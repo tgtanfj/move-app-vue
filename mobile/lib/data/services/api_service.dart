@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 
+enum APIRequestMethod { get, post, put, delete, patch }
+
 class ApiService {
   late Dio dio;
 
@@ -13,116 +15,70 @@ class ApiService {
   }
 
   ApiService._internal() {
+    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
     BaseOptions options = BaseOptions(
       baseUrl: ApiUrls.baseUrl,
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
-      headers: {},
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        if (accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken',
+      },
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
     );
     dio = Dio(options);
   }
 
-  Map<String, dynamic>? getAuthorizationHeader() {
-    var headers = <String, dynamic>{};
-    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-    if (accessToken.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $accessToken';
-    }
-    return headers;
-  }
+  // Intrucstion: use this method to make a request
 
-  Future<dynamic> get(
+  //ApiService().request(APIRequestMethod.get, 'movie/popular',queryParameters: {});
+  Future<Response<T>> request<T>(
+    APIRequestMethod method,
     String path, {
     Map<String, dynamic>? queryParameters,
-    Options? options,
-  }) async {
-    Options requestOptions = options ?? Options();
-    requestOptions.headers = requestOptions.headers ?? {};
-
-    Map<String, dynamic>? authorization = getAuthorizationHeader();
-
-    if (authorization != null) {
-      requestOptions.headers!.addAll(authorization);
-    }
-    try {
-      var response = await dio.get(
-        path,
-        queryParameters: queryParameters,
-        options: requestOptions,
-      );
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        throw Exception('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-
-  Future<dynamic> post(
-    String path, {
     Object? data,
-    Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    Options requestOptions = options ?? Options();
-    requestOptions.headers = requestOptions.headers ?? {};
-
-    Map<String, dynamic>? authorization = getAuthorizationHeader();
-
-    if (authorization != null) {
-      requestOptions.headers!.addAll(authorization);
-    }
     try {
-      var response = await dio.post(path,
-          data: data,
-          queryParameters: queryParameters,
-          options: requestOptions);
-      if (response.statusCode == 200) {
-        return response.data;
+      Response<T> response;
+      switch (method) {
+        case APIRequestMethod.get:
+          response = await dio.get<T>(path,
+              queryParameters: queryParameters, options: options);
+          break;
+        case APIRequestMethod.post:
+          response = await dio.post<T>(path, data: data, options: options);
+          break;
+        case APIRequestMethod.put:
+          response = await dio.put<T>(path, data: data, options: options);
+          break;
+        case APIRequestMethod.delete:
+          response = await dio.delete<T>(path,
+              queryParameters: queryParameters, options: options);
+          break;
+        case APIRequestMethod.patch:
+          response = await dio.patch<T>(path, data: data, options: options);
+          break;
+        default:
+          throw Exception("Unsupported request method");
+      }
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        if (response.data is String) {
+          throw Exception('Error: ${response.data}');
+        }
+        return response;
       } else {
-        throw Exception('Error: ${response.statusCode}');
+        throw Exception(
+            'Error: ${response.statusCode}, Message: ${response.statusMessage}');
       }
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
-    }
-  }
-
-  Future delete(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-  }) async {
-    Options requestOptions = options ?? Options();
-    requestOptions.headers = requestOptions.headers ?? {};
-
-    Map<String, dynamic>? authorization = getAuthorizationHeader();
-
-    if (authorization != null) {
-      requestOptions.headers!.addAll(authorization);
-    }
-    try {
-      var response = await dio.delete(
-        path,
-        queryParameters: queryParameters,
-        options: requestOptions,
-      );
-      if (response.statusCode == 200) {
-        return response.data;
-      } else {
-        throw Exception('Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      rethrow;
     }
   }
 }
