@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:move_app/data/data_sources/local/shared_preferences.dart';
-
+import 'package:move_app/config/app_config.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await SharedPrefer().init();
+  await AppConfig.init();
   runApp(const MyApp());
 }
 
@@ -74,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
