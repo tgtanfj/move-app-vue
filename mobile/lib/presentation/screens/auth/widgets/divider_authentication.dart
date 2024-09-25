@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../constants/constants.dart';
 
-class CustomDividerWith extends StatelessWidget {
-  const CustomDividerWith({super.key});
+class DividerAuthentication extends StatelessWidget {
+  const DividerAuthentication({super.key});
 
   @override
   Widget build(BuildContext context) {

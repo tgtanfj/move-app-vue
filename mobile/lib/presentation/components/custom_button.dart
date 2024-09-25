@@ -1,59 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:move_app/config/theme/app_text_styles.dart';
+import 'package:move_app/config/theme/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
-  final String? iconPath;
   final String title;
-  final Color backgroundColor;
-  final VoidCallback onTap;
-  final TextStyle? textStyle;
-  final double marginBottom;
+  final TextStyle? titleStyle;
+  final Color? backgroundColor;
+  final bool isEnabled;
+  final Widget? prefix;
+  final Widget? suffix;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final double borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final TextAlign? textAlign;
+  final Color? borderColor;
 
-  const CustomButton(
-      {super.key,
-      this.iconPath,
-      required this.title,
-      required this.onTap,
-      this.backgroundColor = Colors.white,
-      this.textStyle,
-      this.marginBottom = 8});
+  const CustomButton({
+    super.key,
+    this.title = '',
+    this.titleStyle,
+    this.backgroundColor = Colors.white,
+    this.isEnabled = true,
+    this.prefix,
+    this.suffix,
+    this.onTap,
+    this.onLongPress,
+    this.borderRadius = 8,
+    this.padding,
+    this.textAlign,
+    this.borderColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 12),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: backgroundColor,
-                border: Border.all(
-                  width: 1,
-                  color: Colors.grey,
-                )),
-            child: Row(
-              children: [
-                iconPath?.isNotEmpty == true
-                    ? SvgPicture.asset(iconPath?? "")
-                    : const SizedBox.shrink(),
-                Expanded(
-                  child: Text(
-                    title,
-                    style:
-                        textStyle ?? AppTextStyles.montserratStyle.bold16Black,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
+    return InkWell(
+      hoverColor: Colors.grey,
+      onTap: isEnabled ? onTap : null,
+      onLongPress: isEnabled ? onLongPress : null,
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: Container(
+        padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: isEnabled ? backgroundColor : Colors.grey,
+          borderRadius: BorderRadius.circular(borderRadius),
+          border: Border.all(color: borderColor ?? AppColors.tiffanyBlue)
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (prefix != null) prefix!,
+            Expanded(
+              child: Text(
+                title,
+                style: titleStyle ?? const TextStyle(color: Colors.white),
+                textAlign: textAlign ?? TextAlign.center,
+              ),
             ),
-          ),
-          SizedBox(
-            height: marginBottom,
-          )
-        ],
+            if (suffix != null) suffix!,
+          ],
+        ),
       ),
     );
   }

@@ -39,10 +39,8 @@ class DialogAuthentication extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             const Flexible(
-              child: CustomTabBar(
-                tabTitles: [Constants.login, Constants.signUp],
-                widgets: [SignUpPage(), SignUpPage()],
-              ),
+              child: CustomTabBar(tabsWithViews: {Constants.signUpWithFaceBook :SignUpPage(),
+              Constants.confirmPassword: Text("data")},  ),
             ),
           ],
         ),

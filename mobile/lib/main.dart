@@ -81,10 +81,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: const Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: CustomTabBar(
-          tabTitles: [Constants.login, Constants.signUp],
-          widgets: [ SignUpPage(),  SignUpPage()],
-        ),
+        child: CustomTabBar(tabsWithViews: {Constants.signUpWithFaceBook :SignUpPage(),
+          Constants.confirmPassword: Text("data")},  ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
