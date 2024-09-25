@@ -10,6 +10,7 @@ import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { MailModule } from './modules/email/email.module';
+import { UserModule } from '@/modules/user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,6 +24,7 @@ import { MailModule } from './modules/email/email.module';
     RedisCloudModule,
     I18nConfigModule,
     MailModule,
+    UserModule,
   ],
   providers: [
     {

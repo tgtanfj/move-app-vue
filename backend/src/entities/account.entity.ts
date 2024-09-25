@@ -12,6 +12,7 @@ export class Account extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   oldPassword: string;
 
