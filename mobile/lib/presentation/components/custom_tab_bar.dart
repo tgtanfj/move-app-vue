@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
-import 'package:move_app/constants/constants.dart';
 
 class CustomTabBar extends StatefulWidget {
   final Map<String, Widget> tabsWithViews;
@@ -13,6 +11,7 @@ class CustomTabBar extends StatefulWidget {
   final EdgeInsetsGeometry? labelPadding;
   final Color? indicatorColor;
   final double? dividerHeight;
+  final Color? dividerColor;
 
   const CustomTabBar({
     super.key,
@@ -24,6 +23,7 @@ class CustomTabBar extends StatefulWidget {
     this.unselectedLabelStyle,
     this.indicatorColor,
     this.dividerHeight,
+    this.dividerColor,
   });
 
   @override
@@ -68,7 +68,14 @@ class _CustomTabBarState extends State<CustomTabBar>
                 AppTextStyles.montserratStyle.regular16Black,
             indicatorWeight: widget.dividerHeight ?? 4,
             indicatorColor: widget.indicatorColor ?? AppColors.tiffanyBlue,
-            dividerColor: Colors.white,
+            dividerColor: widget.dividerColor ?? Colors.white,
+            indicator: const UnderlineTabIndicator(
+              borderSide: BorderSide(
+                width: 4.0,
+                color: AppColors.tiffanyBlue,
+              ),
+              insets: EdgeInsets.symmetric(horizontal: 0),
+            ),
             tabs: widget.tabsWithViews.keys
                 .map((tabTitle) => Tab(text: tabTitle))
                 .toList(),
