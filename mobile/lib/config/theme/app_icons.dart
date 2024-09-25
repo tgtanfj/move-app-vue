@@ -1,6 +1,8 @@
 enum AppIcons {
-  moveLogo
-
+  moveLogo,
+  facebookLogo,
+  googleLogo,
+  close
 }
 
 extension AppIconsExtension on AppIcons {
