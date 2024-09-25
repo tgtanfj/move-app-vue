@@ -88,7 +88,7 @@ export class User extends BaseEntity {
     type: 'varchar',
     nullable: true,
   })
-  deviceToken: string;
+  avatar: string;
 
   @OneToOne(() => Account, (account) => account.user)
   account: Account;

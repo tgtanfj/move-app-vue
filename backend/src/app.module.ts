@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config'; // Import the ConfigModule from the correct module
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { DatabaseModule } from './db/database.module';
 
 import { I18nMiddleware } from 'nestjs-i18n';
@@ -11,6 +11,7 @@ import { GlobalException } from './shared/exceptions/global.exception';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { MailModule } from './modules/email/email.module';
 import { UserModule } from '@/modules/user/user.module';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,10 @@ import { UserModule } from '@/modules/user/user.module';
     {
       provide: APP_FILTER,
       useClass: GlobalException,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
     },
   ],
 })
