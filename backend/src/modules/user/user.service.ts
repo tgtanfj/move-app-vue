@@ -4,7 +4,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserProfile } from './dto/reponse/user.profile';
+import { UserProfile } from './dto/response/user-profile.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -24,7 +24,8 @@ export class UserService {
   }
 
   async getProfile(id: number): Promise<UserProfile> {
-    const foundUser = this.findOne(id);
+    const relations = { country: true, state: true };
+    const foundUser = this.userRepository.findOne(id, relations);
 
     return plainToInstance(UserProfile, foundUser, { excludeExtraneousValues: true });
   }

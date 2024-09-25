@@ -12,4 +12,6 @@ export enum ERRORS_DICTIONARY {
 
   // USER
   NOT_FOUND_ANY_USER = 'Not found any user',
+
+  NOT_FOUND_ANY_COUNTRY = 'Not found any country',
 }

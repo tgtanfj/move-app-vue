@@ -9,9 +9,10 @@ import { RedisCloudModule } from './shared/configs/cache.config';
 import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
+import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { MailModule } from './modules/email/email.module';
 import { UserModule } from '@/modules/user/user.module';
-import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
+import { CountryModule } from './modules/country/country.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import { ResponseInterceptor } from './shared/interceptors/response.interceptor'
     RedisCloudModule,
     I18nConfigModule,
     MailModule,
+    CountryModule,
     UserModule,
   ],
   providers: [

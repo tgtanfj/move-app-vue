@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nes
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { UserProfile } from './dto/response/user-profile.dto';
 
 @ApiTags('user')
 @ApiBearerAuth('jwt')
@@ -14,11 +15,11 @@ export class UserController {
   // [GET]: /user/profile
   // Header: Authorization: AccessToken
   // Body: None
-  @ApiOkResponse({ description: 'get profile User successfully' })
+  @ApiOkResponse({ description: 'Fetch data successfully' })
   @ApiNotFoundResponse({ description: ERRORS_DICTIONARY.NOT_FOUND_ANY_USER })
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
-  async getProfile(@User() user) {
+  async getProfile(@User() user): Promise<UserProfile> {
     return await this.userService.getProfile(user.id);
   }
 }
