@@ -32,7 +32,7 @@ class CustomEditText extends StatefulWidget {
     this.height = 48,
     this.title = '',
     this.maxLength = 255,
-    this.isPasswordInput = true,
+    this.isPasswordInput = false,
     this.suffix,
     this.mainMessage = "",
     this.borderColor = Colors.grey,
@@ -87,7 +87,7 @@ class _CustomEditTextState extends State<CustomEditText> {
             textCapitalization:
                 widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
-            obscureText: widget.isPasswordInput ? !isTextVisible : true,
+            obscureText: widget.isPasswordInput ? !isTextVisible : false,
             decoration: InputDecoration(
               counterText: "",
               fillColor: widget.backgroundColor,

@@ -43,6 +43,7 @@ class Constants {
   static const String weSentAnEmailTo = "We've sent an email to ";
   static const String clickTheLinkToReset =
       ". Click the link in the email to reset your password.";
+  static const String empty = "Empty";
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';

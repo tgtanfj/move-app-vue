@@ -46,7 +46,7 @@ class CustomButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
         padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+        padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
             color: isEnabled ? backgroundColor : AppColors.spanishGray,
             borderRadius: BorderRadius.circular(borderRadius),
@@ -69,3 +69,4 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
+
