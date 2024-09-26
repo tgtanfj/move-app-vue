@@ -37,4 +37,8 @@ class Constants {
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
   static const String malaysia = 'Malaysia';
+  static const String loginWithGoogle = "Log In With Google";
+  static const String loginWithFacebook = "Log In With Facebook";
+  static const String loginWithEmail = "LOGIN WITH EMAIL";
+  static const String forgotPassword = "Forgot Password?";
 }
