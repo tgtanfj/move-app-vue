@@ -1,19 +1,19 @@
 <script setup>
-import { useVModel } from "@vueuse/core";
-import { cn } from "@utils/shadcn.util";
+import { cn } from '@utils/shadcn.util'
+import { useVModel } from '@vueuse/core'
 
 const props = defineProps({
   defaultValue: { type: [String, Number], required: false },
   modelValue: { type: [String, Number], required: false },
-  class: { type: null, required: false },
-});
+  class: { type: null, required: false }
+})
 
-const emits = defineEmits(["update:modelValue"]);
+const emits = defineEmits(['update:modelValue'])
 
-const modelValue = useVModel(props, "modelValue", emits, {
+const modelValue = useVModel(props, 'modelValue', emits, {
   passive: true,
-  defaultValue: props.defaultValue,
-});
+  defaultValue: props.defaultValue
+})
 </script>
 
 <template>
@@ -21,8 +21,8 @@ const modelValue = useVModel(props, "modelValue", emits, {
     v-model="modelValue"
     :class="
       cn(
-        'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-        props.class,
+        'flex h-10 w-full text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none',
+        props.class
       )
     "
   />
