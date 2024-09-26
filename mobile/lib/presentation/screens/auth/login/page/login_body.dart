@@ -9,8 +9,8 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_bloc.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
-import 'package:move_app/presentation/screens/auth/login/widgets/custom_button.dart';
 
+import '../../../../components/custom_button.dart';
 import '../bloc/login_event.dart';
 
 class LoginBody extends StatefulWidget {
@@ -20,7 +20,8 @@ class LoginBody extends StatefulWidget {
   State<LoginBody> createState() => _LoginBodyState();
 }
 
-class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixin {
+class _LoginBodyState extends State<LoginBody>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -36,15 +37,16 @@ class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixi
               child: Column(
                 children: [
                   CustomButton(
-                    onTap: () {},
-                    borderRadius: 8.0,
-                    prefix: SvgPicture.asset(AppIcons.googleLogo.svgAssetPath),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    title: Constants.loginWithGoogle,
-                    titleStyle: AppTextStyles.montserratStyle.bold16Black,
-                    backgroundColor: Colors.white,
-                  ),
+                      onTap: () {},
+                      borderRadius: 8.0,
+                      prefix:
+                          SvgPicture.asset(AppIcons.googleLogo.svgAssetPath),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 14),
+                      title: Constants.loginWithGoogle,
+                      titleStyle: AppTextStyles.montserratStyle.bold16Black,
+                      backgroundColor: Colors.white,
+                      borderColor: AppColors.spanishGray),
                   const SizedBox(height: 12),
                   CustomButton(
                     onTap: () {},
@@ -52,10 +54,11 @@ class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixi
                     prefix:
                         SvgPicture.asset(AppIcons.facebookLogo.svgAssetPath),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
+                        horizontal: 12, vertical: 14),
                     title: Constants.loginWithFacebook,
                     titleStyle: AppTextStyles.montserratStyle.bold16Black,
                     backgroundColor: Colors.white,
+                    borderColor: AppColors.spanishGray,
                   ),
                   const SizedBox(height: 12),
                   const Row(
@@ -72,32 +75,16 @@ class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixi
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const CustomEditText(title: Constants.email),
-                            const SizedBox(height: 12),
-                            Text(
-                              Constants.password,
-                              style:
-                                  AppTextStyles.montserratStyle.regular16Black,
+                            const CustomEditText(
+                              title: Constants.email,
+                              borderColor: AppColors.spanishGray,
                             ),
-                            TextField(
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: const Icon(
-                                    Icons.visibility,
-                                  ),
-                                  onPressed: () {},
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: AppColors.spanishGray),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: AppColors.tiffanyBlue, width: 1.0),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
+                            const SizedBox(height: 12),
+                            const CustomEditText(
+                              borderColor: AppColors.spanishGray,
+                              title: Constants.password,
+                              isPasswordInput: true,
+                              maxLength: 32,
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -113,6 +100,7 @@ class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixi
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12),
                                 backgroundColor: AppColors.spanishGray,
+                                borderColor: AppColors.spanishGray,
                                 onTap: () {}),
                           ],
                         )
@@ -130,7 +118,6 @@ class _LoginBodyState extends State<LoginBody> with AutomaticKeepAliveClientMixi
                             ),
                           ),
                         ),
-                  
                 ],
               ),
             ),

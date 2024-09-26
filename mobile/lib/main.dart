@@ -4,7 +4,6 @@ import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
 import 'config/app_config.dart';
 import 'package:move_app/config/app_config.dart';
 import 'package:move_app/presentation/screens/auth/dialog_authentication/page/dialog_authentication_page.dart';
-import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 void main() async {
   await AppConfig.init();

@@ -17,7 +17,7 @@ class _DialogAuthenticationPageState extends State<DialogAuthenticationPage> {
   Widget build(BuildContext context) {
     return BlocProvider<DialogAuthenticationBloc>(
       create: (context) => DialogAuthenticationBloc(),
-      child: DialogAuthenticationBody(),
+      child: const DialogAuthenticationBody(),
     );
   }
 }

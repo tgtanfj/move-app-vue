@@ -6,4 +6,9 @@ class DialogAuthenticationEvent extends Equatable{
 
 }
 
-final class ShowLoginPageEvent extends DialogAuthenticationEvent {}
+final class ShowLoginPageEvent extends DialogAuthenticationEvent {
+  final int currentPage;
+
+  ShowLoginPageEvent(this.currentPage);
+
+}

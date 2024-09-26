@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 class DialogAuthenticationState extends Equatable {
-  final bool isShowLoginPage;
+  final int currentPage;
 
   const DialogAuthenticationState({
-    this.isShowLoginPage = true,
+    this.currentPage = 0,
   });
 
   DialogAuthenticationState copyWith({
-    bool? isShowLoginPage,
+    int? currentPage,
   }) {
     return DialogAuthenticationState(
-      isShowLoginPage: isShowLoginPage ?? this.isShowLoginPage,
+      currentPage: currentPage ?? this.currentPage,
     );
   }
 
   @override
-  List<Object?> get props => [isShowLoginPage];
+  List<Object?> get props => [currentPage];
 }
