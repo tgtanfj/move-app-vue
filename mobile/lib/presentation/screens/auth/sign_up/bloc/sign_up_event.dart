@@ -7,9 +7,6 @@ class SignUpEvent extends Equatable {
 
 final class SignUpClickSignUpWithEmailEvent extends SignUpEvent {}
 
-final class SignUpClickShowPasswordEvent extends SignUpEvent {}
-
-final class SignUpClickShowConfirmPasswordEvent extends SignUpEvent {}
 
 class SignUpValuesChangedEvent extends SignUpEvent {
   final String? email;

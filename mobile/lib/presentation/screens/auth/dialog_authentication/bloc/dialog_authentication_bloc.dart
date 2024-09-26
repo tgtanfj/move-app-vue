@@ -13,6 +13,6 @@ class DialogAuthenticationBloc
     ShowLoginPageEvent event,
     Emitter<DialogAuthenticationState> emit,
   ) {
-    emit(state.copyWith(isShowLoginPage: !state.isShowLoginPage));
+    emit(state.copyWith(currentPage: event.currentPage));
   }
 }

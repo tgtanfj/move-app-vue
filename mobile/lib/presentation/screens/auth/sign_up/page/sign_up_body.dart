@@ -88,48 +88,32 @@ class _SignUpBodyState extends State<SignUpBody> {
                         const SizedBox(
                           height: 10,
                         ),
+
+                        const SizedBox(
+                          height: 10,
+                        ),
                         CustomEditText(
                           title: Constants.password,
-                          isShowText: !state.isShowPassword,
+                          isPasswordInput:true,
                           maxLength: 32,
                           onChanged: (value) {
                             context
                                 .read<SignUpBloc>()
                                 .add(SignUpValuesChangedEvent(password: value));
                           },
-                          suffix: GestureDetector(
-                            onTap: () {
-                              context
-                                  .read<SignUpBloc>()
-                                  .add(SignUpClickShowPasswordEvent());
-                            },
-                            child: state.isShowPassword
-                                ? const Icon(Icons.visibility)
-                                : const Icon(Icons.visibility_off),
-                          ),
                         ),
                         const SizedBox(
                           height: 10,
                         ),
                         CustomEditText(
                           title: Constants.confirmPassword,
-                          isShowText: !state.isShowConfirmPassword,
+                          isPasswordInput: true,
                           onChanged: (value) {
                             context
                                 .read<SignUpBloc>()
                                 .add(SignUpValuesChangedEvent(confirmPassword: value));
                           },
                           maxLength: 32,
-                          suffix: GestureDetector(
-                            onTap: () {
-                              context
-                                  .read<SignUpBloc>()
-                                  .add(SignUpClickShowConfirmPasswordEvent());
-                            },
-                            child: state.isShowConfirmPassword
-                                ? const Icon(Icons.visibility)
-                                : const Icon(Icons.visibility_off),
-                          ),
                         ),
                         const SizedBox(
                           height: 10,

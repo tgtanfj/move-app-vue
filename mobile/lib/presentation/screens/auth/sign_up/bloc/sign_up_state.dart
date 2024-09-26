@@ -10,8 +10,6 @@ enum SignUpStatus {
 class SignUpState extends Equatable {
   final SignUpStatus status;
   final bool isClickSignUpWithEmail;
-  final bool isShowPassword;
-  final bool isShowConfirmPassword;
   final bool isEnableSignUp;
   final String email;
   final String password;
@@ -21,8 +19,6 @@ class SignUpState extends Equatable {
   const SignUpState({
     this.status = SignUpStatus.initial,
     this.isClickSignUpWithEmail = false,
-    this.isShowPassword = true,
-    this.isShowConfirmPassword = true,
     this.isEnableSignUp = false,
     this.email = '',
     this.password = '',
@@ -45,9 +41,6 @@ class SignUpState extends Equatable {
       status: status ?? this.status,
       isClickSignUpWithEmail:
           isClickSignUpWithEmail ?? this.isClickSignUpWithEmail,
-      isShowPassword: isShowPassword ?? this.isShowPassword,
-      isShowConfirmPassword:
-          isShowConfirmPassword ?? this.isShowConfirmPassword,
       isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
       email: email ?? this.email,
       password: password ?? this.password,
@@ -60,8 +53,6 @@ class SignUpState extends Equatable {
   List<Object?> get props => [
         status,
         isClickSignUpWithEmail,
-        isShowPassword,
-        isShowConfirmPassword,
         isEnableSignUp,
         email,
         password,

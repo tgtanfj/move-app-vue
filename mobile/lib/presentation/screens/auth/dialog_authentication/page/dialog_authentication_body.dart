@@ -27,13 +27,13 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
       builder: (context, state) {
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          insetPadding: EdgeInsets.symmetric(horizontal: 20),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Header Row with Logo and Close Button
+                  SizedBox(height: 16,),
                   Row(
                     children: [
                       Expanded(
@@ -49,6 +49,7 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                           width: 16,
                         ),
                       ),
+                      SizedBox(width: 16,)
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -66,13 +67,13 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                 onTap: () {
                                   context
                                       .read<DialogAuthenticationBloc>()
-                                      .add(ShowLoginPageEvent());
+                                      .add(ShowLoginPageEvent(0));
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     Constants.login,
-                                    style: state.isShowLoginPage
+                                    style: state.currentPage ==0
                                         ? AppTextStyles
                                             .montserratStyle.bold16tiffanyBlue
                                         : AppTextStyles
@@ -80,7 +81,7 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                   ),
                                 ),
                               ),
-                              if (state.isShowLoginPage)
+                              if (state.currentPage == 0)
                                 Container(
                                   height: 4,
                                   width: 56,
@@ -97,13 +98,13 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                 onTap: () {
                                   context
                                       .read<DialogAuthenticationBloc>()
-                                      .add(ShowLoginPageEvent());
+                                      .add(ShowLoginPageEvent(1));
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     Constants.signUp,
-                                    style: !state.isShowLoginPage
+                                    style: state.currentPage ==1
                                         ? AppTextStyles
                                             .montserratStyle.bold16tiffanyBlue
                                         : AppTextStyles
@@ -111,7 +112,7 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                   ),
                                 ),
                               ),
-                              if (!state.isShowLoginPage)
+                              if (state.currentPage ==1)
                                 Container(
                                   height: 4,
                                   width: 65,
@@ -140,13 +141,12 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                     ],
                   ),
                   const SizedBox(height: 12),
-                  state.isShowLoginPage
+                  state.currentPage == 0
                       ? Text(Constants.empty)
                       : const SignUpPage()
                 ],
               ),
             ),
-          ),
         );
       },
     );

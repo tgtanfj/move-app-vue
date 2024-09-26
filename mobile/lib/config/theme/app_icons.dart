@@ -3,8 +3,7 @@ enum AppIcons {
   facebookLogo,
   googleLogo,
   close,
-  password
-
+  password,
   radioSelected,
   radio,
   dropdown,

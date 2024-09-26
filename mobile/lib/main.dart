@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/app_config.dart';
-import 'package:move_app/presentation/components/custom_tab_bar.dart';
 import 'package:move_app/presentation/screens/auth/dialog_authentication/page/dialog_authentication_page.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_body.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
-import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
+
 
 import 'constants/constants.dart';
 import 'config/app_config.dart';
