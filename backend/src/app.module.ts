@@ -14,6 +14,7 @@ import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
+import { DeeplinkModule } from './modules/deep-link/deep-link.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +31,7 @@ import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
     CountryModule,
     UserModule,
     AuthModule,
+    DeeplinkModule,
   ],
   providers: [
     {
