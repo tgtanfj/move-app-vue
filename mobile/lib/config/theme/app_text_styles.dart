@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'app_colors.dart';
+import 'package:move_app/config/theme/app_colors.dart';
 
 enum AppFontFamily { montserrat }
 
@@ -38,10 +37,10 @@ class AppTextStyles {
 
 class MontserratStyles {
   static TextStyle customMontserratStyle(
-      double size,
-      Color color,
-      FontWeight fontWeight,
-      ) {
+    double size,
+    Color color,
+    FontWeight fontWeight,
+  ) {
     return TextStyle(
       fontFamily: AppFontFamily.montserrat.name,
       color: color,
@@ -51,25 +50,35 @@ class MontserratStyles {
   }
 
   final regular12White =
-  customMontserratStyle(12, Colors.white, AppFontWeight.regular.weight);
-  final regular16Black = customMontserratStyle(
-      16, Colors.black, AppFontWeight.regular.weight);
-  final bold16Black = customMontserratStyle(
-      16, Colors.black, AppFontWeight.bold.weight);
+      customMontserratStyle(12, Colors.white, AppFontWeight.regular.weight);
+  final regular16Black =
+      customMontserratStyle(16, Colors.black, AppFontWeight.regular.weight);
+  final bold16Black =
+      customMontserratStyle(16, Colors.black, AppFontWeight.bold.weight);
   final bold16tiffanyBlue = customMontserratStyle(
       16, AppColors.tiffanyBlue, AppFontWeight.bold.weight);
-  final bold16White = customMontserratStyle(
-      16, Colors.white, AppFontWeight.bold.weight);
-  final bold16Grey = customMontserratStyle(
-      16, Colors.grey, AppFontWeight.bold.weight);
+  final bold16White =
+      customMontserratStyle(16, Colors.white, AppFontWeight.bold.weight);
+  final bold16Grey =
+      customMontserratStyle(16, Colors.grey, AppFontWeight.bold.weight);
   final regular14tiffanyBlue = customMontserratStyle(
       14, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
   final regular14sonicSilver = customMontserratStyle(
       14, AppColors.sonicSilver, AppFontWeight.regular.weight);
-  final regular14Black = customMontserratStyle(
-      14, Colors.black, AppFontWeight.regular.weight);
+  final regular14Black =
+      customMontserratStyle(14, Colors.black, AppFontWeight.regular.weight);
   final regular14BrinkPink = customMontserratStyle(
       14, AppColors.brinkPink, AppFontWeight.regular.weight);
   final bold14tiffanyBlue = customMontserratStyle(
       14, AppColors.tiffanyBlue, AppFontWeight.bold.weight);
+  final regular12Black =
+      customMontserratStyle(12, AppColors.black, AppFontWeight.regular.weight);
+  final bold16chineseSilverGray = customMontserratStyle(
+      16, AppColors.chineseSilver, AppFontWeight.bold.weight);
+  final bold14Black =
+      customMontserratStyle(14, AppColors.black, AppFontWeight.bold.weight);
+  final regular14TiffanyBlue = customMontserratStyle(
+      14, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
+  final regular12ExtremeRed = customMontserratStyle(
+      12, AppColors.extremeRed, AppFontWeight.regular.weight);
 }

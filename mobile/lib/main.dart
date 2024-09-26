@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/app_config.dart';
+import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
 
 void main() async {
   await AppConfig.init();
@@ -33,7 +34,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const Scaffold(
+        body: ForgotPasswordPage(),
+      ),
     );
   }
 }
