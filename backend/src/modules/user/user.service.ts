@@ -1,11 +1,10 @@
+import { Account } from '@/entities/account.entity';
 import { User } from '@/entities/user.entity';
-import { IBaseService } from '@/shared/interfaces/commons/IBaseService';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { UserRepository } from './user.repository';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { plainToInstance } from 'class-transformer';
+import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
@@ -28,5 +27,21 @@ export class UserService {
     const foundUser = this.userRepository.findOne(id, relations);
 
     return plainToInstance(UserProfile, foundUser, { excludeExtraneousValues: true });
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneByEmail(email);
+  }
+
+  async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
+    return await this.userRepository.createUserByEmail(signUpEmailDto).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async createAccount(userId: number, password: string): Promise<Account> {
+    return this.userRepository.createAccount(userId, password).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
   }
 }
