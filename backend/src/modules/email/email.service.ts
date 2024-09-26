@@ -7,7 +7,7 @@ import * as Mail from 'nodemailer/lib/mailer';
 export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  sendMail(options: Mail.Options) {
-    return this.mailerService.sendMail(options);
+  async sendMail(options: Mail.Options) {
+    return await this.mailerService.sendMail(options);
   }
 }

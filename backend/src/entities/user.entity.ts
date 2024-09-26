@@ -1,18 +1,18 @@
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
-import { BaseEntity } from './base/base.entity';
-import { Gender } from './enums/gender.enum';
-import { Comment } from './comment.entity';
-import { RefreshToken } from './refresh-token.entity';
 import { Account } from './account.entity';
+import { BaseEntity } from './base/base.entity';
 import { Channel } from './channel.entity';
-import { Payment } from './payment.entity';
-import { SearchHistory } from './search-history.entity';
-import { Donation } from './donation.entity';
-import { Follow } from './follow.entity';
-import { WatchingVideoHistory } from './watching-video-history.entity';
-import { Role } from './enums/role.enum';
+import { Comment } from './comment.entity';
 import { Country } from './country.entity';
+import { Donation } from './donation.entity';
+import { Gender } from './enums/gender.enum';
+import { Role } from './enums/role.enum';
+import { Follow } from './follow.entity';
+import { Payment } from './payment.entity';
+import { RefreshToken } from './refresh-token.entity';
+import { SearchHistory } from './search-history.entity';
 import { State } from './state.entity';
+import { WatchingVideoHistory } from './watching-video-history.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -26,7 +26,7 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
   })
   username: string;
 
@@ -40,6 +40,7 @@ export class User extends BaseEntity {
     type: 'enum',
     enum: Gender,
     default: Gender.MALE,
+    nullable: true,
   })
   gender: Gender;
 
