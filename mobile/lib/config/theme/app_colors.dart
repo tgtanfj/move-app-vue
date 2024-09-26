@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter/material.dart';
 
 class AppColors {
   static const tiffanyBlue = Color(0xff13D0B4);
@@ -13,4 +13,5 @@ class AppColors {
   static const chineseSilver = Color(0xFFCCCCCC);
   static const extremeRed = Color(0xFFCD2504);
   static const graniteGray = Color(0xff666666);
+  static const transparent = Colors.transparent;
 }
