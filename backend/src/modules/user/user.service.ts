@@ -5,10 +5,16 @@ import { plainToInstance } from 'class-transformer';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { UserRepository } from './user.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    @InjectRepository(Account) private accountRepository: Repository<Account>,
+  ) {}
 
   async findOne(id: number): Promise<User> {
     return await this.userRepository.findOne(id).catch((error) => {
@@ -43,5 +49,27 @@ export class UserService {
     return this.userRepository.createAccount(userId, password).catch((error) => {
       throw new BadRequestException(error.message);
     });
+  }
+  async getOneUserByEmailOrThrow(email: string): Promise<User> {
+    return await this.userRepository.getOneUserByEmailOrThrow(email);
+  }
+  async updatePassword(newPassword: string, userId: number) {
+    await this.findOne(userId);
+    const foundAccount = await this.accountRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+    if (!foundAccount) {
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.NOT_FOUND_ACCOUNT,
+      });
+    }
+    console.log(foundAccount);
+    foundAccount.oldPassword = foundAccount.password;
+    foundAccount.password = newPassword;
+    return await this.accountRepository.save(foundAccount);
   }
 }
