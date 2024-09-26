@@ -1,10 +1,17 @@
-import animate from 'tailwindcss-animate'
+const animate = require('tailwindcss-animate')
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
+  darkMode: ['class'],
+  safelist: ['dark'],
   prefix: '',
 
-  content: ['./index.html', './src/**/*.{js,jsx,vue}'],
+  content: [
+    './pages/**/*.{js,jsx,vue}',
+    './components/**/*.{js,jsx,vue}',
+    './app/**/*.{js,jsx,vue}',
+    './src/**/*.{js,jsx,vue}'
+  ],
 
   theme: {
     container: {
@@ -23,7 +30,8 @@ export default {
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          foreground: 'hsl(var(--primary-foreground))',
+          green: 'hsl(var(--primary-green))'
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -48,7 +56,20 @@ export default {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
-        }
+        },
+        darkGray: 'hsl(var(--dark-gray))',
+        lightGray: 'hsl(var(--light-gray))',
+        blueMisc: 'hsl(var(--blue-misc))',
+        redMisc: 'hsl(var(--red-misc))',
+        pinkMisc: 'hsl(var(--pink-misc))'
+      },
+      fontSize: {
+        'title-size': ['24px', '32px'],
+        'subtitle-size': ['18px', '18px']
+      },
+      fontWeight: {
+        'title-weight': '700',
+        'subtitle-weight': '700'
       },
       borderRadius: {
         xl: 'calc(var(--radius) + 4px)',

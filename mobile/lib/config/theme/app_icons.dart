@@ -5,6 +5,9 @@ enum AppIcons {
   close,
   password
 
+  radioSelected,
+  radio,
+  dropdown,
 }
 
 extension AppIconsExtension on AppIcons {

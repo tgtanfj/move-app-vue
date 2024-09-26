@@ -11,6 +11,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dar
 import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 import 'constants/constants.dart';
+import 'config/app_config.dart';
 
 void main() async {
   await AppConfig.init();
@@ -96,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+
     );
   }
 }

@@ -18,4 +18,23 @@ class Constants {
   static const String dot = ".";
   static const String tab = "Tab";
   static const String empty ="Empty";
+  static const String settings = 'Settings';
+  static const String profile = 'Profile';
+  static const String notifications = 'Notifications';
+  static const String profilePicture = 'Profile picture';
+  static const String updateProfilePicture = 'Update profile picture';
+  static const String j = 'J';
+  static const String male = 'Male';
+  static const String female = 'Female';
+  static const String ratherNotSay = 'Rather not say';
+  static const String username = 'Username';
+  static const String fullName = 'Full name';
+  static const String gender = 'Gender';
+  static const String dateOfBirth = 'Date of birth';
+  static const String country = 'Country';
+  static const String state = 'State';
+  static const String city = 'City';
+  static const String saveSetting = 'Save settings';
+  static const String pleaseSelectState = 'Please select state';
+  static const String malaysia = 'Malaysia';
 }

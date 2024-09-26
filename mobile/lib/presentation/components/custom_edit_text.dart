@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+
 import '../../config/theme/app_text_styles.dart';
 
 class CustomEditText extends StatelessWidget {
   final String title;
-  final String message;
+  final String mainMessage;
   final TextStyle? textStyle;
   final ValueChanged<String>? onChanged;
   final TextCapitalization? textCapitalization;
@@ -17,36 +17,48 @@ class CustomEditText extends StatelessWidget {
   final int? maxLength;
   final bool isShowText, isShowMessage;
   final Widget? suffix;
+  final TextEditingController? controller;
+  final Color? cursorColor;
+  final String preMessage;
+  final String sufMessage;
 
   const CustomEditText(
       {super.key,
-        this.textStyle,
-        this.onChanged,
-        this.textCapitalization,
-        this.textInputType,
-        this.backgroundColor = Colors.white,
-        this.height ,
-        this.title ="",
-        this.maxLength = 255,
-        this.isShowText = false,
-        this.suffix,
-        this.message = "",
-        this.borderColor = AppColors.chineseSilver,
-        this.isShowMessage = false,
-        this.backgroundColorMessage = AppColors.lavenderBlush});
+      this.textStyle,
+      this.onChanged,
+      this.textCapitalization,
+      this.textInputType,
+      this.backgroundColor = Colors.white,
+      this.height = 48,
+      this.title = '',
+      this.maxLength = 255,
+      this.isShowText = false,
+      this.suffix,
+      this.mainMessage = "",
+      this.borderColor = Colors.grey,
+      this.isShowMessage = false,
+      this.backgroundColorMessage = AppColors.lavenderBlush,
+      this.controller,
+      this.cursorColor,
+      this.preMessage = "",
+      this.sufMessage = ""});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        title.isNotEmpty ?
-        Text(
-          title ?? "",
-          style: AppTextStyles.montserratStyle.regular16Black,
-          textAlign: TextAlign.left,
-        ): SizedBox(),
+        title.isNotEmpty
+            ? Text(
+                title ?? "",
+                style: AppTextStyles.montserratStyle.regular16Black,
+                textAlign: TextAlign.left,
+              )
+            : const SizedBox(),
         SizedBox(
+          height: title.isNotEmpty ? 4 : 0,
+        ),
+        const SizedBox(
           height: 4,
         ),
         SizedBox(
@@ -54,11 +66,13 @@ class CustomEditText extends StatelessWidget {
           child: TextField(
             style: textStyle ?? AppTextStyles.montserratStyle.regular14Black,
             onChanged: onChanged,
+            controller: controller,
             autofocus: false,
+            cursorColor: cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization: textCapitalization ?? TextCapitalization.none,
             keyboardType: textInputType ?? TextInputType.text,
             decoration: InputDecoration(
-              counterText: "",
+                counterText: "",
                 fillColor: backgroundColor,
                 filled: true,
                 suffixIcon: suffix != null ? Container(child: suffix) : null,
@@ -66,7 +80,7 @@ class CustomEditText extends StatelessWidget {
                     vertical: 12.0, horizontal: 11.5),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: AppColors.spanishGray),
+                  borderSide: const BorderSide(color: AppColors.chineseSilver),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -92,10 +106,21 @@ class CustomEditText extends StatelessWidget {
               border: Border.all(width: 1, color: borderColor),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              message,
-              style: AppTextStyles.montserratStyle.regular14Black,
-              textAlign: TextAlign.justify,
+            child: Expanded(
+              child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      text: preMessage,
+                      style: AppTextStyles.montserratStyle.regular14Black,
+                      children: [
+                        TextSpan(
+                            text: mainMessage,
+                            style: AppTextStyles.montserratStyle.bold14Black),
+                        TextSpan(
+                          text: sufMessage,
+                          style: AppTextStyles.montserratStyle.regular14Black,
+                        )
+                      ])),
             ),
           ),
         ),
@@ -103,3 +128,4 @@ class CustomEditText extends StatelessWidget {
     );
   }
 }
+
