@@ -42,7 +42,10 @@ class _CustomButtonState extends State<CustomButton> {
         padding: widget.padding,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          border: Border.all(width: 1, color: AppColors.gray),
+          border: Border.all(
+            width: 1,
+            color: AppColors.spanishGray,
+          ),
           color: widget.isEnabled == true
               ? widget.disableBackgroundColor
               : widget.backgroundColor,

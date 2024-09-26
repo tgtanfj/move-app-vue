@@ -4,18 +4,21 @@ import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
 import 'login_event.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-
   LoginBloc() : super(LoginState.initial()) {
-  on<LoginInitialEvent>(_onLoginInitialEvent);
-  on<ToggleVisibilityEvent>(_onToggleVisibilityEvent);
+    on<LoginInitialEvent>(_onLoginInitialEvent);
+    on<LoginWithEmailVisibleEvent>(_onLoginWithEmailVisibleEvent);
   }
+
   void _onLoginInitialEvent(
-      LoginEvent event, Emitter<LoginState> emit
-      ){
-  }
-  void _onToggleVisibilityEvent(
-      LoginEvent event, Emitter<LoginState> emit
-      ){
-    emit(state.copyWith(status: LoginStatus.success, isVisible: !state.isVisible));
+      LoginInitialEvent event, Emitter<LoginState> emit) {}
+
+  void _onLoginWithEmailVisibleEvent(
+      LoginWithEmailVisibleEvent event, Emitter<LoginState> emit) {
+    emit(
+      state.copyWith(
+        status: LoginStatus.success,
+        isVisible: !state.isVisible,
+      ),
+    );
   }
 }

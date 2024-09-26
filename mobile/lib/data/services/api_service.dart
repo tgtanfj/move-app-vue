@@ -1,0 +1,84 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:move_app/constants/api_urls.dart';
+import 'package:move_app/data/data_sources/local/shared_preferences.dart';
+
+enum APIRequestMethod { get, post, put, delete, patch }
+
+class ApiService {
+  late Dio dio;
+
+  static final ApiService _instance = ApiService._internal();
+
+  factory ApiService() {
+    return _instance;
+  }
+
+  ApiService._internal() {
+    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+    BaseOptions options = BaseOptions(
+      baseUrl: ApiUrls.baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        if (accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken',
+      },
+      contentType: "application/json: charset=utf-8",
+      responseType: ResponseType.json,
+    );
+    dio = Dio(options);
+  }
+
+  // Intrucstion: use this method to make a request
+
+  //ApiService().request(APIRequestMethod.get, 'movie/popular',queryParameters: {});
+  Future<Response<T>> request<T>(
+    APIRequestMethod method,
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Object? data,
+    Options? options,
+  }) async {
+    try {
+      Response<T> response;
+      switch (method) {
+        case APIRequestMethod.get:
+          response = await dio.get<T>(path,
+              queryParameters: queryParameters, options: options);
+          break;
+        case APIRequestMethod.post:
+          response = await dio.post<T>(path, data: data, options: options);
+          break;
+        case APIRequestMethod.put:
+          response = await dio.put<T>(path, data: data, options: options);
+          break;
+        case APIRequestMethod.delete:
+          response = await dio.delete<T>(path,
+              queryParameters: queryParameters, options: options);
+          break;
+        case APIRequestMethod.patch:
+          response = await dio.patch<T>(path, data: data, options: options);
+          break;
+        default:
+          throw Exception("Unsupported request method");
+      }
+
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        if (response.data is String) {
+          throw Exception('Error: ${response.data}');
+        }
+        return response;
+      } else {
+        throw Exception(
+            'Error: ${response.statusCode}, Message: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      rethrow;
+    }
+  }
+}

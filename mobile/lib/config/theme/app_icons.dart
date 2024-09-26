@@ -1,7 +1,8 @@
 enum AppIcons {
   moveLogo,
   facebookLogo,
-  googleLogo
+  googleLogo,
+  close
 
 }
 
