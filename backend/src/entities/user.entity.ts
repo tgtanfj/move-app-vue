@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { Gender } from './enums/gender.enum';
 import { Comment } from './comment.entity';
@@ -11,6 +11,8 @@ import { Donation } from './donation.entity';
 import { Follow } from './follow.entity';
 import { WatchingVideoHistory } from './watching-video-history.entity';
 import { Role } from './enums/role.enum';
+import { Country } from './country.entity';
+import { State } from './state.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -56,21 +58,9 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
   })
   fullName: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  country: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  state: string;
 
   @Column({
     type: 'varchar',
@@ -88,7 +78,7 @@ export class User extends BaseEntity {
     type: 'varchar',
     nullable: true,
   })
-  deviceToken: string;
+  avatar: string;
 
   @OneToOne(() => Account, (account) => account.user)
   account: Account;
@@ -116,4 +106,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => WatchingVideoHistory, (watchingVideoHistory) => watchingVideoHistory.user)
   watchingVideoHistorys: WatchingVideoHistory[];
+
+  @ManyToOne(() => Country, (country) => country.id)
+  country: Country;
+
+  @ManyToOne(() => State, (state) => state.id)
+  state: State;
 }

@@ -19,12 +19,12 @@ import { join } from 'path';
           watch: true,
         },
       }),
-      resolvers: [
-        { use: QueryResolver, options: ['lang'] },
-        new HeaderResolver(['x-custom-lang']),
-        new CookieResolver(),
-        AcceptLanguageResolver,
-      ],
+      // resolvers: [
+      //   { use: QueryResolver, options: ['lang'] },
+      //   new HeaderResolver(['x-custom-lang']),
+      //   new CookieResolver(),
+      //   AcceptLanguageResolver,
+      // ],
       inject: [ConfigService],
     }),
   ],
