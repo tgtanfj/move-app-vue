@@ -66,6 +66,6 @@ export function configSwagger(app: INestApplication) {
   });
   SwaggerModule.setup('api-docs', app, document, {
     swaggerOptions: { persistAuthorization: true },
-    customSiteTitle: 'API Exam Documentation',
+    customSiteTitle: 'API Move Documentation',
   });
 }

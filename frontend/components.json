@@ -11,7 +11,7 @@
   },
   "framework": "vite",
   "aliases": {
-    "components": "@common",
+    "components": "src/common",
     "utils": "@utils/shadcn.util"
   }
 }

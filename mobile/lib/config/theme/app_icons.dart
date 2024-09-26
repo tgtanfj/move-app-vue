@@ -2,7 +2,10 @@ enum AppIcons {
   moveLogo,
   facebookLogo,
   googleLogo,
-  close
+  close,
+  radioSelected,
+  radio,
+  dropdown,
 
 }
 

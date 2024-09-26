@@ -12,9 +12,8 @@ export class StripeService {
     });
   }
 
-  async createCustomer(name: string, email: string) {
+  async createCustomer(email: string) {
     return this.stripe.customers.create({
-      name,
       email,
     });
   }
