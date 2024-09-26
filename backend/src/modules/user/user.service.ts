@@ -8,6 +8,8 @@ import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserService {
@@ -39,8 +41,18 @@ export class UserService {
     return await this.userRepository.findOneByEmail(email);
   }
 
+  async findAccountWithEmail(email: string): Promise<Account> {
+    return await this.userRepository.findAccountWithEmail(email);
+  }
+
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
     return await this.userRepository.createUserByEmail(signUpEmailDto).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
+    return await this.userRepository.createUserBySocial(signUpDto).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
@@ -71,5 +83,10 @@ export class UserService {
     foundAccount.oldPassword = foundAccount.password;
     foundAccount.password = newPassword;
     return await this.accountRepository.save(foundAccount);
+  }
+  async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
+    return this.userRepository.createAccountSocial(userId, type).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
   }
 }

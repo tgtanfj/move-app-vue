@@ -6,6 +6,8 @@ import { Equal, FindOptionsRelations, Repository } from 'typeorm';
 import { Account } from '../../entities/account.entity';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { NotFoundError } from 'rxjs';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserRepository {
@@ -41,10 +43,22 @@ export class UserRepository {
     return foundUser;
   }
 
+  async findAccountWithEmail(email: string): Promise<Account> {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+      relations: ['account'],
+    });
+    return user && user.account;
+  }
+
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
     const { email, stripeId } = signUpEmailDto;
 
     return await this.userRepository.save({ email, stripeId });
+  }
+
+  async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
+    return await this.userRepository.save({ ...signUpDto, isActive: true });
   }
 
   async createAccount(userId: number, password: string): Promise<Account> {
@@ -62,10 +76,20 @@ export class UserRepository {
         email: email,
       },
     });
-    if (!foundUser) throw new NotFoundException({
-      message: ERRORS_DICTIONARY.USER_NOT_FOUND,
-      email
-    });
+    if (!foundUser)
+      throw new NotFoundException({
+        message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+        email,
+      });
     return foundUser;
+  }
+  async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
+    const accountCreated = this.accountRepository.create({
+      user: {
+        id: userId,
+      },
+      type,
+    });
+    return await this.accountRepository.save(accountCreated);
   }
 }
