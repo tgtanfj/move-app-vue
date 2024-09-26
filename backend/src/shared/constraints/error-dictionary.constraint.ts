@@ -14,4 +14,11 @@ export enum ERRORS_DICTIONARY {
   NOT_FOUND_ANY_USER = 'Not found any user',
 
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
+  //Token
+  GENERATE_TOKEN_FAIL = 'Genereate_token_fail',
+  VERIFY_TOKEN_FAIL = 'Token is not valid',
+
+  //Account
+  NOT_FOUND_ACCOUNT = 'Not found account',
+  UPDATE_PASSWORD_FAIL = 'Update password fail',
 }

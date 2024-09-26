@@ -7,10 +7,15 @@ import { ERRORS_DICTIONARY } from './shared/constraints/error-dictionary.constra
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
 import { I18nMiddleware, I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join, resolve } from 'path';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.setBaseViewsDir(resolve('./src/shared/public'));
+  app.setViewEngine('ejs');
 
   const configService = app.select(SharedModule).get(ApiConfigService);
   const port = configService.serverConfig.port;

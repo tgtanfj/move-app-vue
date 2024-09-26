@@ -52,7 +52,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     alignment: Alignment.centerLeft),
                 child: Text(
                   Constants.updateProfilePicture,
-                  style: AppTextStyles.montserratStyle.regular14TiffanyBlue,
+                  style: AppTextStyles.montserratStyle.regular14tiffanyBlue,
                 ),
               ),
               const CustomEditText(

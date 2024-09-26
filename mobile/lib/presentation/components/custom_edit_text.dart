@@ -3,10 +3,6 @@ import 'package:move_app/config/theme/app_colors.dart';
 
 import '../../config/theme/app_text_styles.dart';
 
-import 'package:flutter/material.dart';
-import 'package:move_app/config/theme/app_colors.dart';
-import '../../config/theme/app_text_styles.dart';
-
 class CustomEditText extends StatefulWidget {
   final String title;
   final String mainMessage;
@@ -89,7 +85,7 @@ class _CustomEditTextState extends State<CustomEditText> {
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
-            obscureText: widget.isPasswordInput ? isTextVisible : false,
+            obscureText: widget.isPasswordInput ? !isTextVisible : false,
             decoration: InputDecoration(
               counterText: "",
               fillColor: widget.backgroundColor,
