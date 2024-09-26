@@ -65,6 +65,7 @@ export class AuthService {
     };
     this.emailService.sendMail(dto);
     return {
+      email,
       token,
     };
   }

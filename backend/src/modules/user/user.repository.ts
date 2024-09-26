@@ -62,7 +62,10 @@ export class UserRepository {
         email: email,
       },
     });
-    if (!foundUser) throw new NotFoundException(ERRORS_DICTIONARY.USER_NOT_FOUND);
+    if (!foundUser) throw new NotFoundException({
+      message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+      email
+    });
     return foundUser;
   }
 }
