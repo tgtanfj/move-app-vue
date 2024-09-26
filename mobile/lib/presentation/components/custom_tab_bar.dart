@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
+import 'package:move_app/constants/constants.dart';
 
 class CustomTabBar extends StatefulWidget {
   final Map<String, Widget> tabsWithViews;
@@ -52,7 +54,7 @@ class _CustomTabBarState extends State<CustomTabBar>
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          widget.tabBarPadding ?? const EdgeInsets.symmetric(horizontal: 0),
+      widget.tabBarPadding ?? const EdgeInsets.symmetric(horizontal: 0),
       child: Column(
         children: [
           TabBar(
@@ -61,7 +63,7 @@ class _CustomTabBarState extends State<CustomTabBar>
             controller: _tabController,
             isScrollable: true,
             labelPadding:
-                widget.labelPadding ?? const EdgeInsets.only(right: 32),
+            widget.labelPadding ?? const EdgeInsets.only(right: 32),
             labelStyle: widget.labelStyle ??
                 AppTextStyles.montserratStyle.bold16tiffanyBlue,
             unselectedLabelStyle: widget.unselectedLabelStyle ??
@@ -91,3 +93,4 @@ class _CustomTabBarState extends State<CustomTabBar>
     );
   }
 }
+

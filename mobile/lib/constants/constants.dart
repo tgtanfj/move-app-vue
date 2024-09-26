@@ -17,6 +17,7 @@ class Constants {
   static const String and = "and ";
   static const String dot = ".";
   static const String tab = "Tab";
+  static const String empty ="Empty";
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';
