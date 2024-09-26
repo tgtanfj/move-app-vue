@@ -10,7 +10,6 @@ class CustomEditText extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final TextCapitalization? textCapitalization;
   final TextInputType? textInputType;
-  final double borderRadius;
   final Color backgroundColor;
   final Color borderColor;
   final Color? backgroundColorMessage;
@@ -18,38 +17,36 @@ class CustomEditText extends StatelessWidget {
   final int? maxLength;
   final bool isShowText, isShowMessage;
   final Widget? suffix;
-  final double marginBottom;
 
   const CustomEditText(
       {super.key,
-      this.textStyle,
-      this.onChanged,
-      this.textCapitalization,
-      this.textInputType,
-      this.borderRadius = 8,
-      this.backgroundColor = Colors.white,
-      this.height = 48,
-      required this.title,
-      this.maxLength = 255,
-      this.isShowText = false,
-      this.suffix,
-      this.message = "",
-      this.marginBottom = 10,
-      this.borderColor = Colors.grey,
-      this.isShowMessage = false,
-      this.backgroundColorMessage = AppColors.lavenderBlush});
+        this.textStyle,
+        this.onChanged,
+        this.textCapitalization,
+        this.textInputType,
+        this.backgroundColor = Colors.white,
+        this.height ,
+        this.title ="",
+        this.maxLength = 255,
+        this.isShowText = false,
+        this.suffix,
+        this.message = "",
+        this.borderColor = AppColors.chineseSilver,
+        this.isShowMessage = false,
+        this.backgroundColorMessage = AppColors.lavenderBlush});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        title.isNotEmpty ?
         Text(
-          title,
+          title ?? "",
           style: AppTextStyles.montserratStyle.regular16Black,
           textAlign: TextAlign.left,
-        ),
-        const SizedBox(
+        ): SizedBox(),
+        SizedBox(
           height: 4,
         ),
         SizedBox(
@@ -61,21 +58,25 @@ class CustomEditText extends StatelessWidget {
             textCapitalization: textCapitalization ?? TextCapitalization.none,
             keyboardType: textInputType ?? TextInputType.text,
             decoration: InputDecoration(
-                counterText: "",
+              counterText: "",
                 fillColor: backgroundColor,
                 filled: true,
                 suffixIcon: suffix != null ? Container(child: suffix) : null,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 11.5),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(8.0),
                   borderSide: const BorderSide(color: AppColors.spanishGray),
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(color: AppColors.chineseSilver),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(8.0),
                     borderSide: const BorderSide(color: AppColors.tiffanyBlue)),
                 errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.0),
+                    borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide(color: borderColor))),
             maxLength: maxLength,
             obscureText: isShowText,
@@ -89,7 +90,7 @@ class CustomEditText extends StatelessWidget {
             decoration: BoxDecoration(
               color: backgroundColorMessage,
               border: Border.all(width: 1, color: borderColor),
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               message,
@@ -98,9 +99,6 @@ class CustomEditText extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
-          height: marginBottom,
-        )
       ],
     );
   }

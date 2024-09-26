@@ -39,12 +39,12 @@ class CustomButton extends StatelessWidget {
       onLongPress: isEnabled ? onLongPress : null,
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
-        padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding:
+        padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
-          color: isEnabled ? backgroundColor : Colors.grey,
-          borderRadius: BorderRadius.circular(borderRadius),
-          border: Border.all(color: borderColor ?? AppColors.tiffanyBlue)
-        ),
+            color: isEnabled ? backgroundColor : AppColors.spanishGray,
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(color: borderColor ?? AppColors.tiffanyBlue)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

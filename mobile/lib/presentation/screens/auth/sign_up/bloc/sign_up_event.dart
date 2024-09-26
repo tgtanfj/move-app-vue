@@ -11,26 +11,20 @@ final class SignUpClickShowPasswordEvent extends SignUpEvent {}
 
 final class SignUpClickShowConfirmPasswordEvent extends SignUpEvent {}
 
-class SignUpEmailChangedEvent extends SignUpEvent {
-  final String email;
+class SignUpValuesChangedEvent extends SignUpEvent {
+  final String? email;
+  final String? password;
+  final String? confirmPassword;
+  final String? referralCode;
 
-  SignUpEmailChangedEvent(this.email);
+  SignUpValuesChangedEvent({
+    this.email,
+    this.password,
+    this.confirmPassword,
+    this.referralCode,
+  });
+
+  @override
+  List<Object?> get props => [email, password, confirmPassword, referralCode];
 }
 
-class SignUpPasswordChangedEvent extends SignUpEvent {
-  final String password;
-
-  SignUpPasswordChangedEvent(this.password);
-}
-
-class SignUpConfirmPasswordChangedEvent extends SignUpEvent {
-  final String confirmPassword;
-
-  SignUpConfirmPasswordChangedEvent(this.confirmPassword);
-}
-
-class SignUpReferralCodeChangedEvent extends SignUpEvent {
-  final String referralCode;
-
-  SignUpReferralCodeChangedEvent(this.referralCode);
-}

@@ -13,10 +13,12 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: BlocProvider<SignUpBloc>(
-          create: (context) => SignUpBloc(), child: SignUpBody()),
+    return Container(
+      child: BlocProvider<SignUpBloc>(
+        create: (context) => SignUpBloc(),
+        child: const SignUpBody(),
+      ),
     );
   }
+
 }

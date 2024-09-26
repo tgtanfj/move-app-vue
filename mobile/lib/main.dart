@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/app_config.dart';
 import 'package:move_app/presentation/components/custom_tab_bar.dart';
+import 'package:move_app/presentation/screens/auth/dialog_authentication/page/dialog_authentication_page.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_body.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dart';
@@ -81,15 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: const Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: CustomTabBar(tabsWithViews: {Constants.signUpWithFaceBook :SignUpPage(),
-          Constants.confirmPassword: Text("data")},  ),
+        child: SizedBox.shrink(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const DialogAuthentication();
+              return const DialogAuthenticationPage();
             },
           );
         },
@@ -98,6 +98,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
-
 }

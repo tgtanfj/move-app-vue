@@ -8,10 +8,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     on<SignUpClickShowPasswordEvent>(onSignUpClickShowPasswordEvent);
     on<SignUpClickShowConfirmPasswordEvent>(
         onSignUpClickShowConfirmPasswordEvent);
-    on<SignUpEmailChangedEvent>(onSignUpEmailChangedEvent);
-    on<SignUpPasswordChangedEvent>(onSignUpPasswordChangedEvent);
-    on<SignUpConfirmPasswordChangedEvent>(onSignUpConfirmPasswordChangedEvent);
-    on<SignUpReferralCodeChangedEvent>(onSignUpReferralCodeChangedEvent);
+    on<SignUpValuesChangedEvent>(onSignUpValuesChangedEvent);
   }
 
   void onSignUpClickSignUpWithEmailEvent(
@@ -35,27 +32,23 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     emit(state.copyWith(isShowConfirmPassword: !state.isShowConfirmPassword));
   }
 
-  void onSignUpEmailChangedEvent(
-    SignUpEmailChangedEvent event,
+  void onSignUpValuesChangedEvent(
+    SignUpValuesChangedEvent event,
     Emitter<SignUpState> emit,
   ) {
-    emit(state.copyWith(email: event.email));
-  }
+    final signUpValues = state.copyWith(
+      email: event.email,
+      password: event.password,
+      confirmPassword: event.confirmPassword,
+      referralCode: event.referralCode,
+    );
 
-  void onSignUpPasswordChangedEvent(
-    SignUpPasswordChangedEvent event,
-    Emitter<SignUpState> emit,
-  ) {
-    emit(state.copyWith(password: event.password));
-  }
+    final isEnableSignUp = signUpValues.email.isNotEmpty &&
+        signUpValues.password.isNotEmpty &&
+        signUpValues.confirmPassword.isNotEmpty &&
+        signUpValues.referralCode.isNotEmpty &&
+        signUpValues.email.contains("@");
 
-  void onSignUpConfirmPasswordChangedEvent(
-      SignUpConfirmPasswordChangedEvent event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(confirmPassword: event.confirmPassword));
-  }
-
-  void onSignUpReferralCodeChangedEvent(
-      SignUpReferralCodeChangedEvent event, Emitter<SignUpState> emit) {
-    emit(state.copyWith(referralCode: event.referralCode));
+    emit(signUpValues.copyWith(isEnableSignUp: isEnableSignUp));
   }
 }

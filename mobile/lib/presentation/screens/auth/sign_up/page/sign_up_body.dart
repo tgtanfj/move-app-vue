@@ -9,6 +9,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_bloc.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
+import 'package:move_app/presentation/screens/auth/sign_up/widgets/title_edit_text_referral.dart';
 import 'package:move_app/presentation/screens/auth/widgets/divider_authentication.dart';
 
 import '../../../../components/custom_button.dart';
@@ -24,31 +25,37 @@ class SignUpBody extends StatefulWidget {
 class _SignUpBodyState extends State<SignUpBody> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: BlocBuilder<SignUpBloc, SignUpState>(
+    return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return SingleChildScrollView(
-          child: Padding(
+          child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 CustomButton(
-                  prefix: SvgPicture.asset(AppIcons.facebookLogo.svgAssetPath),
+                  prefix: SvgPicture.asset(AppIcons.googleLogo.svgAssetPath),
                   title: Constants.signUpWithGoogle,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
+                  borderColor: AppColors.chineseSilver,
                   onTap: () {},
                 ),
-                const SizedBox(height: 8,),
-                // CustomButton(
-                //   iconLeft: AppIcons.facebookLogo.svgAssetPath,
-                //   title: Constants.signUpWithFaceBook,
-                //   borderColor: Colors.grey,
-                //   onTap: () {},
-                // ),
-                const SizedBox(height: 8,),
+                const SizedBox(
+                  height: 8,
+                ),
+                CustomButton(
+                  prefix: SvgPicture.asset(AppIcons.facebookLogo.svgAssetPath),
+                  title: Constants.signUpWithFaceBook,
+                  titleStyle: AppTextStyles.montserratStyle.bold16Black,
+                  borderColor: AppColors.chineseSilver,
+                  onTap: () {},
+                ),
+                const SizedBox(
+                  height: 11,
+                ),
                 const DividerAuthentication(),
                 const SizedBox(
-                  height: 15,
+                  height: 14,
                 ),
                 Visibility(
                   visible: !state.isClickSignUpWithEmail,
@@ -59,34 +66,36 @@ class _SignUpBodyState extends State<SignUpBody> {
                           .add(SignUpClickSignUpWithEmailEvent());
                     },
                     child: Text(
-                      Constants.signUpWithEmail,
+                      Constants.signUpWithEmail.toUpperCase(),
                       style: AppTextStyles.montserratStyle.bold14tiffanyBlue,
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 14,
-                ),
                 Visibility(
                     visible: state.isClickSignUpWithEmail,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomEditText(
                           title: Constants.email,
                           onChanged: (value) {
                             context
                                 .read<SignUpBloc>()
-                                .add(SignUpEmailChangedEvent(value));
+                                .add(SignUpValuesChangedEvent(email: value));
                           },
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         CustomEditText(
                           title: Constants.password,
                           isShowText: !state.isShowPassword,
-                          maxLength: 8,
+                          maxLength: 32,
                           onChanged: (value) {
                             context
                                 .read<SignUpBloc>()
-                                .add(SignUpPasswordChangedEvent(value));
+                                .add(SignUpValuesChangedEvent(password: value));
                           },
                           suffix: GestureDetector(
                             onTap: () {
@@ -99,14 +108,18 @@ class _SignUpBodyState extends State<SignUpBody> {
                                 : const Icon(Icons.visibility_off),
                           ),
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         CustomEditText(
                           title: Constants.confirmPassword,
                           isShowText: !state.isShowConfirmPassword,
                           onChanged: (value) {
-                            context.read<SignUpBloc>().add(
-                                SignUpConfirmPasswordChangedEvent(value));
+                            context
+                                .read<SignUpBloc>()
+                                .add(SignUpValuesChangedEvent(confirmPassword: value));
                           },
-                          maxLength: 8,
+                          maxLength: 32,
                           suffix: GestureDetector(
                             onTap: () {
                               context
@@ -118,26 +131,37 @@ class _SignUpBodyState extends State<SignUpBody> {
                                 : const Icon(Icons.visibility_off),
                           ),
                         ),
-                        CustomEditText(
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TitleEditTextReferral(
                           title: Constants.referralCode,
+                          subTitle: Constants.optional,
+                          subTitleStyle: AppTextStyles
+                              .montserratStyle.regular16Black
+                              .copyWith(fontStyle: FontStyle.italic),
+
+                        ),
+                        CustomEditText(
                           textCapitalization: TextCapitalization.characters,
                           textInputType: TextInputType.text,
                           maxLength: 6,
                           onChanged: (value) {
                             context
                                 .read<SignUpBloc>()
-                                .add(SignUpReferralCodeChangedEvent(value));
+                                .add(SignUpValuesChangedEvent(referralCode: value));
                           },
-                          marginBottom: 17,
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         RichText(
                           textAlign: TextAlign.justify,
                           text: TextSpan(
-                            style:
-                                AppTextStyles.montserratStyle.regular14Black,
+                            style: AppTextStyles
+                                .montserratStyle.regular14sonicSilver,
                             children: [
-                              const TextSpan(
-                                  text: Constants.byClickingSignUp),
+                              const TextSpan(text: Constants.byClickingSignUp),
                               TextSpan(
                                 text: Constants.termsOfService,
                                 style: AppTextStyles
@@ -162,19 +186,11 @@ class _SignUpBodyState extends State<SignUpBody> {
                         ),
                         CustomButton(
                           title: Constants.signUp,
-                            titleStyle:AppTextStyles.montserratStyle.bold16White,
-                          // borderColor:  state.email.isNotEmpty &&
-                          //     state.password.isNotEmpty &&
-                          //     state.confirmPassword.isNotEmpty &&
-                          //     state.referralCode.isNotEmpty
-                          //     ? AppColors.tiffanyBlue
-                          //     : AppColors.spanishGray,
-                          // textStyle:
-                          //     AppTextStyles.montserratStyle.bold16White,
-                          backgroundColor: state.email.isNotEmpty &&
-                                  state.password.isNotEmpty &&
-                                  state.confirmPassword.isNotEmpty &&
-                                  state.referralCode.isNotEmpty
+                          titleStyle: AppTextStyles.montserratStyle.bold16White,
+                          borderColor: state.isEnableSignUp
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          backgroundColor: state.isEnableSignUp
                               ? AppColors.tiffanyBlue
                               : AppColors.spanishGray,
                           onTap: () {},
@@ -186,6 +202,6 @@ class _SignUpBodyState extends State<SignUpBody> {
           ),
         );
       },
-    ));
+    );
   }
 }

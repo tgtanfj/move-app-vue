@@ -8,4 +8,5 @@ class AppColors {
   static const brinkPink = Color(0xffFF647A);
   static const lavenderBlush = Color(0xffFDEDEF);
   static const bubbles = Color(0xffE6FFFB);
+  static const chineseSilver = Color(0xffCCCCCC);
 }

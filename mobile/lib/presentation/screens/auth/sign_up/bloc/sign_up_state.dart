@@ -12,6 +12,7 @@ class SignUpState extends Equatable {
   final bool isClickSignUpWithEmail;
   final bool isShowPassword;
   final bool isShowConfirmPassword;
+  final bool isEnableSignUp;
   final String email;
   final String password;
   final String confirmPassword;
@@ -22,6 +23,7 @@ class SignUpState extends Equatable {
     this.isClickSignUpWithEmail = false,
     this.isShowPassword = true,
     this.isShowConfirmPassword = true,
+    this.isEnableSignUp = false,
     this.email = '',
     this.password = '',
     this.confirmPassword = '',
@@ -33,6 +35,7 @@ class SignUpState extends Equatable {
     bool? isClickSignUpWithEmail,
     bool? isShowPassword,
     bool? isShowConfirmPassword,
+    bool? isEnableSignUp,
     String? email,
     String? password,
     String? confirmPassword,
@@ -45,6 +48,7 @@ class SignUpState extends Equatable {
       isShowPassword: isShowPassword ?? this.isShowPassword,
       isShowConfirmPassword:
           isShowConfirmPassword ?? this.isShowConfirmPassword,
+      isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
       email: email ?? this.email,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
@@ -58,6 +62,7 @@ class SignUpState extends Equatable {
         isClickSignUpWithEmail,
         isShowPassword,
         isShowConfirmPassword,
+        isEnableSignUp,
         email,
         password,
         confirmPassword,
