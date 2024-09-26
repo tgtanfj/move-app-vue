@@ -1,10 +1,11 @@
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, FindOptionsRelations, Repository } from 'typeorm';
 import { Account } from '../../entities/account.entity';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UserRepository {
@@ -54,5 +55,14 @@ export class UserRepository {
       password,
     });
     return await this.accountRepository.save(accountCreated);
+  }
+  async getOneUserByEmailOrThrow(email: string): Promise<User> {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!foundUser) throw new NotFoundException(ERRORS_DICTIONARY.USER_NOT_FOUND);
+    return foundUser;
   }
 }
