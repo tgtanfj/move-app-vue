@@ -9,6 +9,6 @@ export class SearchHistory extends BaseEntity {
   })
   content: string;
 
-  @ManyToOne(() => User, (user) => user.searchHistorys)
+  @ManyToOne(() => User, (user) => user.searchHistories)
   user: User;
 }

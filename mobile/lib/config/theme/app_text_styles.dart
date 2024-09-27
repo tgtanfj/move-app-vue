@@ -83,6 +83,7 @@ class MontserratStyles {
       14, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
   final bold16TiffanyBlue = customMontserratStyle(
       16, AppColors.tiffanyBlue, AppFontWeight.bold.weight);
+
   final bold20Black =
       customMontserratStyle(20, AppColors.black, AppFontWeight.bold.weight);
   final bold23White =

@@ -8,8 +8,8 @@
         <custom-input
           label="Password"
           name="password"
-          :defineInputBinds="defineInputBinds"
-          :error-bag="errorBag"
+          :defineField="defineField"
+          :errors="errors"
           inputType="password"
         />
       </div>
@@ -18,14 +18,19 @@
         <custom-input
           label="Confirm password"
           name="confirmPassword"
-          :defineInputBinds="defineInputBinds"
-          :error-bag="errorBag"
+          :defineField="defineField"
+          :errors="errors"
           inputType="password"
         />
       </div>
 
       <div class="text-center mt-6">
-        <Button class="w-[60%]">Confirm</Button>
+        <Button
+          class="w-[60%]"
+          :disabled="!isFormValid"
+          :variant="isFormValid ? 'default' : 'disabled'"
+          >Confirm</Button
+        >
       </div>
     </form>
   </BaseCard>
@@ -43,15 +48,25 @@
 
 <script setup>
 import { Button } from '@/common/ui/button'
-import CustomInput from '@/common/ui/input-validation/CustomInput.vue'
 import BaseCard from '@/components/BaseCard.vue'
+import CustomInput from '@/components/input-validation/CustomInput.vue'
 import { passwordSchema } from '@/validation/schema.js'
 import { useForm } from 'vee-validate'
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
-const { defineInputBinds, errorBag, values, handleSubmit } = useForm({
+const { values, errors, defineField, handleSubmit } = useForm({
   validationSchema: passwordSchema
 })
+
+const isFillAllFields = computed(() => {
+  return values.password && values.confirmPassword
+})
+
+const isFormValid = computed(() => {
+  return isFillAllFields.value && Object.keys(errors.value).length === 0
+})
+
 const submit = handleSubmit(() => {
   console.log(values.password)
 })

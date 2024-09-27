@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
-import * as yup from 'yup'
-import { useForm, Field, ErrorMessage, Form as VForm } from 'vee-validate'
+import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import { Button } from '@common/ui/button'
+import { ErrorMessage, Field, useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { registerSchema } from '../validation/schema.js'
 
@@ -11,10 +10,10 @@ const props = defineProps({
   closeModal: Function
 })
 
-
+const emit = defineEmits(['openOtpVerification'])
 
 const { handleSubmit, values, resetForm, errors, meta } = useForm({
-  validationSchema :registerSchema
+  validationSchema: registerSchema
 })
 
 const toggleSignWithEmail = ref(false)
@@ -34,6 +33,8 @@ const isSignUp = computed(() => {
 const onSubmit = handleSubmit((values) => {
   console.log('Form Values:', values)
   props.closeModal()
+
+  emit('openOtpVerification')
 })
 </script>
 
