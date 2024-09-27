@@ -12,6 +12,7 @@ import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { SignUpEmailDto } from './dto/signup-email.dto';
+import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 
 @Injectable()
 export class AuthService {
@@ -110,11 +111,13 @@ export class AuthService {
       });
     }
   }
-  async loginSocial(idToken: string, type: TypeAccount) {
+  async loginSocial(infoLoginSocial: infoLoginSocial) {
+    const { idToken, type, publicIp, userAgent } = infoLoginSocial;
     const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
-    const account = await this.userService.findAccountWithEmail(email);
+    const user = await this.userService.findUserAccountWithEmail(email);
+    const account = user.account;
     if (account && account.type !== type) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ONOTHER_LOGIN_METHOD);
+      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ANOTHER_LOGIN_METHOD);
     }
     if (!account) {
       const customer = await this.stripeService.createCustomer(email);
@@ -127,16 +130,23 @@ export class AuthService {
       await this.userService.createAccountSocial(newUser.id, type);
       return newUser;
     }
-    // Login logic
+    return await this.login(user.id, publicIp, userAgent);
   }
 
-  async loginGoogle(idToken: string, type: TypeAccount) {
-    return await this.loginSocial(idToken, type);
+  async login(userId: number, ip: string, userAgent: string) {
+    const { refreshToken, id } = await this.getRefreshToken(userId, {
+      ipAddress: ip,
+      userAgent: userAgent,
+    });
+
+    const accessToken = this.getAccessToken(userId, id);
+
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   }
 
-  async loginFacebook(idToken: string, type: TypeAccount) {
-    return await this.loginSocial(idToken, type);
-  }
   async validateUser(email: string, password: string) {
     // find user by email
     const user = await this.userService.findOneByEmail(email);

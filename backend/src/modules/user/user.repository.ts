@@ -45,12 +45,12 @@ export class UserRepository {
     return foundUser;
   }
 
-  async findAccountWithEmail(email: string): Promise<Account> {
+  async findUserAccountWithEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email: email },
       relations: ['account'],
     });
-    return user && user.account;
+    return user;
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
