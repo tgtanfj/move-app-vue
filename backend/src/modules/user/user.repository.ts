@@ -2,9 +2,9 @@ import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Delete } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsRelations, Repository } from 'typeorm';
+import { DeleteResult, Equal, FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 import { Account } from '../../entities/account.entity';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
@@ -116,5 +116,9 @@ export class UserRepository {
 
   async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
     return await this.tokenRepository.findOneByOrFail({ refreshToken });
+  }
+
+  async revokeRefreshToken(refreshToken: string): Promise<DeleteResult> {
+    return await this.tokenRepository.delete({ refreshToken });
   }
 }

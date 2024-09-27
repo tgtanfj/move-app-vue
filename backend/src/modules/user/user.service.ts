@@ -7,7 +7,7 @@ import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
@@ -115,5 +115,9 @@ export class UserService {
     } catch (error) {
       return null;
     }
+  }
+
+  async revokeRefreshToken(refreshToken: string): Promise<DeleteResult> {
+    return await this.userRepository.revokeRefreshToken(refreshToken);
   }
 }

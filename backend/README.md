@@ -32,3 +32,12 @@ When the access token expires:
 - **Attach the refresh token** to the `Authorization` header in the same format: `Bearer <refreshToken>`.
 
 This will typically result in receiving a new access token and refresh token in the response. You can use the new access token for subsequent API calls.
+
+### Logging Out
+
+To log out:
+
+- **Send a GET request** to the `/auth/logout` endpoint.
+- **Attach the refresh token** to the `Authorization` header in the same format: `Bearer <refreshToken>`.
+
+This will typically revoke the refresh token, invalidating the current session and requiring the user to log in again.

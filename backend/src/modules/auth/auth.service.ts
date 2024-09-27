@@ -198,4 +198,8 @@ export class AuthService {
       accessToken,
     };
   }
+
+  async revokeRefreshToken(token: string) {
+    return await this.userService.revokeRefreshToken(token);
+  }
 }
