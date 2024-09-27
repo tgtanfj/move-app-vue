@@ -41,4 +41,10 @@ class Constants {
   static const String loginWithFacebook = "Log In With Facebook";
   static const String loginWithEmail = "LOGIN WITH EMAIL";
   static const String forgotPassword = "Forgot Password?";
+  static const String sendCode="We sent a 6-digit code to";
+  static const String enterCode="Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
+  static const String verificationCode="Verification Code";
+  static const String resendCode="Resend code";
+  static const String submit="Submit";
+  static const String verifyEmail="Verify your email to keep account secure";
 }
