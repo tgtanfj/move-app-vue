@@ -2,7 +2,6 @@ import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { JwtRefreshGuard } from '@/shared/guards/jwt-refresh.guard';
 import { LocalAuthGuard } from '@/shared/guards/local-auth.guard';
 import { PublicIpAddressService } from '@/shared/utils/publicIpAddressService';
-import { HttpService } from '@nestjs/axios';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -18,7 +17,6 @@ import { SocialTokenDto } from './dto/social-token.dto';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly httpService: HttpService,
     private readonly publicIpAddressService: PublicIpAddressService,
   ) {}
 
