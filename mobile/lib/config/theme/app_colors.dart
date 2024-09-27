@@ -8,8 +8,9 @@ class AppColors {
   static const brinkPink = Color(0xffFF647A);
   static const lavenderBlush = Color(0xffFDEDEF);
   static const bubbles = Color(0xffE6FFFB);
-  static const white = Color(0xFFFFFFFF);
-  static const black = Color(0xFF000000);
+  static const white = Color(0xffFFFFFF);
+  static const black = Color(0xff000000);
   static const chineseSilver = Color(0xFFCCCCCC);
   static const graniteGray = Color(0xff666666);
+  static const transparent = Colors.transparent;
 }
