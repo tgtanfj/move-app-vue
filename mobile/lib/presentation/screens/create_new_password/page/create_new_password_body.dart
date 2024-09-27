@@ -18,7 +18,6 @@ class CreateNewPasswordBody extends StatefulWidget {
 }
 
 class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
-  final double _dialogWidth = 374.0;
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -44,6 +43,7 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
       child: BlocBuilder<CreatePasswordBloc, CreateNewPasswordState>(
           builder: (context, state) {
         double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        double screenWidth = MediaQuery.of(context).size.width;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Center(
@@ -51,7 +51,7 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
               borderRadius: BorderRadius.circular(20.0),
               color: Colors.transparent,
               child: Container(
-                width: _dialogWidth,
+                width: screenWidth * 0.9,
                 margin: EdgeInsets.only(bottom: keyboardHeight),
                 child: SingleChildScrollView(
                   child: Container(
@@ -80,11 +80,10 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                           isPasswordInput: true,
                           maxLength: 32,
                           borderColor: state.showValidationError &&
-                                  !state.isPasswordValid
+                                  (!state.isPasswordValid ||
+                                      !state.doPasswordsMatch)
                               ? AppColors.brinkPink
-                              : (state.isPasswordFocusedButNotEdited
-                                  ? AppColors.tiffanyBlue
-                                  : AppColors.chineseSilver),
+                              : AppColors.chineseSilver,
                           onChanged: (value) {
                             context
                                 .read<CreatePasswordBloc>()
@@ -98,22 +97,18 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                         CustomEditText(
                           title: Constants.confirmNewPassword,
                           controller: _confirmPasswordController,
-                          // isShowText: !state.isShowConfirmPassword,
                           maxLength: 32,
                           borderColor: state.showValidationError &&
                                   (!state.isPasswordValid ||
                                       !state.doPasswordsMatch)
-                              ? AppColors.extremeRed
-                              : (state.isPasswordFocusedButNotEdited
-                                  ? AppColors.extremeRed
-                                  : AppColors.chineseSilver),
+                              ? AppColors.brinkPink
+                              : AppColors.chineseSilver,
                           onChanged: (value) {
                             context
                                 .read<CreatePasswordBloc>()
                                 .add(CreateConfirmPasswordChangedEvent(value));
                           },
                           isPasswordInput: true,
-
                           isShowMessage: state.showValidationError &&
                               (!state.isPasswordValid ||
                                   !state.doPasswordsMatch),

@@ -5,11 +5,11 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 
 class PasswordResetSuccessful extends StatelessWidget {
-  final double _dialogWidth = 374.0;
   const PasswordResetSuccessful({super.key});
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width - 40;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Stack(
@@ -20,7 +20,7 @@ class PasswordResetSuccessful extends StatelessWidget {
               color: AppColors.white,
               child: Container(
                 padding: const EdgeInsets.all(16),
-                width: _dialogWidth,
+                width: screenWidth,
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(20.0),

@@ -63,4 +63,6 @@ class Constants {
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
   static const String malaysia = 'Malaysia';
+  static const String to = 'to';
+  static const String exampleEmail = 'p.giggs@email.com.';
 }

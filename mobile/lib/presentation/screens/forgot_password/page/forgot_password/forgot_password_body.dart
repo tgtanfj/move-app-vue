@@ -18,7 +18,6 @@ class ForgotPasswordBody extends StatefulWidget {
 }
 
 class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
-  final double _dialogWidth = 374.0;
   final TextEditingController _emailController = TextEditingController();
 
   @override
@@ -33,8 +32,8 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: BlocBuilder<ForgotPasswordBloc, ForgotPasswordState>(
           builder: (context, state) {
-        // Get the keyboard height using MediaQuery
         double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+        double screenWidth = MediaQuery.of(context).size.width - 40;
         return Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
@@ -46,7 +45,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    width: _dialogWidth,
+                    width: screenWidth,
                     decoration: BoxDecoration(
                       color: AppColors.white,
                       borderRadius: BorderRadius.circular(20.0),

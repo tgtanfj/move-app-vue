@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:move_app/utils/input_validation_helper.dart';
 
 import 'create_new_password_event.dart';
 import 'create_new_password_state.dart';
@@ -15,7 +16,7 @@ class CreatePasswordBloc
 
   void _onCreateNewPasswordChangedEvent(CreateNewPasswordChangedEvent event,
       Emitter<CreateNewPasswordState> emit) {
-    final isValid = _isPasswordValid(event.newPassword);
+    final isValid = InputValidationHelper().isPasswordValid(event.newPassword);
 
     emit(state.copyWith(
       isPasswordValid: isValid,
@@ -51,15 +52,5 @@ class CreatePasswordBloc
       CreateNewPasswordResetValidationErrorsEvent event,
       Emitter<CreateNewPasswordState> emit) {
     emit(state.copyWith(showValidationError: false));
-  }
-
-  bool _isPasswordValid(String password) {
-    if (password.length < 8 || password.length > 32) return false;
-
-    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
-    final hasLowercase = password.contains(RegExp(r'[a-z]'));
-    final hasDigit = password.contains(RegExp(r'[0-9]'));
-    final hasSpecial = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    return hasUppercase && hasLowercase && hasDigit && hasSpecial;
   }
 }

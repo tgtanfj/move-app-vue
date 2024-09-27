@@ -11,7 +11,6 @@ class AppColors {
   static const white = Color(0xffFFFFFF);
   static const black = Color(0xff000000);
   static const chineseSilver = Color(0xFFCCCCCC);
-  static const extremeRed = Color(0xFFCD2504);
   static const graniteGray = Color(0xff666666);
   static const transparent = Colors.transparent;
 }

@@ -109,11 +109,17 @@ class _CustomEditTextState extends State<CustomEditText> {
                   const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: AppColors.chineseSilver),
+                borderSide: BorderSide(
+                    color: widget.isShowMessage
+                        ? widget.borderColor
+                        : AppColors.chineseSilver),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: AppColors.chineseSilver),
+                borderSide: BorderSide(
+                    color: widget.isShowMessage
+                        ? widget.borderColor
+                        : AppColors.chineseSilver),
               ),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),

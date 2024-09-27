@@ -6,7 +6,6 @@ class CreateNewPasswordState extends Equatable {
   final bool isPasswordValid;
   final bool doPasswordsMatch;
   final bool showValidationError;
-  final bool isPasswordFocusedButNotEdited;
 
   const CreateNewPasswordState({
     required this.newPassword,
@@ -14,7 +13,6 @@ class CreateNewPasswordState extends Equatable {
     required this.isPasswordValid,
     required this.doPasswordsMatch,
     required this.showValidationError,
-    required this.isPasswordFocusedButNotEdited,
   });
 
   factory CreateNewPasswordState.initial() {
@@ -24,7 +22,6 @@ class CreateNewPasswordState extends Equatable {
       isPasswordValid: false,
       doPasswordsMatch: false,
       showValidationError: false,
-      isPasswordFocusedButNotEdited: false,
     );
   }
 
@@ -34,8 +31,6 @@ class CreateNewPasswordState extends Equatable {
     bool? isPasswordValid,
     bool? doPasswordsMatch,
     bool? showValidationError,
-    bool? isPasswordFocusedButNotEdited,
-    bool? isShowPassword,
     bool? isShowConfirmPassword,
   }) {
     return CreateNewPasswordState(
@@ -44,8 +39,6 @@ class CreateNewPasswordState extends Equatable {
       isPasswordValid: isPasswordValid ?? this.isPasswordValid,
       doPasswordsMatch: doPasswordsMatch ?? this.doPasswordsMatch,
       showValidationError: showValidationError ?? this.showValidationError,
-      isPasswordFocusedButNotEdited:
-          isPasswordFocusedButNotEdited ?? this.isPasswordFocusedButNotEdited,
     );
   }
 
@@ -56,6 +49,5 @@ class CreateNewPasswordState extends Equatable {
         isPasswordValid,
         doPasswordsMatch,
         showValidationError,
-        isPasswordFocusedButNotEdited,
       ];
 }

@@ -5,11 +5,11 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 
 class VerificationFailed extends StatelessWidget {
-  final double _dialogWidth = 374.0;
   const VerificationFailed({super.key});
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width - 40;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Stack(
@@ -20,7 +20,7 @@ class VerificationFailed extends StatelessWidget {
               color: AppColors.white,
               child: Container(
                 padding: const EdgeInsets.all(16),
-                width: _dialogWidth,
+                width: screenWidth,
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(20.0),
@@ -48,11 +48,11 @@ class VerificationFailed extends StatelessWidget {
                                 .copyWith(decoration: TextDecoration.underline),
                             children: [
                               TextSpan(
-                                  text: "to",
+                                  text: Constants.to,
                                   style: AppTextStyles
                                       .montserratStyle.regular14Black),
                               TextSpan(
-                                  text: "p.giggs@email.com.",
+                                  text: Constants.exampleEmail,
                                   style: AppTextStyles
                                       .montserratStyle.bold14Black),
                             ])),
