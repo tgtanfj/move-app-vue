@@ -21,4 +21,7 @@ export enum ERRORS_DICTIONARY {
   //Account
   NOT_FOUND_ACCOUNT = 'Not found account',
   UPDATE_PASSWORD_FAIL = 'Update password fail',
+
+  // SOCIAL
+  TRY_ONOTHER_LOGIN_METHOD = 'An account with this email already exists using a different login method. Please use the original method to log in',
 }

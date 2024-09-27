@@ -3,9 +3,9 @@ import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
-// const props = defineProps({
-//   closeModal: Function()
-// })
+const props = defineProps({
+  closeModal: Function
+})
 
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
@@ -79,7 +79,7 @@ const handleOpenForgotPassword = () => {
 
     <form @submit.prevent="handleSignIn" v-if="formLogin" class="flex flex-col gap-1" novalidate>
       <div class="mb-2 flex flex-col">
-        <label class="mb-2 font-bold">Email</label>
+        <label class="mb-2">Email</label>
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
@@ -89,7 +89,7 @@ const handleOpenForgotPassword = () => {
         <p class="text-red-500 text-[14px]">{{ errors.email }}</p>
       </div>
       <div class="mb-2 flex flex-col">
-        <label class="mb-2 font-bold">Password</label>
+        <label class="mb-2">Password</label>
         <input
           type="password"
           class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"

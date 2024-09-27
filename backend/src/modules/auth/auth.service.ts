@@ -10,6 +10,8 @@ import { ApiConfigService } from '@/shared/services/api-config.service';
 import { getTemplateReset } from '../email/templates/get-template';
 import * as bcrypt from 'bcrypt';
 import { getField } from '@/shared/utils/get-field.util';
+import { firebaseAdmin } from '@/shared/firebase/firebase.config';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 
 @Injectable()
 export class AuthService {
@@ -106,5 +108,32 @@ export class AuthService {
         message: ERRORS_DICTIONARY.AUTHORIZE_ERROR,
       });
     }
+  }
+  async loginSocial(idToken: string, type: TypeAccount) {
+    const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const account = await this.userService.findAccountWithEmail(email);
+    if (account && account.type !== type) {
+      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ONOTHER_LOGIN_METHOD);
+    }
+    if (!account) {
+      const customer = await this.stripeService.createCustomer(email);
+      const newUser = await this.userService.createUserBySocial({
+        email,
+        fullName: name,
+        avatar: picture,
+        stripeId: customer.id,
+      });
+      await this.userService.createAccountSocial(newUser.id, type);
+      return newUser;
+    }
+    // Login logic
+  }
+
+  async loginGoogle(idToken: string, type: TypeAccount) {
+    return await this.loginSocial(idToken, type);
+  }
+
+  async loginFacebook(idToken: string, type: TypeAccount) {
+    return await this.loginSocial(idToken, type);
   }
 }

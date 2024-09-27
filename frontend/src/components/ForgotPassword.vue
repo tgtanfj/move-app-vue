@@ -1,30 +1,25 @@
 <template>
   <BaseDialog title="Forgot password" description="Enter email address for your account">
-    <Form @submit="onSubmit" :validation-schema="emailSchema">
+    <form @submit.prevent="handleSendMail">
       <div class="flex flex-col space-y-1.5">
-        <Field
-          name="email"
-          type="email"
-          class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none"
-          :class="borderColor"
-        />
-        <ErrorMessage name="email" class="text-redMisc text-sm italic" />
+        <custom-input name="email" :defineField="defineField" :errors="errors" />
       </div>
 
-      <div
-        v-if="typeof sendEmailSuccess === 'boolean'"
-        class="border rounded-md px-3 py-5 text-center"
-        :class="bgColor"
-      >
+      <div v-if="isSendEmail" class="border rounded-md px-3 py-5 text-center" :class="bgColor">
         <p class="max-w-[400px] m-auto">
-          We've sent an email to. Click the link in the email to reset your password.
+          We've sent an email to {{ email }}. Click the link in the email to reset your password.
         </p>
       </div>
 
       <div class="flex justify-center mt-2">
-        <Button>{{ isSendEmail ? 'Resend the link' : 'Send password reset link' }}</Button>
+        <Button
+          type="submit"
+          :disabled="!isFormValid"
+          :variant="isFormValid ? 'default' : 'disabled'"
+          >{{ isSendEmail ? 'Resend the link' : 'Send password reset link' }}</Button
+        >
       </div>
-    </Form>
+    </form>
 
     <div class="flex justify-center">
       <Button variant="link" @click="openLogin"> Back to login page </Button>
@@ -33,25 +28,26 @@
 </template>
 
 <script setup>
-import { emailSchema } from '@/validation/schema.js'
+import CustomInput from '@/components/input-validation/CustomInput.vue'
 import { Button } from '@common/ui/button'
 import BaseDialog from '@components/BaseDialog.vue'
-import { ErrorMessage, Field, Form } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
+import { emailSchema } from '../validation/schema'
 
 const isSendEmail = ref(false)
-const sendEmailSuccess = ref()
+const sendEmailSuccess = ref(false)
 
 const borderColor = computed(() => {
-  if (typeof sendEmailSuccess.value === 'boolean') {
-    return sendEmailSuccess.value
+  if (isSendEmail.value) {
+    return sendEmailSuccess && sendEmailSuccess.value
       ? 'border-primary focus:border-primary'
       : 'border-redMisc focus:border-redMisc'
   }
   return ''
 })
 const bgColor = computed(() => {
-  if (typeof sendEmailSuccess.value === 'boolean') {
+  if (isSendEmail.value) {
     return sendEmailSuccess.value
       ? 'bg-[#E6FFFB] border-primaryGreen'
       : 'bg-[#FDEDEF] border-redMisc'
@@ -59,9 +55,21 @@ const bgColor = computed(() => {
   return ''
 })
 
-function onSubmit(values) {
-  console.log(values.email)
-}
+const { values, errors, defineField, handleSubmit } = useForm({
+  validationSchema: emailSchema
+})
+
+const isFillAllFields = computed(() => {
+  return values.email
+})
+
+const isFormValid = computed(() => {
+  return isFillAllFields.value && Object.keys(errors.value).length === 0
+})
+
+const handleSendMail = handleSubmit(async (values) => {
+  console.log(values)
+})
 
 //handle open login
 const emit = defineEmits(['openLogin'])
