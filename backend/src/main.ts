@@ -1,14 +1,14 @@
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationError } from 'class-validator';
+import { I18nMiddleware, I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+import { resolve } from 'path';
 import { AppModule } from './app.module';
 import { configSwagger } from './shared/configs/setup-swagger';
 import { ERRORS_DICTIONARY } from './shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
-import { I18nMiddleware, I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { join, resolve } from 'path';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -29,6 +29,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      forbidNonWhitelisted: true,
       exceptionFactory: (errors: ValidationError[]) =>
         new BadRequestException({
           message: ERRORS_DICTIONARY.VALIDATION_ERROR,
@@ -37,7 +38,6 @@ async function bootstrap() {
     }),
     new I18nValidationPipe(),
   );
-
   app.useGlobalFilters(
     new I18nValidationExceptionFilter({
       detailedErrors: false,

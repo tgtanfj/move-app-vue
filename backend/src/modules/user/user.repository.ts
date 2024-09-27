@@ -94,7 +94,7 @@ export class UserRepository {
     });
     return await this.accountRepository.save(accountCreated);
   }
-  
+
   async findOneAccount(userId: number): Promise<Account> {
     const account = this.accountRepository.findOneByOrFail({
       user: {
