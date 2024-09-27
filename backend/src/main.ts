@@ -25,6 +25,7 @@ async function bootstrap() {
   }
 
   app.use(I18nMiddleware);
+  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -2,7 +2,7 @@ import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { JwtRefreshGuard } from '@/shared/guards/jwt-refresh.guard';
 import { LocalAuthGuard } from '@/shared/guards/local-auth.guard';
 import { PublicIpAddressService } from '@/shared/utils/publicIpAddressService';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDTO } from './dto/forgot-password.dto';
@@ -10,6 +10,7 @@ import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
 import { SocialTokenDto } from './dto/social-token.dto';
+import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 
 @ApiTags('Auth')
 @ApiBearerAuth('jwt')
@@ -27,15 +28,29 @@ export class AuthController {
   }
 
   @Post('login/google')
-  async loginGoogle(@Body() socialTokenDto: SocialTokenDto) {
-    const { idToken } = socialTokenDto;
-    return await this.authService.loginGoogle(idToken, TypeAccount.GOOGLE);
+  async loginGoogle(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
+    const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+    const infoLoginSocial: infoLoginSocial = {
+      idToken: socialTokenDto.idToken,
+      type: TypeAccount.GOOGLE,
+      publicIp: publicIp,
+      userAgent: req.headers['user-agent'],
+    };
+
+    return await this.authService.loginSocial(infoLoginSocial);
   }
 
   @Post('login/facebook')
-  async loginFacebook(@Body() socialTokenDto: SocialTokenDto) {
-    const { idToken } = socialTokenDto;
-    return await this.authService.loginFacebook(idToken, TypeAccount.FACEBOOK);
+  async loginFacebook(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
+    const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+    const infoLoginSocial: infoLoginSocial = {
+      idToken: socialTokenDto.idToken,
+      type: TypeAccount.FACEBOOK,
+      publicIp: publicIp,
+      userAgent: req.headers['user-agent'],
+    };
+
+    return await this.authService.loginSocial(infoLoginSocial);
   }
   @Post('forgot-password')
   @HttpCode(200)
@@ -51,18 +66,10 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Body() loginDto: LoginDto) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+    const userAgent = req.headers['user-agent'];
+    const userId = req.user.id;
 
-    const { refreshToken, id } = await this.authService.getRefreshToken(req.user.id, {
-      ipAddress: publicIp,
-      userAgent: req.headers['user-agent'],
-    });
-
-    const accessToken = await this.authService.getAccessToken(req.user.id, id);
-
-    return {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    };
+    return await this.authService.login(userId, publicIp, userAgent);
   }
 
   @Get('refresh')

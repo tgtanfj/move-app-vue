@@ -42,8 +42,8 @@ export class UserService {
     return await this.userRepository.findOneByEmail(email);
   }
 
-  async findAccountWithEmail(email: string): Promise<Account> {
-    return await this.userRepository.findAccountWithEmail(email);
+  async findUserAccountWithEmail(email: string): Promise<User> {
+    return await this.userRepository.findUserAccountWithEmail(email);
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
@@ -80,7 +80,7 @@ export class UserService {
         message: ERRORS_DICTIONARY.NOT_FOUND_ACCOUNT,
       });
     }
-    console.log(foundAccount);
+
     foundAccount.oldPassword = foundAccount.password;
     foundAccount.password = newPassword;
     return await this.accountRepository.save(foundAccount);
