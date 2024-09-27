@@ -17,7 +17,7 @@ export function configSwagger(app: INestApplication) {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'Authorization',
+        name: 'JWT',
         description: 'Enter your JWT token',
         in: 'header',
       },

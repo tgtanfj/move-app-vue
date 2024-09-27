@@ -1,4 +1,5 @@
 import { Account } from '@/entities/account.entity';
+import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
@@ -88,5 +89,31 @@ export class UserService {
     return this.userRepository.createAccountSocial(userId, type).catch((error) => {
       throw new BadRequestException(error.message);
     });
+  }
+
+  async findOneAccount(userId: number): Promise<Account> {
+    return this.userRepository.findOneAccount(userId).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async saveRefreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
+    return this.userRepository.saveFreshToken(userId, deviceInfo, refreshToken).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async validateRefreshToken(refreshToken: string): Promise<string> {
+    try {
+      const refreshTokenEntity = await this.userRepository.validateRefreshToken(refreshToken);
+
+      if (!refreshTokenEntity) {
+        return null;
+      }
+
+      return refreshTokenEntity.id;
+    } catch (error) {
+      return null;
+    }
   }
 }
