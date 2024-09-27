@@ -12,7 +12,12 @@ const router = createRouter({
       path: '/resetpassword/:token',
       name: 'reset-password',
       component: () => import('../views/ResetPasswordView.vue')
-    }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/UserProfile.vue')
+    },
   ]
 })
 

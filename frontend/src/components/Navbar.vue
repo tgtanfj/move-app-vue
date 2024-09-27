@@ -61,12 +61,16 @@
                   />
                 </TabsContent>
                 <TabsContent value="signup">
-                  <SignUpModal :closeModal="closeModal" />
+                  <SignUpModal
+                    :closeModal="closeModal"
+                    @open-otp-verification="openOTPModal = true"
+                  />
                 </TabsContent>
               </Tabs>
             </DialogContent>
           </Dialog>
           <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
+          <OTPVerificationModal v-model:open="openOTPModal" />
         </div>
       </div>
     </div>
@@ -74,19 +78,18 @@
 </template>
 
 <script setup>
+import DotDotDot from '@assets/icons/DotDotDot.vue'
+import LogoBlack from '@assets/icons/LogoBlack.vue'
+import LogoWhite from '@assets/icons/LogoWhite.vue'
+import SearchIcon from '@assets/icons/SearchIcon.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@common/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import SignInModal from '@components/SignInModal.vue'
 import { ref } from 'vue'
 import Button from '../common/ui/button/Button.vue'
 import ForgotPassword from './ForgotPassword.vue'
+import OTPVerificationModal from './OTPVerificationModal.vue'
 import SignUpModal from './SignUpModal.vue'
-import DotDotDot from '@assets/icons/DotDotDot.vue'
-import FacebookIcon from '@assets/icons/FacebookIcon.vue'
-import GoogleIcon from '@assets/icons/GoogleIcon.vue'
-import LogoBlack from '@assets/icons/LogoBlack.vue'
-import LogoWhite from '@assets/icons/LogoWhite.vue'
-import SearchIcon from '@assets/icons/SearchIcon.vue'
 const isOpen = ref(false)
 
 const openModal = () => {
@@ -98,6 +101,8 @@ const closeModal = () => {
 }
 
 const openForgotPassword = ref(false)
+const openOTPModal = ref(false)
+
 const onOpenForgotPassword = () => {
   openForgotPassword.value = true
   closeModal()

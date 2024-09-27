@@ -3,7 +3,8 @@
     <label v-if="label" :for="name">{{ label }}</label>
     <input
       :type="inputType"
-      v-bind="inputBinds"
+      v-model="fieldName"
+      v-bind="fieldNameAttrs"
       :id="name"
       class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none"
     />
@@ -13,6 +14,7 @@
 
 <script setup>
 import { ErrorMessage } from 'vee-validate'
+
 const props = defineProps({
   label: {
     type: [String, Boolean],
@@ -27,15 +29,15 @@ const props = defineProps({
     type: String,
     required: true
   },
-  defineInputBinds: {
+  defineField: {
     type: Function,
     required: true
   },
-  errorBag: {
+  errors: {
     type: Object,
     required: true
   }
 })
 
-const inputBinds = props.defineInputBinds(props.name)
+const [fieldName, fieldNameAttrs] = props.defineField(props.name)
 </script>
