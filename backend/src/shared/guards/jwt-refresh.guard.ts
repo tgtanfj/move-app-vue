@@ -1,14 +1,10 @@
-import { UserService } from '@/modules/user/user.service';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ERRORS_DICTIONARY } from '../constraints/error-dictionary.constraint';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
-  ) {}
+export class JwtRefreshGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -19,9 +15,9 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-      const user = await this.userService.findOne(payload.sub);
-      request['user'] = user;
+      const payload = this.jwtService.verify(token, { secret: process.env.JWT_REFRESH_SECRET });
+
+      request['user'] = { payload, token };
 
       return true;
     } catch (error) {

@@ -16,11 +16,6 @@ export class Video extends BaseEntity {
   title: string;
 
   @Column({
-    type: 'varchar',
-  })
-  oldPassword: string;
-
-  @Column({
     type: 'enum',
     enum: WorkoutLevel,
   })
@@ -55,5 +50,5 @@ export class Video extends BaseEntity {
   donations: Donation[];
 
   @OneToMany(() => WatchingVideoHistory, (watchingVideoHistory) => watchingVideoHistory.video)
-  watchingVideoHistorys: WatchingVideoHistory[];
+  watchingVideoHistories: WatchingVideoHistory[];
 }
