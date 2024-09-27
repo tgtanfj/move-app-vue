@@ -14,4 +14,11 @@ class OtpVerificationCodeChangedEvent extends OtpVerificationEvent {
   List<Object?> get props => [verificationCode];
 }
 
+class OtpVerificationInitialEvent extends OtpVerificationEvent {
+  final String email;
 
+  OtpVerificationInitialEvent(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}

@@ -14,9 +14,7 @@ import '../../../../../config/theme/app_icons.dart';
 import '../widgets/title_verification_code.dart';
 
 class OtpVerificationBody extends StatefulWidget {
-  final String email;
-
-  const OtpVerificationBody({super.key, required this.email});
+  const OtpVerificationBody({super.key});
 
   @override
   State<OtpVerificationBody> createState() => _OtpVerificationBodyState();
@@ -70,7 +68,7 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                     style: AppTextStyles.montserratStyle.regular14Black,
                     children: [
                       TextSpan(
-                        text: " ${widget.email}.",
+                        text: " ${state.email}.",
                         style: AppTextStyles.montserratStyle.bold14Black,
                       ),
                       TextSpan(
