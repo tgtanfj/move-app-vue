@@ -96,12 +96,11 @@ export class UserRepository {
   }
 
   async findOneAccount(userId: number): Promise<Account> {
-    const account = this.accountRepository.findOneByOrFail({
+    return await this.accountRepository.findOneByOrFail({
       user: {
         id: userId,
       },
     });
-    return account;
   }
 
   async saveFreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
@@ -116,6 +115,6 @@ export class UserRepository {
   }
 
   async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
-    return this.tokenRepository.findOneByOrFail({ refreshToken });
+    return await this.tokenRepository.findOneByOrFail({ refreshToken });
   }
 }

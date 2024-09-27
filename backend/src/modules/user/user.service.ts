@@ -98,7 +98,7 @@ export class UserService {
   }
 
   async saveRefreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
-    return this.userRepository.saveFreshToken(userId, deviceInfo, refreshToken).catch((error) => {
+    return await this.userRepository.saveFreshToken(userId, deviceInfo, refreshToken).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
