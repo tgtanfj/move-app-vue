@@ -30,6 +30,7 @@ export class AuthController {
   @Post('login/google')
   async loginGoogle(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+
     const infoLoginSocial: infoLoginSocial = {
       idToken: socialTokenDto.idToken,
       type: TypeAccount.GOOGLE,
@@ -43,6 +44,7 @@ export class AuthController {
   @Post('login/facebook')
   async loginFacebook(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+
     const infoLoginSocial: infoLoginSocial = {
       idToken: socialTokenDto.idToken,
       type: TypeAccount.FACEBOOK,
@@ -66,7 +68,9 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async login(@Request() req, @Body() loginDto: LoginDto) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
+
     const userAgent = req.headers['user-agent'];
+
     const userId = req.user.id;
 
     return await this.authService.login(userId, publicIp, userAgent);

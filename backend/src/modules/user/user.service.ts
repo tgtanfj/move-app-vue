@@ -1,16 +1,16 @@
 import { Account } from '@/entities/account.entity';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
+import { DeleteResult, Repository } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
+import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { UserRepository } from './user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
-import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserService {
@@ -108,16 +108,22 @@ export class UserService {
       const refreshTokenEntity = await this.userRepository.validateRefreshToken(refreshToken);
 
       if (!refreshTokenEntity) {
-        return null;
+        throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
       }
 
       return refreshTokenEntity.id;
     } catch (error) {
-      return null;
+      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
     }
   }
 
   async revokeRefreshToken(refreshToken: string): Promise<DeleteResult> {
-    return await this.userRepository.revokeRefreshToken(refreshToken);
+    const result = await this.userRepository.revokeRefreshToken(refreshToken);
+
+    if (result.affected === 0) {
+      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+    }
+
+    return result;
   }
 }
