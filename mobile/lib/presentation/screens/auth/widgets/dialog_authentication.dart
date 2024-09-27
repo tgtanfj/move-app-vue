@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_icons.dart';
-import 'package:move_app/constants/constants.dart';
 import '../../../components/custom_tab_bar.dart';
 
 class DialogAuthentication extends StatelessWidget {

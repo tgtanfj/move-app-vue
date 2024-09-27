@@ -1,4 +1,11 @@
+
+
 class Constants {
+  static const String featured = 'Featured';
+  static const String views = 'views';
+  static const String category = 'Category';
+  static const String viewAll = 'View All';
+  static const String videosYouMayLike = 'Videos you may like';
   static const String login = "Log In";
   static const String signUp = "Sign Up";
   static const String signUpWithGoogle = "Sign up with Google";
@@ -36,4 +43,8 @@ class Constants {
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
   static const String malaysia = 'Malaysia';
+  static const String interm =  'Interm';
+  static const String intermediate =  'Intermediate';
+
+  
 }

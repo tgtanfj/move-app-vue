@@ -50,7 +50,7 @@ class CustomEditText extends StatelessWidget {
       children: [
         title.isNotEmpty
             ? Text(
-                title ?? "",
+                title,
                 style: AppTextStyles.montserratStyle.regular16Black,
                 textAlign: TextAlign.left,
               )

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
-
 import 'config/app_config.dart';
+import 'presentation/screens/home/page/home_page.dart';
 
 void main() async {
   await AppConfig.init();
@@ -11,14 +10,24 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(),
-      home: const SettingPage(),
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(1.0),
+            devicePixelRatio: 1.0,
+          ),
+          child: child!,
+        );
+      },
+      home: const HomePage(),
     );
   }
 }
