@@ -39,7 +39,6 @@ export class User extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Gender,
-    default: Gender.MALE,
     nullable: true,
   })
   gender: Gender;
