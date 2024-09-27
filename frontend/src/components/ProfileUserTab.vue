@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from 'vee-validate'
+import { Input } from '@/common/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import {
   Select,
@@ -10,14 +10,16 @@ import {
   SelectValue
 } from '@/common/ui/select'
 import { countriesService } from '@services/countries.services'
+import { useForm } from 'vee-validate'
 import { ref, watch, watchEffect } from 'vue'
-import { Input } from '@/common/ui/input'
 
 import { DAYS, MONTHS, YEARS } from '@constants/date.constant'
 
 import { Button } from '@/common/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/ui/form'
 import { userProfileSchema } from '../validation/schema'
+import BaseDialog from './BaseDialog.vue'
+import ChangePasswordModal from './ChangePasswordModal.vue'
 import OTPVerificationModal from './OTPVerificationModal.vue'
 import SetupEmailModal from './SetupEmailModal.vue'
 
@@ -29,6 +31,9 @@ const states = ref([])
 const selectedCountry = ref('')
 const openSetupEmailModal = ref(false)
 const openOTPVerificationModal = ref(false)
+//change password modal
+const openChangePasswordModal = ref(false)
+const openChangePasswordResultModal = ref(false)
 
 const { handleSubmit, values, resetForm, errors, meta } = useForm({
   validationSchema: userProfileSchema
@@ -73,6 +78,11 @@ const onSubmit = handleSubmit((values) => {
   values.birthday = `${selectedDay.value}/${selectedMonth.value}/${selectedYear.value}`
   console.log('Submitting...', values)
 })
+
+const openChangePasswordResult = (result) => {
+  openChangePasswordResultModal.value = true
+  openChangePasswordModal.value = false
+}
 </script>
 
 <template>
@@ -149,7 +159,9 @@ const onSubmit = handleSubmit((values) => {
 
       <div class="flex flex-col gap-1">
         <label>Password</label>
-        <p class="text-primary underline cursor-pointer">Change password</p>
+        <p class="text-primary underline cursor-pointer" @click="openChangePasswordModal = true">
+          {{ $t('change_password.title') }}
+        </p>
       </div>
 
       <div class="flex flex-col gap-1">
@@ -322,4 +334,21 @@ const onSubmit = handleSubmit((values) => {
     v-model:open="openOTPVerificationModal"
     @close-modal="openOTPVerificationModal = false"
   />
+
+  <ChangePasswordModal
+    v-model:open="openChangePasswordModal"
+    @open-change-password-result="openChangePasswordResult"
+  />
+
+  <BaseDialog
+    v-model:open="openChangePasswordResultModal"
+    :title="$t('change_password.title')"
+    :description="$t('change_password.success_desc')"
+  >
+    <div class="flex justify-center">
+      <Button class="w-[60%]" @click="openChangePasswordResultModal = false">{{
+        $t('button.ok')
+      }}</Button>
+    </div>
+  </BaseDialog>
 </template>
