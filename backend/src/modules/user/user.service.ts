@@ -4,19 +4,21 @@ import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
-import { UserRepository } from './user.repository';
+import { AccountRepository } from './repositories/account.repository';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    @InjectRepository(Account) private accountRepository: Repository<Account>,
+    private readonly accountRepository: AccountRepository,
+    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   async findOne(id: number): Promise<User> {
@@ -59,7 +61,7 @@ export class UserService {
   }
 
   async createAccount(userId: number, password: string): Promise<Account> {
-    return this.userRepository.createAccount(userId, password).catch((error) => {
+    return this.accountRepository.createAccount(userId, password).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
@@ -67,14 +69,8 @@ export class UserService {
     return await this.userRepository.getOneUserByEmailOrThrow(email);
   }
   async updatePassword(newPassword: string, userId: number) {
-    await this.findOne(userId);
-    const foundAccount = await this.accountRepository.findOne({
-      where: {
-        user: {
-          id: userId,
-        },
-      },
-    });
+    const foundAccount = await this.accountRepository.findOneAccount(userId);
+
     if (!foundAccount) {
       throw new BadRequestException({
         message: ERRORS_DICTIONARY.NOT_FOUND_ACCOUNT,
@@ -83,29 +79,32 @@ export class UserService {
 
     foundAccount.oldPassword = foundAccount.password;
     foundAccount.password = newPassword;
-    return await this.accountRepository.save(foundAccount);
+
+    return await this.accountRepository.updateAccount(foundAccount);
   }
   async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
-    return this.userRepository.createAccountSocial(userId, type).catch((error) => {
+    return this.accountRepository.createAccountSocial(userId, type).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
 
   async findOneAccount(userId: number): Promise<Account> {
-    return this.userRepository.findOneAccount(userId).catch((error) => {
+    return this.accountRepository.findOneAccount(userId).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
 
   async saveRefreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
-    return await this.userRepository.saveFreshToken(userId, deviceInfo, refreshToken).catch((error) => {
-      throw new BadRequestException(error.message);
-    });
+    return await this.refreshTokenRepository
+      .saveFreshToken(userId, deviceInfo, refreshToken)
+      .catch((error) => {
+        throw new BadRequestException(error.message);
+      });
   }
 
   async validateRefreshToken(refreshToken: string): Promise<string> {
     try {
-      const refreshTokenEntity = await this.userRepository.validateRefreshToken(refreshToken);
+      const refreshTokenEntity = await this.refreshTokenRepository.validateRefreshToken(refreshToken);
 
       if (!refreshTokenEntity) {
         throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
@@ -118,7 +117,7 @@ export class UserService {
   }
 
   async revokeRefreshToken(refreshToken: string): Promise<DeleteResult> {
-    const result = await this.userRepository.revokeRefreshToken(refreshToken);
+    const result = await this.refreshTokenRepository.revokeRefreshToken(refreshToken);
 
     if (result.affected === 0) {
       throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
