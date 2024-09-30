@@ -26,7 +26,9 @@
       "migration:show": "npm run typeorm -- migration:show -d ./src/db/typeorm-config.ts"
    },
    "dependencies": {
-      "@nestjs-modules/mailer": "2.0.2",
+      "@aws-sdk/client-s3": "^3.658.1",
+      "@aws-sdk/s3-request-presigner": "^3.658.1",
+      "@nestjs-modules/mailer": "^1.6.1",
       "@nestjs/axios": "3.0.3",
       "@nestjs/cache-manager": "2.2.2",
       "@nestjs/common": "10.4.4",
@@ -49,6 +51,7 @@
       "firebase-admin": "^12.5.0",
       "joi": "17.13.3",
       "lodash": "^4.17.21",
+      "mime-types": "^2.1.35",
       "nestjs-i18n": "10.4.9",
       "nodemailer": "6.9.15",
       "passport-jwt": "4.0.1",

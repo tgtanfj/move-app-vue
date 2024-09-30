@@ -103,4 +103,14 @@ export class ApiConfigService {
   get documentationEnabled(): boolean {
     return this.getBoolean('ENABLE_DOCUMENTATION');
   }
+
+  get awsS3Config() {
+    return {
+      s3AccessKeyId: this.getString('AWS_S3_ACCESS_KEY_ID'),
+      s3SecretAccessKey: this.getString('AWS_S3_SECRET_ACCESS_KEY'),
+      bucketRegion: this.getString('AWS_S3_BUCKET_REGION'),
+      bucketName: this.getString('AWS_S3_BUCKET_NAME'),
+      bucketEndpoint: this.getString('AWS_S3_BUCKET_ENDPOINT'),
+    };
+  }
 }
