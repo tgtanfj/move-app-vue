@@ -10,8 +10,31 @@
     "confirm_new_password": "Confirm new password",
     "success_desc": "Your password has been successfully updated."
   },
+  "forgot_password": {
+    "title": "Reset password",
+    "desc": "Enter email address for your account",
+    "resend_link": "Resend the link",
+    "send_link": "Send password reset link",
+    "create_password": "Create new password",
+    "create_password_desc": "Please enter your new password and make sure your password is alphanumeric with at least 8 characters.",
+    "reset_success_title": "Reset password success",
+    "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
+    "reset_fail_title": "Verification failed",
+    "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
+    "send_mail_error": "Failed to send email. Please try again",
+    "send_mail_success_before": "We've sent an email to",
+    "send_mail_success_after": ". Click the link in the email to reset your password.",
+    "send_mail_success": "We've sent an email to { email }. Click the link in the email to reset your password."
+  },
   "button": {
     "confirm": "Confirm",
-    "ok": "Okay"
+    "ok": "Okay",
+    "back_to_login": "Back to login page",
+    "login": "Login",
+    "back_to_home": "Back to home"
+  },
+  "label": {
+    "password": "Password",
+    "confirm_password": "Confirm password"
   }
 }

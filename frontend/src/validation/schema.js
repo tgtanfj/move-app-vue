@@ -2,11 +2,8 @@ import { object, ref, string } from 'yup'
 import {
   REGEX_EMAIL,
   REGEX_REFERRAL_CODE,
-  REGEX_STRONG_PASSWORD,
-  REGEX_USERNAME_CODE
+  REGEX_STRONG_PASSWORD
 } from '../constants/regex.constant'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 
 export const passwordSchema = object({
   password: string()
@@ -58,20 +55,20 @@ export const signinSchema = object({
     .max(32, 'Password must be between 8 and 32 characters')
 })
 
-export const userProfileSchema = toTypedSchema(
-  z.object({
-    username: z
-      .string()
-      .regex(REGEX_USERNAME_CODE, 'Invalid username')
-      .min(4, { message: 'Username must be at least 4 characters' })
-      .max(25, 'Username cannot exceed 25 characters'),
+// export const userProfileSchema = toTypedSchema(
+//   z.object({
+//     username: z
+//       .string()
+//       .regex(REGEX_USERNAME_CODE, 'Invalid username')
+//       .min(4, { message: 'Username must be at least 4 characters' })
+//       .max(25, 'Username cannot exceed 25 characters'),
 
-    gender: z.enum(['male', 'female', 'none'], {
-      required_error: 'You need to select one'
-    }),
+//     gender: z.enum(['male', 'female', 'none'], {
+//       required_error: 'You need to select one'
+//     }),
 
-    fullName: z.string(),
+//     fullName: z.string(),
 
-    country: z.string().nonempty('Country is required')
-  })
-)
+//     country: z.string().nonempty('Country is required')
+//   })
+// )
