@@ -26,7 +26,6 @@ export class EmailService {
     };
 
     return await this.sendMail(mailOption)
-      .then(() => {})
       .catch((error) => {
         console.error(error);
       });

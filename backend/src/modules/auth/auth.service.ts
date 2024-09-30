@@ -242,9 +242,6 @@ export class AuthService {
       throw new NotAcceptableException(ERRORS_DICTIONARY.ACCOUNT_LOCKED);
     }
 
-    if (!cachedOtp) {
-    }
-
     if (cachedOtp === otp) {
       // Clear attempts if successful
       await this.cacheManager.del(`attempts_${userId}`);
