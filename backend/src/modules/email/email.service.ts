@@ -22,7 +22,6 @@ export class EmailService {
       template: './otp-verification.ejs',
       context: {
         otp: otp,
-        
       },
     };
 

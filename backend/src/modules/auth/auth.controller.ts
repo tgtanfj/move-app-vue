@@ -92,6 +92,13 @@ export class AuthController {
     return await this.authService.revokeRefreshToken(req.user.token);
   }
 
+  @Get('otp-verification')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async sendMail(@Request() req) {
+    return await this.authService.sendOTPVerification(req.user);
+  }
+
   @Post('otp-verification')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)

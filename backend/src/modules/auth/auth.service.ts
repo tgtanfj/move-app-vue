@@ -243,7 +243,6 @@ export class AuthService {
     }
 
     if (!cachedOtp) {
-      throw new BadRequestException(ERRORS_DICTIONARY.INVALID_OTP);
     }
 
     if (cachedOtp === otp) {
@@ -261,7 +260,7 @@ export class AuthService {
         throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
       }
 
-      return false; // OTP is invalid
+      throw new BadRequestException(ERRORS_DICTIONARY.INVALID_OTP);
     }
   }
 }
