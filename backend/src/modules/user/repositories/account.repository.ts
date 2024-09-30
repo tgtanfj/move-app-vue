@@ -39,7 +39,7 @@ export class AccountRepository {
     });
   }
 
-  async updateAccount(account: Account): Promise<Account> {
+  async updateAccount(account: Partial<Account>): Promise<Account> {
     return await this.accountRepository.save(account);
   }
 }
