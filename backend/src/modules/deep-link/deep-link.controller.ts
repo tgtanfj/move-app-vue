@@ -14,7 +14,7 @@ export class DeepLinkController {
     @Res() res,
   ) {
     //link mobile app
-    const schemaLink = `${this.apiConfig.getString('MY_APP')}:/${path}?token=${token}`;
+    const schemaLink = `${this.apiConfig.getString('MY_APP')}://${path}/${token}`;
     //link-app in CH play
     const dataStoreAndroid = 'http://localhost:4000/';
     //link-app in App store

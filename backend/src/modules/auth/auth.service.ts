@@ -21,6 +21,8 @@ import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { SignUpEmailDto } from './dto/signup-email.dto';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 
 @Injectable()
 export class AuthService {
@@ -74,7 +76,7 @@ export class AuthService {
     //generate token by userId
     const token = this.generateResetPasswordToken(foundUser.id);
     //generate link reset password
-    const link = `${this.apiConfigService.getString('MY_SERVER')}/deep-link?path=/reset-password&token=${token}`;
+    const link = `${this.apiConfigService.getString('MY_SERVER')}/deep-link?path=reset-password/${token}`;
     //send mail with template
     const dto: MailDTO = {
       subject: 'Password reset',
@@ -126,14 +128,45 @@ export class AuthService {
       });
     }
   }
+
+  async changePassword(dto: ChangePasswordDTO, userId: number) {
+    const { currentPassword, newPassword } = dto;
+    const account = await this.userService.findOneAccount(userId);
+    const isCorrectPass = await bcrypt.compare(currentPassword, account.password);
+    const isDuplicatePass = await bcrypt.compare(newPassword, account.password);
+    const isDuplicateOldPass =
+      account.oldPassword && (await bcrypt.compare(newPassword, account.oldPassword));
+
+    if (account.type !== TypeAccount.NORMAL) {
+      throw new BadRequestException(ERRORS_DICTIONARY.WRONG_METHOD);
+    }
+
+    if (!isCorrectPass) {
+      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_INCORRECT);
+    }
+
+    if (isDuplicateOldPass || isDuplicatePass) {
+      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_RESTRICTION);
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await this.userService.updateAccount(account.id, {
+      oldPassword: account.password,
+      password: newPasswordHash,
+    });
+  }
+
   async loginSocial(infoLoginSocial: infoLoginSocial) {
     const { idToken, type, publicIp, userAgent } = infoLoginSocial;
     const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
     const user = await this.userService.findUserAccountWithEmail(email);
-    const account = user.account;
+    const account = user?.account;
+
     if (account && account.type !== type) {
       throw new BadRequestException(ERRORS_DICTIONARY.TRY_ANOTHER_LOGIN_METHOD);
     }
+
     if (!account) {
       const customer = await this.stripeService.createCustomer(email);
       const newUser = await this.userService.createUserBySocial({
@@ -143,8 +176,9 @@ export class AuthService {
         stripeId: customer.id,
       });
       await this.userService.createAccountSocial(newUser.id, type);
-      return newUser;
+      return await this.login(newUser.id, publicIp, userAgent);
     }
+
     return await this.login(user.id, publicIp, userAgent);
   }
 
