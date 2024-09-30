@@ -2,12 +2,7 @@ import { Account } from '@/entities/account.entity';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
@@ -141,7 +136,7 @@ export class UserService {
 
       return result;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new BadRequestException(error.message);
     }
   }
 
