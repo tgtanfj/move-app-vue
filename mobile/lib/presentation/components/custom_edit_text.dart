@@ -29,7 +29,7 @@ class CustomEditText extends StatefulWidget {
     this.textCapitalization,
     this.textInputType,
     this.backgroundColor = Colors.white,
-    this.height = 48,
+    this.height ,
     this.title = '',
     this.maxLength = 255,
     this.isPasswordInput = false,
@@ -78,19 +78,22 @@ class _CustomEditTextState extends State<CustomEditText> {
         SizedBox(
           height: widget.height,
           child: TextField(
-            style: widget.textStyle ?? AppTextStyles.montserratStyle.regular14Black,
+            style: widget.textStyle ??
+                AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
             controller: widget.controller,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
-            textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
+            textCapitalization:
+            widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
             obscureText: widget.isPasswordInput ? !isTextVisible : false,
             decoration: InputDecoration(
               counterText: "",
               fillColor: widget.backgroundColor,
               filled: true,
-              suffixIcon: widget.isPasswordInput ? GestureDetector(
+              suffixIcon: widget.isPasswordInput
+                  ? GestureDetector(
                 onTap: () {
                   setState(() {
                     isTextVisible = !isTextVisible;
@@ -100,20 +103,21 @@ class _CustomEditTextState extends State<CustomEditText> {
                   isTextVisible ? Icons.visibility : Icons.visibility_off,
                   color: AppColors.graniteGray,
                 ),
-              ) : widget.suffix,
-              contentPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0, horizontal: 11.5),
+              )
+                  : widget.suffix,
+              contentPadding:
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: AppColors.chineseSilver),
+                borderSide: BorderSide(color:widget.isShowMessage ? widget.borderColor :  AppColors.chineseSilver),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: const BorderSide(color: AppColors.chineseSilver),
+                borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor : AppColors.chineseSilver ),
               ),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: AppColors.tiffanyBlue)),
+                  borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor :  AppColors.tiffanyBlue)),
               errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: widget.borderColor)),
@@ -124,6 +128,7 @@ class _CustomEditTextState extends State<CustomEditText> {
         Visibility(
           visible: widget.isShowMessage,
           child: Container(
+            width: MediaQuery.of(context).size.width - 64,
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(

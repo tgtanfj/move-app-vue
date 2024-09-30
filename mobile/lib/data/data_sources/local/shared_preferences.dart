@@ -23,4 +23,8 @@ class SharedPrefer {
   String getUserToken() {
     return _prefsInstance.getString(SharedPreferencesKey.token) ?? "";
   }
+
+  Future<void> clearUserToken(){
+    return _prefsInstance.remove(SharedPreferencesKey.token);
+  }
 }

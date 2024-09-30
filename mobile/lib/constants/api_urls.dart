@@ -1,3 +1,5 @@
 class ApiUrls {
-  static const String baseUrl = 'https://api.themoviedb.org/3/';
+  static const String baseUrl = 'http://10.10.50.129:5000/';
+  static const String endPointLogin = 'auth/login';
+  static const String endPointLogout = '';
 }

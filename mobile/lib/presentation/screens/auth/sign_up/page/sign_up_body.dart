@@ -38,7 +38,9 @@ class _SignUpBodyState extends State<SignUpBody> {
                   title: Constants.signUpWithGoogle,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
-                  onTap: () {},
+                  onTap: () {
+                    context.read<SignUpBloc>().add(SignUpWithGoogleEvent());
+                  },
                 ),
                 const SizedBox(
                   height: 8,
@@ -48,7 +50,9 @@ class _SignUpBodyState extends State<SignUpBody> {
                   title: Constants.signUpWithFaceBook,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
-                  onTap: () {},
+                  onTap: () {
+                    context.read<SignUpBloc>().add(SignUpWithFacebookEvent());
+                  },
                 ),
                 const SizedBox(
                   height: 11,

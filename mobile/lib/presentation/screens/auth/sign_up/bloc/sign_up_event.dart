@@ -25,3 +25,14 @@ class SignUpValuesChangedEvent extends SignUpEvent {
   List<Object?> get props => [email, password, confirmPassword, referralCode];
 }
 
+final class SignUpWithGoogleEvent extends SignUpEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+final class SignUpWithFacebookEvent extends SignUpEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+

@@ -15,6 +15,8 @@ class SignUpState extends Equatable {
   final String password;
   final String confirmPassword;
   final String referralCode;
+  final String googleAccount;
+  final String facebookAccount;
 
   const SignUpState({
     this.status = SignUpStatus.initial,
@@ -24,6 +26,8 @@ class SignUpState extends Equatable {
     this.password = '',
     this.confirmPassword = '',
     this.referralCode = '',
+    this.googleAccount = '',
+    this.facebookAccount = '',
   });
 
   SignUpState copyWith({
@@ -36,6 +40,8 @@ class SignUpState extends Equatable {
     String? password,
     String? confirmPassword,
     String? referralCode,
+    String? googleAccount,
+    String? facebookAccount,
   }) {
     return SignUpState(
       status: status ?? this.status,
@@ -46,6 +52,8 @@ class SignUpState extends Equatable {
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
       referralCode: referralCode ?? this.referralCode,
+      googleAccount: googleAccount ?? this.googleAccount,
+      facebookAccount: facebookAccount ?? this.facebookAccount,
     );
   }
 
@@ -57,6 +65,8 @@ class SignUpState extends Equatable {
         email,
         password,
         confirmPassword,
-        referralCode
+        referralCode,
+        googleAccount,
+        facebookAccount,
       ];
 }
