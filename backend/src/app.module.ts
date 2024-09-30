@@ -15,6 +15,8 @@ import { GlobalException } from './shared/exceptions/global.exception';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { DeeplinkModule } from './modules/deep-link/deep-link.module';
+import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,6 +34,7 @@ import { DeeplinkModule } from './modules/deep-link/deep-link.module';
     UserModule,
     AuthModule,
     DeeplinkModule,
+    AwsS3Module,
   ],
   providers: [
     {
