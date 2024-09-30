@@ -1,23 +1,16 @@
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
-import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, FindOptionsRelations, Repository } from 'typeorm';
-import { Account } from '../../entities/account.entity';
-import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
-import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
+import { SignUpEmailDto } from '../../auth/dto/signup-email.dto';
+import { SignUpSocialDto } from '../../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Account)
-    private readonly accountRepository: Repository<Account>,
-    @InjectRepository(RefreshToken)
-    private readonly tokenRepository: Repository<RefreshToken>,
   ) {}
 
   async findOne(id: number, relations: FindOptionsRelations<User> = null): Promise<User> {
@@ -63,15 +56,6 @@ export class UserRepository {
     return await this.userRepository.save({ ...signUpDto, isActive: true });
   }
 
-  async createAccount(userId: number, password: string): Promise<Account> {
-    const accountCreated = this.accountRepository.create({
-      user: {
-        id: userId,
-      },
-      password,
-    });
-    return await this.accountRepository.save(accountCreated);
-  }
   async getOneUserByEmailOrThrow(email: string): Promise<User> {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -84,37 +68,5 @@ export class UserRepository {
         email,
       });
     return foundUser;
-  }
-  async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
-    const accountCreated = this.accountRepository.create({
-      user: {
-        id: userId,
-      },
-      type,
-    });
-    return await this.accountRepository.save(accountCreated);
-  }
-
-  async findOneAccount(userId: number): Promise<Account> {
-    return await this.accountRepository.findOneByOrFail({
-      user: {
-        id: userId,
-      },
-    });
-  }
-
-  async saveFreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
-    const refreshTokenSaved = this.tokenRepository.create({
-      user: { id: userId },
-      refreshToken,
-      ipAddress: deviceInfo.ipAddress,
-      userAgent: deviceInfo.userAgent,
-    });
-
-    return await this.tokenRepository.save(refreshTokenSaved);
-  }
-
-  async validateRefreshToken(refreshToken: string): Promise<RefreshToken> {
-    return await this.tokenRepository.findOneByOrFail({ refreshToken });
   }
 }
