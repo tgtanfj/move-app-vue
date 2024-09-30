@@ -3,6 +3,12 @@ export enum ERRORS_DICTIONARY {
   EMAIL_EXISTED = 'Email already existed',
   USER_NOT_FOUND = 'User not found',
 
+  // Auth
+
+  INVALID_OTP = 'Invalid OTP. Please try again.',
+  ACCOUNT_LOCKED = 'Account is temporarily locked. Try again later.',
+  OTP_WRONG_MANY_TIMES = "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later",
+
   // CLASS VALIDATOR
   VALIDATION_ERROR = 'ValidationError',
   //

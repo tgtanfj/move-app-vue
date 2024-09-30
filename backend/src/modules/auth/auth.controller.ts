@@ -1,4 +1,5 @@
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { JwtRefreshGuard } from '@/shared/guards/jwt-refresh.guard';
 import { LocalAuthGuard } from '@/shared/guards/local-auth.guard';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
@@ -8,6 +9,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDTO } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { OtpVerifyDto } from './dto/otp-verify.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
 import { SocialTokenDto } from './dto/social-token.dto';
@@ -88,5 +90,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Request() req) {
     return await this.authService.revokeRefreshToken(req.user.token);
+  }
+
+  @Post('otp-verification')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async otpVerification(@Request() req, @Body() body: OtpVerifyDto) {
+    return await this.authService.verifyOtp(req.user.id, body.otp);
   }
 }

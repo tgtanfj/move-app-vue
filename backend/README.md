@@ -41,3 +41,18 @@ To log out:
 - **Attach the refresh token** to the `Authorization` header in the same format: `Bearer <refreshToken>`.
 
 This will typically revoke the refresh token, invalidating the current session and requiring the user to log in again.
+
+### Login Controller (Login By Email)
+
+This endpoint handles user login requests and returns the access and refresh tokens upon successful authentication.
+
+**Route:** `POST /login`
+
+**Response:**
+
+```json
+{
+  "accessToken": "<access token string>",
+  "refreshToken": "<refresh token string>"
+}
+```

@@ -1,18 +1,26 @@
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { firebaseAdmin } from '@/shared/firebase/firebase.config';
+import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 import { MailDTO } from '@/shared/interfaces/mail.dto';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { getField } from '@/shared/utils/get-field.util';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Cache } from 'cache-manager';
+import { authenticator } from 'otplib';
 import { EmailService } from '../email/email.service';
 import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { SignUpEmailDto } from './dto/signup-email.dto';
-import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +31,12 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ApiConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  private readonly MAX_ATTEMPTS = 3;
+  private readonly OTP_EXPIRATION_TIME = 60; // seconds
+  private readonly LOCKOUT_TIME = 600; //
 
   async signUpEmail(signUpEmailDto: SignUpEmailDto) {
     const existUser = await this.userService.findOneByEmail(signUpEmailDto.email);
@@ -49,6 +62,8 @@ export class AuthService {
     await this.userService.createAccount(user.id, passwordHashed);
 
     // send mail verify
+
+    await this.sendOTPVerification(user);
 
     return user;
   }
@@ -201,5 +216,48 @@ export class AuthService {
 
   async revokeRefreshToken(token: string) {
     return await this.userService.revokeRefreshToken(token);
+  }
+
+  async sendOTPVerification(user) {
+    const otp = await this.generateOtp(user.id);
+    return this.emailService.sendOTPVerification(user.email, otp);
+  }
+
+  async generateOtp(userId) {
+    const otp = authenticator.generate(userId);
+
+    // Store OTP with a 5-minute expiration
+    await this.cacheManager.set(`otp_${userId}`, otp, 60); // Cache OTP for 1 minute
+    await this.cacheManager.set(`attempts_${userId}`, 0, 60); // Initialize attempts
+
+    return otp;
+  }
+
+  async verifyOtp(userId: number, otp: string) {
+    const cachedOtp = await this.cacheManager.get<string>(`otp_${userId}`);
+    const attempts = await this.cacheManager.get<number>(`attempts_${userId}`);
+    const isLocked = await this.cacheManager.get<number>(`account_locked_${userId}`);
+
+    if (isLocked) {
+      throw new NotAcceptableException(ERRORS_DICTIONARY.ACCOUNT_LOCKED);
+    }
+
+    if (cachedOtp === otp) {
+      // Clear attempts if successful
+      await this.cacheManager.del(`attempts_${userId}`);
+      await this.cacheManager.del(`otp_${userId}`);
+
+      await this.userService.updateUser(userId, { isActive: true }); // OTP is valid
+      return true;
+    } else {
+      await this.cacheManager.set(`attempts_${userId}`, attempts + 1, 60);
+
+      if (attempts + 1 >= this.MAX_ATTEMPTS) {
+        await this.cacheManager.set(`account_locked_${userId}`, true, this.LOCKOUT_TIME);
+        throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
+      }
+
+      throw new BadRequestException(ERRORS_DICTIONARY.INVALID_OTP);
+    }
   }
 }
