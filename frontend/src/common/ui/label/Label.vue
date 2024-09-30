@@ -1,10 +1,10 @@
 <script setup>
 import { computed } from "vue";
-import { TabsList } from "radix-vue";
+import { Label } from "radix-vue";
 import { cn } from "@utils/shadcn.util";
 
 const props = defineProps({
-  loop: { type: Boolean, required: false },
+  for: { type: String, required: false },
   asChild: { type: Boolean, required: false },
   as: { type: null, required: false },
   class: { type: null, required: false },
@@ -18,15 +18,15 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <TabsList
+  <Label
     v-bind="delegatedProps"
     :class="
       cn(
-        'inline-flex items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
+        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
         props.class,
       )
     "
   >
     <slot />
-  </TabsList>
+  </Label>
 </template>

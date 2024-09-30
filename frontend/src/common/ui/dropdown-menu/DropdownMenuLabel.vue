@@ -1,13 +1,13 @@
 <script setup>
 import { computed } from "vue";
-import { TabsList } from "radix-vue";
+import { DropdownMenuLabel, useForwardProps } from "radix-vue";
 import { cn } from "@utils/shadcn.util";
 
 const props = defineProps({
-  loop: { type: Boolean, required: false },
   asChild: { type: Boolean, required: false },
   as: { type: null, required: false },
   class: { type: null, required: false },
+  inset: { type: Boolean, required: false },
 });
 
 const delegatedProps = computed(() => {
@@ -15,18 +15,17 @@ const delegatedProps = computed(() => {
 
   return delegated;
 });
+
+const forwardedProps = useForwardProps(delegatedProps);
 </script>
 
 <template>
-  <TabsList
-    v-bind="delegatedProps"
+  <DropdownMenuLabel
+    v-bind="forwardedProps"
     :class="
-      cn(
-        'inline-flex items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
-        props.class,
-      )
+      cn('px-2 py-1.5 text-sm font-semibold', inset && 'pl-8', props.class)
     "
   >
     <slot />
-  </TabsList>
+  </DropdownMenuLabel>
 </template>

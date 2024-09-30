@@ -1,10 +1,10 @@
 <script setup>
 import { computed } from "vue";
-import { TabsList } from "radix-vue";
+import { PaginationEllipsis } from "radix-vue";
+import { MoreHorizontal } from "lucide-vue-next";
 import { cn } from "@utils/shadcn.util";
 
 const props = defineProps({
-  loop: { type: Boolean, required: false },
   asChild: { type: Boolean, required: false },
   as: { type: null, required: false },
   class: { type: null, required: false },
@@ -18,15 +18,12 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <TabsList
+  <PaginationEllipsis
     v-bind="delegatedProps"
-    :class="
-      cn(
-        'inline-flex items-center justify-center rounded-md bg-muted p-1 text-muted-foreground',
-        props.class,
-      )
-    "
+    :class="cn('w-9 h-9 flex items-center justify-center', props.class)"
   >
-    <slot />
-  </TabsList>
+    <slot>
+      <MoreHorizontal />
+    </slot>
+  </PaginationEllipsis>
 </template>
