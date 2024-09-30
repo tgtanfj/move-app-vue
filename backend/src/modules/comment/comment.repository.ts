@@ -10,7 +10,7 @@ export class CommentRepository {
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async getNumberOfComment(videoId: number): Promise<number> {
+  async getNumberOfComments(videoId: number): Promise<number> {
     return await this.commentRepository.count({
       where: {
         video: { id: videoId },

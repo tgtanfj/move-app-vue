@@ -9,19 +9,22 @@ import { plainToInstance } from 'class-transformer';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
+import { CommentService } from '../comment/comment.service';
+import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
+import { ChannelService } from '../channel/channel.service';
 
 @Injectable()
 export class VideoService {
   constructor(
     private readonly videoRepository: VideoRepository,
-    private readonly commentRepository: CommentRepository,
-    private readonly watchingVideoHistoryRepository: WatchingVideoHistoryRepository,
-    private readonly channelRepository: ChannelRepository,
+    private readonly commentService: CommentService,
+    private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
+    private readonly channelService: ChannelService,
   ) {}
 
   async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      const channel = await this.channelRepository.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -42,11 +45,15 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          videoDetail.numberOfViews = await this.watchingVideoHistoryRepository.getNumberOfViews(video.id);
+          const [numberOfViews, numberOfComments, ratings] = await Promise.all([
+            this.watchingVideoHistoryService.getNumberOfViews(video.id),
+            this.commentService.getNumberOfComments(video.id),
+            this.watchingVideoHistoryService.getAverageRating(video.id),
+          ]);
 
-          videoDetail.numberOfComments = await this.commentRepository.getNumberOfComment(video.id);
-
-          videoDetail.ratings = await this.watchingVideoHistoryRepository.getAverageRating(video.id);
+          videoDetail.numberOfViews = numberOfViews;
+          videoDetail.numberOfComments = numberOfComments;
+          videoDetail.ratings = ratings;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
             excludeExtraneousValues: true,
