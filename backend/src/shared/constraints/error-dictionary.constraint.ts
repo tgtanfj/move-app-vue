@@ -14,19 +14,22 @@ export enum ERRORS_DICTIONARY {
   //
   AUTHORIZE_ERROR = 'You are not authorize',
   TOKEN_ERROR = 'Token invalid',
-  RESET_PASSWORD_FAIL = 'RESET_PASSWORD_FAIL',
+  RESET_PASSWORD_FAIL = 'Reset password failed',
 
   // USER
   NOT_FOUND_ANY_USER = 'Not found any user',
 
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
   //Token
-  GENERATE_TOKEN_FAIL = 'Genereate_token_fail',
+  GENERATE_TOKEN_FAIL = 'Generate token fail',
   VERIFY_TOKEN_FAIL = 'Token is not valid',
 
   //Account
   NOT_FOUND_ACCOUNT = 'Not found account',
   UPDATE_PASSWORD_FAIL = 'Update password fail',
+  PASSWORD_RESTRICTION = 'New passwords cannot match any of the user previous 2 passwords',
+  PASSWORD_INCORRECT = 'Password mismatch your password',
+  WRONG_METHOD = 'Your method cant change password',
 
   // SOCIAL
   TRY_ANOTHER_LOGIN_METHOD = 'An account with this email already exists using a different login method. Please use the original method to log in',

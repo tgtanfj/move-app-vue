@@ -1,5 +1,4 @@
 import { Account } from '@/entities/account.entity';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
@@ -12,6 +11,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { AccountRepository } from './repositories/account.repository';
@@ -85,7 +85,7 @@ export class UserService {
     foundAccount.oldPassword = foundAccount.password;
     foundAccount.password = newPassword;
 
-    return await this.accountRepository.updateAccount(foundAccount);
+    return await this.accountRepository.saveAccount(foundAccount);
   }
   async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
     return this.accountRepository.createAccountSocial(userId, type).catch((error) => {
@@ -143,5 +143,9 @@ export class UserService {
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
+  }
+
+  async updateAccount(accountId: number, data: Partial<Account>): Promise<UpdateResult> {
+    return await this.accountRepository.updateAccount(accountId, data);
   }
 }

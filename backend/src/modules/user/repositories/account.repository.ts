@@ -2,7 +2,7 @@ import { Account } from '@/entities/account.entity';
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class AccountRepository {
@@ -39,7 +39,11 @@ export class AccountRepository {
     });
   }
 
-  async updateAccount(account: Partial<Account>): Promise<Account> {
+  async saveAccount(account: Partial<Account>): Promise<Account> {
     return await this.accountRepository.save(account);
+  }
+
+  async updateAccount(accountId: number, account: Partial<Account>): Promise<UpdateResult> {
+    return await this.accountRepository.update(accountId, account);
   }
 }

@@ -1,8 +1,6 @@
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
-import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
-import { JwtRefreshGuard } from '@/shared/guards/jwt-refresh.guard';
-import { LocalAuthGuard } from '@/shared/guards/local-auth.guard';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
+import { JwtRefreshGuard, JwtAuthGuard, LocalAuthGuard } from '@/shared/guards';
 import { PublicIpAddressService } from '@/shared/utils/publicIpAddressService';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -13,6 +11,7 @@ import { OtpVerifyDto } from './dto/otp-verify.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
 import { SocialTokenDto } from './dto/social-token.dto';
+import { ChangePasswordDTO } from './dto/change-password.dto';
 
 @ApiTags('Auth')
 @ApiBearerAuth('jwt')
@@ -97,5 +96,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async otpVerification(@Request() req, @Body() body: OtpVerifyDto) {
     return await this.authService.verifyOtp(req.user.id, body.otp);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(@Body() dto: ChangePasswordDTO, @Req() req: Request) {
+    const userId = req['user'].id;
+    return await this.authService.changePassword(dto, userId);
   }
 }
