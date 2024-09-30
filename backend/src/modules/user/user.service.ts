@@ -3,9 +3,9 @@ import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
@@ -124,5 +124,20 @@ export class UserService {
     }
 
     return result;
+  }
+
+  async updateUser(userId: number, user: Partial<User>): Promise<UpdateResult> {
+    try {
+      const result = await this.userRepository.updateUser(userId, user);
+
+      if (result.affected === 0) {
+        throw new BadRequestException(ERRORS_DICTIONARY.USER_NOT_FOUND);
+      }
+
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+
   }
 }

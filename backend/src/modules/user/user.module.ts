@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 @Module({
   imports: [TypeOrmModule.forFeature([User, Account, RefreshToken])],
   controllers: [UserController],
-  providers: [UserService, UserRepository, JwtService],
-  exports: [UserService, UserRepository, AccountRepository, RefreshTokenRepository],
+  providers: [UserService, UserRepository, JwtService, AccountRepository, RefreshTokenRepository],
+  exports: [UserService, UserRepository],
 })
 export class UserModule {}

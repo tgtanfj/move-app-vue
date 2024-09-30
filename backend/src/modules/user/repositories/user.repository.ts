@@ -2,7 +2,7 @@ import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsRelations, Repository } from 'typeorm';
+import { Equal, FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../../auth/dto/signup-social.dto';
 
@@ -68,5 +68,9 @@ export class UserRepository {
         email,
       });
     return foundUser;
+  }
+
+  async updateUser(userId: number, user: Partial<User>): Promise<UpdateResult> {
+    return await this.userRepository.update(userId, user);
   }
 }
