@@ -7,7 +7,6 @@ class SignUpEvent extends Equatable {
 
 final class SignUpClickSignUpWithEmailEvent extends SignUpEvent {}
 
-
 class SignUpValuesChangedEvent extends SignUpEvent {
   final String? email;
   final String? password;
@@ -24,4 +23,8 @@ class SignUpValuesChangedEvent extends SignUpEvent {
   @override
   List<Object?> get props => [email, password, confirmPassword, referralCode];
 }
+
+class SignUpWithEmailSubmitEvent extends SignUpEvent{}
+
+
 

@@ -47,7 +47,7 @@ class ApiService {
               queryParameters: queryParameters, options: options);
           break;
         case APIRequestMethod.post:
-          response = await dio.post<T>(path, data: data, options: options);
+          response = await dio.post<T>(path, data: data, options: options, queryParameters: queryParameters);
           break;
         case APIRequestMethod.put:
           response = await dio.put<T>(path, data: data, options: options);
