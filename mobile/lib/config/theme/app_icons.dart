@@ -10,9 +10,11 @@ enum AppIcons {
   facebookLogo,
   googleLogo,
   close,
+  password,
   radioSelected,
   radio,
   dropdown,
+
 }
 
 extension AppIconsExtension on AppIcons {

@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import {
   BeforeInsert,
   Column,
@@ -8,9 +9,8 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
-import { UUID } from 'crypto';
 import { v4 as uuidV4 } from 'uuid';
+import { User } from './user.entity';
 
 @Entity('refresh-tokens')
 export class RefreshToken {

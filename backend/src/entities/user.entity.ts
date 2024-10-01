@@ -39,7 +39,6 @@ export class User extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Gender,
-    default: Gender.MALE,
     nullable: true,
   })
   gender: Gender;
@@ -97,7 +96,7 @@ export class User extends BaseEntity {
   payments: Payment[];
 
   @OneToMany(() => SearchHistory, (searchHistory) => searchHistory.user)
-  searchHistorys: SearchHistory[];
+  searchHistories: SearchHistory[];
 
   @OneToMany(() => Donation, (donation) => donation.user)
   donations: Donation[];
@@ -106,7 +105,7 @@ export class User extends BaseEntity {
   follows: Follow[];
 
   @OneToMany(() => WatchingVideoHistory, (watchingVideoHistory) => watchingVideoHistory.user)
-  watchingVideoHistorys: WatchingVideoHistory[];
+  watchingVideoHistories: WatchingVideoHistory[];
 
   @ManyToOne(() => Country, (country) => country.id)
   country: Country;

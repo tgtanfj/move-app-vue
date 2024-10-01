@@ -1,14 +1,23 @@
 import { Account } from '@/entities/account.entity';
+import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { UserRepository } from './user.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    @InjectRepository(Account) private accountRepository: Repository<Account>,
+  ) {}
 
   async findOne(id: number): Promise<User> {
     return await this.userRepository.findOne(id).catch((error) => {
@@ -33,8 +42,18 @@ export class UserService {
     return await this.userRepository.findOneByEmail(email);
   }
 
+  async findAccountWithEmail(email: string): Promise<Account> {
+    return await this.userRepository.findAccountWithEmail(email);
+  }
+
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
     return await this.userRepository.createUserByEmail(signUpEmailDto).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
+    return await this.userRepository.createUserBySocial(signUpDto).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
@@ -43,5 +62,58 @@ export class UserService {
     return this.userRepository.createAccount(userId, password).catch((error) => {
       throw new BadRequestException(error.message);
     });
+  }
+  async getOneUserByEmailOrThrow(email: string): Promise<User> {
+    return await this.userRepository.getOneUserByEmailOrThrow(email);
+  }
+  async updatePassword(newPassword: string, userId: number) {
+    await this.findOne(userId);
+    const foundAccount = await this.accountRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+    if (!foundAccount) {
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.NOT_FOUND_ACCOUNT,
+      });
+    }
+    console.log(foundAccount);
+    foundAccount.oldPassword = foundAccount.password;
+    foundAccount.password = newPassword;
+    return await this.accountRepository.save(foundAccount);
+  }
+  async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
+    return this.userRepository.createAccountSocial(userId, type).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async findOneAccount(userId: number): Promise<Account> {
+    return this.userRepository.findOneAccount(userId).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async saveRefreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {
+    return await this.userRepository.saveFreshToken(userId, deviceInfo, refreshToken).catch((error) => {
+      throw new BadRequestException(error.message);
+    });
+  }
+
+  async validateRefreshToken(refreshToken: string): Promise<string> {
+    try {
+      const refreshTokenEntity = await this.userRepository.validateRefreshToken(refreshToken);
+
+      if (!refreshTokenEntity) {
+        return null;
+      }
+
+      return refreshTokenEntity.id;
+    } catch (error) {
+      return null;
+    }
   }
 }

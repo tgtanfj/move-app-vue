@@ -6,7 +6,7 @@ import { removeAllCookies } from '@helpers/cookies.helper'
 import { API_METHOD } from '@constants/api-method.constant'
 import { HEADERS_DEFAULT } from '@constants/header.constant'
 import { TOKEN_VARIABLE_NAME } from '@constants/cookies.constant'
-import { REGEX_CONTENT_TYPE_JSON, REGEX_CONTENT_TYPE_TEXT } from '@constants/regex.constant'
+import { REGEX_CONTENT_TYPE_JSON, REGEX_CONTENT_TYPE_TEXT } from '../constants/regex.constant'
 
 // Static strings.
 const { fetch: originalFetch } = window
