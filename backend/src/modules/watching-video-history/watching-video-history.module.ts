@@ -9,6 +9,6 @@ import { WatchingVideoHistoryRepository } from './watching-video-history.reposit
   imports: [TypeOrmModule.forFeature([WatchingVideoHistory])],
   controllers: [WatchingVideoHistoryController],
   providers: [WatchingVideoHistoryService, WatchingVideoHistoryRepository],
-  exports: [WatchingVideoHistoryService, WatchingVideoHistoryRepository]
+  exports: [WatchingVideoHistoryService, WatchingVideoHistoryRepository],
 })
 export class WatchingVideoHistoryModule {}

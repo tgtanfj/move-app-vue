@@ -33,5 +33,5 @@ export enum ERRORS_DICTIONARY {
 
   // SOCIAL
   TRY_ANOTHER_LOGIN_METHOD = 'An account with this email already exists us  ing a different login method. Please use the original method to log in',
-  NOT_FOUND_ANY_CHANNEL_OF_THIS_USER = "Not found any channel of this user",
+  NOT_FOUND_ANY_CHANNEL_OF_THIS_USER = 'Not found any channel of this user',
 }

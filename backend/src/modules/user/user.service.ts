@@ -126,9 +126,9 @@ export class UserService {
     return result;
   }
 
-  async updateUser(userId: number, user: Partial<User>): Promise<UpdateResult> {
+  async updateUserByEmail(email: string, user: Partial<User>): Promise<UpdateResult> {
     try {
-      const result = await this.userRepository.updateUser(userId, user);
+      const result = await this.userRepository.updateUserByEmail(email, user);
 
       if (result.affected === 0) {
         throw new BadRequestException(ERRORS_DICTIONARY.USER_NOT_FOUND);

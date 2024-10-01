@@ -70,7 +70,7 @@ export class UserRepository {
     return foundUser;
   }
 
-  async updateUser(userId: number, user: Partial<User>): Promise<UpdateResult> {
-    return await this.userRepository.update(userId, user);
+  async updateUserByEmail(email: string, user: Partial<User>): Promise<UpdateResult> {
+    return await this.userRepository.update(email, user);
   }
 }

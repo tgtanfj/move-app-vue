@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsStrongPassword, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsStrongPassword, Length } from 'class-validator';
 import { SignUpDto } from './signup.dto';
 
 export class SignUpEmailDto extends SignUpDto {
@@ -18,4 +18,12 @@ export class SignUpEmailDto extends SignUpDto {
     example: '312341',
   })
   referralCode: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'otp',
+    example: '123456',
+  })
+  otp: string;
 }
