@@ -7,6 +7,7 @@ import { User } from './user.entity';
 export class Account extends BaseEntity {
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   password: string;
 

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +6,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
+import 'package:move_app/presentation/screens/auth/otp/page/otp_verification_page.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_bloc.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/widgets/title_edit_text_referral.dart';
@@ -92,13 +92,12 @@ class _SignUpBodyState extends State<SignUpBody> {
                         const SizedBox(
                           height: 10,
                         ),
-
                         const SizedBox(
                           height: 10,
                         ),
                         CustomEditText(
                           title: Constants.password,
-                          isPasswordInput:true,
+                          isPasswordInput: true,
                           maxLength: 32,
                           onChanged: (value) {
                             context
@@ -113,9 +112,9 @@ class _SignUpBodyState extends State<SignUpBody> {
                           title: Constants.confirmPassword,
                           isPasswordInput: true,
                           onChanged: (value) {
-                            context
-                                .read<SignUpBloc>()
-                                .add(SignUpValuesChangedEvent(confirmPassword: value));
+                            context.read<SignUpBloc>().add(
+                                SignUpValuesChangedEvent(
+                                    confirmPassword: value));
                           },
                           maxLength: 32,
                         ),
@@ -128,16 +127,14 @@ class _SignUpBodyState extends State<SignUpBody> {
                           subTitleStyle: AppTextStyles
                               .montserratStyle.regular16Black
                               .copyWith(fontStyle: FontStyle.italic),
-
                         ),
                         CustomEditText(
                           textCapitalization: TextCapitalization.characters,
                           textInputType: TextInputType.text,
                           maxLength: 6,
                           onChanged: (value) {
-                            context
-                                .read<SignUpBloc>()
-                                .add(SignUpValuesChangedEvent(referralCode: value));
+                            context.read<SignUpBloc>().add(
+                                SignUpValuesChangedEvent(referralCode: value));
                           },
                         ),
                         const SizedBox(
@@ -181,7 +178,18 @@ class _SignUpBodyState extends State<SignUpBody> {
                           backgroundColor: state.isEnableSignUp
                               ? AppColors.tiffanyBlue
                               : AppColors.spanishGray,
-                          onTap: () {},
+                          onTap: state.isEnableSignUp
+                              ? () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return OtpVerificationPage(
+                                          email: state.email);
+                                    },
+                                  );
+                                }
+                              : null,
                         ),
                       ],
                     ))

@@ -10,23 +10,20 @@ export class DeepLinkController {
   async deepLink(
     @Query('path')
     path: string,
-    @Query('token') token: string,
     @Res() res,
   ) {
     //link mobile app
-    const schemaLink = `${this.apiConfig.getString('MY_APP')}:/${path}?token=${token}`;
+    const schemaUrl = `${this.apiConfig.getString('MY_APP')}://${path}`;
     //link-app in CH play
     const dataStoreAndroid = 'http://localhost:4000/';
     //link-app in App store
     const dataStoreIOS = 'http://localhost:4000/';
     //web app
-    const schemaUrl = `${this.apiConfig.getString('FRONT_END_URL')}${path}?token=${token}`;
-    const redirectUrl = schemaUrl;
+    const redirectUrl = `${this.apiConfig.getString('FRONT_END_URL')}/${path}`;
     return res.render('deepLinkHandle', {
-      schemaLink,
+      schemaUrl,
       dataStoreAndroid,
       dataStoreIOS,
-      schemaUrl,
       redirectUrl,
     });
   }

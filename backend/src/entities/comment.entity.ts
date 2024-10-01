@@ -20,7 +20,7 @@ export class Comment extends BaseEntity {
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
 
-  @ManyToOne(() => Video, (video) => video.comments)
+  @ManyToOne(() => Video, (video) => video.comments, { onDelete: 'CASCADE' })
   video: Video;
 
   @TreeChildren()

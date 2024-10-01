@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -8,6 +9,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dar
 import 'package:move_app/presentation/screens/auth/widgets/custom_expandable_page_view.dart';
 
 import '../../../../../config/theme/app_colors.dart';
+import '../../../components/custom_tab_bar.dart';
 
 class DialogAuthentication extends StatelessWidget {
   const DialogAuthentication({super.key});

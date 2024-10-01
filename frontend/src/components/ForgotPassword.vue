@@ -1,71 +1,94 @@
-<template>
-  <BaseDialog title="Forgot password" description="Enter email address for your account">
-    <Form @submit="onSubmit" :validation-schema="emailSchema">
-      <div class="flex flex-col space-y-1.5">
-        <Field
-          name="email"
-          type="email"
-          class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none"
-          :class="borderColor"
-        />
-        <ErrorMessage name="email" class="text-redMisc text-sm italic" />
-      </div>
-
-      <div
-        v-if="typeof sendEmailSuccess === 'boolean'"
-        class="border rounded-md px-3 py-5 text-center"
-        :class="bgColor"
-      >
-        <p class="max-w-[400px] m-auto">
-          We've sent an email to. Click the link in the email to reset your password.
-        </p>
-      </div>
-
-      <div class="flex justify-center mt-2">
-        <Button>{{ isSendEmail ? 'Resend the link' : 'Send password reset link' }}</Button>
-      </div>
-    </Form>
-
-    <div class="flex justify-center">
-      <Button variant="link" @click="openLogin"> Back to login page </Button>
-    </div>
-  </BaseDialog>
-</template>
-
 <script setup>
-import { emailSchema } from '@/validation/schema.js'
+import CustomInput from '@/components/input-validation/CustomInput.vue'
 import { Button } from '@common/ui/button'
 import BaseDialog from '@components/BaseDialog.vue'
-import { ErrorMessage, Field, Form } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
+import { useForgotPassword } from '../services/forgotpassword.services'
+import { emailSchema } from '../validation/schema'
+import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
 
-const isSendEmail = ref(false)
-const sendEmailSuccess = ref()
-
-const borderColor = computed(() => {
-  if (typeof sendEmailSuccess.value === 'boolean') {
-    return sendEmailSuccess.value
-      ? 'border-primary focus:border-primary'
-      : 'border-redMisc focus:border-redMisc'
-  }
-  return ''
-})
-const bgColor = computed(() => {
-  if (typeof sendEmailSuccess.value === 'boolean') {
-    return sendEmailSuccess.value
-      ? 'bg-[#E6FFFB] border-primaryGreen'
-      : 'bg-[#FDEDEF] border-redMisc'
-  }
-  return ''
-})
-
-function onSubmit(values) {
-  console.log(values.email)
-}
-
-//handle open login
 const emit = defineEmits(['openLogin'])
+const email = ref('')
+const mutation = useForgotPassword()
+const { isPending, isIdle, isSuccess, isError, reset } = mutation
+
+const forgotPasswordStore = useForgotPasswordStore()
+
+const bgColor = computed(() => {
+  if (isSuccess.value) {
+    return 'bg-[#E6FFFB] border-primary'
+  }
+  if (isError.value) {
+    return 'bg-[#FDEDEF] border-redMisc'
+  }
+  return ''
+})
+
+const { values, errors, defineField, handleSubmit, resetForm } = useForm({
+  validationSchema: emailSchema
+})
+
+const isFillAllFields = computed(() => {
+  return values.email
+})
+
+const isFormValid = computed(() => {
+  return isFillAllFields.value && Object.keys(errors.value).length === 0
+})
+
+const handleSendMail = handleSubmit(async (values) => {
+  email.value = values.email
+  mutation.mutate({ email: values.email })
+  forgotPasswordStore.setEmail(values.email)
+})
+
 const openLogin = () => {
+  resetForm()
+  reset()
   emit('openLogin')
 }
 </script>
+
+<template>
+  <BaseDialog :title="$t('forgot_password.title')" :description="$t('forgot_password.desc')">
+    <form @submit.prevent="handleSendMail">
+      <div class="flex flex-col space-y-1.5">
+        <input type="text" class="w-0 h-0" />
+        <custom-input name="email" :defineField="defineField" :errors="errors" />
+      </div>
+
+      <div
+        v-if="(isSuccess && !isPending) || (isError && !isPending)"
+        class="border rounded-md px-3 py-5 text-center"
+        :class="bgColor"
+      >
+        <span v-if="isSuccess" class="max-w-[400px] m-auto">
+          {{ $t('forgot_password.send_mail_success', { email }) }}
+        </span>
+        <p v-if="isError" class="max-w-[400px] m-auto text-redMisc">
+          {{ $t('forgot_password.send_mail_error') }}
+        </p>
+      </div>
+
+      <div class="flex justify-center mt-3">
+        <Button
+          type="submit"
+          :disabled="!isFormValid || isPending"
+          :variant="isFormValid ? 'default' : 'disabled'"
+          >{{
+            isPending
+              ? 'Sending mail...'
+              : isIdle
+                ? $t('forgot_password.send_link')
+                : $t('forgot_password.resend_link')
+          }}</Button
+        >
+      </div>
+    </form>
+
+    <div class="flex justify-center">
+      <Button variant="link" @click="openLogin"> {{ $t('button.back_to_login') }} </Button>
+    </div>
+  </BaseDialog>
+</template>

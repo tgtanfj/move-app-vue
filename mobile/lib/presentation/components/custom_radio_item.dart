@@ -5,8 +5,8 @@ import '../../config/theme/app_text_styles.dart';
 
 class GenderRadioItem extends StatelessWidget {
   final String title;
-  final groupValue;
-  final value;
+  final dynamic groupValue;
+  final dynamic value;
   final Function(dynamic) onChanged;
 
   const GenderRadioItem({
