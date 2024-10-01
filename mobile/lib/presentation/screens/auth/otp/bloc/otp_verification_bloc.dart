@@ -1,4 +1,4 @@
-import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_event.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_state.dart';

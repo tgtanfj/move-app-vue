@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,25 +19,26 @@ class DialogAuthenticationBody extends StatefulWidget {
   State<DialogAuthenticationBody> createState() => _DialogAuthenticationBody();
 }
 
-class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
-
+class _DialogAuthenticationBody extends State<DialogAuthenticationBody> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DialogAuthenticationBloc, DialogAuthenticationState>(
       builder: (context, state) {
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          insetPadding: EdgeInsets.symmetric(horizontal: 20),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 16,),
+                const SizedBox(
+                  height: 16,
+                ),
                 Row(
                   children: [
                     Expanded(
                         child:
-                        SvgPicture.asset(AppIcons.moveLogo.svgAssetPath)),
+                            SvgPicture.asset(AppIcons.moveLogo.svgAssetPath)),
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
@@ -49,7 +49,9 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                         width: 16,
                       ),
                     ),
-                    SizedBox(width: 16,)
+                    const SizedBox(
+                      width: 16,
+                    )
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -70,14 +72,14 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                     .add(ShowLoginPageEvent(0));
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Text(
                                   Constants.login,
-                                  style: state.currentPage ==0
+                                  style: state.currentPage == 0
                                       ? AppTextStyles
-                                      .montserratStyle.bold16tiffanyBlue
+                                          .montserratStyle.bold16tiffanyBlue
                                       : AppTextStyles
-                                      .montserratStyle.regular16Black,
+                                          .montserratStyle.regular16Black,
                                 ),
                               ),
                             ),
@@ -85,7 +87,7 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                               Container(
                                 height: 4,
                                 width: 56,
-                                margin: EdgeInsets.only(top: 1),
+                                margin: const EdgeInsets.only(top: 1),
                                 color: AppColors.tiffanyBlue,
                               )
                           ],
@@ -101,22 +103,22 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                                     .add(ShowLoginPageEvent(1));
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Text(
                                   Constants.signUp,
-                                  style: state.currentPage ==1
+                                  style: state.currentPage == 1
                                       ? AppTextStyles
-                                      .montserratStyle.bold16tiffanyBlue
+                                          .montserratStyle.bold16tiffanyBlue
                                       : AppTextStyles
-                                      .montserratStyle.regular16Black,
+                                          .montserratStyle.regular16Black,
                                 ),
                               ),
                             ),
-                            if (state.currentPage ==1)
+                            if (state.currentPage == 1)
                               Container(
                                 height: 4,
                                 width: 65,
-                                margin: EdgeInsets.only(top: 1),
+                                margin: const EdgeInsets.only(top: 1),
                                 color: AppColors.tiffanyBlue,
                               )
                           ],
@@ -130,9 +132,9 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                         ),
                         Expanded(
                             child: Divider(
-                              height: 1,
-                              color: AppColors.chineseSilver,
-                            )),
+                          height: 1,
+                          color: AppColors.chineseSilver,
+                        )),
                         SizedBox(
                           width: 16,
                         ),
@@ -141,9 +143,7 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
                   ],
                 ),
                 const SizedBox(height: 12),
-                state.currentPage == 0
-                    ? const LoginPage()
-                    : const SignUpPage()
+                state.currentPage == 0 ? const LoginPage() : const SignUpPage()
               ],
             ),
           ),
@@ -151,5 +151,4 @@ class _DialogAuthenticationBody extends State<DialogAuthenticationBody>{
       },
     );
   }
-
 }

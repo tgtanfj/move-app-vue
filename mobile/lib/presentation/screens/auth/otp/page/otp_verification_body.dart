@@ -43,7 +43,7 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                       Constants.verifyEmail,
                       style: AppTextStyles.montserratStyle.bold16Black,
                     )),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     GestureDetector(

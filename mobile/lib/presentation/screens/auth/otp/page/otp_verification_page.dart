@@ -19,7 +19,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     return BlocProvider<OtpVerificationBloc>(
       create: (context) =>
           OtpVerificationBloc()..add(OtpVerificationInitialEvent(widget.email)),
-      child: OtpVerificationBody(),
+      child: const OtpVerificationBody(),
     );
   }
 }
