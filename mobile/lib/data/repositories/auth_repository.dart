@@ -3,11 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
+import '../data_sources/local/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
 class AuthRepository {
   final ApiService apiService = ApiService();
+
   Future<Response> signUpWithEmail(UserModel userModel, String otp) async {
     try {
       final data = {
@@ -16,10 +18,46 @@ class AuthRepository {
         "referralCode": userModel.referralCode,
         "otp": otp
       };
-
-      return await ApiService().request(
+      final signUpResponse = await apiService.request(
         APIRequestMethod.post,
         ApiUrls.signUpEndpoint,
+        data: data,
+        options: Options(
+          headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (signUpResponse.statusCode != null &&
+          signUpResponse.statusCode! >= 200 &&
+          signUpResponse.statusCode! < 300) {
+        await loginWithEmailPassword(userModel);
+      }
+
+      return signUpResponse;
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          throw SignUpException(errorMessage);
+        } else {
+          throw SignUpException("${e.message}");
+        }
+      }
+      rethrow;
+    }
+  }
+
+  Future<Response> sendVerificationCode(String email) async {
+    try {
+      final data = {"email": email};
+
+      return await apiService.request(
+        APIRequestMethod.post,
+        ApiUrls.sendVerificationCodeEndpoint,
         data: data,
         options: Options(
           headers: {
@@ -42,33 +80,6 @@ class AuthRepository {
     }
   }
 
-  Future<Response> sendVerificationCode(String email) async {
-    try {
-      final data = {"email": email};
-
-      return await ApiService().request(
-        APIRequestMethod.post,
-        ApiUrls.sendVerificationCodeEndpoint,
-        data: data,
-        options: Options(
-          headers: {
-            'Accept': '*/*',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-    } catch (e) {
-      if (e is DioException) {
-        if (e.response != null) {
-          final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
-          throw SignUpException(errorMessage);
-        } else {
-          throw SignUpException("${e.message}");
-        }
-      }
-      rethrow;    }
-  }
   Future<User?> googleLogin() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(
@@ -77,7 +88,7 @@ class AuthRepository {
       final FirebaseAuth _auth = FirebaseAuth.instance;
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
+          await googleUser?.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
@@ -97,7 +108,7 @@ class AuthRepository {
       );
       if (loginResult.status == LoginStatus.success) {
         final OAuthCredential facebookAuthCredential =
-        FacebookAuthProvider.credential(
+            FacebookAuthProvider.credential(
           '${loginResult.accessToken?.tokenString}',
         );
         return FirebaseAuth.instance
@@ -126,11 +137,12 @@ class AuthRepository {
           },
         ),
       );
-      if (response.statusCode == 200) {
-        return response.data['token'];
-      } else {
-        return null;
-      }
+
+      await SharedPrefer.sharedPrefer
+          .setUserToken(response.data['data']['accessToken']);
+      await SharedPrefer.sharedPrefer
+          .setUserRefreshToken(response.data['data']['refreshToken']);
+      return response.data['data']['accessToken'];
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
@@ -146,7 +158,6 @@ class AuthRepository {
   }
 }
 
-
 class SignUpException implements Exception {
   final String message;
 
@@ -157,4 +168,3 @@ class SignUpException implements Exception {
     return message;
   }
 }
-
