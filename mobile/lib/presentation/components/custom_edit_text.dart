@@ -7,6 +7,7 @@ class CustomEditText extends StatefulWidget {
   final String title;
   final String mainMessage;
   final TextStyle? textStyle;
+  final TextStyle? titleStyle;
   final ValueChanged<String>? onChanged;
   final TextCapitalization? textCapitalization;
   final TextInputType? textInputType;
@@ -25,11 +26,12 @@ class CustomEditText extends StatefulWidget {
   const CustomEditText({
     super.key,
     this.textStyle,
+    this.titleStyle,
     this.onChanged,
     this.textCapitalization,
     this.textInputType,
     this.backgroundColor = Colors.white,
-    this.height,
+    this.height ,
     this.title = '',
     this.maxLength = 255,
     this.isPasswordInput = false,
@@ -64,10 +66,10 @@ class _CustomEditTextState extends State<CustomEditText> {
       children: [
         widget.title.isNotEmpty
             ? Text(
-                widget.title,
-                style: AppTextStyles.montserratStyle.regular16Black,
-                textAlign: TextAlign.left,
-              )
+          widget.title,
+          style: widget.titleStyle ?? AppTextStyles.montserratStyle.regular16Black,
+          textAlign: TextAlign.left,
+        )
             : const SizedBox(),
         SizedBox(
           height: widget.title.isNotEmpty ? 4 : 0,
@@ -85,7 +87,7 @@ class _CustomEditTextState extends State<CustomEditText> {
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization:
-                widget.textCapitalization ?? TextCapitalization.none,
+            widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
             obscureText: widget.isPasswordInput ? !isTextVisible : false,
             decoration: InputDecoration(
@@ -94,39 +96,30 @@ class _CustomEditTextState extends State<CustomEditText> {
               filled: true,
               suffixIcon: widget.isPasswordInput
                   ? GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isTextVisible = !isTextVisible;
-                        });
-                      },
-                      child: Icon(
-                        isTextVisible ? Icons.visibility : Icons.visibility_off,
-                        color: AppColors.graniteGray,
-                      ),
-                    )
+                onTap: () {
+                  setState(() {
+                    isTextVisible = !isTextVisible;
+                  });
+                },
+                child: Icon(
+                  isTextVisible ? Icons.visibility : Icons.visibility_off,
+                  color: AppColors.graniteGray,
+                ),
+              )
                   : widget.suffix,
               contentPadding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                    color: widget.isShowMessage
-                        ? widget.borderColor
-                        : AppColors.chineseSilver),
+                borderSide: BorderSide(color:widget.isShowMessage ? widget.borderColor :  AppColors.chineseSilver),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(
-                    color: widget.isShowMessage
-                        ? widget.borderColor
-                        : AppColors.chineseSilver),
+                borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor : AppColors.chineseSilver ),
               ),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(
-                      color: widget.isShowMessage
-                          ? widget.borderColor
-                          : AppColors.tiffanyBlue)),
+                  borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor :  AppColors.tiffanyBlue)),
               errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: widget.borderColor)),

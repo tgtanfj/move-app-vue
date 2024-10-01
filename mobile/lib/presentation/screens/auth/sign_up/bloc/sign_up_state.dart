@@ -11,10 +11,18 @@ class SignUpState extends Equatable {
   final SignUpStatus status;
   final bool isClickSignUpWithEmail;
   final bool isEnableSignUp;
-  final String email;
-  final String password;
-  final String confirmPassword;
-  final String referralCode;
+  final String inputEmail;
+  final String inputPassword;
+  final String inputConfirmPassword;
+  final String inputReferralCode;
+  final String messageInputEmail;
+  final String messageInputPassword;
+  final String messageInputConfirmPassword;
+  final String messageInputReferralCode;
+  final bool isShowEmailMessage;
+  final bool isShowPasswordMessage;
+  final bool isShowConfirmPasswordMessage;
+  final bool isShowReferralCodeMessage;
   final String googleAccount;
   final String facebookAccount;
 
@@ -22,10 +30,18 @@ class SignUpState extends Equatable {
     this.status = SignUpStatus.initial,
     this.isClickSignUpWithEmail = false,
     this.isEnableSignUp = false,
-    this.email = '',
-    this.password = '',
-    this.confirmPassword = '',
-    this.referralCode = '',
+    this.inputEmail = "",
+    this.inputPassword = "",
+    this.inputConfirmPassword = "",
+    this.inputReferralCode = "",
+    this.messageInputEmail = "",
+    this.messageInputPassword = "",
+    this.messageInputConfirmPassword = "",
+    this.messageInputReferralCode = "",
+    this.isShowEmailMessage = false,
+    this.isShowPasswordMessage = false,
+    this.isShowConfirmPasswordMessage = false,
+    this.isShowReferralCodeMessage = false,
     this.googleAccount = '',
     this.facebookAccount = '',
   });
@@ -33,13 +49,21 @@ class SignUpState extends Equatable {
   SignUpState copyWith({
     SignUpStatus? status,
     bool? isClickSignUpWithEmail,
+    bool? isEnableSignUp,
+    String? inputEmail,
+    String? inputPassword,
+    String? inputConfirmPassword,
+    String? inputReferralCode,
+    String? messageInputEmail,
+    String? messageInputPassword,
+    String? messageInputConfirmPassword,
+    String? messageInputReferralCode,
+    bool? isShowEmailMessage,
+    bool? isShowPasswordMessage,
+    bool? isShowConfirmPasswordMessage,
+    bool? isShowReferralCodeMessage,
     bool? isShowPassword,
     bool? isShowConfirmPassword,
-    bool? isEnableSignUp,
-    String? email,
-    String? password,
-    String? confirmPassword,
-    String? referralCode,
     String? googleAccount,
     String? facebookAccount,
   }) {
@@ -48,10 +72,23 @@ class SignUpState extends Equatable {
       isClickSignUpWithEmail:
           isClickSignUpWithEmail ?? this.isClickSignUpWithEmail,
       isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
-      email: email ?? this.email,
-      password: password ?? this.password,
-      confirmPassword: confirmPassword ?? this.confirmPassword,
-      referralCode: referralCode ?? this.referralCode,
+      inputEmail: inputEmail ?? this.inputEmail,
+      inputPassword: inputPassword ?? this.inputPassword,
+      inputConfirmPassword: inputConfirmPassword ?? this.inputConfirmPassword,
+      inputReferralCode: inputReferralCode ?? this.inputReferralCode,
+      messageInputEmail: messageInputEmail ?? this.messageInputEmail,
+      messageInputPassword: messageInputPassword ?? this.messageInputPassword,
+      messageInputConfirmPassword:
+          messageInputConfirmPassword ?? this.messageInputConfirmPassword,
+      messageInputReferralCode:
+          messageInputReferralCode ?? this.messageInputReferralCode,
+      isShowEmailMessage: isShowEmailMessage ?? this.isShowEmailMessage,
+      isShowPasswordMessage:
+          isShowPasswordMessage ?? this.isShowPasswordMessage,
+      isShowConfirmPasswordMessage:
+          isShowConfirmPasswordMessage ?? this.isShowConfirmPasswordMessage,
+      isShowReferralCodeMessage:
+          isShowReferralCodeMessage ?? this.isShowReferralCodeMessage,
       googleAccount: googleAccount ?? this.googleAccount,
       facebookAccount: facebookAccount ?? this.facebookAccount,
     );
@@ -62,10 +99,18 @@ class SignUpState extends Equatable {
         status,
         isClickSignUpWithEmail,
         isEnableSignUp,
-        email,
-        password,
-        confirmPassword,
-        referralCode,
+        inputEmail,
+        inputPassword,
+        inputConfirmPassword,
+        inputReferralCode,
+        messageInputEmail,
+        messageInputPassword,
+        messageInputConfirmPassword,
+        messageInputReferralCode,
+        isShowEmailMessage,
+        isShowPasswordMessage,
+        isShowConfirmPasswordMessage,
+        isShowReferralCodeMessage,
         googleAccount,
         facebookAccount,
       ];
