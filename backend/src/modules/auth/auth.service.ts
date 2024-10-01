@@ -1,3 +1,4 @@
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { firebaseAdmin } from '@/shared/firebase/firebase.config';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
@@ -20,9 +21,8 @@ import { EmailService } from '../email/email.service';
 import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
-import { SignUpEmailDto } from './dto/signup-email.dto';
 import { ChangePasswordDTO } from './dto/change-password.dto';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { SignUpEmailDto } from './dto/signup-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,12 +41,6 @@ export class AuthService {
   private readonly LOCKOUT_TIME = 600; //
 
   async signUpEmail(signUpEmailDto: SignUpEmailDto) {
-    const existUser = await this.userService.findOneByEmail(signUpEmailDto.email);
-
-    if (existUser) {
-      throw new BadRequestException(ERRORS_DICTIONARY.EMAIL_EXISTED);
-    }
-
     // hashed password
 
     const passwordHashed = await bcrypt.hash(signUpEmailDto.password, 10);
@@ -57,15 +51,15 @@ export class AuthService {
 
     signUpEmailDto.stripeId = customer.id;
 
+    const username = signUpEmailDto.email.split('@')[0];
+
+    signUpEmailDto.username = username;
+
     // create user if not exist
 
     const user = await this.userService.createUserByEmail(signUpEmailDto);
 
     await this.userService.createAccount(user.id, passwordHashed);
-
-    // send mail verify
-
-    await this.sendOTPVerification(user);
 
     return user;
   }
@@ -252,25 +246,33 @@ export class AuthService {
     return await this.userService.revokeRefreshToken(token);
   }
 
-  async sendOTPVerification(user) {
-    const otp = await this.generateOtp(user.id);
-    return this.emailService.sendOTPVerification(user.email, otp);
+  async sendOTPVerification(email: string) {
+    const existUser = await this.userService.findOneByEmail(email);
+
+    if (existUser) {
+      throw new BadRequestException(ERRORS_DICTIONARY.EMAIL_EXISTED);
+    }
+
+    const otp = await this.generateOtp(email);
+
+    return this.emailService.sendOTPVerification(email, otp);
   }
 
-  async generateOtp(userId) {
-    const otp = authenticator.generate(userId);
+  async generateOtp(email: string) {
+    const otp = authenticator.generate(email);
 
     // Store OTP with a 5-minute expiration
-    await this.cacheManager.set(`otp_${userId}`, otp, 60); // Cache OTP for 1 minute
-    await this.cacheManager.set(`attempts_${userId}`, 0, 60); // Initialize attempts
+    await this.cacheManager.set(`otp_${email}`, otp, this.OTP_EXPIRATION_TIME); // Cache OTP for 1 minute
+    await this.cacheManager.set(`attempts_${email}`, 0, this.OTP_EXPIRATION_TIME); // Initialize attempts
 
     return otp;
   }
 
-  async verifyOtp(userId: number, otp: string) {
-    const cachedOtp = await this.cacheManager.get<string>(`otp_${userId}`);
-    const attempts = await this.cacheManager.get<number>(`attempts_${userId}`);
-    const isLocked = await this.cacheManager.get<number>(`account_locked_${userId}`);
+  async verifyOtp(signUpEmailDto: SignUpEmailDto) {
+    const { otp, email } = signUpEmailDto;
+    const cachedOtp = await this.cacheManager.get<string>(`otp_${email}`);
+    const attempts = await this.cacheManager.get<number>(`attempts_${email}`);
+    const isLocked = await this.cacheManager.get<number>(`account_locked_${email}`);
 
     if (isLocked) {
       throw new NotAcceptableException(ERRORS_DICTIONARY.ACCOUNT_LOCKED);
@@ -278,16 +280,15 @@ export class AuthService {
 
     if (cachedOtp === otp) {
       // Clear attempts if successful
-      await this.cacheManager.del(`attempts_${userId}`);
-      await this.cacheManager.del(`otp_${userId}`);
+      await this.cacheManager.del(`attempts_${email}`);
+      await this.cacheManager.del(`otp_${email}`);
 
-      await this.userService.updateUser(userId, { isActive: true }); // OTP is valid
-      return true;
+      return await this.signUpEmail(signUpEmailDto);
     } else {
-      await this.cacheManager.set(`attempts_${userId}`, attempts + 1, 60);
+      await this.cacheManager.set(`attempts_${email}`, attempts + 1, 60);
 
       if (attempts + 1 >= this.MAX_ATTEMPTS) {
-        await this.cacheManager.set(`account_locked_${userId}`, true, this.LOCKOUT_TIME);
+        await this.cacheManager.set(`account_locked_${email}`, true, this.LOCKOUT_TIME);
         throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
       }
 
