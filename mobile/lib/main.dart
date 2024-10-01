@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'config/app_config.dart';
-import 'presentation/screens/home/page/home_page.dart';
+
 
 void main() async {
   await AppConfig.init();
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const HomePage(),
+      initialRoute: AppRoutes.getInitialRoute(),
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

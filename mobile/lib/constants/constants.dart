@@ -92,6 +92,15 @@ class Constants {
   static const String verifyEmail="Verify your email to keep account secure";
   static const String interm =  'Interm';
   static const String intermediate =  'Intermediate';
-
-
+  static const String following = 'Following';
+  static const String browse = 'Browse';
+  static const String wallet = 'Wallet';
+  static const String setting = 'Setting';
+  static const String more = 'More';
+  static const String aboutUs = 'About Us';
+  static const String communityGuideline = 'Community Guideline';
+  static const String faq = 'FAQ';
+  static const String logout = 'Logout';
+  static const String loginMenu = "Login";
+  
 }
