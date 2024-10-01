@@ -1,98 +1,185 @@
 import { defineStore } from 'pinia'
-import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, FacebookAuthProvider } from "firebase/auth";
 import { auth } from '../services/firebaseConfig.js'
 import { onMounted, ref } from 'vue';
-import { HEADERS_DEFAULT } from '@constants/header.constant.js';
-import { API_METHOD } from '@constants/api-method.constant.js';
+import axios from 'axios';
+import { ADMIN_BASE } from '@constants/api.constant.js';
 
 export const useAuthStore = defineStore('auth', () => {
     // States
     const user = ref({})
-    const error = ref(null);
-    const token = ref(null);
+    const errorMsg = ref(null)
+    const idToken = ref(null)
+    const accessToken = ref(null)
+    const refreshToken = ref(null)
+    const isLoading = ref(false)
 
     // Actions
-    const googleSignIn = async () => {
+    const googleSignIn = async () => { // Login with Google
         const provider = new GoogleAuthProvider()
         try {
-            const result = await signInWithPopup(auth, provider);
-            user.value = result.user;
-            token.value = await result.user.getIdToken();
-            console.log("User info:", user.value);
+            const result = await signInWithPopup(auth, provider)
+            user.value = result.user
+            idToken.value = await user.value.getIdToken()
+            localStorage.setItem('loginMethod', 'google')
         } catch (err) {
-            error.value = err.message;
-            console.error("Error during Google login:", error.value);
+            if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+                isLoading.value = false;
+            } else {
+                console.error("Error during Google login:", err);
+                throw err;
+            }
+        } finally {
+            isLoading.value = false
         }
     }
 
-    // Gửi idToken cho backend ( Pending )
-    const sendTokenToBackend = async () => {
-        if (token.value) {
-            try {
-                const response = await fetch('', { // đợi api của backend
-                    method: API_METHOD.POST,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ idToken: token.value }),
-                });
-                const data = await response.json();
-                console.log('Response from backend:', data);
-            } catch (error) {
-                console.error('Error sending token to backend:', error);
+    const facebookSignIn = async () => { // Login with Facebook
+        const provider = new FacebookAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider)
+            user.value = result.user
+            idToken.value = await user.value.getIdToken()
+            localStorage.setItem('loginMethod', 'facebook')
+        } catch (err) {
+            if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+                isLoading.value = false
+            } else {
+                console.error("Error during Facebook login:", err)
+                throw err;
+            }
+        } finally {
+            isLoading.value = false
+        }
+    };
+
+    const sendTokenToBackend = async () => {  // Send idToken to backend
+        try {
+            let apiEndpoint;
+            const loginMethodLocal = localStorage.getItem('loginMethod');
+
+            if (loginMethodLocal === 'google') {
+                apiEndpoint = `${ADMIN_BASE}/auth/login/google`;
+            } else if (loginMethodLocal === 'facebook') {
+                apiEndpoint = `${ADMIN_BASE}/auth/login/facebook`;
+            } else {
+                throw new Error("Unsupported login method");
+            }
+
+            const res = await axios.post(apiEndpoint, { idToken: idToken.value });
+            accessToken.value = res.data.data.accessToken;
+            refreshToken.value = res.data.data.refreshToken;
+            localStorage.setItem('token', accessToken.value);
+            localStorage.setItem('refreshToken', refreshToken.value);
+
+        } catch (error) {
+            errorMsg.value = error.response?.data?.message || "Error sending token to backend.";
+            console.error("Error during token submission:", error);
+            await logout()
+            throw error;
+        }
+    };
+
+    const loginWithEmail = async (values) => { // Login with email
+        isLoading.value = true
+        try {
+            const res = await axios.post(`${ADMIN_BASE}/auth/login`, values)
+            const data = res.data
+
+            if (data.success) {
+                accessToken.value = data.data.accessToken
+                localStorage.setItem('token', accessToken.value)
+                localStorage.setItem('loginMethod', 'email')
+            }
+
+        } catch (error) {
+            if (error.response) {
+                const errorRes = error.response.data
+                errorMsg.value = errorRes.message
+                await logout()
+            }
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    const logout = async () => { // Logout all login method
+        await signOut(auth)
+        user.value = {}
+        idToken.value = null;
+        accessToken.value = null
+        refreshToken.value = null;
+        localStorage.removeItem('token')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('loginMethod')
+    };
+
+    const refreshAccessToken = async () => { // Refresh token
+        try {
+            isLoading.value = true;
+            const currentRefreshToken = localStorage.getItem('refreshToken');
+
+            if (!currentRefreshToken) {
+                throw new Error("No refresh token available");
+            }
+
+            const response = await axios.get(`${ADMIN_BASE}/auth/refresh`, {
+                headers: {
+                    Authorization: `Bearer ${currentRefreshToken}`,
+                },
+            });
+
+            accessToken.value = response.data.data.accessToken;
+            localStorage.setItem('token', accessToken.value);
+
+        } catch (error) {
+            console.error("Error refreshing access token:", error);
+            await logout()
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    // Lifecycle hooks (onMounted)
+    onMounted(() => { // Check status login
+        isLoading.value = true;
+        const tokenLocal = localStorage.getItem('token')
+        const loginMethodLocal = localStorage.getItem('loginMethod')
+
+        if (tokenLocal && loginMethodLocal === 'email') {
+            accessToken.value = tokenLocal
+            isLoading.value = false;
+        } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
+            const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                if (currentUser) {
+                    user.value = currentUser
+                    currentUser.getIdToken().then((idToken) => {
+                        accessToken.value = idToken
+                        if (loginMethodLocal === 'google') {
+                            localStorage.setItem('loginMethod', 'google')
+                        } else {
+                            localStorage.setItem('loginMethod', 'facebook')
+                        }
+                        isLoading.value = false;
+                    })
+                } else {
+                    user.value = null
+                    accessToken.value = null
+                    isLoading.value = false;
+                }
+            })
+            return () => {
+                unsubscribe()
             }
         } else {
-            console.error('No token available to send to backend');
+            isLoading.value = false;
         }
-    };
-
-    onMounted(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-                user.value = currentUser;
-                currentUser.getIdToken().then((idToken) => {
-                    token.value = idToken;
-                });
-            } else {
-                user.value = null;
-                token.value = null;
-            }
-        });
-        return () => {
-            unsubscribe();
-        };
     });
-
-    const logout = async () => {
-        await auth.signOut()
-        user.value = {};
-    };
-
-    // Chưa có api login từ backend ( Pending )
-    const loginWithEmail = async (values) => {
-        try {
-            const response = await fetch('', {
-                method: 'POST',
-                headers: HEADERS_DEFAULT,
-                body: JSON.stringify(values),
-                credentials: 'include'
-            });
-    
-            const data = await response.json();
-            if(data.error) {
-                alert(data.error)
-            }
-            user.value = data
-            console.log('data', data)
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     return {
         // states
-        user, error,
+        user, errorMsg, idToken, accessToken, refreshToken, isLoading,
         // actions
-        googleSignIn, sendTokenToBackend, logout, loginWithEmail
+        googleSignIn, facebookSignIn, sendTokenToBackend, logout, loginWithEmail, refreshAccessToken
     }
 })

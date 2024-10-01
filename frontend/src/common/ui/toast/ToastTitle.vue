@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import { DropdownMenuSeparator } from "radix-vue";
+import { ToastTitle } from "radix-vue";
 import { cn } from "@utils/shadcn.util";
 
 const props = defineProps({
@@ -17,8 +17,10 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <DropdownMenuSeparator
+  <ToastTitle
     v-bind="delegatedProps"
-    :class="cn('-mx-1 my-1 h-px bg-lightGray opacity-50', props.class)"
-  />
+    :class="cn('text-sm font-semibold', props.class)"
+  >
+    <slot />
+  </ToastTitle>
 </template>

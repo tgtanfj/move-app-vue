@@ -9,30 +9,39 @@
         </li>
       </ul>
 
-      <div class="flex-1">
+      <div class="w-[20%]">
         <div class="m-auto w-28">
-          <LogoWhite />
+          <RouterLink to="/">
+            <LogoWhite />
+          </RouterLink>
         </div>
       </div>
-
-      <div class="flex flex-1 gap-6 justify-end">
-        <div class="flex">
+      
+      <div class="flex flex-1 items-center gap-2">
+        <div class="flex flex-1 justify-end">
           <input
             type="text"
-            class="w-[252px] rounded-[0.5rem_0_0_0.5rem] px-3 text-black outline-none"
+            class="w-[63%] max-w-[300px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
             placeholder="Search"
           />
-          <Button variant="default" class="w-12 rounded-[0_0.5rem_0.5rem_0]">
+          <Button class="w-[44px] rounded-[0_0.5rem_0.5rem_0]">
             <SearchIcon />
           </Button>
+        </div>
 
+        <div>
           <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn">
             <DialogTrigger>
-              <Button variant="" class="ml-4 rounded-lg">Log In</Button>
+              <Button v-if="authStore.isLoading" variant="default" class="rounded-lg" disabled>
+                Loading...
+              </Button>
+              <Button v-else-if="!isUserLoggedIn" variant="default" class="rounded-lg">
+                Log In
+              </Button>
             </DialogTrigger>
 
             <DialogContent>
-              <DialogHeader class="relative">
+              <DialogHeader>
                 <DialogTitle class="w-24 m-auto">
                   <LogoBlack />
                 </DialogTitle>
@@ -55,17 +64,14 @@
                     <span class="font-bold">Sign up</span>
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="login" class="">
+                <TabsContent value="login">
                   <SignInModal
                     :closeModal="closeModal"
                     @openForgotPassword="onOpenForgotPassword"
                   />
                 </TabsContent>
                 <TabsContent value="signup">
-                  <SignUpModal
-                    :closeModal="closeModal"
-                    @open-otp-verification="openOTPModal = true"
-                  />
+                  <SignUpModal :closeModal="closeModal" />
                 </TabsContent>
               </Tabs>
             </DialogContent>
@@ -74,15 +80,21 @@
         <div>
           <NavbarLogged v-if="isUserLoggedIn" />
         </div>
-
-        <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
-      </div>
+</div>
+      <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
     </div>
   </nav>
 </template>
 
 <script setup>
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@common/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription
+} from '@common/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import SignInModal from '@components/SignInModal.vue'
 import { computed, ref } from 'vue'
@@ -96,25 +108,25 @@ import SearchIcon from '@assets/icons/SearchIcon.vue'
 import { useAuthStore } from '../stores/auth'
 import NavbarLogged from '@components/NavbarLogged.vue'
 import MoreMenuNav from '@components/MoreMenuNav.vue'
+
 const isOpen = ref(false)
+const openForgotPassword = ref(false)
+const authStore = useAuthStore()
+
+const isUserLoggedIn = computed(() => !!authStore.accessToken)
 
 const closeModal = () => {
   isOpen.value = false
 }
 
-const openForgotPassword = ref(false)
-const openOTPModal = ref(false)
-
 const onOpenForgotPassword = () => {
   openForgotPassword.value = true
   closeModal()
 }
+
 const openLoginModal = () => {
   isOpen.value = true
   openForgotPassword.value = false
 }
 
-const authStore = useAuthStore()
-
-const isUserLoggedIn = computed(() => !!authStore.user.displayName)
 </script>
