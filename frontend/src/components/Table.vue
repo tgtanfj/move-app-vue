@@ -8,7 +8,7 @@
               <Checkbox id="all" :checked="allSelected" @update:checked="toggleAll" />
             </TableHead>
             <template v-if="selectedItems.length === 0">
-              <TableHead> Videos </TableHead>
+              <TableHead>Videos</TableHead>
               <TableHead>Details</TableHead>
               <TableHead>Date Posted</TableHead>
               <TableHead>Views</TableHead>
@@ -198,6 +198,8 @@ const handleClearSelection = () => {
 
 const handleDeleteVideoList = () => {
   showConfirmModal.value = false
+  //send video id arr to BE
+  selectedItems.value = []
 }
 const handleDownloadVideoList = () => {
   console.log(selectedItems)
