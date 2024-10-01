@@ -113,4 +113,13 @@ export class ApiConfigService {
       bucketEndpoint: this.getString('AWS_S3_BUCKET_ENDPOINT'),
     };
   }
+
+  get vimeoConfig() {
+    return {
+      accessTokenVimeo: this.getString('ACCESS_TOKEN_VIMEO'),
+      clientIdVimeo: this.getString('VIMEO_CLIENT_ID'),
+      clientSercetClientVimeo: this.getString('VIMEO_CLIENT_SECRET'),
+      apiUrlVimeo: this.getString('VIMEO_API_URL'),
+    };
+  }
 }
