@@ -69,6 +69,8 @@ export const signinSchema = object({
 
 //     fullName: z.string(),
 
-//     country: z.string().nonempty('Country is required')
+//     country: z.string().nonempty('Country is required'),
+//     state: z.string().nonempty('State is required'),
+//     city: z.string().nonempty('City is required')
 //   })
 // )

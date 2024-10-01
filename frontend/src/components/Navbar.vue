@@ -62,7 +62,10 @@
                   />
                 </TabsContent>
                 <TabsContent value="signup">
-                  <SignUpModal :closeModal="closeModal" />
+                  <SignUpModal
+                    :closeModal="closeModal"
+                    @open-otp-verification="openOTPModal = true"
+                  />
                 </TabsContent>
               </Tabs>
             </DialogContent>
@@ -85,6 +88,7 @@ import SignInModal from '@components/SignInModal.vue'
 import { computed, ref } from 'vue'
 import Button from '../common/ui/button/Button.vue'
 import ForgotPassword from './ForgotPassword.vue'
+import OTPVerificationModal from './OTPVerificationModal.vue'
 import SignUpModal from './SignUpModal.vue'
 import LogoBlack from '@assets/icons/LogoBlack.vue'
 import LogoWhite from '@assets/icons/LogoWhite.vue'
@@ -99,6 +103,8 @@ const closeModal = () => {
 }
 
 const openForgotPassword = ref(false)
+const openOTPModal = ref(false)
+
 const onOpenForgotPassword = () => {
   openForgotPassword.value = true
   closeModal()

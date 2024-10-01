@@ -36,5 +36,26 @@
   "label": {
     "password": "Password",
     "confirm_password": "Confirm password"
+  },
+  "user_profile": {
+    "title": "Settings",
+    "tab_profile": "Profile",
+    "tab_notification": "Notifications",
+    "profile_pic": "Profile picture",
+    "update_profile_pic": "Update profile picture",
+    "username": "Username",
+    "email": "Email",
+    "fullname": "Full Name",
+    "password": "Password",
+    "change_pw": "Change password",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "birth": "Date of birth",
+    "rather_not_say": "Rather not say",
+    "country": "Country",
+    "state": "State",
+    "city": "City",
+    "save": "Save settings"
   }
 }

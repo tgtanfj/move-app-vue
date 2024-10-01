@@ -1,29 +1,27 @@
 import { useFetch } from '@/utils/vue-query.util'
-import { useQueryClient } from '@tanstack/vue-query'
-import { usePost, usePostFetch } from '@utils/vue-query.util'
+import { COUNTRY_BASE } from '@constants/api.constant'
+import { usePostFetch } from '@utils/vue-query.util'
 
 export const countriesService = {
-  getAllCountries: () => useFetch('https://countriesnow.space/api/v0.1/countries/positions'),
+  getAllCountries: () => useFetch(`${COUNTRY_BASE}/countries/positions`),
 
-  getStatesByCountry: (country) => {
-    const queryClient = useQueryClient() 
+  getAllStates: (country) => {
+    const body = { country }
 
-    return async () => {
-      const url = 'https://countriesnow.space/api/v0.1/countries/states' 
+    return usePostFetch(`${COUNTRY_BASE}/countries/states`, body, {
+      enabled: !country,
+      refetchOnWindowFocus: false,
+      staleTime: 300000
+    })
+  },
 
-      const configs = {
-      }
+  getAllCities: (country, state) => {
+    const body = { country: country, state: state }
 
-      try {
-        const response = await apiClient.post(url, { country }, configs) 
-        const data = response.data 
-
-        queryClient.setQueryData(['states', country], data)
-        return data
-      } catch (error) {
-        console.error('Error fetching states:', error)
-        throw error
-      }
-    }
+    return usePostFetch(`${COUNTRY_BASE}/countries/state/cities`, body, {
+      enabled: !country && !state,
+      refetchOnWindowFocus: false,
+      staleTime: 300000
+    })
   }
 }
