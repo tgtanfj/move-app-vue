@@ -5,10 +5,15 @@ import { Button } from '@common/ui/button'
 import { ErrorMessage, Field, useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { registerSchema } from '../validation/schema.js'
+import { signupService } from '@services/signup.services.js'
+import Loading from './Loading.vue'
 
 const props = defineProps({
   closeModal: Function
 })
+
+const errorsSignUp = ref('')
+const isLoading = ref(false)
 
 const emit = defineEmits(['openOtpVerification'])
 
@@ -30,11 +35,25 @@ const isSignUp = computed(() => {
   return isFillAllFields.value && Object.keys(errors.value).length === 0
 })
 
-const onSubmit = handleSubmit((values) => {
-  console.log('Form Values:', values)
-  props.closeModal()
+const onSubmit = handleSubmit(async (values) => {
+  const email = values.email
+  const password = values.password
+  const referralCode = values.code ? values.code : ''
 
-  emit('openOtpVerification')
+  try {
+    isLoading.value = true
+    const data = await signupService.signupByEmailPassword(email, password, referralCode)
+    isLoading.value = false
+    if (data.success === true) {
+      props.closeModal()
+      emit('openOtpVerification')
+    }
+  } catch (error) {
+    isLoading.value = false
+    console.error('Signup failed:', error)
+    errorsSignUp.value = error.response.data.message
+    console.error('test:', error.response.data.message)
+  }
 })
 </script>
 
@@ -121,14 +140,19 @@ const onSubmit = handleSubmit((values) => {
             <span class="text-primary cursor-pointer">Privacy Notice</span>.
           </p>
         </div>
-
-        <Button
-          class="w-full text-base"
-          :disabled="!isSignUp"
-          :variant="isSignUp ? 'default' : 'disabled'"
-          type="submit"
-          >Sign Up</Button
-        >
+        <div v-if="errorsSignUp">
+          <p class="text-destructive text-base mt-1">{{ errorsSignUp }}</p>
+        </div>
+        <div>
+          <Button
+            class="w-full text-base"
+            :disabled="!isSignUp"
+            :variant="isSignUp ? 'default' : 'disabled'"
+            type="submit"
+            ><span v-if="!isLoading">Sign Up</span>
+            <Loading v-if="isLoading" />
+          </Button>
+        </div>
       </form>
     </div>
   </div>
