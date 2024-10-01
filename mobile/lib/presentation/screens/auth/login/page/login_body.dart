@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
@@ -14,6 +15,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_body.dar
 import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
+import '../../widgets/divider_authentication.dart';
 import '../bloc/login_event.dart';
 
 class LoginBody extends StatefulWidget {
@@ -33,9 +35,10 @@ class _LoginBodyState extends State<LoginBody>
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
+          Fluttertoast.showToast(msg: "Login successful");
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => HomeBody(),
+              builder: (context) => const HomeBody(),
             ),
           );
         }
@@ -72,16 +75,8 @@ class _LoginBodyState extends State<LoginBody>
                     borderColor: AppColors.chineseSilver,
                   ),
                   const SizedBox(height: 12),
-                  const Row(
-                    children: [
-                      Expanded(child: Divider(thickness: 1)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(Constants.or),
-                      ),
-                      Expanded(child: Divider(thickness: 1)),
-                    ],
-                  ),
+                  const DividerAuthentication(),
+                  const SizedBox(height: 15),
                   state.isVisible
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

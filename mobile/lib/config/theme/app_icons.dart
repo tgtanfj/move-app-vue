@@ -14,7 +14,12 @@ enum AppIcons {
   radioSelected,
   radio,
   dropdown,
-
+  rep,
+  notification,
+  arrowUp,
+  arrowDown,
+  addVideo,
+  closeWhite,
 }
 
 extension AppIconsExtension on AppIcons {

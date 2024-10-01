@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 
-
 enum AppFontFamily { montserrat }
 
 enum AppFontWeight { regular, medium, semiBold, bold }
@@ -52,7 +51,7 @@ class MontserratStyles {
 
   final regular12White =
       customMontserratStyle(12, AppColors.white, AppFontWeight.regular.weight);
-      final regular12Black =
+  final regular12Black =
       customMontserratStyle(12, AppColors.black, AppFontWeight.regular.weight);
   final regular16Black =
       customMontserratStyle(16, Colors.black, AppFontWeight.regular.weight);
@@ -103,5 +102,10 @@ class MontserratStyles {
       10, AppColors.darkCharcoal, AppFontWeight.bold.weight);
   final regular18tiffanyBlue = customMontserratStyle(
       18, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
-
+  final bold17White =
+      customMontserratStyle(17, AppColors.white, AppFontWeight.bold.weight);
+  final bold20White =
+      customMontserratStyle(20, AppColors.white, AppFontWeight.bold.weight);
+final regular16White=
+      customMontserratStyle(16, AppColors.white, AppFontWeight.regular.weight);
 }
