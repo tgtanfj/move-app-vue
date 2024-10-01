@@ -1,5 +1,3 @@
-
-
 class Constants {
   static const String featured = 'Featured';
   static const String views = 'views';
@@ -76,14 +74,24 @@ class Constants {
   static const String loginWithFacebook = "Log In With Facebook";
   static const String loginWithEmail = "LOGIN WITH EMAIL";
   static const String forgotPassword = "Forgot Password?";
-  static const String sendCode="We sent a 6-digit code to";
-  static const String enterCode="Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
-  static const String verificationCode="Verification Code";
-  static const String resendCode="Resend code";
-  static const String submit="Submit";
-  static const String verifyEmail="Verify your email to keep account secure";
-  static const String interm =  'Interm';
-  static const String intermediate =  'Intermediate';
-
+  static const String sendCode = "We sent a 6-digit code to";
+  static const String enterCode =
+      "Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
+  static const String verificationCode = "Verification Code";
+  static const String resendCode = "Resend code";
+  static const String submit = "Submit";
+  static const String verifyEmail = "Verify your email to keep account secure";
+  static const String interm = 'Interm';
+  static const String intermediate = 'Intermediate';
+  static const String following = 'Following';
+  static const String browse = 'Browse';
+  static const String wallet = 'Wallet';
+  static const String setting = 'Setting';
+  static const String more = 'More';
+  static const String aboutUs = 'About Us';
+  static const String communityGuideline = 'Community Guideline';
+  static const String faq = 'FAQ';
+  static const String logout = 'Logout';
+  static const String loginMenu = "Login";
   
 }
