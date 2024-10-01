@@ -144,8 +144,41 @@ class AuthRepository {
       rethrow;
     }
   }
-}
 
+  Future<void> logOut() async {
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.get,
+        'auth/logout',
+        options: Options(
+          headers: {
+            'Accept': '/',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Logout successful');
+      } else {
+        print('Failed to logout: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          throw errorMessage;
+        } else {
+          throw Exception('No response from the server');
+        }
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+}
 
 class SignUpException implements Exception {
   final String message;
