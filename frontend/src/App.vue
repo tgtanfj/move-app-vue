@@ -1,9 +1,15 @@
 <script setup>
-import Navbar from '@components/Navbar.vue';
+import Toaster from '@common/ui/toast/Toaster.vue'
+import ToastProvider from '@common/ui/toast/ToastProvider.vue'
+import Navbar from '@components/Navbar.vue'
 import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <Navbar />
-  <RouterView />
+  <ToastProvider>
+    <Navbar />
+
+    <RouterView />
+    <Toaster />
+  </ToastProvider>
 </template>

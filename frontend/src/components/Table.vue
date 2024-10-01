@@ -83,60 +83,6 @@
         <Button variant="default" @click="handleDeleteVideoList">Delete</Button>
       </div>
     </BaseDialog>
-    <Dialog v-model:open="showEditModal">
-      <DialogContent class="min-w-fit">
-        <DialogHeader>
-          <DialogTitle class="font-bold">Edit Details</DialogTitle>
-        </DialogHeader>
-        <div class="flex w-full">
-          <Tabs orientation="vertical" class="flex">
-            <TabsList class="flex flex-col bg-white">
-              <TabsTrigger value="detail" class="p-3 block -ml-3 group">
-                <div class="flex items-center justify-start group-data-[state=active]:font-bold">
-                  <div class="px-[15px] py-[8px] bg-black text-[#EEEEEE] rounded-full mr-5">1</div>
-                  Details
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="tag" class="block p-3 -ml-7 group">
-                <div class="flex items-center justify-start group-data-[state=active]:font-bold">
-                  <div class="px-[15px] py-[8px] bg-black text-[#EEEEEE] rounded-full mr-5">2</div>
-                  Tags
-                </div>
-              </TabsTrigger>
-              <TabsTrigger value="setting" class="block p-3 group">
-                <div class="flex items-center justify-start group-data-[state=active]:font-bold">
-                  <div class="px-[15px] py-[8px] bg-black text-[#EEEEEE] rounded-full mr-5">3</div>
-                  Settings
-                </div>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="detail">
-              <div class="flex flex-col">
-                <Label for="title">Video title</Label>
-                <Input
-                  id="title"
-                  :modelValue="editItem ? editItem.title : ''"
-                  placeholder="Title goes here"
-                  class="mt-2"
-                />
-              </div>
-              <div class="flex flex-col mt-3">
-                <Label>Video Thumbnail</Label>
-                <Carousel />
-              </div>
-            </TabsContent>
-            <TabsContent value="tag"> </TabsContent>
-            <TabsContent value="setting">Setting</TabsContent>
-          </Tabs>
-        </div>
-        <DialogFooter>
-          <div class="flex justify-end items-center">
-            <Button variant="outline">Back</Button>
-            <Button class="px-7">Next</Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   </div>
 </template>
 

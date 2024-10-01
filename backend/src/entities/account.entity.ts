@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { TypeAccount } from './enums/typeAccount.enum';
 import { User } from './user.entity';
@@ -7,6 +7,7 @@ import { User } from './user.entity';
 export class Account extends BaseEntity {
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   password: string;
 
@@ -24,5 +25,6 @@ export class Account extends BaseEntity {
   type: TypeAccount;
 
   @OneToOne(() => User, (user) => user.account)
+  @JoinColumn({ name: 'userId' })
   user: User;
 }

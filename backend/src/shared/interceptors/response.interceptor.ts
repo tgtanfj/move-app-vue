@@ -20,7 +20,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
       map((data) => ({
         statusCode: statusCode,
         data: data?.data ? data.data : data,
-        message: 'success',
+        message: data?.message ? data.message : 'success',
         meta: data?.meta || undefined,
         success: true,
       })),

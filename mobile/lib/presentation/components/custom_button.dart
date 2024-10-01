@@ -14,6 +14,9 @@ class CustomButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final TextAlign? textAlign;
   final Color? borderColor;
+  final int? maxLines;
+  final TextOverflow? textOverflow;
+  final bool? softWrap;
 
   const CustomButton({
     super.key,
@@ -29,6 +32,9 @@ class CustomButton extends StatelessWidget {
     this.padding,
     this.textAlign,
     this.borderColor,
+    this.maxLines,
+    this.textOverflow,
+    this.softWrap,
   });
 
   @override
@@ -40,7 +46,7 @@ class CustomButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
         padding:
-            padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+        padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
             color: isEnabled ? backgroundColor : AppColors.spanishGray,
             borderRadius: BorderRadius.circular(borderRadius),
@@ -63,3 +69,4 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
+
