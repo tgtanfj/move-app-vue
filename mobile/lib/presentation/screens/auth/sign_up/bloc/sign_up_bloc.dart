@@ -9,12 +9,17 @@ import 'package:move_app/utils/input_validation_helper.dart';
 
 import '../../../../../data/services/api_service.dart';
 
+import '../../../../../data/repositories/auth_repository.dart';
+import '../../login/bloc/login_state.dart';
+
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState()) {
     on<SignUpClickSignUpWithEmailEvent>(onSignUpClickSignUpWithEmailEvent);
     on<SignUpValuesChangedEvent>(onSignUpValuesChangedEvent);
     on<SignUpWithEmailSubmitEvent>(onSignUpWithEmailSubmitEvent);
 
+    on<SignUpWithFacebookEvent>(_onSignUpWithFacebookEvent);
+    on<SignUpWithGoogleEvent>(_onSignUpWithGoogleEvent);
   }
 
   void onSignUpClickSignUpWithEmailEvent(
@@ -101,6 +106,49 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
               isShowEmailMessage: true, messageInputEmail: e.toString()));
         }
       }
+    }
+  }
+
+
+  void _onSignUpWithGoogleEvent(SignUpWithGoogleEvent event, Emitter emit) async {
+    final user = await AuthRepository().googleLogin();
+    try {
+      if (user != null) {
+        emit(state.copyWith(
+          status: SignUpStatus.success,
+          googleAccount: user.toString(),
+        ));
+      } else {
+        emit(state.copyWith(
+          status: SignUpStatus.error,
+        ));
+      }
+    } catch (error) {
+      emit(state.copyWith(
+        status: SignUpStatus.error,
+      ));
+    }
+  }
+
+  void _onSignUpWithFacebookEvent(
+      SignUpWithFacebookEvent event, Emitter emit) async {
+    final facebookAccount =
+    await AuthRepository().loginWithFacebook();
+    try {
+      if (facebookAccount != null) {
+        emit(state.copyWith(
+          status: SignUpStatus.success,
+          facebookAccount: facebookAccount.toString(),
+        ));
+      } else {
+        emit(state.copyWith(
+          status: SignUpStatus.error,
+        ));
+      }
+    } catch (error) {
+      emit(state.copyWith(
+        status: SignUpStatus.error,
+      ));
     }
   }
 

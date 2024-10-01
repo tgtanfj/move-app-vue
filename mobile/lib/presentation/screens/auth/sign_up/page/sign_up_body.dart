@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
@@ -48,6 +47,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
                   onTap: () {
+                    context.read<SignUpBloc>().add(SignUpWithGoogleEvent());
                   },
                 ),
                 const SizedBox(height: 8),
@@ -57,7 +57,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
                   onTap: () {
-
+                    context.read<SignUpBloc>().add(SignUpWithFacebookEvent());
                   },
                 ),
                 const SizedBox(height: 11),

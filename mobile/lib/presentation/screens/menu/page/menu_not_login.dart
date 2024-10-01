@@ -9,6 +9,8 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
 
+import '../../auth/widgets/dialog_authentication.dart';
+
 class MenuNotLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
@@ -58,7 +60,15 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             borderRadius: 0,
             titleStyle: AppTextStyles.montserratStyle.bold20White,
             textAlign: TextAlign.start,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.logIn),
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogAuthentication();
+                },
+              );
+            },
             title: Constants.loginMenu,
           ),
         ],

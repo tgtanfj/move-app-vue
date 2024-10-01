@@ -23,6 +23,8 @@ class SignUpState extends Equatable {
   final bool isShowPasswordMessage;
   final bool isShowConfirmPasswordMessage;
   final bool isShowReferralCodeMessage;
+  final String googleAccount;
+  final String facebookAccount;
 
   const SignUpState({
     this.status = SignUpStatus.initial,
@@ -40,46 +42,56 @@ class SignUpState extends Equatable {
     this.isShowPasswordMessage = false,
     this.isShowConfirmPasswordMessage = false,
     this.isShowReferralCodeMessage = false,
+    this.googleAccount = '',
+    this.facebookAccount = '',
   });
 
-  SignUpState copyWith(
-      {SignUpStatus? status,
-      bool? isClickSignUpWithEmail,
-      bool? isEnableSignUp,
-      String? inputEmail,
-      String? inputPassword,
-      String? inputConfirmPassword,
-      String? inputReferralCode,
-      String? messageInputEmail,
-      String? messageInputPassword,
-      String? messageInputConfirmPassword,
-      String? messageInputReferralCode,
-      bool? isShowEmailMessage,
-      bool? isShowPasswordMessage,
-      bool? isShowConfirmPasswordMessage,
-      bool? isShowReferralCodeMessage,}) {
+  SignUpState copyWith({
+    SignUpStatus? status,
+    bool? isClickSignUpWithEmail,
+    bool? isEnableSignUp,
+    String? inputEmail,
+    String? inputPassword,
+    String? inputConfirmPassword,
+    String? inputReferralCode,
+    String? messageInputEmail,
+    String? messageInputPassword,
+    String? messageInputConfirmPassword,
+    String? messageInputReferralCode,
+    bool? isShowEmailMessage,
+    bool? isShowPasswordMessage,
+    bool? isShowConfirmPasswordMessage,
+    bool? isShowReferralCodeMessage,
+    bool? isShowPassword,
+    bool? isShowConfirmPassword,
+    String? googleAccount,
+    String? facebookAccount,
+  }) {
     return SignUpState(
-        status: status ?? this.status,
-        isClickSignUpWithEmail:
-            isClickSignUpWithEmail ?? this.isClickSignUpWithEmail,
-        isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
-        inputEmail: inputEmail ?? this.inputEmail,
-        inputPassword: inputPassword ?? this.inputPassword,
-        inputConfirmPassword: inputConfirmPassword ?? this.inputConfirmPassword,
-        inputReferralCode: inputReferralCode ?? this.inputReferralCode,
-        messageInputEmail: messageInputEmail ?? this.messageInputEmail,
-        messageInputPassword: messageInputPassword ?? this.messageInputPassword,
-        messageInputConfirmPassword:
-            messageInputConfirmPassword ?? this.messageInputConfirmPassword,
-        messageInputReferralCode:
-            messageInputReferralCode ?? this.messageInputReferralCode,
-        isShowEmailMessage: isShowEmailMessage ?? this.isShowEmailMessage,
-        isShowPasswordMessage:
-            isShowPasswordMessage ?? this.isShowPasswordMessage,
-        isShowConfirmPasswordMessage:
-            isShowConfirmPasswordMessage ?? this.isShowConfirmPasswordMessage,
-        isShowReferralCodeMessage:
-            isShowReferralCodeMessage ?? this.isShowReferralCodeMessage,);
+      status: status ?? this.status,
+      isClickSignUpWithEmail:
+          isClickSignUpWithEmail ?? this.isClickSignUpWithEmail,
+      isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
+      inputEmail: inputEmail ?? this.inputEmail,
+      inputPassword: inputPassword ?? this.inputPassword,
+      inputConfirmPassword: inputConfirmPassword ?? this.inputConfirmPassword,
+      inputReferralCode: inputReferralCode ?? this.inputReferralCode,
+      messageInputEmail: messageInputEmail ?? this.messageInputEmail,
+      messageInputPassword: messageInputPassword ?? this.messageInputPassword,
+      messageInputConfirmPassword:
+          messageInputConfirmPassword ?? this.messageInputConfirmPassword,
+      messageInputReferralCode:
+          messageInputReferralCode ?? this.messageInputReferralCode,
+      isShowEmailMessage: isShowEmailMessage ?? this.isShowEmailMessage,
+      isShowPasswordMessage:
+          isShowPasswordMessage ?? this.isShowPasswordMessage,
+      isShowConfirmPasswordMessage:
+          isShowConfirmPasswordMessage ?? this.isShowConfirmPasswordMessage,
+      isShowReferralCodeMessage:
+          isShowReferralCodeMessage ?? this.isShowReferralCodeMessage,
+      googleAccount: googleAccount ?? this.googleAccount,
+      facebookAccount: facebookAccount ?? this.facebookAccount,
+    );
   }
 
   @override
@@ -99,5 +111,7 @@ class SignUpState extends Equatable {
         isShowPasswordMessage,
         isShowConfirmPasswordMessage,
         isShowReferralCodeMessage,
+        googleAccount,
+        facebookAccount,
       ];
 }

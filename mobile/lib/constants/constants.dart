@@ -102,5 +102,5 @@ class Constants {
   static const String faq = 'FAQ';
   static const String logout = 'Logout';
   static const String loginMenu = "Login";
-  
+
 }

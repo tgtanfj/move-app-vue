@@ -60,4 +60,11 @@ class UserModel {
         referralCode: referralCode ?? this.referralCode
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'password': password,
+    };
+  }
 }
+
