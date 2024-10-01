@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsOrder, FindOptionsRelations, Repository } from 'typeorm';
 import { PaginationDto } from './dto/request/pagination.dto';
+import { UploadVideoDTO } from './dto/upload-video.dto';
 
 @Injectable()
 export class VideoRepository {
@@ -27,5 +28,26 @@ export class VideoRepository {
       relations,
       withDeleted,
     });
+  }
+  
+  async createVideo(userId:number,thumbnail:string,dto:UploadVideoDTO){
+    const newVideo = this.videoRepository.create({
+      channel: {
+        id: userId,
+      },
+      isPublish: dto.isPublish,
+      category: {
+        id:dto.category
+      },
+      workoutLevel: dto.workoutLevel,
+      duration: dto.duration,
+      keywords: dto.duration,
+      url: dto.url,
+      isCommentable: dto.isCommentable,
+      thumbnail_url: thumbnail,
+      title: dto.title,
+    });
+    
+    return await this.videoRepository.save(newVideo)
   }
 }

@@ -16,10 +16,10 @@ import { ResponseInterceptor } from './shared/interceptors/response.interceptor'
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { DeeplinkModule } from './modules/deep-link/deep-link.module';
 import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
-import { VideoModule } from './modules/video/video.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
-
+import { VideoModule } from './modules/video/video.module';
+import { CategoryModule } from './modules/category/category.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -39,6 +39,7 @@ import { JwtService } from '@nestjs/jwt';
     DeeplinkModule,
     AwsS3Module,
     VideoModule,
+    CategoryModule
   ],
   providers: [
     {
