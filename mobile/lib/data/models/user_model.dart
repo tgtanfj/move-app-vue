@@ -1,3 +1,6 @@
+import 'package:move_app/data/models/country_model.dart';
+import 'package:move_app/data/models/state_model.dart';
+
 class UserModel {
   final String? avatar;
   final String? email;
@@ -6,20 +9,23 @@ class UserModel {
   final String? fullName;
   final String? gender;
   final DateTime? dateOfBirth;
+  final Country? country;
+  final State? state;
   final String? city;
   final String? referralCode;
 
-  UserModel({
-     this.avatar,
-     this.email,
-     this.username,
-     this.password,
-     this.fullName,
-     this.gender,
-     this.dateOfBirth,
-     this.city,
-     this.referralCode
-  });
+  UserModel(
+      {this.avatar,
+      this.email,
+      this.username,
+      this.password,
+      this.fullName,
+      this.gender,
+      this.dateOfBirth,
+      this.country,
+      this.state,
+      this.city,
+      this.referralCode});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -32,6 +38,12 @@ class UserModel {
       dateOfBirth: json['dateOfBirth'] != null
           ? DateTime.parse(json['dateOfBirth'])
           : null,
+      country: json['country'] != null
+          ? Country.fromJson(json['country'])
+          : Country(id: 0, name: ''),
+      state: json['state'] != null
+          ? State.fromJson(json['state'])
+          : State(id: 0, name: ''),
       city: json['city'] is String? ? json['city'] : '',
       referralCode: json['referralCode'] is String? ? json['referralCode'] : '',
     );
@@ -45,21 +57,25 @@ class UserModel {
     String? fullName,
     String? gender,
     DateTime? dateOfBirth,
+    Country? country,
+    State? state,
     String? city,
-    String? referralCode
   }) {
     return UserModel(
-        avatar: avatar ?? this.avatar,
-        email: email ?? this.email,
-        username: username ?? this.username,
-        password: password ?? this.password,
-        fullName: fullName ?? this.fullName,
-        gender: gender ?? this.gender,
-        dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-        city: city ?? this.city,
-        referralCode: referralCode ?? this.referralCode
+      avatar: avatar ?? this.avatar,
+      email: email ?? this.email,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      fullName: fullName ?? this.fullName,
+      gender: gender ?? this.gender,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      country: country ?? this.country,
+      state: state ?? this.state,
+      city: city ?? this.city,
+      referralCode: referralCode ?? this.referralCode,
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'email': email,
@@ -67,4 +83,3 @@ class UserModel {
     };
   }
 }
-

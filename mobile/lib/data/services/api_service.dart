@@ -15,7 +15,9 @@ class ApiService {
   }
 
   ApiService._internal() {
-    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+    var accessToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJkZXZpY2VJZCI6ImE5NWRmYTJkLWZmZTQtNDQwOS05ZDk3LTFkNTc3YzRmYjNlZiIsImlhdCI6MTcyNzc2NDgyNSwiZXhwIjoxNzI3ODUxMjI1fQ.JKJAHvX0wTHOFi-51ud-2mnjvzJ4U75pLtGx8RDqh54';
+    SharedPrefer.sharedPrefer.getUserToken();
     BaseOptions options = BaseOptions(
       baseUrl: ApiUrls.baseUrl,
       connectTimeout: const Duration(seconds: 30),
