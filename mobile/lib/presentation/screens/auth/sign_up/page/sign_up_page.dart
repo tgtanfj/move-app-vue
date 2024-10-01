@@ -13,12 +13,9 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: BlocProvider<SignUpBloc>(
-        create: (context) => SignUpBloc(),
-        child: const SignUpBody(),
-      ),
+    return BlocProvider<SignUpBloc>(
+      create: (context) => SignUpBloc(),
+      child: const SignUpBody(),
     );
   }
-
 }

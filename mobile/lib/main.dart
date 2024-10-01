@@ -1,12 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/config/app_config.dart';
-import 'package:move_app/presentation/screens/auth/dialog_authentication/page/dialog_authentication_page.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 
+import 'config/firebase_options.dart';
 import 'constants/constants.dart';
 import 'config/app_config.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await AppConfig.init();
   runApp(const MyApp());
 }
@@ -83,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return const DialogAuthenticationPage();
+              return const DialogAuthentication();
             },
           );
         },
