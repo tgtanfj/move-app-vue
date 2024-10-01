@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { VideoService } from './video.service';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
@@ -26,11 +36,12 @@ export class VideoController {
     return data;
   }
 
+  // @Roles(Role.INSTRUCTOR)
   // @UseGuards(JwtAuthGuard)
   @Post('upload-video')
   @UseInterceptors(FileInterceptor('thumbnail'))
   async uploadVideo(@User() user, @UploadedFile() file: Express.Multer.File, @Body() dto: UploadVideoDTO) {
-    const id = user.id;
+    // const id = user.id;
     return await this.videoService.uploadVideo(1, file, dto);
   }
 }

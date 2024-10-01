@@ -15,6 +15,7 @@ import { plainToInstance } from 'class-transformer';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
+import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
 
 @Injectable()
 export class VideoService {

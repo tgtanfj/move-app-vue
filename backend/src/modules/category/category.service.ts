@@ -6,6 +6,6 @@ import { CategoryRepository } from './caregory.repository';
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
   async findAll() {
-    return await this.categoryRepository.getAll()
+    return await this.categoryRepository.getAll();
   }
 }

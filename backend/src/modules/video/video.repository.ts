@@ -29,15 +29,15 @@ export class VideoRepository {
       withDeleted,
     });
   }
-  
-  async createVideo(userId:number,thumbnail:string,dto:UploadVideoDTO){
+
+  async createVideo(userId: number, thumbnail: string, dto: UploadVideoDTO) {
     const newVideo = this.videoRepository.create({
       channel: {
         id: userId,
       },
       isPublish: dto.isPublish,
       category: {
-        id:dto.category
+        id: dto.category,
       },
       workoutLevel: dto.workoutLevel,
       duration: dto.duration,
@@ -47,7 +47,7 @@ export class VideoRepository {
       thumbnail_url: thumbnail,
       title: dto.title,
     });
-    
-    return await this.videoRepository.save(newVideo)
+
+    return await this.videoRepository.save(newVideo);
   }
 }
