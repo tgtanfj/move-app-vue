@@ -2,22 +2,29 @@
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import Button from '@common/ui/button/Button.vue'
-import { useAuthStore } from '../stores/auth'
-const props = defineProps({
-  closeModal: Function
-})
-
+import { useToast } from '@common/ui/toast/use-toast'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { signinSchema } from '../validation/schema'
+import { useAuthStore } from '../stores/auth'
+
+const props = defineProps({
+  closeModal: Function
+})
+//Handle open forgot password
+const emit = defineEmits(['openForgotPassword'])
+const handleOpenForgotPassword = () => {
+  emit('openForgotPassword')
+}
 
 const { values, errors, defineField, handleSubmit } = useForm({
   validationSchema: signinSchema
 })
 
+const formLogin = ref(false)
 const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
-
+const { toast } = useToast()
 const authStore = useAuthStore()
 
 const isFillAllFields = computed(() => {
@@ -29,23 +36,61 @@ const isSignIn = computed(() => {
 })
 
 const handleSignIn = handleSubmit(async (values) => {
-  props.closeModal()
+  await authStore.loginWithEmail(values)
+  if (authStore.accessToken) {
+    props.closeModal()
+    toast({ description: 'Login successfully', variant: 'successfully' })
+  } else {
+    toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+  }
 })
 
 const handleGoogleSignIn = async () => {
-  await authStore.googleSignIn()
-  if (authStore.user) {
-    props.closeModal()
+  try {
+    await authStore.googleSignIn()
+
+    if (authStore.idToken) {
+      await authStore.sendTokenToBackend()
+
+      if (authStore.accessToken) {
+        props.closeModal()
+        toast({ description: 'Login successfully', variant: 'successfully' })
+      }
+    }
+  } catch (error) {
+    console.log('Error during Google login or backend token submission:', error)
+    toast({
+      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      variant: 'destructive'
+    })
+  } finally {
+    authStore.isLoading = false
   }
 }
 
-const formLogin = ref(false)
+const handleFacebookSignIn = async () => {
+  try {
+    await authStore.facebookSignIn()
 
-//Handle open forgot password
-const emit = defineEmits(['openForgotPassword'])
-const handleOpenForgotPassword = () => {
-  emit('openForgotPassword')
+    if (authStore.idToken) {
+      await authStore.sendTokenToBackend()
+
+      if (authStore.accessToken) {
+        props.closeModal()
+        toast({ description: 'Login successfully', variant: 'successfully' })
+      }
+    }
+  } catch (error) {
+    console.log('Error during Google login or backend token submission:', error)
+    toast({
+      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      variant: 'destructive'
+    })
+  } finally {
+    authStore.isLoading = false
+  }
 }
+
 </script>
 
 <template>
@@ -99,11 +144,18 @@ const handleOpenForgotPassword = () => {
         <p class="text-red-500 text-[14px]">{{ errors.password }}</p>
       </div>
       <div class="ml-[-10px]">
-        <Button variant="link" @click="handleOpenForgotPassword">Forgot password?</Button>
+        <Button variant="link" type="button" @click="handleOpenForgotPassword"
+          >Forgot password?</Button
+        >
       </div>
-      <Button type="submit" :disabled="!isSignIn" :variant="isSignIn ? 'default' : 'disabled'"
-        >Log In</Button
+      <Button
+        type="submit"
+        :disabled="!isSignIn || authStore.isLoading"
+        :variant="isSignIn ? 'default' : 'disabled'"
       >
+        <span v-if="authStore.isLoading">Logging in...</span>
+        <span v-else>Log In</span>
+      </Button>
     </form>
   </div>
 </template>

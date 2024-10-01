@@ -13,7 +13,7 @@ import { SharedModule } from './shared/shared.module';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
+  app.enableCors();
   app.setBaseViewsDir(resolve('./src/shared/public'));
   app.setViewEngine('ejs');
 

@@ -7,6 +7,8 @@ import { computed, ref } from 'vue'
 import { registerSchema } from '../validation/schema.js'
 import { signupService } from '@services/signup.services.js'
 import Loading from './Loading.vue'
+import { useAuthStore } from '../stores/auth'
+import { useToast } from '@common/ui/toast/use-toast'
 
 const props = defineProps({
   closeModal: Function
@@ -14,6 +16,8 @@ const props = defineProps({
 
 const errorsSignUp = ref('')
 const isLoading = ref(false)
+const authStore = useAuthStore()
+const { toast } = useToast()
 
 const emit = defineEmits(['openOtpVerification'])
 
@@ -55,15 +59,62 @@ const onSubmit = handleSubmit(async (values) => {
     console.error('test:', error.response.data.message)
   }
 })
+
+
+const handleGoogleSignIn = async () => {
+  try {
+    await authStore.googleSignIn()
+
+    if (authStore.idToken) {
+      await authStore.sendTokenToBackend()
+
+      if (authStore.accessToken) {
+        props.closeModal()
+        toast({ description: 'Login successfully', variant: 'successfully' })
+      }
+    }
+  } catch (error) {
+    console.log('Error during Google login or backend token submission:', error)
+    toast({
+      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      variant: 'destructive'
+    })
+  } finally {
+    authStore.isLoading = false
+  }
+}
+
+const handleFacebookSignIn = async () => {
+  try {
+    await authStore.facebookSignIn()
+
+    if (authStore.idToken) {
+      await authStore.sendTokenToBackend()
+
+      if (authStore.accessToken) {
+        props.closeModal()
+        toast({ description: 'Login successfully', variant: 'successfully' })
+      }
+    }
+  } catch (error) {
+    console.log('Error during Google login or backend token submission:', error)
+    toast({
+      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      variant: 'destructive'
+    })
+  } finally {
+    authStore.isLoading = false
+  }
+}
 </script>
 
 <template>
   <div class="flex flex-col justify-center gap-3 pb-3">
-    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg">
+    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg" @click="handleGoogleSignIn">
       <GoogleIcon />
       <p class="m-auto font-bold">Log In with Google</p>
     </button>
-    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg">
+    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg" @click="handleFacebookSignIn">
       <FacebookIcon />
       <span class="m-auto font-bold">Log In with Facebook</span>
     </button>

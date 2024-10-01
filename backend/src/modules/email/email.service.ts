@@ -25,9 +25,8 @@ export class EmailService {
       },
     };
 
-    return await this.sendMail(mailOption)
-      .catch((error) => {
-        console.error(error);
-      });
+    return await this.sendMail(mailOption).catch((error) => {
+      console.error(error);
+    });
   }
 }
