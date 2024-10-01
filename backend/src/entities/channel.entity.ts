@@ -14,6 +14,7 @@ export class Channel extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   bio: string;
 

@@ -2,20 +2,15 @@ import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, FindOptionsRelations, Repository } from 'typeorm';
-import { Account } from '../../entities/account.entity';
-import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
-import { NotFoundError } from 'rxjs';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
-import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
+import { Equal, FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
+import { SignUpEmailDto } from '../../auth/dto/signup-email.dto';
+import { SignUpSocialDto } from '../../auth/dto/signup-social.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Account)
-    private readonly accountRepository: Repository<Account>,
   ) {}
 
   async findOne(id: number, relations: FindOptionsRelations<User> = null): Promise<User> {
@@ -43,12 +38,12 @@ export class UserRepository {
     return foundUser;
   }
 
-  async findAccountWithEmail(email: string): Promise<Account> {
+  async findUserAccountWithEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email: email },
       relations: ['account'],
     });
-    return user && user.account;
+    return user;
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
@@ -61,15 +56,6 @@ export class UserRepository {
     return await this.userRepository.save({ ...signUpDto, isActive: true });
   }
 
-  async createAccount(userId: number, password: string): Promise<Account> {
-    const accountCreated = this.accountRepository.create({
-      user: {
-        id: userId,
-      },
-      password,
-    });
-    return await this.accountRepository.save(accountCreated);
-  }
   async getOneUserByEmailOrThrow(email: string): Promise<User> {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -83,13 +69,8 @@ export class UserRepository {
       });
     return foundUser;
   }
-  async createAccountSocial(userId: number, type: TypeAccount): Promise<Account> {
-    const accountCreated = this.accountRepository.create({
-      user: {
-        id: userId,
-      },
-      type,
-    });
-    return await this.accountRepository.save(accountCreated);
+
+  async updateUserByEmail(email: string, user: Partial<User>): Promise<UpdateResult> {
+    return await this.userRepository.update(email, user);
   }
 }

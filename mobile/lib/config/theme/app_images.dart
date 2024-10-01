@@ -1,6 +1,8 @@
 enum AppImages {
   hiitCategory,
+  posterVideo,
   headline,
+  headlineFull,
 }
 
 extension AppImagesExtension on AppImages {

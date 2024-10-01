@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(to right, #00bc69 0, #00bc88 50%, #00bca8 100%);
+      padding: 20px;
+      border-radius: 8px 8px 0 0;
+      text-align: center;
+      color: #ffffff;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .content {
+      padding: 30px 20px;
+      text-align: center;
+      color: #333333;
+    }
+    .content h2 {
+      margin-top: 0;
+      color: #00bc88;
+      font-size: 28px;
+    }
+    .otp {
+      display: inline-block;
+      margin: 20px 0;
+      padding: 15px 25px;
+      background: linear-gradient(to right, #00bc69 0, #00bc88 50%, #00bca8 100%);
+      color: #ffffff;
+      border-radius: 5px;
+      font-size: 22px;
+      letter-spacing: 5px;
+    }
+    .footer {
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #777777;
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>OTP Verification</h1>
+    </div>
+    <div class="content">
+      <h2>Hello</h2>
+      <p>Thank you for using our service. To complete your verification, please use the One-Time Password (OTP) below:</p>
+      <div class="otp"><%= otp %></div>
+      <p>Please note that this OTP is valid for only 1 minute. Do not share this code with anyone for security reasons.</p>
+      <p>If you didn't request this OTP, please ignore this email or contact support immediately.</p>
+    </div>
+    <div class="footer">
+      <p>Best Regards,</p>
+      <p>The Move Team</p>
+    </div>
+  </div>
+</body>
+</html>

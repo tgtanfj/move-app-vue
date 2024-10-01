@@ -1,32 +1,46 @@
 <script setup>
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/common/ui/tabs'
+import { ref } from 'vue'
 import ProfileUserTab from './ProfileUserTab.vue'
 import NotificationsTab from './NotificationsTab.vue'
+
+const tabShow = ref(1)
+
+const changeTab = (tab) => {
+  tabShow.value = tab
+}
 </script>
 
 <template>
-  <Tabs default-value="profile" class="w-full mt-2">
-    <TabsList
-      class="ml-0 pl-0 text-[16px] w-full border-b-[1px] border-[#999999] pb-0 rounded-none mb-4 self-start flex justify-start"
+  <div class="w-full mt-2">
+    <div
+      class="ml-0 pl-0 text-[16px] w-full border-b-[1px] border-[#999999] pb-0 rounded-none mb-4 self-start flex justify-start gap-4"
     >
-      <TabsTrigger
-        class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-3 border-white rounded-none data-[state=active]:border-[#13D0B4] data-[state=active]:text-[#13D0B4] flex items-center justify-start ml-0 pl-0 pb-3"
-        value="profile"
+      <div
+        @click="changeTab(1)"
+        class="border-b-[3px] cursor-pointer px-0 mx-3 rounded-none flex items-center justify-start ml-0 pl-0 pb-3 transition-transform w-[55px]"
+        :class="{
+          'border-[#13D0B4] text-[#13D0B4] font-bold': tabShow === 1,
+          'border-white': tabShow !== 1
+        }"
       >
-        <p>Profile</p>
-      </TabsTrigger>
-      <TabsTrigger
-        class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-3 border-white rounded-none data-[state=active]:border-[#13D0B4] data-[state=active]:text-[#13D0B4] pb-3"
-        value="notifications"
+        Profile
+      </div>
+      <div
+        @click="changeTab(2)"
+        class="border-b-[3px] cursor-pointer px-0 mx-3 rounded-none flex items-center justify-start ml-0 pl-0 pb-3 transition-transform"
+        :class="{
+          'border-[#13D0B4] text-[#13D0B4] font-bold': tabShow === 2,
+          'border-white': tabShow !== 2
+        }"
       >
-        <p>Notifications</p>
-      </TabsTrigger>
-    </TabsList>
-    <TabsContent value="profile">
+        Notifications
+      </div>
+    </div>
+    <div v-show="tabShow === 1">
       <ProfileUserTab />
-    </TabsContent>
-    <TabsContent value="notifications">
+    </div>
+    <div v-show="tabShow === 2">
       <NotificationsTab />
-     </TabsContent>
-  </Tabs>
+    </div>
+  </div>
 </template>

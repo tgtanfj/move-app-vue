@@ -15,9 +15,9 @@ export class WatchingVideoHistory extends BaseEntity {
   })
   rate: number;
 
-  @ManyToOne(() => User, (user) => user.watchingVideoHistorys)
+  @ManyToOne(() => User, (user) => user.watchingVideoHistories)
   user: User;
 
-  @ManyToOne(() => Video, (video) => video.watchingVideoHistorys)
+  @ManyToOne(() => Video, (video) => video.watchingVideoHistories, { onDelete: 'SET NULL' })
   video: Video;
 }

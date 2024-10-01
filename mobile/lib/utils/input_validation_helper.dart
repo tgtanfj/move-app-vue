@@ -1,6 +1,7 @@
 import 'package:move_app/constants/constants.dart';
 
 class InputValidationHelper {
+
   static String? validateEmail(String email) {
     if (email.length < 5 || email.length > 255) {
       return Constants.invalidEmail;
@@ -17,7 +18,6 @@ class InputValidationHelper {
     final parts = email.split('@');
     final localPart = parts[0];
     final domainPart = parts[1];
-
     if (localPart.contains('..') || domainPart.contains('..')) {
       return Constants.invalidEmail;
     }
@@ -64,5 +64,14 @@ class InputValidationHelper {
     }
 
     return null;
+  }
+
+  bool isPasswordValid(String password) {
+    if (password.length < 8 || password.length > 32) return false;
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasLowercase = password.contains(RegExp(r'[a-z]'));
+    final hasDigit = password.contains(RegExp(r'[0-9]'));
+    final hasSpecial = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    return hasUppercase && hasLowercase && hasDigit && hasSpecial;
   }
 }

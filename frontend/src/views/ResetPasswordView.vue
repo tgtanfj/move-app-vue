@@ -1,12 +1,52 @@
+<script setup>
+import { Button } from '@/common/ui/button'
+import BaseCard from '@/components/BaseCard.vue'
+import CustomInput from '@/components/input-validation/CustomInput.vue'
+import { passwordSchema } from '@/validation/schema.js'
+import { useForm } from 'vee-validate'
+import { computed, ref } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { useResetPassword, useForgotPassword } from '../services/forgotpassword.services'
+import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
+
+const route = useRoute()
+const token = route.params.token
+const mutationResetPassword = useResetPassword()
+const mutationForgotPassword = useForgotPassword()
+const { isPending, isSuccess, isError } = mutationResetPassword
+const forgotPasswordStore = useForgotPasswordStore()
+
+const isFillAllFields = computed(() => {
+  return values.password && values.confirmPassword
+})
+const isFormValid = computed(() => {
+  return isFillAllFields.value && Object.keys(errors.value).length === 0
+})
+
+const { values, errors, defineField, handleSubmit } = useForm({
+  validationSchema: passwordSchema
+})
+const submit = handleSubmit(async (values) => {
+  mutationResetPassword.mutate({
+    token: token,
+    newPassword: values.password
+  })
+})
+const handleResendLink = () => {
+  mutationForgotPassword.mutate({ email: forgotPasswordStore.email })
+}
+</script>
+
 <template>
   <BaseCard
-    title="Create new password"
-    description="Please enter your new password and make sure your password is alphanumeric with at least 8 characters."
+    v-if="!isSuccess && !isError"
+    :title="$t('forgot_password.create_password')"
+    :description="$t('forgot_password.create_password_desc')"
   >
     <form @submit="submit">
       <div class="flex flex-col space-y-1.5 mb-4">
         <custom-input
-          label="Password"
+          :label="$t('label.password')"
           name="password"
           :defineField="defineField"
           :errors="errors"
@@ -16,7 +56,7 @@
 
       <div class="flex flex-col space-y-1.5">
         <custom-input
-          label="Confirm password"
+          :label="$t('label.confirm_password')"
           name="confirmPassword"
           :defineField="defineField"
           :errors="errors"
@@ -27,47 +67,37 @@
       <div class="text-center mt-6">
         <Button
           class="w-[60%]"
-          :disabled="!isFormValid"
+          :disabled="!isFormValid || isPending"
           :variant="isFormValid ? 'default' : 'disabled'"
-          >Confirm</Button
-        >
+          >{{ isPending ? 'Loading...' : 'Confirm' }}
+        </Button>
       </div>
     </form>
   </BaseCard>
 
   <BaseCard
-    title="Reset password success"
-    description="Good news! You are just few steps away to login to MOVE. Click on the button below to login."
-    v-if="false"
+    v-if="isSuccess || isError"
+    :title="
+      isSuccess ? $t('forgot_password.reset_success_title') : $t('forgot_password.reset_fail_title')
+    "
+    :description="
+      isSuccess ? $t('forgot_password.reset_success_desc') : $t('forgot_password.reset_fail_desc')
+    "
   >
+    <p v-if="isError">
+      <Button variant="link" class="p-0" @click="handleResendLink">{{
+        $t('forgot_password.resend_link')
+      }}</Button>
+      to
+      <b>{{ forgotPasswordStore.email }}</b>
+    </p>
+
     <div class="text-center mt-6">
-      <Button class="w-[60%]"><RouterLink to="/">Login</RouterLink></Button>
+      <Button class="w-[60%]">
+        <RouterLink to="/">{{
+          isSuccess ? $t('button.login') : $t('button.back_to_home')
+        }}</RouterLink>
+      </Button>
     </div>
   </BaseCard>
 </template>
-
-<script setup>
-import { Button } from '@/common/ui/button'
-import BaseCard from '@/components/BaseCard.vue'
-import CustomInput from '@/components/input-validation/CustomInput.vue'
-import { passwordSchema } from '@/validation/schema.js'
-import { useForm } from 'vee-validate'
-import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
-
-const { values, errors, defineField, handleSubmit } = useForm({
-  validationSchema: passwordSchema
-})
-
-const isFillAllFields = computed(() => {
-  return values.password && values.confirmPassword
-})
-
-const isFormValid = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
-})
-
-const submit = handleSubmit(() => {
-  console.log(values.password)
-})
-</script>
