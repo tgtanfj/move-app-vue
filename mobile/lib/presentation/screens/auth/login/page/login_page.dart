@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<LoginBloc>(
       create: (context) {
-        final authRepository = AuthenticationRepository();
+        final authRepository = AuthRepository();
         final bloc = LoginBloc(authenticationRepository: authRepository);         bloc.add(LoginInitialEvent());
         return bloc;
       },

@@ -111,7 +111,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
 
   void _onSignUpWithGoogleEvent(SignUpWithGoogleEvent event, Emitter emit) async {
-    final user = await AuthenticationRepository().googleLogin();
+    final user = await AuthRepository().googleLogin();
     try {
       if (user != null) {
         emit(state.copyWith(
@@ -133,7 +133,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   void _onSignUpWithFacebookEvent(
       SignUpWithFacebookEvent event, Emitter emit) async {
     final facebookAccount =
-    await AuthenticationRepository().loginWithFacebook();
+    await AuthRepository().loginWithFacebook();
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(

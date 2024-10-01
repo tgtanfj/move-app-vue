@@ -8,7 +8,7 @@ import 'package:move_app/utils/input_validation_helper.dart';
 import 'login_event.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthenticationRepository authenticationRepository;
+  final AuthRepository authenticationRepository;
 
   LoginBloc({required this.authenticationRepository})
       : super(LoginState.initial()) {
@@ -52,7 +52,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onLoginWithGoogleEvent(LoginWithGoogleEvent event, Emitter emit) async {
-    final user = await AuthenticationRepository().googleLogin();
+    final user = await AuthRepository().googleLogin();
     try {
       if (user != null) {
         emit(state.copyWith(
@@ -75,7 +75,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter emit) async {
     final facebookAccount =
-        await AuthenticationRepository().loginWithFacebook();
+        await AuthRepository().loginWithFacebook();
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
