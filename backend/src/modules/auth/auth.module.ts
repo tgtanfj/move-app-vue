@@ -1,3 +1,4 @@
+import { RedisCloudModule } from '@/shared/configs/cache.config';
 import { LocalStrategy } from '@/shared/guards/strategies/local.strategy';
 import { PublicIpAddressService } from '@/shared/utils/publicIpAddressService';
 import { Module } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { AuthService } from './auth.service';
     UserModule,
     MailModule,
     PassportModule,
+    RedisCloudModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),

@@ -1,17 +1,28 @@
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { firebaseAdmin } from '@/shared/firebase/firebase.config';
+import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 import { MailDTO } from '@/shared/interfaces/mail.dto';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { getField } from '@/shared/utils/get-field.util';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Cache } from 'cache-manager';
+import { authenticator } from 'otplib';
 import { EmailService } from '../email/email.service';
 import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { SignUpEmailDto } from './dto/signup-email.dto';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +33,12 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     private readonly configService: ApiConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  private readonly MAX_ATTEMPTS = 3;
+  private readonly OTP_EXPIRATION_TIME = 60; // seconds
+  private readonly LOCKOUT_TIME = 600; //
 
   async signUpEmail(signUpEmailDto: SignUpEmailDto) {
     const existUser = await this.userService.findOneByEmail(signUpEmailDto.email);
@@ -49,6 +65,8 @@ export class AuthService {
 
     // send mail verify
 
+    await this.sendOTPVerification(user);
+
     return user;
   }
 
@@ -58,7 +76,7 @@ export class AuthService {
     //generate token by userId
     const token = this.generateResetPasswordToken(foundUser.id);
     //generate link reset password
-    const link = `${this.apiConfigService.getString('MY_SERVER')}/deep-link?path=/reset-password&token=${token}`;
+    const link = `${this.apiConfigService.getString('MY_SERVER')}/deep-link?path=reset-password/${token}`;
     //send mail with template
     const dto: MailDTO = {
       subject: 'Password reset',
@@ -110,12 +128,45 @@ export class AuthService {
       });
     }
   }
-  async loginSocial(idToken: string, type: TypeAccount) {
-    const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
-    const account = await this.userService.findAccountWithEmail(email);
-    if (account && account.type !== type) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ONOTHER_LOGIN_METHOD);
+
+  async changePassword(dto: ChangePasswordDTO, userId: number) {
+    const { currentPassword, newPassword } = dto;
+    const account = await this.userService.findOneAccount(userId);
+    const isCorrectPass = await bcrypt.compare(currentPassword, account.password);
+    const isDuplicatePass = await bcrypt.compare(newPassword, account.password);
+    const isDuplicateOldPass =
+      account.oldPassword && (await bcrypt.compare(newPassword, account.oldPassword));
+
+    if (account.type !== TypeAccount.NORMAL) {
+      throw new BadRequestException(ERRORS_DICTIONARY.WRONG_METHOD);
     }
+
+    if (!isCorrectPass) {
+      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_INCORRECT);
+    }
+
+    if (isDuplicateOldPass || isDuplicatePass) {
+      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_RESTRICTION);
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await this.userService.updateAccount(account.id, {
+      oldPassword: account.password,
+      password: newPasswordHash,
+    });
+  }
+
+  async loginSocial(infoLoginSocial: infoLoginSocial) {
+    const { idToken, type, publicIp, userAgent } = infoLoginSocial;
+    const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const user = await this.userService.findUserAccountWithEmail(email);
+    const account = user?.account;
+
+    if (account && account.type !== type) {
+      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ANOTHER_LOGIN_METHOD);
+    }
+
     if (!account) {
       const customer = await this.stripeService.createCustomer(email);
       const newUser = await this.userService.createUserBySocial({
@@ -125,18 +176,26 @@ export class AuthService {
         stripeId: customer.id,
       });
       await this.userService.createAccountSocial(newUser.id, type);
-      return newUser;
+      return await this.login(newUser.id, publicIp, userAgent);
     }
-    // Login logic
+
+    return await this.login(user.id, publicIp, userAgent);
   }
 
-  async loginGoogle(idToken: string, type: TypeAccount) {
-    return await this.loginSocial(idToken, type);
+  async login(userId: number, ip: string, userAgent: string) {
+    const { refreshToken, id } = await this.getRefreshToken(userId, {
+      ipAddress: ip,
+      userAgent: userAgent,
+    });
+
+    const accessToken = this.getAccessToken(userId, id);
+
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   }
 
-  async loginFacebook(idToken: string, type: TypeAccount) {
-    return await this.loginSocial(idToken, type);
-  }
   async validateUser(email: string, password: string) {
     // find user by email
     const user = await this.userService.findOneByEmail(email);
@@ -187,5 +246,52 @@ export class AuthService {
     return {
       accessToken,
     };
+  }
+
+  async revokeRefreshToken(token: string) {
+    return await this.userService.revokeRefreshToken(token);
+  }
+
+  async sendOTPVerification(user) {
+    const otp = await this.generateOtp(user.id);
+    return this.emailService.sendOTPVerification(user.email, otp);
+  }
+
+  async generateOtp(userId) {
+    const otp = authenticator.generate(userId);
+
+    // Store OTP with a 5-minute expiration
+    await this.cacheManager.set(`otp_${userId}`, otp, 60); // Cache OTP for 1 minute
+    await this.cacheManager.set(`attempts_${userId}`, 0, 60); // Initialize attempts
+
+    return otp;
+  }
+
+  async verifyOtp(userId: number, otp: string) {
+    const cachedOtp = await this.cacheManager.get<string>(`otp_${userId}`);
+    const attempts = await this.cacheManager.get<number>(`attempts_${userId}`);
+    const isLocked = await this.cacheManager.get<number>(`account_locked_${userId}`);
+
+    if (isLocked) {
+      throw new NotAcceptableException(ERRORS_DICTIONARY.ACCOUNT_LOCKED);
+    }
+
+    if (cachedOtp === otp) {
+      // Clear attempts if successful
+      await this.cacheManager.del(`attempts_${userId}`);
+      await this.cacheManager.del(`otp_${userId}`);
+
+      await this.userService.updateUser(userId, { isActive: true }); // OTP is valid
+      return true;
+    } else {
+      await this.cacheManager.set(`attempts_${userId}`, attempts + 1, 60);
+
+      if (attempts + 1 >= this.MAX_ATTEMPTS) {
+        await this.cacheManager.set(`account_locked_${userId}`, true, this.LOCKOUT_TIME);
+        throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
+      }
+
+      throw new BadRequestException(ERRORS_DICTIONARY.INVALID_OTP);
+    }
   }
 }

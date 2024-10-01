@@ -1,61 +1,31 @@
-<template>
-  <BaseDialog title="Forgot password" description="Enter email address for your account">
-    <form @submit.prevent="handleSendMail">
-      <div class="flex flex-col space-y-1.5">
-        <custom-input name="email" :defineField="defineField" :errors="errors" />
-      </div>
-
-      <div v-if="isSendEmail" class="border rounded-md px-3 py-5 text-center" :class="bgColor">
-        <p class="max-w-[400px] m-auto">
-          We've sent an email to {{ email }}. Click the link in the email to reset your password.
-        </p>
-      </div>
-
-      <div class="flex justify-center mt-2">
-        <Button
-          type="submit"
-          :disabled="!isFormValid"
-          :variant="isFormValid ? 'default' : 'disabled'"
-          >{{ isSendEmail ? 'Resend the link' : 'Send password reset link' }}</Button
-        >
-      </div>
-    </form>
-
-    <div class="flex justify-center">
-      <Button variant="link" @click="openLogin"> Back to login page </Button>
-    </div>
-  </BaseDialog>
-</template>
-
 <script setup>
 import CustomInput from '@/components/input-validation/CustomInput.vue'
 import { Button } from '@common/ui/button'
 import BaseDialog from '@components/BaseDialog.vue'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
+import { useForgotPassword } from '../services/forgotpassword.services'
 import { emailSchema } from '../validation/schema'
+import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
 
-const isSendEmail = ref(false)
-const sendEmailSuccess = ref(false)
+const emit = defineEmits(['openLogin'])
+const email = ref('')
+const mutation = useForgotPassword()
+const { isPending, isIdle, isSuccess, isError, reset } = mutation
 
-const borderColor = computed(() => {
-  if (isSendEmail.value) {
-    return sendEmailSuccess && sendEmailSuccess.value
-      ? 'border-primary focus:border-primary'
-      : 'border-redMisc focus:border-redMisc'
-  }
-  return ''
-})
+const forgotPasswordStore = useForgotPasswordStore()
+
 const bgColor = computed(() => {
-  if (isSendEmail.value) {
-    return sendEmailSuccess.value
-      ? 'bg-[#E6FFFB] border-primaryGreen'
-      : 'bg-[#FDEDEF] border-redMisc'
+  if (isSuccess.value) {
+    return 'bg-[#E6FFFB] border-primary'
+  }
+  if (isError.value) {
+    return 'bg-[#FDEDEF] border-redMisc'
   }
   return ''
 })
 
-const { values, errors, defineField, handleSubmit } = useForm({
+const { values, errors, defineField, handleSubmit, resetForm } = useForm({
   validationSchema: emailSchema
 })
 
@@ -68,12 +38,57 @@ const isFormValid = computed(() => {
 })
 
 const handleSendMail = handleSubmit(async (values) => {
-  console.log(values)
+  email.value = values.email
+  mutation.mutate({ email: values.email })
+  forgotPasswordStore.setEmail(values.email)
 })
 
-//handle open login
-const emit = defineEmits(['openLogin'])
 const openLogin = () => {
+  resetForm()
+  reset()
   emit('openLogin')
 }
 </script>
+
+<template>
+  <BaseDialog :title="$t('forgot_password.title')" :description="$t('forgot_password.desc')">
+    <form @submit.prevent="handleSendMail">
+      <div class="flex flex-col space-y-1.5">
+        <input type="text" class="w-0 h-0" />
+        <custom-input name="email" :defineField="defineField" :errors="errors" />
+      </div>
+
+      <div
+        v-if="(isSuccess && !isPending) || (isError && !isPending)"
+        class="border rounded-md px-3 py-5 text-center"
+        :class="bgColor"
+      >
+        <span v-if="isSuccess" class="max-w-[400px] m-auto">
+          {{ $t('forgot_password.send_mail_success', { email }) }}
+        </span>
+        <p v-if="isError" class="max-w-[400px] m-auto text-redMisc">
+          {{ $t('forgot_password.send_mail_error') }}
+        </p>
+      </div>
+
+      <div class="flex justify-center mt-3">
+        <Button
+          type="submit"
+          :disabled="!isFormValid || isPending"
+          :variant="isFormValid ? 'default' : 'disabled'"
+          >{{
+            isPending
+              ? 'Sending mail...'
+              : isIdle
+                ? $t('forgot_password.send_link')
+                : $t('forgot_password.resend_link')
+          }}</Button
+        >
+      </div>
+    </form>
+
+    <div class="flex justify-center">
+      <Button variant="link" @click="openLogin"> {{ $t('button.back_to_login') }} </Button>
+    </div>
+  </BaseDialog>
+</template>

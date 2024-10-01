@@ -1,21 +1,21 @@
 <template>
   <nav class="w-full bg-black text-white">
     <div class="flex items-center justify-between px-[40px] py-3">
-      <ul class="flex flex-[0.3] items-center gap-[35px] text-[18px]">
-        <li class="font-semibold">Following</li>
-        <li class="font-semibold">Browse</li>
+      <ul class="flex flex-1 items-center gap-[35px]">
+        <li class="font-semibold text-[16px]">Following</li>
+        <li class="font-semibold text-[16px]">Browse</li>
         <li class="my-auto">
-          <DotDotDot />
+          <MoreMenuNav />
         </li>
       </ul>
 
-      <div class="flex-[0.3]">
+      <div class="flex-1">
         <div class="m-auto w-28">
           <LogoWhite />
         </div>
       </div>
 
-      <div class="flex flex-[0.3] justify-end">
+      <div class="flex flex-1 gap-6 justify-end">
         <div class="flex">
           <input
             type="text"
@@ -26,17 +26,18 @@
             <SearchIcon />
           </Button>
 
-          <Dialog v-model:open="isOpen">
+          <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn">
             <DialogTrigger>
-              <Button variant="default" class="ml-4 rounded-lg">Log In</Button>
+              <Button variant="" class="ml-4 rounded-lg">Log In</Button>
             </DialogTrigger>
+
             <DialogContent>
               <DialogHeader class="relative">
                 <DialogTitle class="w-24 m-auto">
                   <LogoBlack />
                 </DialogTitle>
               </DialogHeader>
-
+              <DialogDescription></DialogDescription>
               <Tabs default-value="login" class="w-full">
                 <TabsList
                   class="w-full m-auto border-b-[1px] border-[#999999] pb-0 rounded-none mb-3"
@@ -69,32 +70,33 @@
               </Tabs>
             </DialogContent>
           </Dialog>
-          <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
-          <OTPVerificationModal v-model:open="openOTPModal" />
         </div>
+        <div>
+          <NavbarLogged v-if="isUserLoggedIn" />
+        </div>
+
+        <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import DotDotDot from '@assets/icons/DotDotDot.vue'
-import LogoBlack from '@assets/icons/LogoBlack.vue'
-import LogoWhite from '@assets/icons/LogoWhite.vue'
-import SearchIcon from '@assets/icons/SearchIcon.vue'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@common/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@common/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import SignInModal from '@components/SignInModal.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Button from '../common/ui/button/Button.vue'
 import ForgotPassword from './ForgotPassword.vue'
 import OTPVerificationModal from './OTPVerificationModal.vue'
 import SignUpModal from './SignUpModal.vue'
+import LogoBlack from '@assets/icons/LogoBlack.vue'
+import LogoWhite from '@assets/icons/LogoWhite.vue'
+import SearchIcon from '@assets/icons/SearchIcon.vue'
+import { useAuthStore } from '../stores/auth'
+import NavbarLogged from '@components/NavbarLogged.vue'
+import MoreMenuNav from '@components/MoreMenuNav.vue'
 const isOpen = ref(false)
-
-const openModal = () => {
-  isOpen.value = true
-}
 
 const closeModal = () => {
   isOpen.value = false
@@ -111,4 +113,8 @@ const openLoginModal = () => {
   isOpen.value = true
   openForgotPassword.value = false
 }
+
+const authStore = useAuthStore()
+
+const isUserLoggedIn = computed(() => !!authStore.user.displayName)
 </script>
