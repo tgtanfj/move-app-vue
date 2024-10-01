@@ -12,6 +12,7 @@ export class VimeoService {
     this.accessToken = accessTokenVimeo;
     this.apiUrl = apiUrlVimeo;
   }
+  
   async createUploadSession(fileSize: number) {
     try {
       const response = await axios.post(
@@ -42,6 +43,7 @@ export class VimeoService {
       });
     }
   }
+
   async getVideoDetails(url: string): Promise<any> {
     try {
       const response = await axios.get(url, {
@@ -50,11 +52,10 @@ export class VimeoService {
         },
       });
       return response.data;
-      
     } catch (error) {
-       throw new NotFoundException({
-         message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
-       });
+      throw new NotFoundException({
+        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+      });
     }
   }
 }

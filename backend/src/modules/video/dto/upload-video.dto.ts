@@ -1,7 +1,7 @@
-import { DurationType } from "@/entities/enums/durationType.enum";
-import { WorkoutLevel } from "@/entities/enums/workoutLevel.enum";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNotEmpty, IsString } from "class-validator"
+import { DurationType } from '@/entities/enums/durationType.enum';
+import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UploadVideoDTO {
   @ApiProperty({
@@ -9,6 +9,9 @@ export class UploadVideoDTO {
     example: 'Pro ex',
   })
   @IsString()
+  @IsNotEmpty({ message: 'Title is required and cannot be empty.' })
+  @MinLength(1, { message: 'Title must be at least 1 character long.' })
+  @MaxLength(100, { message: 'Title cannot be longer than 100 characters.' })
   title: string;
 
   @ApiProperty({
@@ -43,7 +46,6 @@ export class UploadVideoDTO {
     description: 'Commentable video',
     example: true,
   })
-  @IsString()
   @IsBoolean()
   isCommentable: boolean = true;
 

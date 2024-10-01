@@ -12,14 +12,28 @@ import { CategoryService } from '../category/category.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
 import { UserModule } from '../user/user.module';
 import { JwtService } from '@nestjs/jwt';
-
+import { CommentModule } from '../comment/comment.module';
+import { ChannelModule } from '../channel/channel.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Video]), UserModule, CategoryModule],
+  imports: [
+    TypeOrmModule.forFeature([Video]),
+    UserModule,
+    CategoryModule,
+    CommentModule,
+    WatchingVideoHistoryModule,
+    UserModule,
+    ChannelModule,
+  ],
   controllers: [VideoController],
-  providers: [VideoService, VideoRepository, JwtService,
-    AwsS3Service, GeneratorService, CategoryService,
-    VimeoService
+  providers: [
+    VideoService,
+    VideoRepository,
+    JwtService,
+    AwsS3Service,
+    GeneratorService,
+    CategoryService,
+    VimeoService,
   ],
 })
 export class VideoModule {}

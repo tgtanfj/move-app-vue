@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, Max } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, Max } from 'class-validator';
 
 // validation file size before return upload link
 export class CreateVideoDTO {

@@ -39,7 +39,7 @@ import { CategoryModule } from './modules/category/category.module';
     DeeplinkModule,
     AwsS3Module,
     VideoModule,
-    CategoryModule
+    CategoryModule,
   ],
   providers: [
     {
