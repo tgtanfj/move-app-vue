@@ -18,6 +18,6 @@ export class Donation extends BaseEntity {
   @ManyToOne(() => User, (user) => user.donations)
   user: User;
 
-  @ManyToOne(() => Video, (video) => video.donations)
+  @ManyToOne(() => Video, (video) => video.donations, { onDelete: 'CASCADE' })
   video: Video;
 }

@@ -16,6 +16,9 @@ import { ResponseInterceptor } from './shared/interceptors/response.interceptor'
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { DeeplinkModule } from './modules/deep-link/deep-link.module';
 import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
+import { VideoModule } from './modules/video/video.module';
+import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -35,6 +38,7 @@ import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
     AuthModule,
     DeeplinkModule,
     AwsS3Module,
+    VideoModule,
   ],
   providers: [
     {
@@ -45,6 +49,7 @@ import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
+    JwtService,
   ],
 })
 export class AppModule implements NestModule {

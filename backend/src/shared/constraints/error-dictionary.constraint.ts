@@ -32,5 +32,6 @@ export enum ERRORS_DICTIONARY {
   WRONG_METHOD = 'Your method cant change password',
 
   // SOCIAL
-  TRY_ANOTHER_LOGIN_METHOD = 'An account with this email already exists using a different login method. Please use the original method to log in',
+  TRY_ANOTHER_LOGIN_METHOD = 'An account with this email already exists us  ing a different login method. Please use the original method to log in',
+  NOT_FOUND_ANY_CHANNEL_OF_THIS_USER = "Not found any channel of this user",
 }
