@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
@@ -116,5 +116,26 @@ export class VideoService {
       });
     }
     return video;
+  }
+
+  async deleteVideos(videoIds: number[]) {
+    await this.videoRepository.deleteVideos(videoIds).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+    });
+
+    videoIds.forEach(async (videoId) => {
+      try {
+        const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
+        if (!url) return;
+
+        await this.vimeoService.delete(url);
+      } catch (error) {
+        return;
+      }
+    });
+  }
+
+  async restoreVideos(videoIds: number[]) {
+    await this.videoRepository.restoreVideos(videoIds);
   }
 }

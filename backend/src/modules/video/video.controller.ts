@@ -1,8 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseArrayPipe,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -17,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { User } from '@/shared/decorators/user.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
+import { DeleteVideosDto } from './dto/request/delete-videos.dto';
 
 @ApiTags('Video')
 @Controller('video')
@@ -43,5 +49,16 @@ export class VideoController {
   async uploadVideo(@User() user, @UploadedFile() file: Express.Multer.File, @Body() dto: UploadVideoDTO) {
     // const id = user.id;
     return await this.videoService.uploadVideo(1, file, dto);
+  }
+
+  @Delete()
+  @HttpCode(HttpStatus.OK)
+  async deleteVideos(@Body() deleteVideosDto: DeleteVideosDto) {
+    return await this.videoService.deleteVideos(deleteVideosDto.videoIds);
+  }
+
+  @Patch('restore')
+  async restoreVideos(@Body() deleteVideosDto: DeleteVideosDto) {
+    return await this.videoService.restoreVideos(deleteVideosDto.videoIds);
   }
 }

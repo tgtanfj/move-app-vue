@@ -41,4 +41,5 @@ export enum ERRORS_DICTIONARY {
   UPLOAD_THUMBNAIL_FAIL = 'Thumbnail resolution should be at least 1280x720 pixels',
   UPLOAD_VIDEO_FAIL = 'Upload video fail',
   NOT_FOUND_VIDEO = 'Not found video',
+  CAN_NOT_DELETE_VIDEOS = 'Can not delete videos',
 }
