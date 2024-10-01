@@ -26,4 +26,7 @@ export class SignUpEmailDto extends SignUpDto {
     example: '123456',
   })
   otp: string;
+
+  @IsOptional()
+  username: string;
 }

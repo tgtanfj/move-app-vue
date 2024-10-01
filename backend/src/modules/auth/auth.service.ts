@@ -1,3 +1,4 @@
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { firebaseAdmin } from '@/shared/firebase/firebase.config';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
@@ -20,9 +21,8 @@ import { EmailService } from '../email/email.service';
 import { getTemplateReset } from '../email/templates/get-template';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
-import { SignUpEmailDto } from './dto/signup-email.dto';
 import { ChangePasswordDTO } from './dto/change-password.dto';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
+import { SignUpEmailDto } from './dto/signup-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +50,10 @@ export class AuthService {
     const customer = await this.stripeService.createCustomer(signUpEmailDto.email);
 
     signUpEmailDto.stripeId = customer.id;
+
+    const username = signUpEmailDto.email.split('@')[0];
+
+    signUpEmailDto.username = username;
 
     // create user if not exist
 
