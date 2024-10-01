@@ -12,6 +12,10 @@ import { UserProfile } from './dto/response/user-profile.dto';
 import { AccountRepository } from './repositories/account.repository';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { UserRepository } from './repositories/user.repository';
+import { AwsS3Service } from '@/shared/services/aws-s3.service';
+import { IFile } from '@/shared/interfaces/file.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CountryService } from '../country/country.service';
 
 @Injectable()
 export class UserService {
@@ -19,6 +23,8 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly accountRepository: AccountRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly awsS3Service: AwsS3Service,
+    private readonly countryService: CountryService,
   ) {}
 
   async findOne(id: number): Promise<User> {
@@ -126,9 +132,24 @@ export class UserService {
     return result;
   }
 
-  async updateUserByEmail(email: string, user: Partial<User>): Promise<UpdateResult> {
+  async updateUser(userId: number, dto: UpdateUserDto, file?: IFile): Promise<UpdateResult> {
     try {
-      const result = await this.userRepository.updateUserByEmail(email, user);
+      const dataUpdate = dto;
+
+      if (file) {
+        const image = await this.awsS3Service.uploadImage(file);
+        dto.avatar = image;
+      }
+
+      if (dto.countryId && dto.stateId) {
+        const statesOfCountry = await this.countryService.getStatesOfCountry(dto.countryId);
+        const isValidState = statesOfCountry.find((state) => state.id === dto.stateId);
+        if (!isValidState) {
+          throw new BadRequestException(ERRORS_DICTIONARY.INVALID_STATE);
+        }
+      }
+
+      const result = await this.userRepository.updateUser(userId, dataUpdate);
 
       if (result.affected === 0) {
         throw new BadRequestException(ERRORS_DICTIONARY.USER_NOT_FOUND);

@@ -20,6 +20,8 @@ export enum ERRORS_DICTIONARY {
   NOT_FOUND_ANY_USER = 'Not found any user',
 
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
+  INVALID_STATE = 'Invalid state',
+
   //Token
   GENERATE_TOKEN_FAIL = 'Generate token fail',
   VERIFY_TOKEN_FAIL = 'Token is not valid',
