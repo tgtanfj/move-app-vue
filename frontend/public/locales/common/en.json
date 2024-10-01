@@ -31,7 +31,8 @@
     "ok": "Okay",
     "back_to_login": "Back to login page",
     "login": "Login",
-    "back_to_home": "Back to home"
+    "back_to_home": "Back to home",
+    "cancel": "Cancel"
   },
   "label": {
     "password": "Password",
@@ -57,5 +58,9 @@
     "state": "State",
     "city": "City",
     "save": "Save settings"
+  },
+  "logout": {
+    "title": "Log Out",
+    "desc": "Are you sure to log out?"
   }
 }
