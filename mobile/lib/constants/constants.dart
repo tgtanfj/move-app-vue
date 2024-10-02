@@ -1,5 +1,3 @@
-
-
 class Constants {
   static const String featured = 'Featured';
   static const String views = 'views';
@@ -24,6 +22,7 @@ class Constants {
   static const String and = "and ";
   static const String dot = ".";
   static const String tab = "Tab";
+  static const String empty = "Empty";
   static const String sendPasswordResetEmail = 'Send password reset email';
   static const String resendTheLink = 'Resend the link';
   static const String backToLoginPage = 'Back to login page';
@@ -50,7 +49,6 @@ class Constants {
   static const String weSentAnEmailTo = "We've sent an email to ";
   static const String clickTheLinkToReset =
       ". Click the link in the email to reset your password.";
-  static const String empty = "Empty";
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';
@@ -76,7 +74,18 @@ class Constants {
   static const String loginWithFacebook = "Log In With Facebook";
   static const String loginWithEmail = "LOGIN WITH EMAIL";
   static const String forgotPassword = "Forgot Password?";
+  static const String invalidEmail = "Invalid Email";
+  static const String invalidPassword = "Invalid Password";
+  static const String invalidReferralCode ="The referral code you entered is invalid";
+  static const String prefixPassword =
+      "Password must be 8-32 characters with at least one uppercase, one lowercase, one number, and one special character";
+  static const String chooseStrongPassword =
+      "Please choose a stronger password. Try a combination of letters, numbers, and special charater";
+  static const String emailExist =
+      "Email already exists in the system. Please select another Email";
+  static const String wrongCode = "Wrong code. Please try again";
   static const String sendCode="We sent a 6-digit code to";
+  static const String invalidCode = "Invalid code";
   static const String enterCode="Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
   static const String verificationCode="Verification Code";
   static const String resendCode="Resend code";
@@ -84,6 +93,16 @@ class Constants {
   static const String verifyEmail="Verify your email to keep account secure";
   static const String interm =  'Interm';
   static const String intermediate =  'Intermediate';
+  static const String following = 'Following';
+  static const String browse = 'Browse';
+  static const String wallet = 'Wallet';
+  static const String setting = 'Setting';
+  static const String more = 'More';
+  static const String aboutUs = 'About Us';
+  static const String communityGuideline = 'Community Guideline';
+  static const String faq = 'FAQ';
+  static const String logout = 'Logout';
+  static const String loginMenu = "Login";
+  static const String signUpSuccessful="Sign Up Successful";
 
-  
 }

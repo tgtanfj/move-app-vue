@@ -5,6 +5,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/list_categories.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/home/widgets/list_videos_may_u_like.dart';
 import 'package:move_app/presentation/screens/home/widgets/slide_show_videos_feature.dart';
 import 'package:move_app/presentation/screens/home/widgets/horizontal_divider.dart';
@@ -19,10 +20,11 @@ class HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: const AppBarWidget(),
+      appBar: AppBarWidget(
+        prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu),
+      ),
       backgroundColor: AppColors.white,
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -31,14 +33,6 @@ class _HomeBodyState extends State<HomeBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              height: 20.0,
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              height: height * 0.1,
-              decoration: const BoxDecoration(color: AppColors.chineseSilver),
-            ),
             const SizedBox(
               height: 20.0,
             ),

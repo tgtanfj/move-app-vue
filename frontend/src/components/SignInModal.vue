@@ -3,10 +3,11 @@ import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { useToast } from '@common/ui/toast/use-toast'
+import { Eye, EyeOff } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { signinSchema } from '../validation/schema'
 import { useAuthStore } from '../stores/auth'
+import { signinSchema } from '../validation/schema'
 
 const props = defineProps({
   closeModal: Function
@@ -22,6 +23,7 @@ const { values, errors, defineField, handleSubmit } = useForm({
 })
 
 const formLogin = ref(false)
+const showPassword = ref(false)
 const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 const { toast } = useToast()
@@ -60,7 +62,9 @@ const handleGoogleSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -83,7 +87,9 @@ const handleFacebookSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -91,6 +97,9 @@ const handleFacebookSignIn = async () => {
   }
 }
 
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
 </script>
 
 <template>
@@ -135,12 +144,21 @@ const handleFacebookSignIn = async () => {
       </div>
       <div class="mb-2 flex flex-col">
         <label class="mb-2">Password</label>
-        <input
-          type="password"
-          class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
-          v-model="password"
-          v-bind="passwordAttrs"
-        />
+        <div class="relative">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none z-0 w-full"
+            v-model="password"
+            v-bind="passwordAttrs"
+          />
+          <span
+            @click="togglePasswordVisibility"
+            class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"
+          >
+            <Eye v-if="!showPassword" />
+            <EyeOff v-else />
+          </span>
+        </div>
         <p class="text-red-500 text-[14px]">{{ errors.password }}</p>
       </div>
       <div class="ml-[-10px]">
