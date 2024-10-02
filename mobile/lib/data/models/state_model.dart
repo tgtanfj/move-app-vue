@@ -1,24 +1,24 @@
-class State {
+class StateModel {
   final int? id;
   final String? name;
 
-  State({
+  StateModel({
     required this.id,
     required this.name,
   });
 
-  State copyWith({
+  StateModel copyWith({
     int? id,
     String? name,
   }) {
-    return State(
+    return StateModel(
       id: id ?? this.id,
       name: name ?? this.name,
     );
   }
 
-  factory State.fromJson(Map<String, dynamic> json) {
-    return State(
+  factory StateModel.fromJson(Map<String, dynamic> json) {
+    return StateModel(
       id: json['id'] is int? ? json['id'] : 0,
       name: json['name'] is String? ? json['name'] : '',
     );

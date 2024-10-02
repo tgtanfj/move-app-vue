@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/utils/string_extentions.dart';
 
+import '../../../../../../config/theme/app_colors.dart';
 import '../../../../../../config/theme/app_text_styles.dart';
 import '../../../../../../constants/constants.dart';
 import '../../../../../components/custom_button.dart';
@@ -35,25 +35,28 @@ class _ProfileBodyState extends State<ProfileBody> {
                   children: [
                     const SizedBox(height: 19),
                     _createTitle(title: Constants.profilePicture),
-                    ClipOval(
-                      child: Image.network(
-                        state.user!.avatar.isNullOrEmpty
-                            ? ''
-                            : state.user!.avatar!,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            alignment: Alignment.center,
-                            width: 56,
-                            height: 56,
-                            color: AppColors.tiffanyBlue,
-                            child: Text(Constants.j,
-                                style:
-                                    AppTextStyles.montserratStyle.bold23White),
-                          );
-                        },
+                    InkWell(
+                      onTap: () {},
+                      child: ClipOval(
+                        child: Image.network(
+                          state.user!.avatar.isNullOrEmpty
+                              ? ''
+                              : state.user!.avatar!,
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              alignment: Alignment.center,
+                              width: 56,
+                              height: 56,
+                              color: AppColors.tiffanyBlue,
+                              child: Text(Constants.j,
+                                  style: AppTextStyles
+                                      .montserratStyle.bold23White),
+                            );
+                          },
+                        ),
                       ),
                     ),
                     TextButton(
@@ -70,10 +73,22 @@ class _ProfileBodyState extends State<ProfileBody> {
                       ),
                     ),
                     CustomEditText(
+                      isShowMessage: state.isShowUsernameMessage,
                       title: Constants.username,
-                      textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      controller:
-                          TextEditingController(text: state.user!.username),
+                      textStyle: state.isShowUsernameMessage
+                          ? AppTextStyles.montserratStyle.regular16BrinkPink
+                          : AppTextStyles.montserratStyle.regular16Black,
+                      cursorColor: state.isShowUsernameMessage
+                          ? AppColors.brinkPink
+                          : AppColors.tiffanyBlue,
+                      borderColor: AppColors.brinkPink,
+                      preMessage: state.messageInputUsername,
+                      widthMessage: MediaQuery.of(context).size.width,
+                      onChanged: (value) {
+                        context
+                            .read<ProfileBloc>()
+                            .add(ProfileValueChangeEvent(username: value));
+                      },
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
@@ -85,10 +100,22 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
+                      isShowMessage: state.isShowFullNameMessage,
                       title: Constants.fullName,
-                      textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      controller:
-                          TextEditingController(text: state.user!.fullName),
+                      textStyle: state.isShowFullNameMessage
+                          ? AppTextStyles.montserratStyle.regular16BrinkPink
+                          : AppTextStyles.montserratStyle.regular16Black,
+                      cursorColor: state.isShowFullNameMessage
+                          ? AppColors.brinkPink
+                          : AppColors.tiffanyBlue,
+                      borderColor: AppColors.brinkPink,
+                      preMessage: state.messageInputFullName,
+                      widthMessage: MediaQuery.of(context).size.width,
+                      onChanged: (value) {
+                        context
+                            .read<ProfileBloc>()
+                            .add(ProfileValueChangeEvent(fullName: value));
+                      },
                     ),
                     const SizedBox(height: 16),
                     _createTitle(title: Constants.gender),
@@ -103,7 +130,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     _createTitle(title: Constants.dateOfBirth),
                     const SizedBox(height: 4),
                     DatePicker(
-                      date: state.dateOfBirth,
+                      date: state.user?.dateOfBirth,
                       onDateChanged: (datetime) {
                         context
                             .read<ProfileBloc>()
@@ -114,7 +141,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     _createTitle(title: Constants.country),
                     CustomDropdownButton(
                       hintText: state.countryList.first.name.toString(),
-                      initialValue: state.selectedCountry,
+                      initialValue: state.user?.country?.id,
                       items: state.countryList.map((country) {
                         return {'id': country.id, 'name': country.name};
                       }).toList(),
@@ -132,7 +159,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     _createTitle(title: Constants.state),
                     CustomDropdownButton(
                       hintText: Constants.pleaseSelectState,
-                      initialValue: state.selectedState,
+                      initialValue: state.user?.state?.id,
                       items: state.stateList
                           .map((state) {
                             return {'id': state.id, 'name': state.name};
@@ -151,16 +178,41 @@ class _ProfileBodyState extends State<ProfileBody> {
                     const SizedBox(height: 16),
                     CustomEditText(
                       title: Constants.city,
-                      textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      controller: TextEditingController(text: state.user!.city),
+                      isShowMessage: state.isShowCityMessage,
+                      textStyle: state.isShowCityMessage
+                          ? AppTextStyles.montserratStyle.regular16BrinkPink
+                          : AppTextStyles.montserratStyle.regular16Black,
+                      cursorColor: state.isShowCityMessage
+                          ? AppColors.brinkPink
+                          : AppColors.tiffanyBlue,
+                      borderColor: AppColors.brinkPink,
+                      preMessage: state.messageInputCity,
+                      widthMessage: MediaQuery.of(context).size.width,
+                      onChanged: (value) {
+                        context
+                            .read<ProfileBloc>()
+                            .add(ProfileValueChangeEvent(city: value));
+                      },
                     ),
                     const SizedBox(height: 16),
                     CustomButton(
-                      mainAxisSize: MainAxisSize.max,
-                      title: Constants.saveSetting,
-                      titleStyle: AppTextStyles.montserratStyle.bold16White,
-                      backgroundColor: AppColors.tiffanyBlue,
-                    ),
+                        mainAxisSize: MainAxisSize.max,
+                        title: Constants.saveSetting,
+                        titleStyle: AppTextStyles.montserratStyle.bold16White,
+                        borderColor: state.isEnableSaveSettings
+                            ? AppColors.tiffanyBlue
+                            : AppColors.spanishGray,
+                        backgroundColor: state.isEnableSaveSettings
+                            ? AppColors.tiffanyBlue
+                            : AppColors.spanishGray,
+                        onTap: state.isEnableSaveSettings
+                            ? () {
+                                FocusScope.of(context).unfocus();
+                                context
+                                    .read<ProfileBloc>()
+                                    .add(ProfileSaveSettingsEvent());
+                              }
+                            : null),
                   ],
                 ),
               );

@@ -17,11 +17,18 @@ final class ProfileState extends Equatable {
   final Gender selectedGender;
   final String? errorMessage;
   final UserModel? user;
-  final List<Country> countryList;
-  final List<State> stateList;
-  final int? selectedCountry;
-  final int? selectedState;
-  final DateTime? dateOfBirth;
+  final List<CountryModel> countryList;
+  final List<StateModel> stateList;
+  final bool isEnableSaveSettings;
+  final String inputUsername;
+  final String inputFullName;
+  final String inputCity;
+  final String messageInputUsername;
+  final String messageInputFullName;
+  final String messageInputCity;
+  final bool isShowUsernameMessage;
+  final bool isShowFullNameMessage;
+  final bool isShowCityMessage;
 
   const ProfileState({
     required this.selectedGender,
@@ -30,9 +37,16 @@ final class ProfileState extends Equatable {
     this.user,
     required this.countryList,
     required this.stateList,
-    this.selectedCountry,
-    this.selectedState,
-    this.dateOfBirth,
+    this.isEnableSaveSettings = false,
+    this.inputUsername = '',
+    this.inputFullName = '',
+    this.inputCity = '',
+    this.messageInputUsername = '',
+    this.messageInputFullName = '',
+    this.messageInputCity = '',
+    this.isShowUsernameMessage = false,
+    this.isShowFullNameMessage = false,
+    this.isShowCityMessage = false,
   });
 
   static ProfileState initial() => const ProfileState(
@@ -41,6 +55,16 @@ final class ProfileState extends Equatable {
         user: null,
         countryList: [],
         stateList: [],
+        isEnableSaveSettings: false,
+        inputUsername: '',
+        inputFullName: '',
+        inputCity: '',
+        messageInputUsername: '',
+        messageInputFullName: '',
+        messageInputCity: '',
+        isShowUsernameMessage: false,
+        isShowFullNameMessage: false,
+        isShowCityMessage: false,
       );
 
   ProfileState copyWith({
@@ -48,11 +72,18 @@ final class ProfileState extends Equatable {
     Gender? selectedGender,
     String? errorMessage,
     UserModel? user,
-    List<Country>? countryList,
-    List<State>? stateList,
-    int? selectedCountry,
-    int? selectedState,
-    DateTime? dateOfBirth,
+    List<CountryModel>? countryList,
+    List<StateModel>? stateList,
+    bool? isEnableSaveSettings,
+    String? inputUsername,
+    String? inputFullName,
+    String? inputCity,
+    String? messageInputUsername,
+    String? messageInputFullName,
+    String? messageInputCity,
+    bool? isShowUsernameMessage,
+    bool? isShowFullNameMessage,
+    bool? isShowCityMessage,
   }) {
     return ProfileState(
       status: status ?? this.status,
@@ -61,9 +92,18 @@ final class ProfileState extends Equatable {
       user: user ?? this.user,
       countryList: countryList ?? this.countryList,
       stateList: stateList ?? this.stateList,
-      selectedCountry: selectedCountry ?? this.selectedCountry,
-      selectedState: selectedState ?? this.selectedState,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      isEnableSaveSettings: isEnableSaveSettings ?? this.isEnableSaveSettings,
+      inputUsername: inputUsername ?? this.inputUsername,
+      inputFullName: inputFullName ?? this.inputFullName,
+      inputCity: inputCity ?? this.inputCity,
+      messageInputUsername: messageInputUsername ?? this.messageInputUsername,
+      messageInputFullName: messageInputFullName ?? this.messageInputFullName,
+      messageInputCity: messageInputCity ?? this.messageInputCity,
+      isShowUsernameMessage:
+          isShowUsernameMessage ?? this.isShowUsernameMessage,
+      isShowFullNameMessage:
+          isShowFullNameMessage ?? this.isShowFullNameMessage,
+      isShowCityMessage: isShowCityMessage ?? this.isShowCityMessage,
     );
   }
 
@@ -75,8 +115,15 @@ final class ProfileState extends Equatable {
         user,
         countryList,
         stateList,
-        selectedCountry,
-        selectedState,
-        dateOfBirth,
+        isEnableSaveSettings,
+        inputUsername,
+        inputFullName,
+        inputCity,
+        messageInputUsername,
+        messageInputFullName,
+        messageInputCity,
+        isShowUsernameMessage,
+        isShowFullNameMessage,
+        isShowCityMessage,
       ];
 }

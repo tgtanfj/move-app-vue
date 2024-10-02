@@ -9,8 +9,8 @@ class UserModel {
   final String? fullName;
   final String? gender;
   final DateTime? dateOfBirth;
-  final Country? country;
-  final State? state;
+  final CountryModel? country;
+  final StateModel? state;
   final String? city;
   final String? referralCode;
 
@@ -39,11 +39,11 @@ class UserModel {
           ? DateTime.parse(json['dateOfBirth'])
           : null,
       country: json['country'] != null
-          ? Country.fromJson(json['country'])
-          : Country(id: 0, name: ''),
+          ? CountryModel.fromJson(json['country'])
+          : CountryModel(id: 0, name: ''),
       state: json['state'] != null
-          ? State.fromJson(json['state'])
-          : State(id: 0, name: ''),
+          ? StateModel.fromJson(json['state'])
+          : StateModel(id: 0, name: ''),
       city: json['city'] is String? ? json['city'] : '',
       referralCode: json['referralCode'] is String? ? json['referralCode'] : '',
     );
@@ -57,8 +57,8 @@ class UserModel {
     String? fullName,
     String? gender,
     DateTime? dateOfBirth,
-    Country? country,
-    State? state,
+    CountryModel? country,
+    StateModel? state,
     String? city,
   }) {
     return UserModel(

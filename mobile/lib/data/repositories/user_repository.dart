@@ -1,16 +1,18 @@
 import 'package:either_dart/either.dart';
+import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/constants.dart';
 
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
 class UserRepository {
+  final ApiService apiService = ApiService();
+
   Future<Either<String, UserModel>> getUserProfile() async {
     try {
-      final response = await ApiService().request(
+      final response = await apiService.request(
         APIRequestMethod.get,
-        'user/profile',
-        queryParameters: {},
+        ApiUrls.getUserProfileEndPoint,
       );
       if (response.data != null) {
         final user = UserModel.fromJson(response.data['data']);

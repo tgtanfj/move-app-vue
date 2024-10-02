@@ -22,6 +22,7 @@ class Constants {
   static const String and = "and ";
   static const String dot = ".";
   static const String tab = "Tab";
+  static const String profilePicture = "Profile picture";
   static const String empty = "Empty";
   static const String sendPasswordResetEmail = 'Send password reset email';
   static const String resendTheLink = 'Resend the link';
@@ -52,7 +53,6 @@ class Constants {
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';
-  static const String profilePicture = 'Profile picture';
   static const String updateProfilePicture = 'Update profile picture';
   static const String j = 'J';
   static const String male = 'Male';
@@ -110,4 +110,13 @@ class Constants {
   static const String userNotFound = 'User not found!';
   static const String countriesNotFound = 'Countries not found!';
   static const String internalServerError = 'Internal Server Error';
+  static const String invalidCharacterFullName =
+      'Full name must be 8-255 characters';
+  static const String invalidSpecialCharacterFullName =
+      'Full name must not include special characters';
+  static const String invalidCharacterUsername =
+      'Username must be 4 - 25 characters';
+  static const String invalidContainUsername =
+      'Username containing only letters, numbers, and underscores';
+  static const String invalidCity = 'This field is required';
 }

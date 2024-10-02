@@ -23,6 +23,7 @@ class CustomEditText extends StatefulWidget {
   final String preMessage;
   final String sufMessage;
   final bool? enable;
+  final double? widthMessage;
 
   const CustomEditText({
     super.key,
@@ -46,6 +47,7 @@ class CustomEditText extends StatefulWidget {
     this.preMessage = "",
     this.sufMessage = "",
     this.enable,
+    this.widthMessage,
   });
 
   @override
@@ -59,17 +61,6 @@ class _CustomEditTextState extends State<CustomEditText> {
   void initState() {
     super.initState();
     isTextVisible = !widget.isPasswordInput;
-    if (widget.controller == null) {
-      widget.controller == TextEditingController();
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      widget.controller!.dispose();
-    }
-    super.dispose();
   }
 
   @override
@@ -156,7 +147,8 @@ class _CustomEditTextState extends State<CustomEditText> {
         Visibility(
           visible: widget.isShowMessage,
           child: Container(
-            width: MediaQuery.of(context).size.width - 64,
+            width:
+                widget.widthMessage ?? MediaQuery.of(context).size.width - 64,
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(

@@ -30,9 +30,9 @@ class DatePicker extends StatelessWidget {
           top: false,
           child: CupertinoDatePicker(
             minimumYear: 1959,
-            maximumYear: 2011,
+            maximumYear: 2006,
             initialDateTime:
-                date != null && date!.year <= 2011 ? date : DateTime(2011),
+                date != null && date!.year <= 2006 ? date : DateTime(2006),
             mode: mode,
             use24hFormat: true,
             onDateTimeChanged: onDateTimeChanged,
