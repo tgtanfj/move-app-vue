@@ -32,6 +32,7 @@
     "back_to_login": "Back to login page",
     "login": "Login",
     "back_to_home": "Back to home",
+    "cancel": "Cancel",
     "submit": "Submit",
     "loading": "Loading..."
   },
@@ -62,6 +63,10 @@
     "state": "State",
     "city": "City",
     "save": "Save settings"
+  },
+  "logout": {
+    "title": "Log Out",
+    "desc": "Are you sure to log out?"
   },
   "otp_verify": {
     "title": "Verify your email to keep account secure",
