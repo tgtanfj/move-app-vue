@@ -61,11 +61,11 @@ class InputValidationHelper {
   }
 
   static String? validateOtpCode(String input) {
-    const numberPattern = r'^\d+$';
+    const numberPattern = r'^[0-9]+$';
     final regExp = RegExp(numberPattern);
 
     if (!regExp.hasMatch(input)) {
-      return Constants.wrongCode;
+      return Constants.invalidCode;
     }
 
     return null;

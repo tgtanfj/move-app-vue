@@ -85,6 +85,7 @@ class Constants {
       "Email already exists in the system. Please select another Email";
   static const String wrongCode = "Wrong code. Please try again";
   static const String sendCode="We sent a 6-digit code to";
+  static const String invalidCode = "Invalid code";
   static const String enterCode="Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
   static const String verificationCode="Verification Code";
   static const String resendCode="Resend code";
@@ -102,5 +103,6 @@ class Constants {
   static const String faq = 'FAQ';
   static const String logout = 'Logout';
   static const String loginMenu = "Login";
+  static const String signUpSuccessful="Sign Up Successful";
 
 }

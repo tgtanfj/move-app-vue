@@ -105,6 +105,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             ),
           ),
           widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
+          const SizedBox(height: 40.0,),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,

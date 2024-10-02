@@ -1,24 +1,32 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/user_model.dart';
 
-abstract class OtpVerificationEvent extends Equatable {
+class OtpVerificationEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
 class OtpVerificationCodeChangedEvent extends OtpVerificationEvent {
-  final String verificationCode;
+  final String inputOtpCode;
 
-  OtpVerificationCodeChangedEvent(this.verificationCode);
+  OtpVerificationCodeChangedEvent(this.inputOtpCode);
 
   @override
-  List<Object?> get props => [verificationCode];
+  List<Object?> get props => [inputOtpCode];
 }
 
 class OtpVerificationInitialEvent extends OtpVerificationEvent {
-  final String email;
+  final UserModel? userModel;
 
-  OtpVerificationInitialEvent(this.email);
+  OtpVerificationInitialEvent(this.userModel);
 
   @override
-  List<Object?> get props => [email];
+  List<Object?> get props => [userModel];
 }
+
+class OtpVerificationStartTimerEvent extends OtpVerificationEvent {}
+
+class OtpVerificationResendEvent extends OtpVerificationEvent {}
+
+class OtpVerificationSubmitEvent extends OtpVerificationEvent {}
+

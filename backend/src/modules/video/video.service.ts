@@ -37,7 +37,8 @@ export class VideoService {
 
   async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      // const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -168,5 +169,25 @@ export class VideoService {
       // Handle and rethrow the error
       throw error;
     }
+  }
+  async deleteVideos(videoIds: number[]) {
+    await this.videoRepository.deleteVideos(videoIds).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+    });
+
+    videoIds.forEach(async (videoId) => {
+      try {
+        const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
+        if (!url) return;
+
+        await this.vimeoService.delete(url);
+      } catch (error) {
+        return;
+      }
+    });
+  }
+
+  async restoreVideos(videoIds: number[]) {
+    await this.videoRepository.restoreVideos(videoIds);
   }
 }

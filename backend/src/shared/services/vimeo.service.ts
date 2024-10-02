@@ -12,7 +12,7 @@ export class VimeoService {
     this.accessToken = accessTokenVimeo;
     this.apiUrl = apiUrlVimeo;
   }
-  
+
   async createUploadSession(fileSize: number) {
     try {
       const response = await axios.post(
@@ -52,6 +52,22 @@ export class VimeoService {
         },
       });
       return response.data;
+    } catch (error) {
+      throw new NotFoundException({
+        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+      });
+    }
+  }
+
+  async delete(url: string): Promise<any> {
+    try {
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+
+      return response.status;
     } catch (error) {
       throw new NotFoundException({
         message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,

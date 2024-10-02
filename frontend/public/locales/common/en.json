@@ -31,11 +31,17 @@
     "ok": "Okay",
     "back_to_login": "Back to login page",
     "login": "Login",
-    "back_to_home": "Back to home"
+    "back_to_home": "Back to home",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "loading": "Loading..."
   },
   "label": {
     "password": "Password",
-    "confirm_password": "Confirm password"
+    "confirm_password": "Confirm password",
+    "email": "Email",
+    "verify_code": "Verification Code",
+    "referral_code": "Referral code (Optional)"
   },
   "user_profile": {
     "title": "Settings",
@@ -57,5 +63,14 @@
     "state": "State",
     "city": "City",
     "save": "Save settings"
+  },
+  "logout": {
+    "title": "Log Out",
+    "desc": "Are you sure to log out?"
+  },
+  "otp_verify": {
+    "title": "Verify your email to keep account secure",
+    "desc": "We sent a 6-digit code to your email. Enter the code below to confirm your account. You may also tap on the link in the email we sent you.",
+    "resend_code": "Resend code"
   }
 }

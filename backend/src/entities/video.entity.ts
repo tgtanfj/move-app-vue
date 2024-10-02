@@ -68,4 +68,10 @@ export class Video extends BaseEntity {
     default: false,
   })
   isPublish: boolean;
+
+  @Column({
+    type: 'integer',
+    default: 0,
+  })
+  shareCount: number;
 }

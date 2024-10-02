@@ -7,29 +7,24 @@ import {
 
 export const passwordSchema = object({
   password: string()
-    .required('This field is required')
     .min(8, 'Password must be between 8 and 32 characters')
     .max(32, 'Password must be between 8 and 32 characters')
     .matches(
       REGEX_STRONG_PASSWORD,
       'Please choose a stronger password. Try a combination of letters, numbers, and special character'
-    ),
+    )
+    .required('This field is required'),
   confirmPassword: string()
-    .required('This field is required')
     .min(8)
     .oneOf([ref('password')], 'The confirmation password does not match the new password.')
+    .required('This field is required')
 })
 export const emailSchema = object({
-  email: string().matches(REGEX_EMAIL, 'Invalid email').required('Please enter your email')
+  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email')
 })
 
 export const registerSchema = object({
-  email: string()
-    .email('Invalid email')
-    .matches(REGEX_EMAIL, 'Invalid email')
-    .min(5, 'Email must be at least 5 characters')
-    .max(255, 'Email must not exceed 255 characters')
-    .required('Please enter your email'),
+  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email'),
 
   password: string()
     .min(8, 'Password must be between 8 and 32 characters')
@@ -48,7 +43,7 @@ export const registerSchema = object({
 })
 
 export const signinSchema = object({
-  email: string().matches(REGEX_EMAIL, 'Invalid email').required('Please enter your email'),
+  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email'),
   password: string()
     .required('Please enter your password')
     .min(8, 'Password must be between 8 and 32 characters')
