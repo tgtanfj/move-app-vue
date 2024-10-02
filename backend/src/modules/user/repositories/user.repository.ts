@@ -77,6 +77,7 @@ export class UserRepository {
 
   async updateUser(userId: number, dto: UpdateUserDto): Promise<UpdateResult> {
     const { countryId, stateId, ...dataUpdated } = dto;
+
     if (countryId) dataUpdated['country'] = { id: Number(countryId) };
 
     if (stateId) dataUpdated['state'] = { id: Number(stateId) };

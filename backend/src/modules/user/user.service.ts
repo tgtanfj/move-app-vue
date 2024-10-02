@@ -144,6 +144,7 @@ export class UserService {
       if (dto.countryId && dto.stateId) {
         const statesOfCountry = await this.countryService.getStatesOfCountry(dto.countryId);
         const isValidState = statesOfCountry.find((state) => state.id === dto.stateId);
+
         if (!isValidState) {
           throw new BadRequestException(ERRORS_DICTIONARY.INVALID_STATE);
         }
