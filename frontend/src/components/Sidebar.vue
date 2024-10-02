@@ -25,8 +25,8 @@
                   <router-link
                     v-else
                     class="flex items-center w-full text-left p-2 rounded"
-                    :to="getRoute(item.name)"
-                    :class="{ 'text-primary font-semibold': getRoute(item.name) === path }"
+                    :to="item.path"
+                    :class="{ 'text-primary font-semibold': item.path === path }"
                   >
                     <component :is="item.icon" class="mr-2" />
                     {{ item.name }}
@@ -35,7 +35,7 @@
                 <ul v-show="isActive(item.name)" class="ml-4">
                   <li v-for="child in item.children" :key="child.name">
                     <router-link
-                      :to="getChildRoute(item.name, child.name)"
+                      :to="`${item.path}/${child.path}`"
                       class="block w-full text-left p-2 rounded"
                     >
                       {{ child.name }}
@@ -68,42 +68,52 @@ import { useRoute } from 'vue-router'
 const sidebarList = [
   {
     name: 'Home',
-    icon: House
+    icon: House,
+    path: '/'
   },
   {
     name: 'Videos',
-    icon: Video
+    icon: Video,
+    path: '/streamer/videos'
   },
   {
     name: 'Comments',
-    icon: MessageSquare
+    icon: MessageSquare,
+    path: '/streamer/comments'
   },
   {
     name: 'Analytics',
     icon: ChartArea,
+    path: '/streamer/analytics',
     children: [
       {
-        name: 'Overview'
+        name: 'Overview',
+        path: '/overview'
       },
       {
-        name: 'Video analytics'
+        name: 'Video analytics',
+        path: '/video-analytics'
       },
       {
-        name: 'Live analytics'
+        name: 'Live analytics',
+        path: '/live-analytic'
       }
     ]
   },
   {
     name: 'Resources',
-    icon: Cookie
+    icon: Cookie,
+    path: '/streamer/resources'
   },
   {
     name: 'Cashout',
-    icon: CircleDollarSign
+    icon: CircleDollarSign,
+    path: '/streamer/cashout'
   },
   {
     name: 'Channel Settings',
-    icon: Settings
+    icon: Settings,
+    path: '/streamer/channel-settings'
   }
 ]
 const activeDropdown = ref(null)
@@ -111,36 +121,7 @@ const activeDropdown = ref(null)
 const toggleDropdown = (name) => {
   activeDropdown.value = activeDropdown.value === name ? null : name
 }
-const getRoute = (name) => {
-  switch (name) {
-    case 'Home':
-      return '/'
-    case 'Videos':
-      return '/streamer/videos'
-    case 'Comments':
-      return '/streamer/comments'
-    case 'Resources':
-      return '/streamer/resources'
-    case 'Cashout':
-      return '/streamer/cashout'
-    case 'Channel Settings':
-      return '/streamer/setting'
-    default:
-      return '/'
-  }
-}
-const getChildRoute = (parent, child) => {
-  if (parent === 'Analytics') {
-    switch (child) {
-      case 'Overview':
-        return '/streamer/analytics/overview'
-      case 'Video analytics':
-        return '/streamer/analytics/video'
-      case 'Live analytics':
-        return '/streamer/analytics/live'
-    }
-  }
-}
+
 const isActive = (name) => {
   return activeDropdown.value === name
 }
