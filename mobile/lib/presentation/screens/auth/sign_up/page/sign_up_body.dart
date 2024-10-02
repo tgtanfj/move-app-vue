@@ -14,6 +14,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/widgets/title_edit_te
 import 'package:move_app/presentation/screens/auth/widgets/divider_authentication.dart';
 
 import '../../../../components/custom_button.dart';
+import '../../otp/page/otp_verification_page.dart';
 import '../bloc/sign_up_event.dart';
 
 class SignUpBody extends StatefulWidget {
@@ -31,13 +32,16 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
         listener: (context, state) {
       if (state.status == SignUpStatus.success) {
         Navigator.of(context).pop();
+        showDialog(context: context, builder: (BuildContext context) {
+          return OtpVerificationPage(userModel: state.userModel);
+        },);
       }
     },
     child: BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.only(top: 12),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -46,6 +50,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   title: Constants.signUpWithGoogle,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
+                  padding: const EdgeInsets.only(top: 13, bottom: 14, left: 12),
                   onTap: () {
                     context.read<SignUpBloc>().add(SignUpWithGoogleEvent());
                   },
@@ -56,6 +61,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   title: Constants.signUpWithFaceBook,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
+                  padding: const EdgeInsets.only(top: 13, bottom: 14, left: 12),
                   onTap: () {
                     context.read<SignUpBloc>().add(SignUpWithFacebookEvent());
                   },
@@ -157,7 +163,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                           context.read<SignUpBloc>().add(SignUpValuesChangedEvent(referralCode: value.trim()));
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 17),
                       RichText(
                         textAlign: TextAlign.justify,
                         text: TextSpan(

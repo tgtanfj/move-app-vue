@@ -1,25 +1,24 @@
-
+import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/user_model.dart';
+import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_event.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_state.dart';
 
+import '../../../../../utils/input_validation_helper.dart';
+
 class OtpVerificationBloc
     extends Bloc<OtpVerificationEvent, OtpVerificationState> {
+  Timer? timer;
+
   OtpVerificationBloc() : super(const OtpVerificationState()) {
     on<OtpVerificationCodeChangedEvent>(onOtpVerificationCodeChangedEvent);
     on<OtpVerificationInitialEvent>(onOtpVerificationInitialEvent);
-  }
-
-  void onOtpVerificationCodeChangedEvent(
-    OtpVerificationCodeChangedEvent event,
-    Emitter<OtpVerificationState> emit,
-  ) {
-    final isValidCode = event.verificationCode.length == 6;
-
-    emit(state.copyWith(
-      verificationCode: event.verificationCode,
-      isEnabledSubmit: isValidCode,
-    ));
+    on<OtpVerificationStartTimerEvent>(onOtpVerificationStartTimerEvent);
+    on<OtpVerificationResendEvent>(onOtpVerificationResendEvent);
+    on<OtpVerificationSubmitEvent>(onOtpVerificationSubmitEvent);
   }
 
   void onOtpVerificationInitialEvent(
@@ -27,7 +26,76 @@ class OtpVerificationBloc
     Emitter<OtpVerificationState> emit,
   ) {
     emit(state.copyWith(
-      email: event.email,
-    ));
+        userModel: event.userModel, status: OtpVerificationStatus.initial));
+    add(OtpVerificationStartTimerEvent());
+  }
+
+
+  void onOtpVerificationStartTimerEvent(
+    OtpVerificationStartTimerEvent event,
+    Emitter<OtpVerificationState> emit,
+  ) async {
+    timer?.cancel();
+    emit(state.copyWith(remainingSeconds: 60));
+
+    await Future.forEach(List.generate(60, (index) => index), (index) async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (emit.isDone) return;
+      emit(state.copyWith(remainingSeconds: state.remainingSeconds - 1));
+    });
+  }
+
+  void onOtpVerificationCodeChangedEvent(
+    OtpVerificationCodeChangedEvent event,
+    Emitter<OtpVerificationState> emit,
+  ) {
+    final isShowMessageOtp = state.inputOtpCode != event.inputOtpCode
+        ? false
+        : state.isShowMessageOtp;
+
+    emit(state.copyWith(
+        inputOtpCode: event.inputOtpCode,
+        isEnabledSubmit: event.inputOtpCode.isNotEmpty,
+        isShowMessageOtp: isShowMessageOtp));
+  }
+
+  void onOtpVerificationResendEvent(
+    OtpVerificationResendEvent event,
+    Emitter<OtpVerificationState> emit,
+  ) async {
+    add(OtpVerificationStartTimerEvent());
+    await AuthRepository().sendVerificationCode(state.userModel?.email ?? "");
+  }
+
+  void onOtpVerificationSubmitEvent(
+    OtpVerificationSubmitEvent event,
+    Emitter<OtpVerificationState> emit,
+  ) async {
+    try {
+      await AuthRepository()
+          .signUpWithEmail(state.userModel ?? UserModel(), state.inputOtpCode);
+      emit(state.copyWith(status: OtpVerificationStatus.success));
+    } catch (e) {
+      if (e is Exception) {
+        if (e.toString() == Constants.yourAccountVerificationHasExpired) {
+          emit(state.copyWith(
+              isEnabledSubmit: false,
+              isShowMessageOtp: true,
+              messageOtp: e.toString(),
+              status: OtpVerificationStatus.error));
+        } else {
+          emit(state.copyWith(
+              isShowMessageOtp: true,
+              messageOtp: e.toString(),
+              status: OtpVerificationStatus.error));
+        }
+      }
+    }
+  }
+
+  @override
+  Future<void> close() {
+    timer?.cancel();
+    return super.close();
   }
 }

@@ -58,8 +58,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
     final isEnableSignUp = signUpValues.inputEmail.isNotEmpty &&
         signUpValues.inputPassword.isNotEmpty &&
-        signUpValues.inputConfirmPassword.isNotEmpty &&
-        signUpValues.inputEmail.contains("@");
+        signUpValues.inputConfirmPassword.isNotEmpty;
 
     emit(signUpValues.copyWith(
       isEnableSignUp: isEnableSignUp,
@@ -93,24 +92,32 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       messageInputReferralCode: validReferralCode,
     ));
 
+    UserModel userModel = UserModel(
+        email: state.inputEmail,
+        password: state.inputPassword,
+        referralCode: state.inputReferralCode);
+
     if (validEmail == null &&
         validPassword == null &&
         doMatchPassword &&
         validReferralCode == null) {
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+            state.copyWith(status: SignUpStatus.success, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
           emit(state.copyWith(
-              isShowEmailMessage: true, messageInputEmail: e.toString()));
+              status: SignUpStatus.error,
+              isShowEmailMessage: true,
+              messageInputEmail: e.toString()));
         }
       }
     }
   }
 
-
-  void _onSignUpWithGoogleEvent(SignUpWithGoogleEvent event, Emitter emit) async {
+  void _onSignUpWithGoogleEvent(
+      SignUpWithGoogleEvent event, Emitter emit) async {
     final user = await AuthRepository().googleLogin();
     try {
       if (user != null) {
@@ -132,8 +139,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
   void _onSignUpWithFacebookEvent(
       SignUpWithFacebookEvent event, Emitter emit) async {
-    final facebookAccount =
-    await AuthRepository().loginWithFacebook();
+    final facebookAccount = await AuthRepository().loginWithFacebook();
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
@@ -151,5 +157,4 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       ));
     }
   }
-
 }
