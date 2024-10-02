@@ -74,16 +74,20 @@
       </Table>
     </div>
     <BaseDialog
+      :title="$t('streamer.delete_selected_video_modal_title')"
+      :description="
+        !allSelected
+          ? $t('streamer.delete_video_modal_description')
+          : $t('streamer.delete_all_video_modal_title')
+      "
       v-model:open="showConfirmModal"
-      title="Delete video(s)"
-      description="The selected video(s) will be permanently deleted. You will lose all data such"
     >
       <div class="w-full flex justify-center items-center gap-4">
         <Button variant="outline" @click="showConfirmModal = false">{{
           $t('button.cancel')
         }}</Button>
         <Button variant="default" @click="handleDeleteVideoList">{{
-          $t('streamer.download')
+          $t('streamer.delete')
         }}</Button>
       </div>
     </BaseDialog>

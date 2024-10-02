@@ -2,7 +2,8 @@ import { useFetch } from '@utils/vue-query.util'
 import { ADMIN_BASE } from '@constants/api.constant'
 
 export const videoService = {
-  getUploadVideos: (token, take, page) => {
+  getUploadVideos: (take, page) => {
+    const token = localStorage.getItem('token')
     const config = {
       headers: {
         Authorization: `Bearer ${token}`

@@ -4,23 +4,25 @@
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
     <TableCell>
-      <img :src="item.image" alt="" class="w-[124px] h-[70px]" />
+      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
     </TableCell>
     <TableCell>
       <div class="flex flex-col">
-        <div class="font-bold text-base">{{ item.title }}</div>
+        <div class="font-bold text-base capitalize">{{ item.title }}</div>
         <div class="text-sm">{{ item.description }}</div>
-        <div class="flex gap-1 mt-1">
-          <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">{{ item.level }}</div>
-          <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">> {{ item.duration }}</div>
+        <div class="flex gap-1 mt-3">
+          <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">{{ item.workoutLevel }}</div>
+          <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">
+            {{ detectDuration(item.duration) }}
+          </div>
         </div>
       </div>
     </TableCell>
     <TableCell>{{ item.datePosted }}</TableCell>
-    <TableCell>{{ item.view }}</TableCell>
-    <TableCell>{{ item.comments }}</TableCell>
+    <TableCell>{{ item.numberOfViews }}</TableCell>
+    <TableCell>{{ item.numberOfComments }}</TableCell>
     <TableCell>
-      <div class="flex gap-1">{{ item.rating }} <StartIcon /></div>
+      <div class="flex gap-1">{{ item.ratings }} <StartIcon /></div>
     </TableCell>
     <TableCell>
       <div class="flex invisible gap-3 group-hover:visible">
@@ -92,6 +94,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@commo
 import { ArrowDownToLine, EllipsisVertical, Pen, Trash, Upload } from 'lucide-vue-next'
 import { defineProps, defineEmits, computed, ref } from 'vue'
 import BaseDialog from './BaseDialog.vue'
+import StartIcon from '@assets/icons/startIcon.vue'
 
 const props = defineProps({
   item: {
@@ -109,6 +112,19 @@ const emit = defineEmits(['update:selectedItems', 'edit:item'])
 const isChecked = computed(() => {
   return props.selectedItems && props.selectedItems.includes(props.item.id)
 })
+
+const detectDuration = (duration) => {
+  switch (duration) {
+    case 'less than 30 minutes':
+      return '<30 mins'
+    case 'less than 1 hours':
+      return '<1h'
+    case 'more than 1 hours':
+      return '>1h'
+    default:
+      return 'Unknown'
+  }
+}
 
 const handleDeleteVideo = (videoId) => {}
 const handleDownloadVideo = (videoId) => {}
