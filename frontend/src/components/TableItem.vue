@@ -33,21 +33,21 @@
               <div class="flex gap-3 cursor-pointer">
                 <div class="flex flex-col gap-2 items-center" @click="handleGetFBLink">
                   <FacebookIcon class="w-[40px] h-[40px]" />
-                  <span class="text-sm">Facebook</span>
+                  <span class="text-sm">{{ $t('streamer.fb') }}</span>
                 </div>
                 <div class="flex flex-col gap-2 items-center" @click="handleGetTwitterLink">
                   <TwitterIcon />
-                  <span class="text-sm">Twitter</span>
+                  <span class="text-sm">{{ $t('streamer.twitter') }}</span>
                 </div>
                 <div class="flex flex-col gap-2 items-center" @click="handleGetLink">
                   <CopyLinkIcon />
-                  <span class="text-sm">Copy Link</span>
+                  <span class="text-sm">{{ $t('streamer.copy_link') }}</span>
                   <div
                     class="absolute right-0 top-full p-1 border-[1.5px] rounded-lg shadow-lg z-2"
                   >
                     <div class="p-1 flex">
                       <CopyLinkIcon class="w-[24px] h-[24px]" />
-                      Link copied!
+                      {{ $t('streamer.link_copied') }}
                     </div>
                   </div>
                 </div>
@@ -65,14 +65,14 @@
               <div class="flex flex-col gap-3 cursor-pointer">
                 <div class="flex gap-2 items-center" @click="handleDeleteVideo">
                   <Trash size="16" color="#12BDA3" />
-                  <span class="text-sm">Delete video</span>
+                  <span class="text-sm">{{ $t('streamer.delete_video') }}</span>
                 </div>
                 <div
                   class="flex gap-2 items-center text-sm cursor-pointer"
                   @click="handleDownloadVideo"
                 >
                   <ArrowDownToLine size="16" color="#12BDA3" />
-                  <span class="text-sm">Download video</span>
+                  <span class="text-sm">{{ $t('streamer.download_video') }}</span>
                 </div>
               </div>
             </TooltipContent>

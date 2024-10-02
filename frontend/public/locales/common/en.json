@@ -25,6 +25,7 @@
     "upload_video": "Upload a video",
     "delete": "Delete",
     "download": "Download",
+    "all": "All",
     "videos_selected": "videos on this page has been selected",
     "select_all_videos": "Select all videos",
     "clear_selection": "Clear selection",
@@ -83,7 +84,9 @@
     "ok": "Okay",
     "back_to_login": "Back to login page",
     "login": "Login",
-    "back_to_home": "Back to home"
+    "back_to_home": "Back to home",
+    "upload_video": "Upload a video",
+    "cancel": "Cancel"
   },
   "label": {
     "password": "Password",

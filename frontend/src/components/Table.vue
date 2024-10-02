@@ -8,12 +8,12 @@
               <Checkbox id="all" :checked="allSelected" @update:checked="toggleAll" />
             </TableHead>
             <template v-if="selectedItems.length === 0">
-              <TableHead>Videos</TableHead>
-              <TableHead>Details</TableHead>
-              <TableHead>Date Posted</TableHead>
-              <TableHead>Views</TableHead>
-              <TableHead>Comments</TableHead>
-              <TableHead>Rating</TableHead>
+              <TableHead>{{ $t('streamer.videos') }}</TableHead>
+              <TableHead>{{ $t('streamer.details') }}</TableHead>
+              <TableHead>{{ $t('streamer.date_post') }}</TableHead>
+              <TableHead>{{ $t('streamer.views') }}</TableHead>
+              <TableHead>{{ $t('streamer.comment') }}</TableHead>
+              <TableHead>{{ $t('streamer.rating') }}</TableHead>
               <TableHead></TableHead>
             </template>
             <div v-else class="flex">
@@ -21,13 +21,13 @@
                 class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
                 @click="showConfirmModal = true"
               >
-                <Trash size="16" stroke-width="2.5" />Delete
+                <Trash size="16" stroke-width="2.5" />{{ $t('streamer.delete') }}
               </TableHead>
               <TableHead
                 class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
                 @click="handleDownloadVideoList"
               >
-                <ArrowDownToLine size="16" stroke-width="2.5" />Download
+                <ArrowDownToLine size="16" stroke-width="2.5" />{{ $t('streamer.download') }}
               </TableHead>
             </div>
           </TableRow>
@@ -40,24 +40,24 @@
                 v-if="selectedItems.length === props.list.length"
               >
                 <p>
-                  <span class="font-bold">All {{ selectedItems.length }}</span> videos on this page
-                  has been selected.
+                  <span class="font-bold">{{ $t('streamer.all') }} {{ selectedItems.length }}</span>
+                  {{ $t('streamer.videos_selected') }}
                 </p>
                 <span
                   class="ml-10 text-primary font-bold cursor-pointer"
                   @click="handleClearSelection"
-                  >Clear selection.</span
+                  >{{ $t('streamer.clear_selection') }}</span
                 >
               </div>
               <div class="p-4 bg-[#E6FFFB] flex justify-center items-center" v-else>
                 <p>
-                  <span class="font-bold">{{ selectedItems.length }}</span> videos on this page has
-                  been selected.
+                  <span class="font-bold">{{ selectedItems.length }}</span>
+                  {{ $t('streamer.videos_selected') }}
                 </p>
                 <span
                   class="ml-10 text-primary font-bold cursor-pointer"
                   @click="handleSelectAllItems"
-                  >Select all videos.</span
+                  >{{ $t('streamer.select_all_videos') }}</span
                 >
               </div>
             </td>
@@ -79,8 +79,12 @@
       description="The selected video(s) will be permanently deleted. You will lose all data such"
     >
       <div class="w-full flex justify-center items-center gap-4">
-        <Button variant="outline" @click="showConfirmModal = false">Cancel</Button>
-        <Button variant="default" @click="handleDeleteVideoList">Delete</Button>
+        <Button variant="outline" @click="showConfirmModal = false">{{
+          $t('button.cancel')
+        }}</Button>
+        <Button variant="default" @click="handleDeleteVideoList">{{
+          $t('streamer.download')
+        }}</Button>
       </div>
     </BaseDialog>
   </div>
@@ -91,7 +95,7 @@ import StartIcon from '@assets/icons/startIcon.vue'
 import { Checkbox } from '@common/ui/checkbox'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@common/ui/table'
 import TableItem from './TableItem.vue'
-import { defineProps, ref, computed, watch } from 'vue'
+import { defineProps, ref, computed, watch, onMounted } from 'vue'
 import { ArrowDownToLine, Trash } from 'lucide-vue-next'
 import { Button } from '@common/ui/button'
 import BaseDialog from './BaseDialog.vue'
