@@ -2,9 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
-  const AppBarWidget({super.key});
+  final VoidCallback? prefixButton;
+  final VoidCallback? suffixButton;
+  final String? prefixIconPath;
+  final String? suffixIconPath;
+  final bool isEnableIcon;
+
+  const AppBarWidget({
+    super.key,
+    this.prefixButton,
+    this.suffixButton,
+    this.prefixIconPath,
+    this.suffixIconPath,
+    this.isEnableIcon = true,
+  });
 
   @override
   State<AppBarWidget> createState() => _AppBarWidgetState();
@@ -22,27 +36,31 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         const SizedBox(
           width: 20.0,
         ),
-        GestureDetector(
-          onTap: () {},
-          child: SvgPicture.asset(
-            AppIcons.drawer.svgAssetPath,
-            height: 18.0,
-            width: 27.0,
-          ),
-        ),
+        widget.isEnableIcon
+            ? GestureDetector(
+                onTap: widget.prefixButton,
+                child: SvgPicture.asset(
+                  widget.prefixIconPath ?? AppIcons.drawer.svgAssetPath,
+                  height: 18.0,
+                  width: 27.0,
+                ),
+              )
+            : const SizedBox(),
         Expanded(
           child: SvgPicture.asset(
             AppIcons.moveWhiteTextLogo.svgAssetPath,
           ),
         ),
-        GestureDetector(
-          onTap: () {},
-          child: SvgPicture.asset(
-            AppIcons.search.svgAssetPath,
-            width: 24.0,
-            height: 24.0,
-          ),
-        ),
+        widget.isEnableIcon
+            ? GestureDetector(
+                onTap: () {},
+                child: SvgPicture.asset(
+                  widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
+                  width: 24.0,
+                  height: 24.0,
+                ),
+              )
+            : const SizedBox(),
         const SizedBox(
           width: 20.0,
         ),

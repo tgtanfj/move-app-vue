@@ -7,5 +7,6 @@ import { AwsS3Service } from '@/shared/services/aws-s3.service';
 @Module({
   controllers: [AwsS3Controller],
   providers: [ApiConfigService, GeneratorService, AwsS3Service],
+  exports: [AwsS3Service],
 })
 export class AwsS3Module {}

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
@@ -16,6 +16,9 @@ import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
 import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
+import { EditVideoDTO } from './dto/edit-video.dto';
+import { CategoryRepository } from '../category/caregory.repository';
+import { Video } from '@/entities/video.entity';
 
 @Injectable()
 export class VideoService {
@@ -24,7 +27,9 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
+
     private vimeoService: VimeoService,
+    private readonly categoryRepository: CategoryRepository,
     private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
@@ -32,7 +37,8 @@ export class VideoService {
 
   async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      // const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -116,5 +122,72 @@ export class VideoService {
       });
     }
     return video;
+  }
+
+  async editVideo(videoId: number, dto: EditVideoDTO, thumbnail: Express.Multer.File): Promise<Video> {
+    try {
+      // Find video by id
+      const video = await this.videoRepository.findVideoById(videoId);
+      if (!video) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+
+      if (dto.categoryId) {
+        const category = await this.categoryRepository.findCategoryById(dto.categoryId);
+        if (!category) {
+          throw new NotFoundException({
+            message: ERRORS_DICTIONARY.NOT_FOUND_CATEGORY,
+          });
+        }
+        video.category = category;
+      }
+
+      if (thumbnail) {
+        const thumbnailUrl = await this.s3.uploadImage(thumbnail);
+        video.thumbnail_url = thumbnailUrl;
+      }
+
+      // Update video properties
+      video.title = dto.title || video.title;
+      video.workoutLevel = dto.workoutLevel || video.workoutLevel;
+      video.duration = dto.duration || video.duration;
+      video.keywords = dto.keywords || video.keywords;
+      video.isCommentable = dto.isCommentable !== undefined ? dto.isCommentable : video.isCommentable;
+
+      // Save updated video
+      const updatedVideo = await this.videoRepository.save(video);
+      if (!updatedVideo) {
+        throw new BadRequestException({
+          message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
+        });
+      }
+
+      return updatedVideo;
+    } catch (error) {
+      // Handle and rethrow the error
+      throw error;
+    }
+  }
+  async deleteVideos(videoIds: number[]) {
+    await this.videoRepository.deleteVideos(videoIds).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+    });
+
+    videoIds.forEach(async (videoId) => {
+      try {
+        const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
+        if (!url) return;
+
+        await this.vimeoService.delete(url);
+      } catch (error) {
+        return;
+      }
+    });
+  }
+
+  async restoreVideos(videoIds: number[]) {
+    await this.videoRepository.restoreVideos(videoIds);
   }
 }

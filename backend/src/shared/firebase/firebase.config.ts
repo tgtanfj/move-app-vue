@@ -2,11 +2,13 @@ import { config } from 'dotenv';
 import * as admin from 'firebase-admin';
 config();
 
+const private_key = Buffer.from(process.env.PRIVATE_KEY, 'base64').toString('utf-8').replace(/\\n/gm, '\n');
+
 const serviceAccount = {
   type: process.env.TYPE,
   project_id: process.env.PROJECT_ID,
   private_key_id: process.env.PRIVATE_KEY_ID,
-  private_key: process.env.PRIVATE_KEY,
+  private_key: private_key,
   client_email: process.env.CLIENT_EMAIL,
   client_id: process.env.CLIENT_ID,
   auth_uri: process.env.AUTH_URI,

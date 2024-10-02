@@ -40,7 +40,6 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      hoverColor: Colors.grey,
       onTap: isEnabled ? onTap : null,
       onLongPress: isEnabled ? onLongPress : null,
       borderRadius: BorderRadius.circular(borderRadius),

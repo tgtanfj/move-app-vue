@@ -1,0 +1,46 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  sshUsername: 'move-intern'   
+  sshHost: '209.97.160.91'
+
+steps:
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run build
+  displayName: 'npm install and build'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/dist'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy Files to Staging Directory'
+
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+  displayName: 'Publish Artifact: drop'
+
+- script: |
+    ssh -o StrictHostKeyChecking=no $(sshUsername)@$(sshHost) "mkdir -p /var/www/api.training-move-intern.madlab.tech && sudo chmod -R 775 /var/www/api.training-move-intern.madlab.tech"
+  displayName: 'Check and Create Target Directory on Server'
+
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: 'Move-Connection'
+    sourceFolder: '$(Build.ArtifactStagingDirectory)'
+    targetFolder: '/var/www/api.training-move-intern.madlab.tech'
+  displayName: 'Deploy to Server'

@@ -2,12 +2,10 @@ import { ADMIN_BASE } from '@constants/api.constant'
 import axios from 'axios'
 
 export const signupService = {
-  signupByEmailPassword: async (email, password, referralCode) => {
-    const url = `${ADMIN_BASE}/auth/signup/email`
+  signupByEmailPassword: async (email) => {
+    const url = `${ADMIN_BASE}/auth/send-otp`
     const body = {
-      email,
-      password,
-      referralCode
+      email
     }
 
     try {
