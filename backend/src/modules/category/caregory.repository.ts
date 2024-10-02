@@ -12,4 +12,8 @@ export class CategoryRepository {
       select: ['id', 'title'],
     });
   }
+
+  async findCategoryById(categoryId: number): Promise<Category | null> {
+    return await this.categoryRepository.findOne({ where: { id: categoryId } });
+  }
 }

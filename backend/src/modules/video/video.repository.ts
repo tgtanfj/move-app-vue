@@ -51,6 +51,13 @@ export class VideoRepository {
     return await this.videoRepository.save(newVideo);
   }
 
+  async findVideoById(videoId: number): Promise<Video | null> {
+    return await this.videoRepository.findOne({ where: { id: videoId } });
+  }
+
+  async save(video: Video): Promise<Video> {
+    return await this.videoRepository.save(video);
+  }
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.manager.transaction(async (transactionalEntityManager) => {
       await Promise.all(

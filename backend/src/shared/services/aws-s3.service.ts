@@ -41,11 +41,8 @@ export class AwsS3Service {
     }
 
     const fileName = this.generatorService.fileName(<string>extension);
-    console.log('fileName', fileName);
 
     const key = this.configService.awsS3Config.bucketEndpoint + 'images/' + fileName;
-
-    console.log('key', key);
 
     await this.s3Client.send(
       new PutObjectCommand({
