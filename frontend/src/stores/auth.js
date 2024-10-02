@@ -97,8 +97,10 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (data.success) {
         accessToken.value = data.data.accessToken
+        refreshToken.value = data.data.refreshToken
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
+        localStorage.setItem('refreshToken', refreshToken.value)
       }
     } catch (error) {
       if (error.response) {
@@ -110,12 +112,11 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = false
     }
   }
-
   const logout = async () => {
-    const loginmethod = JSON.parse(localStorage.getItem('loginMethod'))
+    const loginMethod = localStorage.getItem('loginMethod')
     try {
       isLoading.value = true
-      if (loginmethod === 'email') {
+      if (loginMethod === 'email') {
         const currentRefreshToken = localStorage.getItem('refreshToken')
         const config = {
           headers: {
@@ -123,7 +124,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
         const response = await axios.get(`${ADMIN_BASE}/auth/log-out`, config)
-        if (response.success) {
+        if (response.status === 200) {
           user.value = {}
           idToken.value = null
           accessToken.value = null
@@ -145,7 +146,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err) {
       errorMsg.value = err.message
     } finally {
-      isLoading = false
+      isLoading.value = false
     }
   }
 

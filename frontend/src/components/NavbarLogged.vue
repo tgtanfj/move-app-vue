@@ -68,8 +68,10 @@
       v-model:open="showLogoutModal"
     >
       <div class="flex justify-end items-center">
-        <Button @click="showLogoutModal = false" variant="outline">{{ $t('button.cancel') }}</Button
-        ><Button @click="logOutGoogle">{{ $t('button.confirm') }}</Button>
+        <Button @click="showLogoutModal = false" variant="outline">{{
+          $t('button.cancel')
+        }}</Button>
+        <Button @click="logOutGoogle">{{ $t('button.confirm') }}</Button>
       </div></BaseDialog
     >
   </div>
@@ -93,6 +95,7 @@ import DashboardIcon from '@assets/icons/DashboardIcon.vue'
 import BellIcon from '@assets/icons/BellIcon.vue'
 import BaseDialog from './BaseDialog.vue'
 import { ref } from 'vue'
+import { Button } from '@common/ui/button'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -101,6 +104,7 @@ const showLogoutModal = ref(false)
 
 const logOutGoogle = async () => {
   await authStore.logout()
+  showLogoutModal.value = false
   router.push('/')
 }
 </script>
