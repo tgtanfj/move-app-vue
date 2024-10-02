@@ -14,4 +14,5 @@ class AppColors {
   static const lavenderBlush = Color(0xffFDEDEF);
   static const bubbles = Color(0xffE6FFFB);
   static const transparent = Colors.transparent;
+  
 }

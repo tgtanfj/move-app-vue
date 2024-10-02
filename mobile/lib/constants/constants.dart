@@ -29,7 +29,7 @@ class Constants {
   static const String newPassword = 'New password';
   static const String confirmNewPassword = 'Confirm new password';
   static const String confirm = 'Confirm';
-  static const String passwordResetSuccessful = 'Password Reset Successfull';
+  static const String passwordResetSuccessful = 'Password Reset Successful';
   static const String resetPassword = 'Reset Password';
   static const String enterEmailAddress =
       'Enter email address for your account';
@@ -68,7 +68,7 @@ class Constants {
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
   static const String malaysia = 'Malaysia';
-  static const String to = 'to';
+  static const String to = ' to ';
   static const String exampleEmail = 'p.giggs@email.com.';
   static const String loginWithGoogle = "Log In With Google";
   static const String loginWithFacebook = "Log In With Facebook";
@@ -104,5 +104,6 @@ class Constants {
   static const String logout = 'Logout';
   static const String loginMenu = "Login";
   static const String signUpSuccessful="Sign Up Successful";
-
+  static const String theEmail = 'The email ';
+  static const String isNotFound = ' is not found. Please try again.';
 }

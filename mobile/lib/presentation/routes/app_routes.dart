@@ -21,4 +21,6 @@ class AppRoutes {
       //logIn : (BuildContext context) => const (),
     };
   }
+  static const String routeForgotPassword = '/forgot-password';
+  static const String routeCreateNewPassword = '/create-new-password';
 }

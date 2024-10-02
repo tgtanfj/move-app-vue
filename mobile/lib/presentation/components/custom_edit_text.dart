@@ -5,6 +5,7 @@ import '../../config/theme/app_text_styles.dart';
 
 class CustomEditText extends StatefulWidget {
   final String title;
+  final TextStyle? tittleStyle;
   final String mainMessage;
   final TextStyle? textStyle;
   final TextStyle? titleStyle;
@@ -33,6 +34,7 @@ class CustomEditText extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.height ,
     this.title = '',
+    this.tittleStyle,
     this.maxLength = 255,
     this.isPasswordInput = false,
     this.suffix,
@@ -66,10 +68,11 @@ class _CustomEditTextState extends State<CustomEditText> {
       children: [
         widget.title.isNotEmpty
             ? Text(
-          widget.title,
-          style: widget.titleStyle ?? AppTextStyles.montserratStyle.regular16Black,
-          textAlign: TextAlign.left,
-        )
+                widget.title,
+                style: widget.textStyle ??
+                    AppTextStyles.montserratStyle.regular16Black,
+                textAlign: TextAlign.left,
+              )
             : const SizedBox(),
         SizedBox(
           height: widget.title.isNotEmpty ? 4 : 0,

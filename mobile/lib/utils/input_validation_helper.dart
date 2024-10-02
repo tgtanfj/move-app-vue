@@ -6,7 +6,6 @@ class InputValidationHelper {
   static final RegExp password = RegExp(
       r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$');
 
-
   static String? validateEmail(String email) {
     if (email.length < 5 || email.length > 255) {
       return Constants.invalidEmail;
@@ -71,7 +70,6 @@ class InputValidationHelper {
     return null;
   }
 
-
   bool isPasswordValid(String password) {
     if (password.length < 8 || password.length > 32) return false;
     final hasUppercase = password.contains(RegExp(r'[A-Z]'));
@@ -81,4 +79,10 @@ class InputValidationHelper {
     return hasUppercase && hasLowercase && hasDigit && hasSpecial;
   }
 
+  bool isValidEmail(String email) {
+    final RegExp emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
 }
