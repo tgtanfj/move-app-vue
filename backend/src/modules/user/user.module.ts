@@ -9,9 +9,11 @@ import { RefreshTokenRepository } from './repositories/refresh-token.repository'
 import { UserRepository } from './repositories/user.repository';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { AwsS3Module } from '../aws-s3/aws-s3.module';
+import { CountryModule } from '../country/country.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Account, RefreshToken])],
+  imports: [TypeOrmModule.forFeature([User, Account, RefreshToken]), AwsS3Module, CountryModule],
   controllers: [UserController],
   providers: [UserService, UserRepository, JwtService, AccountRepository, RefreshTokenRepository],
   exports: [UserService, UserRepository],
