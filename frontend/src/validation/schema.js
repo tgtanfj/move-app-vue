@@ -4,50 +4,51 @@ import {
   REGEX_REFERRAL_CODE,
   REGEX_STRONG_PASSWORD
 } from '../constants/regex.constant'
+import { t } from '../helpers/i18n.helper'
 
 export const passwordSchema = object({
   password: string()
-    .min(8, 'Password must be between 8 and 32 characters')
-    .max(32, 'Password must be between 8 and 32 characters')
-    .matches(
-      REGEX_STRONG_PASSWORD,
-      'Please choose a stronger password. Try a combination of letters, numbers, and special character'
-    )
-    .required('This field is required'),
+    .required(t('error_message.required_email'))
+    .min(8, t('error_message.password_length'))
+    .max(32, t('error_message.password_length'))
+    .matches(REGEX_STRONG_PASSWORD, t('error_message.strong_password')),
   confirmPassword: string()
+    .required(t('error_message.required'))
     .min(8)
-    .oneOf([ref('password')], 'The confirmation password does not match the new password.')
-    .required('This field is required')
+    .oneOf([ref('password')], t('error_message.match_password'))
 })
+
 export const emailSchema = object({
-  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email')
+  email: string()
+    .required(t('error_message.required_email'))
+    .matches(REGEX_EMAIL, t('error_message.invalid_email'))
 })
 
 export const registerSchema = object({
-  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email'),
+  email: string()
+    .required(t('error_message.required_email'))
+    .matches(REGEX_EMAIL, t('error_message.invalid_email')),
 
   password: string()
-    .min(8, 'Password must be between 8 and 32 characters')
-    .max(32, 'Password must be between 8 and 32 characters')
-    .matches(
-      REGEX_STRONG_PASSWORD,
-      'Please choose a stronger password. Try a combination of letters, numbers, and special character'
-    )
-    .required('This field is required'),
+    .required(t('error_message.required'))
+    .min(8, t('error_message.password_length'))
+    .max(32, t('error_message.password_length'))
+    .matches(REGEX_STRONG_PASSWORD, t('error_message.strong_password')),
 
   confirmPassword: string()
-    .oneOf([ref('password')], 'The confirmation password does not match the new password.')
-    .required('This field is required'),
-
-  code: string().matches(REGEX_REFERRAL_CODE, 'Referral code must be 8 alphanumeric characters')
+    .required(t('error_message.required'))
+    .oneOf([ref('password')], t('error_message.match_password')),
+  code: string().matches(REGEX_REFERRAL_CODE, t('error_message.referral_code'))
 })
 
 export const signinSchema = object({
-  email: string().required('Please enter your email').matches(REGEX_EMAIL, 'Invalid email'),
+  email: string()
+    .required(t('error_message.required_email'))
+    .matches(REGEX_EMAIL, t('error_message.invalid_email')),
   password: string()
-    .required('Please enter your password')
-    .min(8, 'Password must be between 8 and 32 characters')
-    .max(32, 'Password must be between 8 and 32 characters')
+    .required(t('error_message.required'))
+    .min(8, t('error_message.strong_password'))
+    .max(32, t('error_message.strong_password'))
 })
 
 // export const userProfileSchema = toTypedSchema(

@@ -21,7 +21,8 @@
           type="submit"
           class="w-[40%]"
           @click.prevent="handleSendOTP"
-          >{{ isPending && !isError ? $t('button.loading') : $t('button.submit') }}</Button
+          :isPending="isPending"
+          >{{ $t('button.submit') }}</Button
         >
       </div>
     </form>
