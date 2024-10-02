@@ -12,4 +12,10 @@ export class ChannelService {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL_OF_THIS_USER);
     });
   }
+
+  async findOne(channelId: number) {
+    return await this.channelRepository.findOne(channelId).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+    });
+  }
 }

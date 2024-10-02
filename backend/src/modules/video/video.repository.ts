@@ -1,7 +1,7 @@
 import { Video } from '@/entities/video.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsOrder, FindOptionsRelations, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, Repository } from 'typeorm';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 
@@ -49,5 +49,40 @@ export class VideoRepository {
     });
 
     return await this.videoRepository.save(newVideo);
+  }
+
+  async deleteVideos(videoIds: number[]) {
+    await this.videoRepository.manager.transaction(async (transactionalEntityManager) => {
+      await Promise.all(
+        videoIds.map(async (videoId) => {
+          await transactionalEntityManager
+            .getRepository(Video)
+            .findOneOrFail({ where: { id: videoId }, withDeleted: false });
+          await transactionalEntityManager.getRepository(Video).softDelete(videoId);
+        }),
+      );
+    });
+  }
+
+  async restoreVideos(videoIds: number[]) {
+    await this.videoRepository.manager.transaction(async (transactionalEntityManager) => {
+      await Promise.all(
+        videoIds.map(async (videoId) => {
+          await transactionalEntityManager.getRepository(Video).restore(videoId);
+        }),
+      );
+    });
+  }
+
+  async findOne(
+    videoId: number,
+    relations: FindOptionsRelations<Video> = {},
+    options: FindOneOptions<Video> = {},
+  ) {
+    return await this.videoRepository.findOne({
+      where: { id: videoId },
+      relations,
+      withDeleted: options.withDeleted,
+    });
   }
 }

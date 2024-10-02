@@ -20,6 +20,8 @@ export enum ERRORS_DICTIONARY {
   NOT_FOUND_ANY_USER = 'Not found any user',
 
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
+  INVALID_STATE = 'Invalid state',
+
   //Token
   GENERATE_TOKEN_FAIL = 'Generate token fail',
   VERIFY_TOKEN_FAIL = 'Token is not valid',
@@ -34,9 +36,11 @@ export enum ERRORS_DICTIONARY {
   // SOCIAL
   TRY_ANOTHER_LOGIN_METHOD = 'An account with this email already exists us  ing a different login method. Please use the original method to log in',
   NOT_FOUND_ANY_CHANNEL_OF_THIS_USER = 'Not found any channel of this user',
+  NOT_FOUND_ANY_CHANNEL = 'Not found any channel ',
 
   //video
   UPLOAD_THUMBNAIL_FAIL = 'Thumbnail resolution should be at least 1280x720 pixels',
   UPLOAD_VIDEO_FAIL = 'Upload video fail',
   NOT_FOUND_VIDEO = 'Not found video',
+  CAN_NOT_DELETE_VIDEOS = 'Can not delete videos',
 }
