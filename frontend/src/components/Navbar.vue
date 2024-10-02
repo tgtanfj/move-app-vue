@@ -16,7 +16,7 @@
           </RouterLink>
         </div>
       </div>
-      
+
       <div class="flex flex-1 items-center gap-2">
         <div class="flex flex-1 justify-end">
           <input
@@ -71,7 +71,10 @@
                   />
                 </TabsContent>
                 <TabsContent value="signup">
-                  <SignUpModal :closeModal="closeModal" />
+                  <SignUpModal
+                    :closeModal="closeModal"
+                    @open-otp-verification="handleOpenOTPVerification"
+                  />
                 </TabsContent>
               </Tabs>
             </DialogContent>
@@ -80,34 +83,40 @@
         <div>
           <NavbarLogged v-if="isUserLoggedIn" />
         </div>
-</div>
-      <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
+
+        <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
+        <OTPVerificationModal
+          v-model:open="openOTPModal"
+          :signupInfo="signupInfo"
+          @verify-success="handleVerifySuccess"
+        />
+      </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription
-} from '@common/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
-import SignInModal from '@components/SignInModal.vue'
-import { computed, ref } from 'vue'
-import Button from '../common/ui/button/Button.vue'
-import ForgotPassword from './ForgotPassword.vue'
-import OTPVerificationModal from './OTPVerificationModal.vue'
-import SignUpModal from './SignUpModal.vue'
 import LogoBlack from '@assets/icons/LogoBlack.vue'
 import LogoWhite from '@assets/icons/LogoWhite.vue'
 import SearchIcon from '@assets/icons/SearchIcon.vue'
-import { useAuthStore } from '../stores/auth'
-import NavbarLogged from '@components/NavbarLogged.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@common/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import MoreMenuNav from '@components/MoreMenuNav.vue'
+import NavbarLogged from '@components/NavbarLogged.vue'
+import SignInModal from '@components/SignInModal.vue'
+import { computed, ref } from 'vue'
+import Button from '../common/ui/button/Button.vue'
+import { useAuthStore } from '../stores/auth'
+import ForgotPassword from './ForgotPassword.vue'
+import OTPVerificationModal from './OTPVerificationModal.vue'
+import SignUpModal from './SignUpModal.vue'
 
 const isOpen = ref(false)
 const openForgotPassword = ref(false)
@@ -119,6 +128,10 @@ const closeModal = () => {
   isOpen.value = false
 }
 
+// const openForgotPassword = ref(false)
+const openOTPModal = ref(false)
+const signupInfo = ref('')
+
 const onOpenForgotPassword = () => {
   openForgotPassword.value = true
   closeModal()
@@ -129,4 +142,17 @@ const openLoginModal = () => {
   openForgotPassword.value = false
 }
 
+// const authStore = useAuthStore()
+
+// const isUserLoggedIn = computed(() => !!authStore.user.displayName)
+
+const handleOpenOTPVerification = (values) => {
+  openOTPModal.value = true
+  signupInfo.value = values
+}
+
+const handleVerifySuccess = () => {
+  openOTPModal.value = false
+  isOpen.value = true
+}
 </script>
