@@ -32,7 +32,8 @@ export class VideoService {
 
   async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      // const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
