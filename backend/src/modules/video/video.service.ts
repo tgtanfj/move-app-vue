@@ -39,9 +39,12 @@ export class VideoService {
     private readonly thumbnailService: ThumbnailService,
   ) {}
 
-  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
+  async getVideosDashboard(
+    // userId: number,
+    paginationDto: PaginationDto
+  ): Promise<object> {
     try {
-      // const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      // const channel = await this.channelService.getChannelByUserId(userId); 
       const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
@@ -63,12 +66,14 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [numberOfViews, numberOfComments, ratings] = await Promise.all([
+          const [selectedThumbnail, numberOfViews, numberOfComments, ratings] = await Promise.all([
+            this.thumbnailService.getSelectedThumbnail(video.id),
             this.watchingVideoHistoryService.getNumberOfViews(video.id),
             this.commentService.getNumberOfComments(video.id),
             this.watchingVideoHistoryService.getAverageRating(video.id),
           ]);
 
+          videoDetail.thumbnail_url = selectedThumbnail.image;
           videoDetail.numberOfViews = numberOfViews;
           videoDetail.numberOfComments = numberOfComments;
           videoDetail.ratings = ratings;

@@ -4,6 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ThumbnailRepository } from './thumbnail.repository';
 import { error } from 'console';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { Thumbnail } from '@/entities/thumbnail.entity';
 
 @Injectable()
 export class ThumbnailService {
@@ -12,6 +13,7 @@ export class ThumbnailService {
     private s3: AwsS3Service,
     private thumbnailRepository: ThumbnailRepository,
   ) {}
+  
   async saveThumbnails(files: Array<Express.Multer.File>, selected: number, videoId: number) {
     const result = await Promise.all(
       files.map(async (file, index) => {
@@ -33,5 +35,9 @@ export class ThumbnailService {
       }),
     );
     return result;
+  }
+
+  async getSelectedThumbnail(videoId: number): Promise<Thumbnail> {
+    return await this.thumbnailRepository.findSelectedThumbnail(videoId);
   }
 }
