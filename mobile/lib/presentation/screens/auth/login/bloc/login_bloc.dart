@@ -98,12 +98,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _onLoginWithEmailPasswordEvent(
       LoginWithEmailPasswordEvent event, Emitter<LoginState> emit) async {
     emit(state.copyWith(status: LoginStatus.processing));
+    print(state.email+'---------');
     final UserModel userModel = UserModel(
       email: state.email,
       password: state.password,
     );
     try {
       await authenticationRepository.loginWithEmailPassword(userModel);
+      print(state.email+'---------');
       emit(state.copyWith(
         status: LoginStatus.success,
       ));

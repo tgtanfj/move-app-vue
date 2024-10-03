@@ -24,7 +24,11 @@ class SharedPrefer {
     return _prefsInstance.getString(SharedPreferencesKey.token) ?? "";
   }
 
-  Future<void> clearUserToken(){
-    return _prefsInstance.remove(SharedPreferencesKey.token);
+  Future<void> setUserRefreshToken(String value) async {
+    await _prefsInstance.setString(SharedPreferencesKey.refreshToken, value);
+  }
+
+  String getUserRefreshToken() {
+    return _prefsInstance.getString(SharedPreferencesKey.refreshToken) ?? "";
   }
 }

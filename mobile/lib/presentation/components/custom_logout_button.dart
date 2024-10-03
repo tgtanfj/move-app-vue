@@ -3,7 +3,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 
 import '../../config/theme/app_text_styles.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomLogoutButton extends StatelessWidget {
   final String title;
   final TextStyle? titleStyle;
   final Color? backgroundColor;
@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
   final TextOverflow? textOverflow;
   final bool? softWrap;
 
-  const CustomButton({
+  const CustomLogoutButton({
     super.key,
     this.title = '',
     this.titleStyle,
@@ -56,20 +56,13 @@ class CustomButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (prefix != null) prefix!,
-            // Padding(
-            //   padding: EdgeInsets.symmetric(
-            //       horizontal: (title ?? '').isNotEmpty ? 12 : 0),
-            //   child: Text(
-            //     title ?? '',
-            //     style: titleStyle ??
-            //         AppTextStyles.montserratStyle.regular14Black,
-            //   ),
-            // ),
-            Expanded(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: (title ?? '').isNotEmpty ? 12 : 0),
               child: Text(
-                title,
-                style: titleStyle ?? const TextStyle(color: Colors.white),
-                textAlign: textAlign ?? TextAlign.center,
+                title ?? '',
+                style: titleStyle ??
+                    AppTextStyles.montserratStyle.regular14Black,
               ),
             ),
             if (suffix != null) suffix!,

@@ -15,30 +15,32 @@ class ApiService {
   }
 
   ApiService._internal() {
-    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-    BaseOptions options = BaseOptions(
+    dio = Dio(BaseOptions(
       baseUrl: ApiUrls.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        if (accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken',
-      },
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
-    );
-    dio = Dio(options);
+    ));
+
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+        if (accessToken.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $accessToken';
+        }
+        return handler.next(options);
+      },
+    ));
   }
 
-  // Intrucstion: use this method to make a request
-
-  //ApiService().request(APIRequestMethod.get, 'movie/popular',queryParameters: {});
   Future<Response<T>> request<T>(
-    APIRequestMethod method,
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Object? data,
-    Options? options,
-  }) async {
+      APIRequestMethod method,
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Object? data,
+        Options? options,
+      }) async {
     try {
       Response<T> response;
       switch (method) {
