@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, Repository } from 'typeorm';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
+import { channel } from 'diagnostics_channel';
+import { boolean } from 'joi';
 
 @Injectable()
 export class VideoRepository {
@@ -30,21 +32,20 @@ export class VideoRepository {
     });
   }
 
-  async createVideo(userId: number, thumbnail: string, dto: UploadVideoDTO) {
+  async createVideo(channelId: number, dto: UploadVideoDTO, isComment: boolean, isPublish: boolean) {
     const newVideo = this.videoRepository.create({
-      channel: {
-        id: userId,
-      },
-      isPublish: dto.isPublish,
       category: {
         id: dto.category,
       },
+      channel: {
+        id: channelId,
+      },
       workoutLevel: dto.workoutLevel,
       duration: dto.duration,
-      keywords: dto.duration,
+      keywords: dto.keywords,
+      isCommentable: isComment,
+      isPublish: isPublish,
       url: dto.url,
-      isCommentable: dto.isCommentable,
-      thumbnail_url: thumbnail,
       title: dto.title,
     });
 
@@ -58,6 +59,7 @@ export class VideoRepository {
   async save(video: Video): Promise<Video> {
     return await this.videoRepository.save(video);
   }
+
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.manager.transaction(async (transactionalEntityManager) => {
       await Promise.all(

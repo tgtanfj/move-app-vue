@@ -11,6 +11,9 @@ export class VideoDetail {
   title: string;
 
   @Expose()
+  url: string;
+
+  @Expose()
   thumbnail_url: string;
 
   @Expose()
