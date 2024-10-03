@@ -21,7 +21,7 @@ import { VideoService } from './video.service';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { UploadVideoDTO } from './dto/upload-video.dto';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { User } from '@/shared/decorators/user.decorator';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
@@ -50,15 +50,28 @@ export class VideoController {
   // @Roles(Role.INSTRUCTOR)
   // @UseGuards(JwtAuthGuard)
   @Post('upload-video')
-  @UseInterceptors(FilesInterceptor('thumbnails', 6))
+  // @UseInterceptors(FilesInterceptor('thumbnails', 6), FileInterceptor('video'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'thumbnails', maxCount: 6 },
+      { name: 'video', maxCount: 1 },
+    ]),
+  )
   @ApiConsumes('multipart/form-data')
   async uploadVideo(
     @User() user,
-    @UploadedFiles(ThumbnailsValidationPipe) files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files: {
+      thumbnails?: Express.Multer.File[];
+      video?: Express.Multer.File
+    },
     @Body() dto: UploadVideoDTO,
   ) {
     // const id = user.id;
-    return await this.videoService.uploadVideo(1, files, dto);
+    // return files.video;
+    // return files.thumbnails
+    console.log(files);
+    return await this.videoService.uploadVideo(1, files.thumbnails, dto, files.video[0]);
   }
 
   @Put('edit-video/:videoId')
@@ -79,5 +92,10 @@ export class VideoController {
   @Patch('restore')
   async restoreVideos(@Body() deleteVideosDto: DeleteVideosDto) {
     return await this.videoService.restoreVideos(deleteVideosDto.videoIds);
+  }
+
+  @Get('download')
+  async downloadVideo() {
+    return await this.videoService.downloadVideo('');
   }
 }

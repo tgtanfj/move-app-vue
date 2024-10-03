@@ -21,6 +21,7 @@ import { JwtService } from '@nestjs/jwt';
 import { VideoModule } from './modules/video/video.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
+import { BullModule } from '@nestjs/bullmq';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,6 +43,13 @@ import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
     VideoModule,
     CategoryModule,
     ThumbnailModule,
+    BullModule.forRoot({
+      connection: {
+        host: '172.19.12.84',
+        port: 6379,
+        connectTimeout: 200000,
+      },
+    }),
   ],
   providers: [
     {
