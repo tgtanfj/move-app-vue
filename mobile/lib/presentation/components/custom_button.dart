@@ -17,25 +17,30 @@ class CustomButton extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? textOverflow;
   final bool? softWrap;
+  final MainAxisAlignment? contentAlignment;
+  final MainAxisSize? mainAxisSize;
+  final bool isExpanded;
 
-  const CustomButton({
-    super.key,
-    this.title = '',
-    this.titleStyle,
-    this.backgroundColor = Colors.white,
-    this.isEnabled = true,
-    this.prefix,
-    this.suffix,
-    this.onTap,
-    this.onLongPress,
-    this.borderRadius = 8,
-    this.padding,
-    this.textAlign,
-    this.borderColor,
-    this.maxLines,
-    this.textOverflow,
-    this.softWrap,
-  });
+  const CustomButton(
+      {super.key,
+      this.title = '',
+      this.titleStyle,
+      this.backgroundColor = Colors.white,
+      this.isEnabled = true,
+      this.prefix,
+      this.suffix,
+      this.onTap,
+      this.onLongPress,
+      this.borderRadius = 8,
+      this.padding,
+      this.textAlign,
+      this.borderColor,
+      this.maxLines,
+      this.textOverflow,
+      this.softWrap,
+      this.contentAlignment,
+      this.mainAxisSize,
+      this.isExpanded = true});
 
   @override
   Widget build(BuildContext context) {
@@ -45,22 +50,29 @@ class CustomButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
         padding:
-        padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+            padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
             color: isEnabled ? backgroundColor : AppColors.spanishGray,
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(color: borderColor ?? AppColors.tiffanyBlue)),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: mainAxisSize ?? MainAxisSize.min,
+          mainAxisAlignment: contentAlignment ?? MainAxisAlignment.center,
           children: [
             if (prefix != null) prefix!,
-            Expanded(
-              child: Text(
-                title,
-                style: titleStyle ?? const TextStyle(color: Colors.white),
-                textAlign: textAlign ?? TextAlign.center,
-              ),
-            ),
+            isExpanded
+                ? Expanded(
+                    child: Text(
+                      title,
+                      style: titleStyle ?? const TextStyle(color: Colors.white),
+                      textAlign: textAlign ?? TextAlign.center,
+                    ),
+                  )
+                : Text(
+                    title,
+                    style: titleStyle ?? const TextStyle(color: Colors.white),
+                    textAlign: textAlign ?? TextAlign.center,
+                  ),
             if (suffix != null) suffix!,
           ],
         ),
@@ -68,4 +80,3 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
-

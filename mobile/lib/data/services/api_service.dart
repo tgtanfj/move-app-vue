@@ -15,23 +15,26 @@ class ApiService {
   }
 
   ApiService._internal() {
-    var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-    BaseOptions options = BaseOptions(
+    dio = Dio(BaseOptions(
       baseUrl: ApiUrls.baseUrl,
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        if (accessToken.isNotEmpty) 'Authorization': 'Bearer $accessToken',
-      },
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
-    );
-    dio = Dio(options);
+    ));
+
+    // Thêm Interceptor để cập nhật token trước mỗi request
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+        if (accessToken.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $accessToken';
+        }
+        return handler.next(options);
+      },
+    ));
   }
 
-  // Intrucstion: use this method to make a request
-
-  //ApiService().request(APIRequestMethod.get, 'movie/popular',queryParameters: {});
   Future<Response<T>> request<T>(
     APIRequestMethod method,
     String path, {
@@ -47,7 +50,8 @@ class ApiService {
               queryParameters: queryParameters, options: options);
           break;
         case APIRequestMethod.post:
-          response = await dio.post<T>(path, data: data, options: options, queryParameters: queryParameters);
+          response = await dio.post<T>(path,
+              data: data, options: options, queryParameters: queryParameters);
           break;
         case APIRequestMethod.put:
           response = await dio.put<T>(path, data: data, options: options);

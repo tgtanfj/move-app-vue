@@ -22,6 +22,8 @@ class CustomEditText extends StatefulWidget {
   final Color? cursorColor;
   final String preMessage;
   final String sufMessage;
+  final bool? enable;
+  final double? widthMessage;
 
   const CustomEditText({
     super.key,
@@ -31,7 +33,7 @@ class CustomEditText extends StatefulWidget {
     this.textCapitalization,
     this.textInputType,
     this.backgroundColor = Colors.white,
-    this.height ,
+    this.height,
     this.title = '',
     this.maxLength = 255,
     this.isPasswordInput = false,
@@ -44,6 +46,8 @@ class CustomEditText extends StatefulWidget {
     this.cursorColor,
     this.preMessage = "",
     this.sufMessage = "",
+    this.enable,
+    this.widthMessage,
   });
 
   @override
@@ -66,10 +70,11 @@ class _CustomEditTextState extends State<CustomEditText> {
       children: [
         widget.title.isNotEmpty
             ? Text(
-          widget.title,
-          style: widget.titleStyle ?? AppTextStyles.montserratStyle.regular16Black,
-          textAlign: TextAlign.left,
-        )
+                widget.title,
+                style: widget.titleStyle ??
+                    AppTextStyles.montserratStyle.regular16Black,
+                textAlign: TextAlign.left,
+              )
             : const SizedBox(),
         SizedBox(
           height: widget.title.isNotEmpty ? 4 : 0,
@@ -80,6 +85,7 @@ class _CustomEditTextState extends State<CustomEditText> {
         SizedBox(
           height: widget.height,
           child: TextField(
+            enabled: widget.enable ?? true,
             style: widget.textStyle ??
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
@@ -87,39 +93,50 @@ class _CustomEditTextState extends State<CustomEditText> {
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization:
-            widget.textCapitalization ?? TextCapitalization.none,
+                widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
             obscureText: widget.isPasswordInput ? !isTextVisible : false,
             decoration: InputDecoration(
               counterText: "",
-              fillColor: widget.backgroundColor,
+              fillColor: widget.enable == false
+                  ? AppColors.cultured
+                  : widget.backgroundColor,
               filled: true,
               suffixIcon: widget.isPasswordInput
                   ? GestureDetector(
-                onTap: () {
-                  setState(() {
-                    isTextVisible = !isTextVisible;
-                  });
-                },
-                child: Icon(
-                  isTextVisible ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.graniteGray,
-                ),
-              )
+                      onTap: () {
+                        setState(() {
+                          isTextVisible = !isTextVisible;
+                        });
+                      },
+                      child: Icon(
+                        isTextVisible ? Icons.visibility : Icons.visibility_off,
+                        color: AppColors.graniteGray,
+                      ),
+                    )
                   : widget.suffix,
               contentPadding:
-              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 11.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(color:widget.isShowMessage ? widget.borderColor :  AppColors.chineseSilver),
+                borderSide: BorderSide(
+                    color: widget.isShowMessage
+                        ? widget.borderColor
+                        : AppColors.chineseSilver),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor : AppColors.chineseSilver ),
+                borderSide: BorderSide(
+                    color: widget.isShowMessage
+                        ? widget.borderColor
+                        : AppColors.chineseSilver),
               ),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(color: widget.isShowMessage ? widget.borderColor :  AppColors.tiffanyBlue)),
+                  borderSide: BorderSide(
+                      color: widget.isShowMessage
+                          ? widget.borderColor
+                          : AppColors.tiffanyBlue)),
               errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: widget.borderColor)),
@@ -130,7 +147,8 @@ class _CustomEditTextState extends State<CustomEditText> {
         Visibility(
           visible: widget.isShowMessage,
           child: Container(
-            width: MediaQuery.of(context).size.width - 64,
+            width:
+                widget.widthMessage ?? MediaQuery.of(context).size.width - 64,
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
