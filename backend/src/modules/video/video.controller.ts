@@ -110,6 +110,7 @@ export class VideoController {
   async getUrlVideo(@Param('videoId') videoId: number) {
     return await this.videoService.sharingVideoUrlByNativeId(videoId);
   }
+
   @Get('download')
   async downloadVideo() {
     return await this.videoService.downloadVideo('');
