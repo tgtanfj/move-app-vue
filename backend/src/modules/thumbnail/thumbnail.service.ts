@@ -17,7 +17,7 @@ export class ThumbnailService {
       files.map(async (file, index) => {
         const linkThumbnail = await this.s3.uploadImage(file);
         if (selected === index) {
-          await this.thumbnailRepository
+          this.thumbnailRepository
             .saveThumbnail(linkThumbnail, true, videoId)
             .then(() => {})
             .catch((error) => {
