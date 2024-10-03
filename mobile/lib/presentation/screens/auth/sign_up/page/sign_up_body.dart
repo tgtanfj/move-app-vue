@@ -30,6 +30,9 @@ class _SignUpBodyState extends State<SignUpBody>
   Widget build(BuildContext context) {
     super.build(context);
     return BlocListener<SignUpBloc, SignUpState>(listener: (context, state) {
+      if (state.status == SignUpStatus.completed) {
+        Navigator.of(context).pop();
+      }
       if (state.status == SignUpStatus.success) {
         Navigator.of(context).pop();
         showDialog(

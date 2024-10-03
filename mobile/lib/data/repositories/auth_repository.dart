@@ -100,7 +100,7 @@ class AuthRepository {
       return null;
     }
   }
-
+  
   Future<UserCredential?> loginWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login(

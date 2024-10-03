@@ -25,28 +25,29 @@ class CustomEditText extends StatefulWidget {
   final String sufMessage;
   final List<TextInputFormatter>? inputFormatters;
 
-  const CustomEditText(
-      {super.key,
-      this.textStyle,
-      this.titleStyle,
-      this.onChanged,
-      this.textCapitalization,
-      this.textInputType,
-      this.backgroundColor = Colors.white,
-      this.height,
-      this.title = '',
-      this.maxLength = 255,
-      this.isPasswordInput = false,
-      this.suffix,
-      this.mainMessage = "",
-      this.borderColor = Colors.grey,
-      this.isShowMessage = false,
-      this.backgroundColorMessage = AppColors.lavenderBlush,
-      this.controller,
-      this.cursorColor,
-      this.preMessage = "",
-      this.sufMessage = "",
-      this.inputFormatters,});
+  const CustomEditText({
+    super.key,
+    this.textStyle,
+    this.titleStyle,
+    this.onChanged,
+    this.textCapitalization,
+    this.textInputType,
+    this.backgroundColor = Colors.white,
+    this.height,
+    this.title = '',
+    this.maxLength = 255,
+    this.isPasswordInput = false,
+    this.suffix,
+    this.mainMessage = "",
+    this.borderColor = Colors.grey,
+    this.isShowMessage = false,
+    this.backgroundColorMessage = AppColors.lavenderBlush,
+    this.controller,
+    this.cursorColor,
+    this.preMessage = "",
+    this.sufMessage = "",
+    this.inputFormatters,
+  });
 
   @override
   State<CustomEditText> createState() => _CustomEditTextState();
@@ -108,9 +109,8 @@ class _CustomEditTextState extends State<CustomEditText> {
                           isTextVisible = !isTextVisible;
                         });
                       },
-                      child: Icon(isTextVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                      child: Icon(
+                        isTextVisible ? Icons.visibility : Icons.visibility_off,
                         color: AppColors.graniteGray,
                       ),
                     )

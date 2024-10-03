@@ -125,7 +125,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (user != null) {
         emit(state.copyWith(
-          status: SignUpStatus.success,
+          status: SignUpStatus.completed,
           googleAccount: user.toString(),
         ));
       } else {
@@ -146,7 +146,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
-          status: SignUpStatus.success,
+          status: SignUpStatus.completed,
           facebookAccount: facebookAccount.toString(),
         ));
       } else {
