@@ -50,22 +50,18 @@ class CreatePasswordBloc
         isPasswordValid: true,
         doPasswordsMatch: true,
       ));
-      try {
-        final token = state.token;
-        final result = await forgotPasswordRepository.sendResetPasswordLink(
-          token,
-          state.newPassword,
-        );
-        result.fold((failure) {
-          emit(state.copyWith(
-              isPasswordResetSuccessful: false, errorMessage: failure));
-        }, (success) {
-          emit(state.copyWith(
-              isPasswordResetSuccessful: true, errorMessage: ''));
-        });
-      } catch (e) {
-        emit(state.copyWith(errorMessage: 'Error reset password'));
-      }
+
+      final token = state.token;
+      final result = await forgotPasswordRepository.sendResetPasswordLink(
+        token,
+        state.newPassword,
+      );
+      result.fold((failure) {
+        emit(state.copyWith(
+            isPasswordResetSuccessful: false, errorMessage: failure));
+      }, (success) {
+        emit(state.copyWith(isPasswordResetSuccessful: true, errorMessage: ''));
+      });
     } else {
       emit(state.copyWith(showValidationError: true));
     }

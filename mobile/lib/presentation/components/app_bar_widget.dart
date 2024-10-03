@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
-import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;

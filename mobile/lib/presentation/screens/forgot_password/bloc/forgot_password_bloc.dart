@@ -39,9 +39,5 @@ class ForgotPasswordBloc
             isShowEmailMessage: true));
       }
     }
-
-    // if (state.isEmailValid) {
-    //   emit(state.copyWith(isEmailSent: true));
-    // }
   }
 }

@@ -4,6 +4,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 
 class PasswordResetSuccessful extends StatelessWidget {
   const PasswordResetSuccessful({super.key});
@@ -12,7 +13,7 @@ class PasswordResetSuccessful extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width - 40;
     return Scaffold(
-      appBar: const AppBarWidget(),
+      appBar: const AppBarWidget(isEnableIcon: false,),
       backgroundColor: AppColors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -57,6 +58,12 @@ class PasswordResetSuccessful extends StatelessWidget {
                           backgroundColor: AppColors.tiffanyBlue,
                           onTap: () {
                             Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DialogAuthentication();
+                              },
+                            );
                           },
                         ),
                       ),

@@ -4,7 +4,8 @@ class Constants {
   static const String category = 'Category';
   static const String viewAll = 'View All';
   static const String videosYouMayLike = 'Videos you may like';
-  static const String login = "Log In";
+  static const String logIn = "Log In";
+  static const String login = "Login";
   static const String signUp = "Sign Up";
   static const String signUpWithGoogle = "Sign up with Google";
   static const String signUpWithFaceBook = "Sign up with Facebook";
@@ -76,7 +77,8 @@ class Constants {
   static const String forgotPassword = "Forgot Password?";
   static const String invalidEmail = "Invalid Email";
   static const String invalidPassword = "Invalid Password";
-  static const String invalidReferralCode ="The referral code you entered is invalid";
+  static const String invalidReferralCode =
+      "The referral code you entered is invalid";
   static const String prefixPassword =
       "Password must be 8-32 characters with at least one uppercase, one lowercase, one number, and one special character";
   static const String chooseStrongPassword =
@@ -84,15 +86,16 @@ class Constants {
   static const String emailExist =
       "Email already exists in the system. Please select another Email";
   static const String wrongCode = "Wrong code. Please try again";
-  static const String sendCode="We sent a 6-digit code to";
+  static const String sendCode = "We sent a 6-digit code to";
   static const String invalidCode = "Invalid code";
-  static const String enterCode="Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
-  static const String verificationCode="Verification Code";
-  static const String resendCode="Resend code";
-  static const String submit="Submit";
-  static const String verifyEmail="Verify your email to keep account secure";
-  static const String interm =  'Interm';
-  static const String intermediate =  'Intermediate';
+  static const String enterCode =
+      "Enter the code below to confirm your account. You may also tap on the link in the email we sent you.";
+  static const String verificationCode = "Verification Code";
+  static const String resendCode = "Resend code";
+  static const String submit = "Submit";
+  static const String verifyEmail = "Verify your email to keep account secure";
+  static const String interm = 'Interm';
+  static const String intermediate = 'Intermediate';
   static const String following = 'Following';
   static const String browse = 'Browse';
   static const String wallet = 'Wallet';
@@ -103,7 +106,11 @@ class Constants {
   static const String faq = 'FAQ';
   static const String logout = 'Logout';
   static const String loginMenu = "Login";
-  static const String signUpSuccessful="Sign Up Successful";
+  static const String signUpSuccessful = "Sign Up Successful";
   static const String theEmail = 'The email ';
   static const String isNotFound = ' is not found. Please try again.';
+  static const String titleExample =
+      'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam';
+  static const String contentExample =
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic.';
 }

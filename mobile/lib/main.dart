@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
-import 'config/app_config.dart';
-
-import 'package:move_app/config/app_config.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
 import 'package:uni_links2/uni_links.dart';
+
+import 'config/app_config.dart';
 
 void main() async {
   await AppConfig.init();
@@ -82,7 +80,6 @@ class _MyAppState extends State<MyApp> {
       },
       initialRoute: AppRoutes.getInitialRoute(),
       routes: AppRoutes.getRoutes(),
-      home: const ForgotPasswordPage(),
     );
   }
 }

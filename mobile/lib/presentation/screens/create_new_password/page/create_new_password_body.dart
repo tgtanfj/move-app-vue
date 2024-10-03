@@ -72,7 +72,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
           double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
           double screenWidth = MediaQuery.of(context).size.width - 40;
           return Scaffold(
-            appBar: const AppBarWidget(),
+            appBar: const AppBarWidget(
+              isEnableIcon: false,
+            ),
             backgroundColor: AppColors.white,
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),

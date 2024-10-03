@@ -19,12 +19,10 @@ class ForgotPasswordRepository {
             'Accept': '/',
             'Content-Type': 'application/json',
           },
-          validateStatus: (status) => status != null && status < 500,
+          validateStatus: (status) => status == 200,
         ),
       );
-      // await SharedPrefer.sharedPrefer
-      //     .setUserToken(response.data['data']['token']);
-      if (response.data['success'] != null) return true;
+      if (response.data['success'] == true) return true;
 
       return false;
     } catch (e) {
@@ -46,12 +44,12 @@ class ForgotPasswordRepository {
             'Accept': '/',
             'Content-Type': 'application/json',
           },
-          validateStatus: (status) => status != null && status < 500,
+          validateStatus: (status) => status == 201,
         ),
       );
       if (response.statusCode! >= 200 &&
           response.statusCode! < 300 &&
-          response.data['success'] != null) {
+          response.data['success'] == true) {
         return const Right(true);
       } else {
         return Left(

@@ -8,6 +8,7 @@ import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_bloc.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_state.dart';
+import 'package:move_app/presentation/screens/home/page/home_page.dart';
 
 class VerificationFailed extends StatefulWidget {
   const VerificationFailed({super.key});
@@ -28,7 +29,9 @@ class _VerificationFailedState extends State<VerificationFailed> {
         // double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
         double screenWidth = MediaQuery.of(context).size.width - 40;
         return Scaffold(
-          appBar: const AppBarWidget(),
+          appBar: const AppBarWidget(
+            isEnableIcon: false,
+          ),
           backgroundColor: AppColors.white,
           body: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -74,6 +77,11 @@ class _VerificationFailedState extends State<VerificationFailed> {
                               backgroundColor: AppColors.tiffanyBlue,
                               onTap: () {
                                 Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const HomePage(),
+                                  ),
+                                );
                               },
                             ),
                           ),

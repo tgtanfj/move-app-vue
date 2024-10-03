@@ -17,27 +17,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ForgotPasswordBloc(forgotPasswordRepository),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white70,
-        body: Center(
-          child: ElevatedButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    builder: (BuildContext context) {
-                      return BlocProvider(
-                          create: (context) =>
-                              ForgotPasswordBloc(forgotPasswordRepository),
-                          child: const ForgotPasswordBody());
-                    });
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: const Text("Forgot Password")),
-        ),
-      ),
-    );
+        create: (context) => ForgotPasswordBloc(forgotPasswordRepository),
+        child: const ForgotPasswordBody());
   }
 }

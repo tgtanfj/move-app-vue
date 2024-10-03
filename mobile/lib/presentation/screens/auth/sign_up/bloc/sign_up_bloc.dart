@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/user_model.dart';
@@ -6,11 +5,6 @@ import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_event.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
-
-import '../../../../../data/services/api_service.dart';
-
-import '../../../../../data/repositories/auth_repository.dart';
-import '../../login/bloc/login_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState()) {

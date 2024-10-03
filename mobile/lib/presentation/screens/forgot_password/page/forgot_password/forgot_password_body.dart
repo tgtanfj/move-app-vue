@@ -5,7 +5,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
-import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_bloc.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_event.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_state.dart';
@@ -31,7 +31,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: BlocBuilder<ForgotPasswordBloc, ForgotPasswordState>(
-        builder: (context, state) {
+          builder: (context, state) {
         double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
         double screenWidth = MediaQuery.of(context).size.width - 40;
         final bool hasError = state.errorMessage.isNotEmpty;
@@ -122,22 +122,20 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: CustomButton(
-                            title: Constants.backToLoginPage,
-                            titleStyle: AppTextStyles
-                                .montserratStyle.regular14TiffanyBlue,
-                            borderColor: AppColors.white,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return const CreateNewPasswordPage();
-                                  });
-                            },
-                          ),
+                        CustomButton(
+                          title: Constants.backToLoginPage,
+                          titleStyle: AppTextStyles
+                              .montserratStyle.regular14TiffanyBlue,
+                          borderColor: AppColors.white,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DialogAuthentication();
+                              },
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -147,8 +145,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
             ),
           ),
         );
-      }
-      ),
+      }),
     );
   }
 }
