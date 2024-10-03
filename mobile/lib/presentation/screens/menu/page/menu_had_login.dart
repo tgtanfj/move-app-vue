@@ -109,7 +109,11 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
               ],
             ),
           ),
-          widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
+          widget.isMoreEnable
+              ? MoreInfomation(faqButton: () {
+                  Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
+                })
+              : const SizedBox(),
           const SizedBox(
             height: 40.0,
           ),

@@ -28,7 +28,7 @@ class _MoreInfomationState extends State<MoreInfomation> {
         borderRadius: 0,
         titleStyle: AppTextStyles.montserratStyle.regular16White,
         textAlign: TextAlign.start,
-        onTap: () {},
+        onTap: widget.faqButton,
         title: Constants.faq,
       ),
     );
