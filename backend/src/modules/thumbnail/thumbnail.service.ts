@@ -17,11 +17,14 @@ export class ThumbnailService {
       files.map(async (file, index) => {
         const linkThumbnail = await this.s3.uploadImage(file);
         if (selected === index) {
-          await this.thumbnailRepository.saveThumbnail(linkThumbnail, true, videoId).then(() => { }).catch((error) => {
-            throw new BadRequestException({
-              message:ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL
-            })
-          })
+          await this.thumbnailRepository
+            .saveThumbnail(linkThumbnail, true, videoId)
+            .then(() => {})
+            .catch((error) => {
+              throw new BadRequestException({
+                message: ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL,
+              });
+            });
         } else {
           try {
             await this.thumbnailRepository.saveThumbnail(linkThumbnail, false, videoId);

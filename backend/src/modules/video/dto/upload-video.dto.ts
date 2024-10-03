@@ -4,8 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UploadVideoDTO {
-
-  thumbnails:any
+  thumbnails: any;
   @ApiProperty({
     description: 'Title of video',
     example: 'Pro ex',
@@ -46,14 +45,14 @@ export class UploadVideoDTO {
 
   @ApiProperty({
     description: 'Commentable video',
-    example: "true",
+    example: 'true',
   })
   @IsString()
   isCommentable: string;
 
   @ApiProperty({
     description: 'Publish  video',
-    example: "true",
+    example: 'true',
   })
   @IsString()
   isPublish: string;
@@ -66,6 +65,4 @@ export class UploadVideoDTO {
 
   @IsNotEmpty()
   selectedThumbnail: string;
-
-  
 }

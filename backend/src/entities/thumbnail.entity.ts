@@ -8,12 +8,12 @@ export class Thumbnail extends BaseEntity {
     type: 'varchar',
   })
   image: string;
-  
+
   @ManyToOne(() => Video, (video) => video.thumbnails)
   video: Video;
-  
+
   @Column({
-    type:'boolean'
+    type: 'boolean',
   })
-  selected:boolean
+  selected: boolean;
 }

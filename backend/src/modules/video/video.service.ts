@@ -109,22 +109,22 @@ export class VideoService {
     //find channel by id
     const foundChannel = await this.channelService.getChannelByUserId(userId);
     dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
-    const isPublish = stringToBoolean(dto.isPublish)
+    const isPublish = stringToBoolean(dto.isPublish);
     const isComment = stringToBoolean(dto.isCommentable);
-    
+
     const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
     if (!video) {
       throw new BadRequestException({
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
-    const selected=parseInt(dto.selectedThumbnail)
+    const selected = parseInt(dto.selectedThumbnail);
     //save thumbnails
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
     if (!newThumb) {
-       throw new BadRequestException({
-         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
-       });
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+      });
     }
     return video;
   }

@@ -41,7 +41,7 @@ import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
     AwsS3Module,
     VideoModule,
     CategoryModule,
-    ThumbnailModule
+    ThumbnailModule,
   ],
   providers: [
     {

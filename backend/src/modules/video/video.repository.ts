@@ -32,7 +32,7 @@ export class VideoRepository {
     });
   }
 
-  async createVideo(channelId: number, dto: UploadVideoDTO,isComment:boolean,isPublish:boolean) {
+  async createVideo(channelId: number, dto: UploadVideoDTO, isComment: boolean, isPublish: boolean) {
     const newVideo = this.videoRepository.create({
       category: {
         id: dto.category,
@@ -42,11 +42,11 @@ export class VideoRepository {
       },
       workoutLevel: dto.workoutLevel,
       duration: dto.duration,
-      keywords:dto.keywords,
+      keywords: dto.keywords,
       isCommentable: isComment,
       isPublish: isPublish,
       url: dto.url,
-      title:dto.title
+      title: dto.title,
     });
 
     return await this.videoRepository.save(newVideo);
@@ -59,7 +59,7 @@ export class VideoRepository {
   async save(video: Video): Promise<Video> {
     return await this.videoRepository.save(video);
   }
-  
+
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.manager.transaction(async (transactionalEntityManager) => {
       await Promise.all(

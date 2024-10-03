@@ -4,9 +4,9 @@ import * as sharp from 'sharp';
 
 @Injectable()
 export class ThumbnailsValidationPipe implements PipeTransform {
-    async transform(files: Array<Express.Multer.File>) {
-    console.log('pipe::::'+files.length);
-    
+  async transform(files: Array<Express.Multer.File>) {
+    console.log('pipe::::' + files.length);
+
     if (!files || files.length === 0) {
       throw new BadRequestException('No thumbnails uploaded.');
     }

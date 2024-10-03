@@ -50,7 +50,7 @@ export class VideoController {
   // @Roles(Role.INSTRUCTOR)
   // @UseGuards(JwtAuthGuard)
   @Post('upload-video')
-  @UseInterceptors(FilesInterceptor('thumbnails', 3))
+  @UseInterceptors(FilesInterceptor('thumbnails', 6))
   @ApiConsumes('multipart/form-data')
   async uploadVideo(
     @User() user,
