@@ -152,8 +152,8 @@ export class AuthService {
   }
 
   async loginSocial(infoLoginSocial: infoLoginSocial) {
-    const { idToken, type, publicIp, userAgent } = infoLoginSocial;
-    const { email, name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const { idToken, type, publicIp, userAgent, email } = infoLoginSocial;
+    const { name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
     const user = await this.userService.findUserAccountWithEmail(email);
     const account = user?.account;
 
