@@ -7,6 +7,7 @@ import { Donation } from './donation.entity';
 import { WatchingVideoHistory } from './watching-video-history.entity';
 import { Comment } from './comment.entity';
 import { Category } from './category.entity';
+import { Thumbnail } from './thumbnail.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
@@ -43,11 +44,6 @@ export class Video extends BaseEntity {
   })
   url: string;
 
-  @Column({
-    type: 'varchar',
-  })
-  thumbnail_url: string;
-
   @ManyToOne(() => Channel, (channel) => channel.videos)
   channel: Channel;
 
@@ -74,4 +70,6 @@ export class Video extends BaseEntity {
     default: 0,
   })
   shareCount: number;
+  @OneToMany(() => Thumbnail, (thumbnail) => thumbnail.video)
+  thumbnails: Thumbnail[];
 }

@@ -20,6 +20,7 @@ import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { VideoModule } from './modules/video/video.module';
 import { CategoryModule } from './modules/category/category.module';
+import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,6 +41,7 @@ import { CategoryModule } from './modules/category/category.module';
     AwsS3Module,
     VideoModule,
     CategoryModule,
+    ThumbnailModule
   ],
   providers: [
     {

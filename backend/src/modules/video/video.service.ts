@@ -19,6 +19,9 @@ import { CategoryVideoDetailDto } from '../category/dto/response/category-video-
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { CategoryRepository } from '../category/caregory.repository';
 import { Video } from '@/entities/video.entity';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { parseInt } from 'lodash';
+import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 
 @Injectable()
 export class VideoService {
@@ -33,6 +36,7 @@ export class VideoService {
     private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
+    private readonly thumbnailService: ThumbnailService,
   ) {}
 
   async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
@@ -101,25 +105,26 @@ export class VideoService {
     }
   }
 
-  async uploadVideo(channelId: number, thumbnail: Express.Multer.File, dto: UploadVideoDTO) {
+  async uploadVideo(userId: number, thumbnails: Array<Express.Multer.File>, dto: UploadVideoDTO) {
     //find channel by id
-    const foundChannel = null;
-    //validation thumbnail
-    const dimensions = sizeOf(thumbnail.buffer);
-    if (dimensions.height < 720) {
-      throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL,
-      });
-    }
-    // upload thumbnail into S3
-    const linkThumbNail = await this.s3.uploadImage(thumbnail);
-
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
     dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
-    const video = await this.videoRepository.createVideo(2, linkThumbNail, dto);
+    const isPublish = stringToBoolean(dto.isPublish)
+    const isComment = stringToBoolean(dto.isCommentable);
+    
+    const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
     if (!video) {
       throw new BadRequestException({
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
+    }
+    const selected=parseInt(dto.selectedThumbnail)
+    //save thumbnails
+    const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
+    if (!newThumb) {
+       throw new BadRequestException({
+         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+       });
     }
     return video;
   }
@@ -144,10 +149,10 @@ export class VideoService {
         video.category = category;
       }
 
-      if (thumbnail) {
-        const thumbnailUrl = await this.s3.uploadImage(thumbnail);
-        video.thumbnail_url = thumbnailUrl;
-      }
+      // if (thumbnail) {
+      //   const thumbnailUrl = await this.s3.uploadImage(thumbnail);
+      //   video.thumbnail_url = thumbnailUrl;
+      // }
 
       // Update video properties
       video.title = dto.title || video.title;

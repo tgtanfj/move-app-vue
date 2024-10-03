@@ -14,6 +14,9 @@ import { UserModule } from '../user/user.module';
 import { JwtService } from '@nestjs/jwt';
 import { CommentModule } from '../comment/comment.module';
 import { ChannelModule } from '../channel/channel.module';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
+import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 
 @Module({
   imports: [
@@ -24,6 +27,7 @@ import { ChannelModule } from '../channel/channel.module';
     WatchingVideoHistoryModule,
     UserModule,
     ChannelModule,
+    ThumbnailModule,
   ],
   controllers: [VideoController],
   providers: [

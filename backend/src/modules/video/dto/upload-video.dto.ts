@@ -1,9 +1,11 @@
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class UploadVideoDTO {
+
+  thumbnails:any
   @ApiProperty({
     description: 'Title of video',
     example: 'Pro ex',
@@ -44,21 +46,26 @@ export class UploadVideoDTO {
 
   @ApiProperty({
     description: 'Commentable video',
-    example: true,
+    example: "true",
   })
-  @IsBoolean()
-  isCommentable: boolean = true;
+  @IsString()
+  isCommentable: string;
 
   @ApiProperty({
     description: 'Publish  video',
-    example: true,
+    example: "true",
   })
-  @IsBoolean()
-  isPublish: boolean = false;
+  @IsString()
+  isPublish: string;
 
   @ApiProperty({
     description: 'url of video',
   })
   @IsString()
   url: string;
+
+  @IsNotEmpty()
+  selectedThumbnail: string;
+
+  
 }

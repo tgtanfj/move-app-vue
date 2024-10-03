@@ -12,19 +12,22 @@ import {
   Put,
   Query,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
 import { VideoService } from './video.service';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { UploadVideoDTO } from './dto/upload-video.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { User } from '@/shared/decorators/user.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { DeleteVideosDto } from './dto/request/delete-videos.dto';
+import { ThumbnailsValidationPipe } from '@/shared/pipes/thumbnail-validation.pipe';
 
 @ApiTags('Video')
 @Controller('video')
@@ -47,10 +50,15 @@ export class VideoController {
   // @Roles(Role.INSTRUCTOR)
   // @UseGuards(JwtAuthGuard)
   @Post('upload-video')
-  @UseInterceptors(FileInterceptor('thumbnail'))
-  async uploadVideo(@User() user, @UploadedFile() file: Express.Multer.File, @Body() dto: UploadVideoDTO) {
+  @UseInterceptors(FilesInterceptor('thumbnails', 3))
+  @ApiConsumes('multipart/form-data')
+  async uploadVideo(
+    @User() user,
+    @UploadedFiles(ThumbnailsValidationPipe) files: Array<Express.Multer.File>,
+    @Body() dto: UploadVideoDTO,
+  ) {
     // const id = user.id;
-    return await this.videoService.uploadVideo(1, file, dto);
+    return await this.videoService.uploadVideo(1, files, dto);
   }
 
   @Put('edit-video/:videoId')
