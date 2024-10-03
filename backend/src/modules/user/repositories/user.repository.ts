@@ -48,9 +48,9 @@ export class UserRepository {
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
-    const { email, stripeId } = signUpEmailDto;
+    const { email, stripeId, username } = signUpEmailDto;
 
-    return await this.userRepository.save({ email, stripeId });
+    return await this.userRepository.save({ email, stripeId, username });
   }
 
   async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
