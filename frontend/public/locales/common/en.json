@@ -134,7 +134,9 @@
     "password_length": "Password must be between 8 and 32 characters",
     "strong_password": "Please choose a stronger password. Try a combination of letters, numbers, and special character",
     "match_password": "The confirmation password does not match the new password.",
-    "referral_code": "Referral code must be 8 alphanumeric characters"
+    "referral_code": "Referral code must be 8 alphanumeric characters",
+    "wrong_code": "Wrong code. Please try again",
+    "banned": "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later"
   },
   "upload_video": {
     "title": "Upload a video",
