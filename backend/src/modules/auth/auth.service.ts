@@ -153,6 +153,7 @@ export class AuthService {
 
   async loginSocial(infoLoginSocial: infoLoginSocial) {
     const { idToken, type, publicIp, userAgent, email } = infoLoginSocial;
+    const username = email.split('@')[0];
     const { name, picture } = await firebaseAdmin.auth().verifyIdToken(idToken);
     const user = await this.userService.findUserAccountWithEmail(email);
     const account = user?.account;
@@ -168,6 +169,7 @@ export class AuthService {
         fullName: name,
         avatar: picture,
         stripeId: customer.id,
+        username: username,
       });
       await this.userService.createAccountSocial(newUser.id, type);
       return await this.login(newUser.id, publicIp, userAgent);

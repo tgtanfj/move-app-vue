@@ -35,7 +35,9 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             followingButton: () {},
             browseButton: () {},
             walletButton: () {},
-            settingButton: () {},
+            settingButton: () {
+              Navigator.of(context).pushNamed(AppRoutes.routeProfile);
+            },
           ),
           GestureDetector(
             onTap: widget.moreButton,

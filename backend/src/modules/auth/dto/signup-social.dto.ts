@@ -9,4 +9,8 @@ export class SignUpSocialDto extends SignUpDto {
   @IsNotEmpty()
   @IsString()
   avatar: string;
+
+  @IsNotEmpty()
+  @IsString()
+  username: string;
 }

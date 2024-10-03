@@ -23,6 +23,8 @@ class CustomEditText extends StatefulWidget {
   final Color? cursorColor;
   final String preMessage;
   final String sufMessage;
+  final bool? enable;
+  final double? widthMessage;
   final List<TextInputFormatter>? inputFormatters;
 
   const CustomEditText({
@@ -47,6 +49,8 @@ class CustomEditText extends StatefulWidget {
     this.preMessage = "",
     this.sufMessage = "",
     this.inputFormatters,
+    this.enable,
+    this.widthMessage,
   });
 
   @override
@@ -84,6 +88,7 @@ class _CustomEditTextState extends State<CustomEditText> {
         SizedBox(
           height: widget.height,
           child: TextField(
+            enabled: widget.enable ?? true,
             style: widget.textStyle ??
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
@@ -100,7 +105,9 @@ class _CustomEditTextState extends State<CustomEditText> {
             ],
             decoration: InputDecoration(
               counterText: "",
-              fillColor: widget.backgroundColor,
+              fillColor: widget.enable == false
+                  ? AppColors.cultured
+                  : widget.backgroundColor,
               filled: true,
               suffixIcon: widget.isPasswordInput
                   ? GestureDetector(
@@ -147,7 +154,8 @@ class _CustomEditTextState extends State<CustomEditText> {
         Visibility(
           visible: widget.isShowMessage,
           child: Container(
-            width: MediaQuery.of(context).size.width - 64,
+            width:
+                widget.widthMessage ?? MediaQuery.of(context).size.width - 64,
             margin: const EdgeInsets.only(top: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
