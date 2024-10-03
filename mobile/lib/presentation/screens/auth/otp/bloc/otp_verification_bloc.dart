@@ -30,7 +30,6 @@ class OtpVerificationBloc
     add(OtpVerificationStartTimerEvent());
   }
 
-
   void onOtpVerificationStartTimerEvent(
     OtpVerificationStartTimerEvent event,
     Emitter<OtpVerificationState> emit,
@@ -71,24 +70,17 @@ class OtpVerificationBloc
     OtpVerificationSubmitEvent event,
     Emitter<OtpVerificationState> emit,
   ) async {
+    emit(state.copyWith(status: OtpVerificationStatus.loading));
     try {
       await AuthRepository()
           .signUpWithEmail(state.userModel ?? UserModel(), state.inputOtpCode);
       emit(state.copyWith(status: OtpVerificationStatus.success));
     } catch (e) {
       if (e is Exception) {
-        if (e.toString() == Constants.yourAccountVerificationHasExpired) {
-          emit(state.copyWith(
-              isEnabledSubmit: false,
-              isShowMessageOtp: true,
-              messageOtp: e.toString(),
-              status: OtpVerificationStatus.error));
-        } else {
-          emit(state.copyWith(
-              isShowMessageOtp: true,
-              messageOtp: e.toString(),
-              status: OtpVerificationStatus.error));
-        }
+        emit(state.copyWith(
+            isShowMessageOtp: true,
+            messageOtp: e.toString(),
+            status: OtpVerificationStatus.error));
       }
     }
   }

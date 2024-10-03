@@ -101,6 +101,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         validPassword == null &&
         doMatchPassword &&
         validReferralCode == null) {
+      emit(state.copyWith(status: SignUpStatus.loading));
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
         emit(

@@ -30,9 +30,7 @@ class AuthRepository {
         ),
       );
 
-      if (signUpResponse.statusCode != null &&
-          signUpResponse.statusCode! >= 200 &&
-          signUpResponse.statusCode! < 300) {
+      if (signUpResponse.statusCode == 201) {
         await loginWithEmailPassword(userModel);
       }
 
