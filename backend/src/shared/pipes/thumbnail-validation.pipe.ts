@@ -1,6 +1,5 @@
 import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { Express } from 'express';
-import * as sharp from 'sharp';
 
 @Injectable()
 export class ThumbnailsValidationPipe implements PipeTransform {
