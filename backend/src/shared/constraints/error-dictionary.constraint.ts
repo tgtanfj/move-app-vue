@@ -1,11 +1,11 @@
 export enum ERRORS_DICTIONARY {
   // Users
-  EMAIL_EXISTED = 'Email already existed',
+  EMAIL_EXISTED = 'Email already exists in the system. Please select another Email',
   USER_NOT_FOUND = 'User not found',
 
   // Auth
 
-  INVALID_OTP = 'Invalid OTP. Please try again.',
+  INVALID_OTP = 'Wrong code. Please try again',
   ACCOUNT_LOCKED = 'Account is temporarily locked. Try again later.',
   OTP_WRONG_MANY_TIMES = "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later",
 
@@ -29,8 +29,8 @@ export enum ERRORS_DICTIONARY {
   //Account
   NOT_FOUND_ACCOUNT = 'Not found account',
   UPDATE_PASSWORD_FAIL = 'Update password fail',
-  PASSWORD_RESTRICTION = 'New passwords cannot match any of the user previous 2 passwords',
-  PASSWORD_INCORRECT = 'Password mismatch your password',
+  PASSWORD_RESTRICTION = 'Your new password cannot be the same as any of your last two passwords. Please choose a different password.',
+  PASSWORD_INCORRECT = 'You have entered an invalid password',
   WRONG_METHOD = 'Your method cant change password',
 
   // SOCIAL
