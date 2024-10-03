@@ -107,10 +107,13 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
             state.copyWith(status: SignUpStatus.success, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
-          emit(state.copyWith(
+          emit(
+            state.copyWith(
               status: SignUpStatus.error,
               isShowEmailMessage: true,
-              messageInputEmail: e.toString()));
+              messageInputEmail: e.toString(),
+            ),
+          );
         }
       }
     }
