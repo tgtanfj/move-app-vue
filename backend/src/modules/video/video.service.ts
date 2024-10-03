@@ -24,6 +24,8 @@ import { parseInt } from 'lodash';
 import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class VideoService {
@@ -39,6 +41,7 @@ export class VideoService {
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
+    @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
   ) {}
 
   async sharingVideoUrlByNativeId(videoId: number): Promise<string> {
@@ -151,7 +154,12 @@ export class VideoService {
     }
   }
 
-  async uploadVideo(userId: number, thumbnails: Array<Express.Multer.File>, dto: UploadVideoDTO) {
+  async uploadVideo(
+    userId: number,
+    thumbnails: Array<Express.Multer.File>,
+    dto: UploadVideoDTO,
+    videoFile: Express.Multer.File,
+  ) {
     //find channel by id
     const foundChannel = await this.channelService.getChannelByUserId(userId);
     dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
@@ -172,6 +180,17 @@ export class VideoService {
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
+    // const urlS3 = await this.s3.uploadImage(videoFile)
+    // console.log(urlS3);
+    // if (!urlS3) {
+    //   throw new Error('upload s3 fail')
+    // }
+    
+    // await this.uploadVideoUrlS3(video.id, urlS3);
+    await this.uploadS3Queue.add('upload', {
+      file: videoFile,
+      videoId:video.id
+    })
     return video;
   }
 
@@ -240,5 +259,24 @@ export class VideoService {
 
   async restoreVideos(videoIds: number[]) {
     await this.videoRepository.restoreVideos(videoIds);
+  }
+  async downloadVideo(linkS3: string) {
+    return await this.s3.getVideoDownloadLink('images/d5297b10-8135-11ef-9482-69a9835ce969.mp4');
+  }
+
+  async findOneOrThrow(videoId: number) {
+    const foundVideo = await this.videoRepository.findVideoById(videoId)
+    if (!foundVideo) {
+      throw new NotFoundException({
+        message:ERRORS_DICTIONARY.NOT_FOUND_VIDEO
+      })
+    }
+    return foundVideo
+  }
+
+  async uploadVideoUrlS3(videoId: number, urlS3: string) {
+    const foundVideo = await this.findOneOrThrow(videoId)
+    foundVideo.urlS3 = urlS3
+    return await this.videoRepository.save(foundVideo)
   }
 }
