@@ -31,13 +31,15 @@ class _MenuBodyState extends State<MenuBody> {
         builder: (context, state) {
           if (state.status == MenuStatus.hadlogin) {
             return MenuHadLogin(
+              logoutSuccessEvent: () =>
+                  context.read<MenuBloc>().add(MenuLogoutSuccessEvent()),
               isMoreEnable: state.isEnableMore,
               moreButton: () => context
                   .read<MenuBloc>()
                   .add(MenuSelectMoreEvent(isMoreEnable: !state.isEnableMore)),
             );
           } else {
-            return  MenuNotLogin(
+            return MenuNotLogin(
               isMoreEnable: state.isEnableMore,
               moreButton: () => context
                   .read<MenuBloc>()

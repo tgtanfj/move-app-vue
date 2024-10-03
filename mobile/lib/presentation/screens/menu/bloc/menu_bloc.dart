@@ -8,6 +8,7 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   MenuBloc() : super(MenuState.initial()) {
     on<MenuInitialEvent>(_onMenuInitialEvent);
     on<MenuSelectMoreEvent>(_onMenuSelectMoreEvent);
+    on<MenuLogoutSuccessEvent>(_onMenuLogoutSuccessEvent);
   }
 
   void _onMenuInitialEvent(MenuInitialEvent event, Emitter<MenuState> emit) {
@@ -22,5 +23,11 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   void _onMenuSelectMoreEvent(
       MenuSelectMoreEvent event, Emitter<MenuState> emit) {
     emit(state.copyWith(isEnableMore: event.isMoreEnable));
+  }
+
+  void _onMenuLogoutSuccessEvent (
+      MenuLogoutSuccessEvent event, Emitter<MenuState>  emit
+      ){
+    emit(state.copyWith(status: MenuStatus.notlogin));
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
-import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
+import 'package:move_app/presentation/components/logout_dialog.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;
@@ -53,7 +53,9 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: () {},
+                onTap: () {
+
+                },
                 child: SvgPicture.asset(
                   widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
                   width: 24.0,

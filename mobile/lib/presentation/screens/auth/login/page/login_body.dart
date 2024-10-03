@@ -141,12 +141,16 @@ class _LoginBodyState extends State<LoginBody>
                               backgroundColor: state.isEnabled
                                   ? AppColors.tiffanyBlue
                                   : AppColors.spanishGray,
-                              borderColor: AppColors.spanishGray,
-                              onTap: () {
-                                context.read<LoginBloc>().add(
-                                      LoginWithEmailPasswordEvent(),
-                                    );
-                              },
+                              borderColor: state.isEnabled
+                                  ? AppColors.tiffanyBlue
+                                  : AppColors.spanishGray,
+                              onTap: state.isEnabled
+                                  ? () {
+                                      context.read<LoginBloc>().add(
+                                            LoginWithEmailPasswordEvent(),
+                                          );
+                                    }
+                                  : null,
                             ),
                           ],
                         )

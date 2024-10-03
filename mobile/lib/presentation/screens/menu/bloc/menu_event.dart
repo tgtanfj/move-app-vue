@@ -16,3 +16,8 @@ final class MenuSelectMoreEvent extends MenuEvent {
   @override
   List<Object?> get props => [];
 }
+final class MenuLogoutSuccessEvent extends MenuEvent {
+  const MenuLogoutSuccessEvent();
+  @override
+  List<Object?> get props => [];
+}
