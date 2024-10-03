@@ -6,15 +6,12 @@ import { passwordSchema } from '@/validation/schema.js'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { useResetPassword, useForgotPassword } from '../services/forgotpassword.services'
-import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
+import { useResetPassword } from '../services/forgotpassword.services'
 
 const route = useRoute()
 const token = route.params.token
 const mutationResetPassword = useResetPassword()
-const mutationForgotPassword = useForgotPassword()
 const { isPending, isSuccess, isError } = mutationResetPassword
-const forgotPasswordStore = useForgotPasswordStore()
 
 const isFillAllFields = computed(() => {
   return values.password && values.confirmPassword
@@ -32,9 +29,9 @@ const submit = handleSubmit(async (values) => {
     newPassword: values.password
   })
 })
-const handleResendLink = () => {
-  mutationForgotPassword.mutate({ email: forgotPasswordStore.email })
-}
+// const handleResendLink = () => {
+//   mutationForgotPassword.mutate({ email: forgotPasswordStore.email })
+// }
 </script>
 
 <template>
@@ -84,13 +81,13 @@ const handleResendLink = () => {
       isSuccess ? $t('forgot_password.reset_success_desc') : $t('forgot_password.reset_fail_desc')
     "
   >
-    <p v-if="isError">
+    <!-- <p v-if="isError">
       <Button variant="link" class="p-0" @click="handleResendLink">{{
         $t('forgot_password.resend_link')
       }}</Button>
       to
       <b>{{ forgotPasswordStore.email }}</b>
-    </p>
+    </p> -->
 
     <div class="text-center mt-6">
       <Button class="w-[60%]">

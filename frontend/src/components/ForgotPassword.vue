@@ -6,14 +6,12 @@ import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { useForgotPassword } from '../services/forgotpassword.services'
 import { emailSchema } from '../validation/schema'
-import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
 
 const emit = defineEmits(['openLogin'])
 const email = ref('')
 const mutation = useForgotPassword()
 const { isPending, isIdle, isSuccess, isError, reset } = mutation
 
-const forgotPasswordStore = useForgotPasswordStore()
 
 const bgColor = computed(() => {
   if (isSuccess.value) {
@@ -40,7 +38,6 @@ const isFormValid = computed(() => {
 const handleSendMail = handleSubmit(async (values) => {
   email.value = values.email
   mutation.mutate({ email: values.email })
-  forgotPasswordStore.setEmail(values.email)
 })
 
 const openLogin = () => {

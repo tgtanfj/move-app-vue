@@ -62,14 +62,8 @@
       </div>
       <div class="mt-4 ml-7" v-else>
         <p class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</p>
-        <Button
-          variant="default"
-          class="flex items-center gap-2 mt-3"
-          @click="handleUploadNewVideo"
-        >
-          <FileVideo2 class="text-xl" />
-          <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
-        </Button>
+        <UploadVideo class="mt-3"/>
+        
       </div>
     </template>
   </div>
@@ -100,6 +94,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { videoService } from '@services/video.services'
 import { ADMIN_BASE } from '@constants/api.constant'
 import axios from 'axios'
+import UploadVideo from '@components/UploadVideo.vue'
 
 const count = ref()
 const videos = ref([])
@@ -171,5 +166,4 @@ const handlePrevPage = () => {
   getVideosByLimit(count.value, temp)
   selectedPage.value = temp
 }
-const handleUploadNewVideo = () => {}
 </script>

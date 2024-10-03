@@ -88,7 +88,14 @@
         <OTPVerificationModal
           v-model:open="openOTPModal"
           :signupInfo="signupInfo"
+          :countdown="countdown"
+          :isCounting="isCounting"
+          :isBanned="isBanned"
           @verify-success="handleVerifySuccess"
+          @getWithExpiry="getWithExpiry"
+          @start="startCountdown"
+          @reset="resetCountdown"
+          @setIsBannedToTrue="setIsBannedToTrue"
         />
       </div>
     </div>
@@ -118,6 +125,10 @@ import ForgotPassword from './ForgotPassword.vue'
 import OTPVerificationModal from './OTPVerificationModal.vue'
 import SignUpModal from './SignUpModal.vue'
 
+const countdown = ref(60)
+const isCounting = ref(false)
+let timer = null
+const isBanned = ref(false)
 const isOpen = ref(false)
 const openForgotPassword = ref(false)
 const authStore = useAuthStore()
@@ -146,13 +157,66 @@ const openLoginModal = () => {
 
 // const isUserLoggedIn = computed(() => !!authStore.user.displayName)
 
+const getWithExpiry = (key) => {
+  console.log('here')
+  const itemStr = localStorage.getItem(key)
+  console.log('itemStr', itemStr)
+
+  if (!itemStr) {
+    return null
+  }
+
+  const item = JSON.parse(itemStr)
+  const now = new Date()
+  console.log('item', item)
+
+  if (now.getTime() > item.expiry) {
+    localStorage.removeItem(key)
+    return null
+  }
+
+  return item.value
+}
+
 const handleOpenOTPVerification = (values) => {
   openOTPModal.value = true
   signupInfo.value = values
+
+  const data = getWithExpiry('banOTP')
+
+  if (data) {
+    isBanned.value = true
+    clearInterval(timer)
+    isCounting.value = false
+  } else {
+    isBanned.value = false
+    startCountdown()
+  }
+}
+
+const setIsBannedToTrue = () => {
+  isBanned.value = true
 }
 
 const handleVerifySuccess = () => {
   openOTPModal.value = false
   isOpen.value = true
+}
+
+const startCountdown = () => {
+  isCounting.value = true
+  timer = setInterval(() => {
+    if (countdown.value > 0) {
+      countdown.value--
+    } else {
+      clearInterval(timer)
+      isCounting.value = false
+    }
+  }, 1000)
+}
+
+const resetCountdown = () => {
+  countdown.value = 60
+  startCountdown()
 }
 </script>
