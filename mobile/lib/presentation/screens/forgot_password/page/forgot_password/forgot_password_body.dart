@@ -63,7 +63,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                         CustomEditText(
                           key: Key(state.errorMessage),
                           title: Constants.enterEmailAddress,
-                          tittleStyle:
+                          titleStyle:
                               AppTextStyles.montserratStyle.regular14Black,
                           controller: _emailController,
                           isPasswordInput: false,

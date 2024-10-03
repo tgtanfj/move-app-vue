@@ -3,7 +3,16 @@
     <label v-if="label" :for="name">{{ label }}</label>
     <div class="relative">
       <input
-        :type="inputType !== 'password' ? 'text' : showPassword ? 'text' : 'password'"
+        v-if="inputType !== 'password'"
+        :type="inputType"
+        v-model.trim="fieldName"
+        v-bind="fieldNameAttrs"
+        :id="name"
+        class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none w-full"
+      />
+      <input
+        v-else
+        :type="showPassword ? 'text' : 'password'"
         v-model="fieldName"
         v-bind="fieldNameAttrs"
         :id="name"

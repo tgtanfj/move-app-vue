@@ -26,34 +26,34 @@ class GenderRadioGroup extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: GenderRadioItem(
+              child: CustomRadioItem(
                 value: Gender.male,
                 groupValue: selectedGender,
                 title: Constants.male,
                 onChanged: (value) {
-                  onChanged(value!);
+                  onChanged(value);
                 },
               ),
             ),
             Expanded(
-              child: GenderRadioItem(
+              child: CustomRadioItem(
                 value: Gender.female,
                 groupValue: selectedGender,
                 title: Constants.female,
                 onChanged: (value) {
-                  onChanged(value!);
+                  onChanged(value);
                 },
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        GenderRadioItem(
+        CustomRadioItem(
           value: Gender.ratherNotSay,
           groupValue: selectedGender,
           title: Constants.ratherNotSay,
           onChanged: (value) {
-            onChanged(value!);
+            onChanged(value);
           },
         ),
       ],

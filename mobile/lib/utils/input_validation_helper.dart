@@ -85,4 +85,32 @@ class InputValidationHelper {
     );
     return emailRegex.hasMatch(email);
   }
+
+  static String? validateUsername(String username) {
+    if (username.length < 4 || username.length > 25) {
+      return Constants.invalidCharacterUsername;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
+      return Constants.invalidContainUsername;
+    }
+    return null;
+  }
+
+  static String? validateFullName(String fullName) {
+    if (fullName.length < 8 || fullName.length > 255) {
+      return Constants.invalidCharacterFullName;
+    }
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(fullName)) {
+      return Constants.invalidSpecialCharacterFullName;
+    }
+    return null;
+  }
+
+  static String? validateCity(String city) {
+    if (city.isEmpty) {
+      return Constants.invalidCity;
+    }
+
+    return null;
+  }
 }

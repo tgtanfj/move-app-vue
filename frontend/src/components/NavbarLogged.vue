@@ -5,7 +5,7 @@
     <DropdownMenu>
       <DropdownMenuTrigger>
         <img
-          :src="authStore.user?.photoURL"
+          :src="authStore.user?.photoURL || defaultAvatar"
           alt="Avatar"
           width="30"
           height="30"
@@ -19,14 +19,14 @@
             class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
             <img
-              :src="authStore.user?.photoURL"
+              :src="authStore.user?.photoURL || defaultAvatar"
               alt="Avatar"
               width="40"
               height="40"
               class="rounded-full"
             />
             <p class="font-semibold text-lg group-hover:text-primary duration-100">
-              {{ authStore.user?.displayName || authStore.user?.name }}
+              {{ authStore.user?.displayName || authStore.user?.name || 'Username' }}
             </p>
           </DropdownMenuItem>
         </RouterLink>
@@ -78,24 +78,24 @@
 </template>
 
 <script setup>
+import BellIcon from '@assets/icons/BellIcon.vue'
+import DashboardIcon from '@assets/icons/DashboardIcon.vue'
+import defaultAvatar from '@assets/icons/default-avatar.png'
+import LogoutIcon from '@assets/icons/LogoutIcon.vue'
+import SettingIcon from '@assets/icons/SettingIcon.vue'
+import WalletIcon from '@assets/icons/WalletIcon.vue'
+import { Button } from '@common/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
-import { useAuthStore } from '../stores/auth'
-import { RouterLink, useRouter } from 'vue-router'
-import LogoutIcon from '@assets/icons/LogoutIcon.vue'
-import SettingIcon from '@assets/icons/SettingIcon.vue'
-import WalletIcon from '@assets/icons/WalletIcon.vue'
-import DashboardIcon from '@assets/icons/DashboardIcon.vue'
-import BellIcon from '@assets/icons/BellIcon.vue'
-import BaseDialog from './BaseDialog.vue'
 import { ref } from 'vue'
-import { Button } from '@common/ui/button'
+import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
+import BaseDialog from './BaseDialog.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()

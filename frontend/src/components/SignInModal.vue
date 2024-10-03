@@ -137,7 +137,7 @@ const togglePasswordVisibility = () => {
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
-          v-model="email"
+          v-model.trim="email"
           v-bind="emailAttrs"
         />
         <p class="text-red-500 text-[14px]">{{ errors.email }}</p>
@@ -170,9 +170,9 @@ const togglePasswordVisibility = () => {
         type="submit"
         :disabled="!isSignIn || authStore.isLoading"
         :variant="isSignIn ? 'default' : 'disabled'"
+        :isLoading="authStore.isLoading"
       >
-        <span v-if="authStore.isLoading">Logging in...</span>
-        <span v-else>Log In</span>
+        Log In
       </Button>
     </form>
   </div>

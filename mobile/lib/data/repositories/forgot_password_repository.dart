@@ -19,10 +19,10 @@ class ForgotPasswordRepository {
             'Accept': '/',
             'Content-Type': 'application/json',
           },
-          validateStatus: (status) => status == 200,
+          validateStatus: (status) => status != null && status < 500,
         ),
       );
-      if (response.data['success'] == true) return true;
+      if (response.data['success'] != null) return true;
 
       return false;
     } catch (e) {
@@ -44,12 +44,12 @@ class ForgotPasswordRepository {
             'Accept': '/',
             'Content-Type': 'application/json',
           },
-          validateStatus: (status) => status == 201,
+          validateStatus: (status) => status != null && status < 500,
         ),
       );
       if (response.statusCode! >= 200 &&
           response.statusCode! < 300 &&
-          response.data['success'] == true) {
+          response.data['success'] != null) {
         return const Right(true);
       } else {
         return Left(

@@ -9,7 +9,6 @@ import { computed, ref } from 'vue'
 import { signupService } from '../services/signup.services'
 import { useAuthStore } from '../stores/auth'
 import { registerSchema } from '../validation/schema.js'
-import Loading from './Loading.vue'
 
 const props = defineProps({
   closeModal: Function
@@ -191,11 +190,11 @@ const handleFacebookSignIn = async () => {
         <div>
           <Button
             class="w-full text-base"
-            :disabled="!isSignUp"
+            :disabled="!isSignUp || isLoading"
             :variant="isSignUp ? 'default' : 'disabled'"
             type="submit"
-            ><span v-if="!isLoading">Sign Up</span>
-            <Loading v-if="isLoading" />
+            :isLoading="isLoading"
+            >Sign Up
           </Button>
         </div>
       </form>
