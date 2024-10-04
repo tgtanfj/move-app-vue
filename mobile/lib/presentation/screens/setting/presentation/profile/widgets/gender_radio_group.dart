@@ -4,9 +4,16 @@ import 'package:move_app/constants/constants.dart';
 import '../../../../../components/custom_radio_item.dart';
 
 enum Gender {
-  male,
-  female,
-  ratherNotSay,
+  male('M'),
+  female('F'),
+  ratherNotSay('0');
+
+  final String value;
+
+  const Gender(this.value);
+
+  @override
+  String toString() => value;
 }
 
 class GenderRadioGroup extends StatelessWidget {

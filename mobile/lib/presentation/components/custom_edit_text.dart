@@ -56,11 +56,21 @@ class CustomEditText extends StatefulWidget {
 
 class _CustomEditTextState extends State<CustomEditText> {
   late bool isTextVisible;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     isTextVisible = !widget.isPasswordInput;
+    _controller = widget.controller ?? TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller != null) {
+      widget.controller?.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -89,7 +99,7 @@ class _CustomEditTextState extends State<CustomEditText> {
             style: widget.textStyle ??
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
-            controller: widget.controller,
+            controller: _controller,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization:

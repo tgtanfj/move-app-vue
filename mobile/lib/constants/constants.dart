@@ -67,6 +67,7 @@ class Constants {
   static const String city = 'City';
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
+  static const String pleaseSelectCountry = 'Please select country';
   static const String malaysia = 'Malaysia';
   static const String to = 'to';
   static const String exampleEmail = 'p.giggs@email.com.';
@@ -119,4 +120,14 @@ class Constants {
   static const String invalidContainUsername =
       'Username containing only letters, numbers, and underscores';
   static const String invalidCity = 'This field is required';
+  static const String invalidDateOfBirth = 'Please select your date of birth';
+  static const String invalidAge =
+      'Invalid age. Age must be between 18 and 65 years old';
+  static const String sizeAvatarLimit =
+      'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.';
+  static const String allowFileType =
+      'Invalid file format. Only JPG, PNG, and GIF are allowed.';
+  static const String dimensionAvatar =
+      'Image dimensions should be between 100x100 and 2000x2000.';
+  static const String noImageIsPicked = 'No image is picked';
 }

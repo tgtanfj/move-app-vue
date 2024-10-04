@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:move_app/constants/api_urls.dart';
-import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 
 enum APIRequestMethod { get, post, put, delete, patch }
 
@@ -23,10 +22,11 @@ class ApiService {
       responseType: ResponseType.json,
     ));
 
-    // Thêm Interceptor để cập nhật token trước mỗi request
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+        var accessToken =
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQwLCJkZXZpY2VJZCI6IjY5Zjg3Yjg4LWJhNDQtNDZiYy05NTExLWY4YzMwN2E4Y2I2YSIsImlhdCI6MTcyODIxODE2MCwiZXhwIjoxNzI4MzA0NTYwfQ.inzyC4krHrTiHbVZkMyappWZU3P6OLNVnalt_yKi0u0';
+        // SharedPrefer.sharedPrefer.getUserToken();
         if (accessToken.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $accessToken';
         }

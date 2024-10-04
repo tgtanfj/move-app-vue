@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:either_dart/either.dart';
+import 'package:dartz/dartz.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
@@ -8,6 +8,8 @@ import 'package:move_app/data/repositories/user_repository.dart';
 import 'package:move_app/presentation/screens/setting/presentation/profile/bloc/profile_event.dart';
 import 'package:move_app/presentation/screens/setting/presentation/profile/bloc/profile_state.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
+
+import '../../../../../../data/models/state_model.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final userRepository = UserRepository();
@@ -20,8 +22,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileCountrySelectEvent>(_onProfileCountrySelectEvent);
     on<ProfileStateSelectEvent>(_onProfileStateSelectEvent);
     on<ProfileUpdateDateOfBirthEvent>(_onProfileUpdateDateOfBirthEvent);
-    on<ProfileValueChangeEvent>(_onProfileValueChangeEvent);
     on<ProfileSaveSettingsEvent>(_onProfileSaveSettingsEvent);
+    on<ProfileUpdateAvatarEvent>(_onProfileUpdateAvatarEvent);
+    on<ProfileUsernameChangeEvent>(_onProfileUsernameChangEvent);
+    on<ProfileFullNameChangeEvent>(_onProfileFullNameChangEvent);
+    on<ProfileCityChangeEvent>(_onProfileCityChangEvent);
   }
 
   void _onProfileInitialEvent(
@@ -35,7 +40,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(state.copyWith(status: ProfileStatus.failure));
     }, (r) {
       emit(state.copyWith(
-        status: ProfileStatus.success,
         user: r,
       ));
     });
@@ -45,18 +49,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ));
     }, (r) {
       emit(state.copyWith(
-        status: ProfileStatus.success,
         countryList: r,
       ));
     });
+    if (state.user?.country?.id != null) {
+      final states =
+          await stateRepository.getStateList(state.user!.country!.id!);
+      states.fold((l) {}, (r) {
+        emit(state.copyWith(stateList: r));
+      });
+    }
+    final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
+        (state.user?.fullName?.isNotEmpty ?? false);
+    emit(state.copyWith(isEnableSaveSettings: isEnableSaveSettings));
   }
 
   void _onProfileGenderChangedEvent(
       ProfileGenderChangedEvent event, Emitter<ProfileState> emit) {
     emit(state.copyWith(status: ProfileStatus.processing));
     emit(state.copyWith(
-      selectedGender: event.selectedGender,
-    ));
+        user: state.user?.copyWith(gender: event.selectedGender.value)));
   }
 
   void _onProfileCountrySelectEvent(
@@ -64,18 +76,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(status: ProfileStatus.processing));
-    final updateUser = state.user?.copyWith(
-        country: state.countryList.firstWhere(
-      (e) => e.id == event.countryId,
-    ));
     final result = await stateRepository.getStateList(event.countryId);
     result.fold((l) {
       emit(state.copyWith(status: ProfileStatus.failure));
     }, (r) {
       emit(state.copyWith(
-        status: ProfileStatus.success,
-        user: updateUser,
+        user: state.user?.copyWith(
+          country: state.countryList.firstWhere(
+            (e) => e.id == event.countryId,
+          ),
+          state: StateModel(id: 0, name: ''),
+        ),
         stateList: r,
+        isShowCountryMessage: false,
+        isShowStateMessage: false,
       ));
     });
   }
@@ -89,7 +103,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         state: state.stateList.firstWhere(
       (e) => e.id == event.stateId,
     ));
-    emit(state.copyWith(status: ProfileStatus.success, user: updateUser));
+    emit(state.copyWith(user: updateUser, isShowStateMessage: false));
   }
 
   void _onProfileUpdateDateOfBirthEvent(
@@ -98,38 +112,65 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) {
     emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(dateOfBirth: event.dateOfBirth);
+    final isShowDateOfBirthMessage =
+        state.user?.dateOfBirth != event.dateOfBirth
+            ? false
+            : state.isShowDateOfBirthMessage;
+    if (updateUser != null) {
+      emit(state.copyWith(
+        user: updateUser,
+        isShowDateOfBirthMessage: isShowDateOfBirthMessage,
+      ));
+    }
+  }
+
+  void _onProfileUsernameChangEvent(
+    ProfileUsernameChangeEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    emit(state.copyWith(status: ProfileStatus.processing));
+    final updateUser = state.user?.copyWith(username: event.username);
+    final isEnableSaveSettings = (updateUser?.username?.isNotEmpty ?? false) &&
+        (state.user?.fullName?.isNotEmpty ?? false);
+    final isShowUsernameMessage = state.user?.username != event.username
+        ? false
+        : state.isShowUsernameMessage;
     emit(state.copyWith(
-      status: ProfileStatus.success,
       user: updateUser,
+      isEnableSaveSettings: isEnableSaveSettings,
+      isShowUsernameMessage: isShowUsernameMessage,
     ));
   }
 
-  void _onProfileValueChangeEvent(
-    ProfileValueChangeEvent event,
+  void _onProfileFullNameChangEvent(
+    ProfileFullNameChangeEvent event,
     Emitter<ProfileState> emit,
   ) {
-    final settingValues = state.copyWith(
-      inputUsername: event.username,
-      inputFullName: event.fullName,
-      inputCity: event.city,
-    );
-    final isShowUsernameMessage =
-        state.inputUsername != settingValues.inputUsername
-            ? false
-            : state.isShowUsernameMessage;
-    final isShowFullNameMessage =
-        state.inputFullName != settingValues.inputFullName
-            ? false
-            : state.isShowFullNameMessage;
-    final isShowCityMessage = state.inputCity != settingValues.inputCity
+    emit(state.copyWith(status: ProfileStatus.processing));
+    final updateUser = state.user?.copyWith(fullName: event.fullName);
+    final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
+        (updateUser?.fullName?.isNotEmpty ?? false);
+    final isShowFullNameMessage = state.user?.username != event.fullName
         ? false
-        : state.isShowCityMessage;
-    final isEnableSaveSettings = settingValues.inputUsername.isNotEmpty &&
-        settingValues.inputFullName.isNotEmpty;
-    emit(settingValues.copyWith(
+        : state.isShowFullNameMessage;
+    emit(state.copyWith(
+      user: updateUser,
       isEnableSaveSettings: isEnableSaveSettings,
-      isShowUsernameMessage: isShowUsernameMessage,
       isShowFullNameMessage: isShowFullNameMessage,
+    ));
+  }
+
+  void _onProfileCityChangEvent(
+    ProfileCityChangeEvent event,
+    Emitter<ProfileState> emit,
+  ) {
+    emit(state.copyWith(status: ProfileStatus.processing));
+    final updateUser = state.user?.copyWith(city: event.city);
+    final isShowCityMessage = state.user?.username != event.city
+        ? false
+        : state.isShowFullNameMessage;
+    emit(state.copyWith(
+      user: updateUser,
       isShowCityMessage: isShowCityMessage,
     ));
   }
@@ -137,12 +178,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   void _onProfileSaveSettingsEvent(
     ProfileSaveSettingsEvent event,
     Emitter<ProfileState> emit,
-  ) {
+  ) async {
     final validUsername =
-        InputValidationHelper.validateUsername(state.inputUsername);
+        InputValidationHelper.validateUsername(state.user?.username ?? '');
     final validFullName =
-        InputValidationHelper.validateFullName(state.inputFullName);
-    final validCity = InputValidationHelper.validateCity(state.inputCity);
+        InputValidationHelper.validateFullName(state.user?.fullName ?? '');
+    final validCity =
+        InputValidationHelper.validateStringValue(state.user?.city ?? '');
+    final validDateOfBirth =
+        InputValidationHelper.validateDateOfBirth(state.user?.dateOfBirth);
+    final validCountry = InputValidationHelper.validateStringValue(
+        state.user?.country?.name ?? '');
+    final validState = InputValidationHelper.validateStringValue(
+        state.user?.state?.name ?? '');
+    final validAvatar =
+        await InputValidationHelper.validateImage(state.imageLocal);
     emit(state.copyWith(
       isShowUsernameMessage: validUsername != null,
       isShowFullNameMessage: validFullName != null,
@@ -150,7 +200,67 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       messageInputUsername: validUsername,
       messageInputFullName: validFullName,
       messageInputCity: validCity,
+      isShowDateOfBirthMessage: validDateOfBirth != null,
+      isShowCountryMessage: validCountry != null,
+      isShowStateMessage: validState != null,
+      isShowUpdateMessage: validAvatar != null,
+      messageSelectDateOfBirth: validDateOfBirth,
+      messageSelectCountry: validCountry,
+      messageSelectState: validState,
+      messageUpdateAvatar: validAvatar,
     ));
-    if (validUsername == null && validFullName == null && validCity == null) {}
+    if (validUsername == null &&
+        validFullName == null &&
+        validCity == null &&
+        validDateOfBirth == null &&
+        validCountry == null &&
+        validState == null) {
+      emit(state.copyWith(
+          user: state.user?.copyWith(
+              username: state.user?.username,
+              fullName: state.user?.fullName,
+              city: state.user?.city,
+              dateOfBirth: state.user?.dateOfBirth,
+              country: state.user?.country,
+              state: state.user?.state)));
+      final result =
+          await userRepository.editUserProfile(state.user, state.imageLocal);
+      result.fold((l) {
+        if (l.contains('username')) {
+          emit(state.copyWith(
+            status: ProfileStatus.failure,
+            isShowUsernameMessage: true,
+            messageInputUsername: l,
+          ));
+        }
+        emit(state.copyWith(status: ProfileStatus.failure));
+      }, (r) {
+        emit(state.copyWith(
+          status: ProfileStatus.success,
+        ));
+      });
+    }
+  }
+
+  void _onProfileUpdateAvatarEvent(
+    ProfileUpdateAvatarEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileStatus.processing));
+    final result = await userRepository.pickImageFromGallery();
+    result.fold((l) {
+      emit(state.copyWith(status: ProfileStatus.failure));
+    }, (r) {
+      if (r != null) {
+        final avatarPath = r.path;
+        print("Image Local Path: $avatarPath");
+        emit(state.copyWith(
+          imageLocal: r,
+          user: state.user?.copyWith(avatar: avatarPath),
+        ));
+      } else {
+        emit(state.copyWith(status: ProfileStatus.failure));
+      }
+    });
   }
 }
