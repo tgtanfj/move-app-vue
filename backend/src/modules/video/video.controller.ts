@@ -35,10 +35,16 @@ export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
   @Get('/dashboard')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Roles(Role.INSTRUCTOR)
-  async getVideosDashboard(@User() user, @Query() paginationDto: PaginationDto) {
-    return await this.videoService.getVideosDashboard(user.id, paginationDto);
+  async getVideosDashboard(
+    // @User() user,
+    @Query() paginationDto: PaginationDto
+  ) {
+    return await this.videoService.getVideosDashboard(
+      // user.id,
+      paginationDto
+    );
   }
   // @UseGuards(JwtAuthGuard)
   @Post('create-upload-session')
