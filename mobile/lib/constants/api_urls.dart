@@ -4,8 +4,9 @@ class ApiUrls {
   static const String sendVerificationCodeEndpoint="auth/send-otp";
   static const String endPointLogin = 'auth/login';
   static const String endPointLogout = '';
+  static const String forgotPasswordEndpoint = 'auth/forgot-password';
+  static const String resetPasswordEndpoint = 'auth/reset-password';
   static const String getUserProfileEndPoint = 'user/profile';
   static const String getCountryEndPoint = 'countries';
-  static const String getStateEndPoint = 'countries/{id}/states';
   static const String editUserProfileEndPoint = 'user/edit-profile';
 }

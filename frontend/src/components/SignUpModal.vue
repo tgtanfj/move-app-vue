@@ -15,6 +15,7 @@ const props = defineProps({
 })
 
 const errorsSignUp = ref('')
+const showError = ref(false)
 const isLoading = ref(false)
 const authStore = useAuthStore()
 const { toast } = useToast()
@@ -36,27 +37,31 @@ const isFillAllFields = computed(() => {
 })
 
 const isSignUp = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const onSubmit = handleSubmit(async (values) => {
-  const email = values.email
+const onSubmit = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
+  } else {
+    const email = values.email
 
-  try {
-    isLoading.value = true
-    const data = await signupService.signupByEmailPassword(email)
-    isLoading.value = false
-    if (data.success === true) {
-      props.closeModal()
-      emit('openOtpVerification', values)
+    try {
+      isLoading.value = true
+      const data = await signupService.signupByEmailPassword(email)
+      isLoading.value = false
+      if (data.success === true) {
+        props.closeModal()
+        emit('openOtpVerification', values)
+      }
+    } catch (error) {
+      isLoading.value = false
+      console.error('Signup failed:', error)
+      errorsSignUp.value = error.response.data.message
+      console.error('test:', error.response.data.message)
     }
-  } catch (error) {
-    isLoading.value = false
-    console.error('Signup failed:', error)
-    errorsSignUp.value = error.response.data.message
-    console.error('test:', error.response.data.message)
   }
-})
+}
 
 const handleGoogleSignIn = async () => {
   try {
@@ -138,13 +143,14 @@ const handleFacebookSignIn = async () => {
       SIGN UP WITH EMAIL
     </p>
     <div v-if="toggleSignWithEmail">
-      <form @submit="onSubmit" class="flex flex-col">
+      <form @submit.prevent="onSubmit" class="flex flex-col">
         <div class="flex flex-col gap-[4px]">
           <custom-input
             :label="$t('label.email')"
             name="email"
             :defineField="defineField"
             :errors="errors"
+            :show-error="showError"
           />
         </div>
 
@@ -155,6 +161,7 @@ const handleFacebookSignIn = async () => {
             :defineField="defineField"
             :errors="errors"
             inputType="password"
+            :show-error="showError"
           />
         </div>
 
@@ -165,15 +172,7 @@ const handleFacebookSignIn = async () => {
             :defineField="defineField"
             :errors="errors"
             inputType="password"
-          />
-        </div>
-
-        <div class="flex flex-col gap-[4px]">
-          <custom-input
-            :label="$t('label.referral_code')"
-            name="code"
-            :defineField="defineField"
-            :errors="errors"
+            :show-error="showError"
           />
         </div>
 

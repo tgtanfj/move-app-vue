@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_event.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_state.dart';
-
-import '../../../../../utils/input_validation_helper.dart';
 
 class OtpVerificationBloc
     extends Bloc<OtpVerificationEvent, OtpVerificationState> {

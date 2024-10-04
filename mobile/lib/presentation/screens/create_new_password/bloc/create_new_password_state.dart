@@ -5,15 +5,20 @@ class CreateNewPasswordState extends Equatable {
   final String confirmNewPassword;
   final bool isPasswordValid;
   final bool doPasswordsMatch;
-  final bool showValidationError;
+  final bool isShowValidationError;
+  final String errorMessage;
+  final String token;
+  final bool isPasswordResetSuccessful;
 
-  const CreateNewPasswordState({
-    required this.newPassword,
-    required this.confirmNewPassword,
-    required this.isPasswordValid,
-    required this.doPasswordsMatch,
-    required this.showValidationError,
-  });
+  const CreateNewPasswordState(
+      {required this.newPassword,
+      required this.confirmNewPassword,
+      required this.isPasswordValid,
+      required this.doPasswordsMatch,
+      required this.isShowValidationError,
+      required this.errorMessage,
+      required this.isPasswordResetSuccessful,
+      required this.token});
 
   factory CreateNewPasswordState.initial() {
     return const CreateNewPasswordState(
@@ -21,7 +26,10 @@ class CreateNewPasswordState extends Equatable {
       confirmNewPassword: '',
       isPasswordValid: false,
       doPasswordsMatch: false,
-      showValidationError: false,
+      isShowValidationError: false,
+      errorMessage: '',
+      isPasswordResetSuccessful: false,
+      token: '',
     );
   }
 
@@ -32,14 +40,20 @@ class CreateNewPasswordState extends Equatable {
     bool? doPasswordsMatch,
     bool? showValidationError,
     bool? isShowConfirmPassword,
+    String? errorMessage,
+    bool? isPasswordResetSuccessful,
+    String? token,
   }) {
     return CreateNewPasswordState(
-      newPassword: newPassword ?? this.newPassword,
-      confirmNewPassword: confirmNewPassword ?? this.confirmNewPassword,
-      isPasswordValid: isPasswordValid ?? this.isPasswordValid,
-      doPasswordsMatch: doPasswordsMatch ?? this.doPasswordsMatch,
-      showValidationError: showValidationError ?? this.showValidationError,
-    );
+        newPassword: newPassword ?? this.newPassword,
+        confirmNewPassword: confirmNewPassword ?? this.confirmNewPassword,
+        isPasswordValid: isPasswordValid ?? this.isPasswordValid,
+        doPasswordsMatch: doPasswordsMatch ?? this.doPasswordsMatch,
+        isShowValidationError: showValidationError ?? isShowValidationError,
+        errorMessage: errorMessage ?? this.errorMessage,
+        isPasswordResetSuccessful:
+            isPasswordResetSuccessful ?? this.isPasswordResetSuccessful,
+        token: token ?? this.token);
   }
 
   @override
@@ -48,6 +62,9 @@ class CreateNewPasswordState extends Equatable {
         confirmNewPassword,
         isPasswordValid,
         doPasswordsMatch,
-        showValidationError,
+        isShowValidationError,
+        errorMessage,
+        isPasswordResetSuccessful,
+        token
       ];
 }
