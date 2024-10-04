@@ -4,7 +4,9 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
-import 'package:move_app/data/models/email_request_login.dart';
+import 'package:move_app/data/models/object_login_social.dart';
+import 'package:move_app/data/services/api_service_additional.dart';
+import 'package:move_app/data/services/api_service_additional.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/facebook_request_login.dart';
 import '../models/user_model.dart';
@@ -12,6 +14,7 @@ import '../services/api_service.dart';
 
 class AuthRepository {
   final ApiService apiService = ApiService();
+  final ApiServiceAdditional apiServiceAdditional = ApiServiceAdditional();
 
   Future<Response> signUpWithEmail(UserModel userModel, String otp) async {
     try {
@@ -81,33 +84,54 @@ class AuthRepository {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email'],
       );
-      final FirebaseAuth _auth = FirebaseAuth.instance;
+
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
-      final email = googleUser?.email;
-      print(token);
-      print(email);
-      final User? user = (await _auth.signInWithCredential(credential)).user;
-      EmailRequestLogin emailRequestLogin =
-          EmailRequestLogin(email: email, idToken: token);
-      await sendIdTokenGoogle(emailRequestLogin);
+
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      final String? firebaseIdToken = await user?.getIdToken(true);
+
+      final String? accessToken = googleAuth?.accessToken;
+      final String? idToken = googleAuth?.idToken;
+      final String? email = googleUser?.email;
+      final String? name = googleUser?.displayName;
+      final String? profilePic = googleUser?.photoUrl;
+
+      print('Access Token: $accessToken');
+      print('ID Token: $idToken');
+      print('Email: $email');
+      print('Firebase ID Token: $firebaseIdToken');
+      print('Name: $name');
+      print('Profile Picture: $profilePic');
+
+
+      ObjectLoginSocial objectLoginSocial = ObjectLoginSocial(
+        email: email,
+        idToken: firebaseIdToken,
+      );
+      await sendIdTokenGoogle(objectLoginSocial);
+
       return user;
     } catch (e) {
+      print('Error during Google login: ${e.toString()}');
       return null;
     }
   }
 
-  Future<Response?> sendIdTokenGoogle(
-      EmailRequestLogin emailRequestLogin) async {
+
+  Future<void> sendIdTokenGoogle(
+      ObjectLoginSocial emailRequestLogin) async {
     try {
-      final response = await apiService.request(
-        APIRequestMethod.post,
+      final response = await apiServiceAdditional.request(
+        Method.post,
         ApiUrls.loginGoogle,
         data: emailRequestLogin.toJson(),
         options: Options(
@@ -124,9 +148,43 @@ class AuthRepository {
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
     } catch (e) {
-      print(" ${e.toString()}");
+      print("send facebookk token==== ${e.toString()}");
+      rethrow;
     }
   }
+
+  // Future<UserCredential?> loginWithFacebook() async {
+  //   try {
+  //     final LoginResult loginResult = await FacebookAuth.instance.login(
+  //       permissions: ['email', 'public_profile'],
+  //     );
+  //
+  //     if (loginResult.status == LoginStatus.success) {
+  //       final OAuthCredential facebookAuthCredential =
+  //           FacebookAuthProvider.credential(
+  //               '${loginResult.accessToken?.tokenString}');
+  //
+  //       print("object $facebookAuthCredential");
+  //       final userData = await FacebookAuth.instance.getUserData();
+  //       final email = userData['email'];
+  //       print(email);
+  //       final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
+  //       print(token);
+  //       FacebookRequestLogin facebookRequestLogin =
+  //       FacebookRequestLogin(email: email, idToken: token);
+  //       await sendIdTokenFacebook(facebookRequestLogin);
+  //       return FirebaseAuth.instance
+  //           .signInWithCredential(facebookAuthCredential);
+  //     } else {
+  //       throw FirebaseAuthException(
+  //         code: 'ERROR_ABORTED_BY_USER',
+  //         message: 'Sign in aborted by user',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print("Error in Facebook login: ${e.toString()}");
+  //   }
+  // }
 
   Future<UserCredential?> loginWithFacebook() async {
     try {
@@ -135,21 +193,27 @@ class AuthRepository {
       );
 
       if (loginResult.status == LoginStatus.success) {
-        final OAuthCredential facebookAuthCredential =
-            FacebookAuthProvider.credential(
-                '${loginResult.accessToken?.tokenString}');
+        final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(
+          loginResult.accessToken!.tokenString,
+        );
 
-        print("object $facebookAuthCredential");
         final userData = await FacebookAuth.instance.getUserData();
         final email = userData['email'];
-        print(email);
-        final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
-        print(token);
-        FacebookRequestLogin facebookRequestLogin =
-        FacebookRequestLogin(email: email, idToken: token);
-        await sendIdTokenFacebook(facebookRequestLogin);
-        return FirebaseAuth.instance
-            .signInWithCredential(facebookAuthCredential);
+        final name = userData['name'];
+        final profilePic = userData['picture']['data']['url'];
+
+        print('Email: $email');
+
+        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+
+        final token = await userCredential.user?.getIdToken(true);
+        print('ID Token: $token');
+
+        ObjectLoginSocial objecSocialLogin = ObjectLoginSocial(email: email, idToken: token);
+
+        await sendIdTokenFacebook(objecSocialLogin);
+
+        return userCredential;
       } else {
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
@@ -159,15 +223,17 @@ class AuthRepository {
     } catch (e) {
       print("Error in Facebook login: ${e.toString()}");
     }
+    return null;
   }
 
-  Future<Response> sendIdTokenFacebook(
-      FacebookRequestLogin facebookRequestLogin) async {
+
+  Future<void> sendIdTokenFacebook(
+      ObjectLoginSocial objectSocialLogin) async {
     try {
-      final response = await apiService.request(
-        APIRequestMethod.post,
+      final response =  await apiServiceAdditional.request(
+        Method.post,
         ApiUrls.loginFacebook,
-        data: facebookRequestLogin.toJson(),
+        data: objectSocialLogin.toJson(),
         options: Options(
           headers: {
             'Accept': '/',
@@ -220,9 +286,11 @@ class AuthRepository {
 
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
+
+    print("Refresh Tokenn-========================${refreshToken}");
     try {
-      final response = await apiService.request(
-        APIRequestMethod.get,
+      final response = await apiServiceAdditional.request(
+        Method.get,
         ApiUrls.endPointLogout,
         options: Options(
           headers: {
