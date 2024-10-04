@@ -4,6 +4,7 @@ import 'package:move_app/presentation/screens/forgot_password/page/forgot_passwo
 import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_page.dart';
 import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
+import 'package:move_app/presentation/screens/view_FAQs/page/view_FAQs_page.dart';
 
 class AppRoutes {
   static const String routeProfile = '/profile';
@@ -21,7 +22,7 @@ class AppRoutes {
       routeProfile: (BuildContext context) => const SettingPage(),
       '/': (BuildContext context) => const HomePage(),
       routeMenu: (BuildContext context) => const MenuPage(),
-      // routeviewFAQs: (BuildContext context) => const ViewFAQsPage(),
+      routeviewFAQs: (BuildContext context) => const ViewFAQsPage(),
       routeForgotPassword: (BuildContext context) => const ForgotPasswordPage(),
       routeCreateNewPassword: (BuildContext context) =>
           const CreateNewPasswordPage(),

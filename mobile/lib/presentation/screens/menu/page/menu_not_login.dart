@@ -59,6 +59,13 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
           const SizedBox(
             height: 40.0,
           ),
+          widget.isMoreEnable
+              ? MoreInfomation(
+                  faqButton: () {
+                    Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
+                  },
+                )
+              : const SizedBox(),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,
