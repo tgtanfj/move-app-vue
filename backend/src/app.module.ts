@@ -21,6 +21,7 @@ import { VideoModule } from './modules/video/video.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
+import { ApiConfigService } from './shared/services/api-config.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,12 +43,16 @@ import { BullModule } from '@nestjs/bullmq';
     VideoModule,
     CategoryModule,
     ThumbnailModule,
-    BullModule.forRoot({
-      connection: {
-        host: '172.19.12.84',
-        port: 6379,
-        connectTimeout: 200000,
-      },
+    BullModule.forRootAsync({
+      inject: [ApiConfigService],
+      useFactory: async (apiConfig: ApiConfigService) => ({
+        connection: {
+          host: apiConfig.getString('REDIS_HOST'),
+          port: apiConfig.getNumber('REDIS_PORT'),
+          connectTimeout: 200000,
+          password: apiConfig.getString('REDIS_PASSWORD'),
+        },
+      }),
     }),
   ],
   providers: [

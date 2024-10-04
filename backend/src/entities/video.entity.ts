@@ -75,7 +75,7 @@ export class Video extends BaseEntity {
 
   @Column({
     type: 'varchar',
-    nullable:true
+    nullable: true,
   })
-  urlS3:string
+  urlS3: string;
 }

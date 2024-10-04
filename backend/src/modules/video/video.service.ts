@@ -25,9 +25,13 @@ import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.con
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import * as fs from 'fs';
+import * as path from 'path';
+import { getKeyS3 } from '@/shared/utils/get-key-s3.util';
 
 @Injectable()
 export class VideoService {
+  private readonly videoUploadPath = path.resolve(__dirname, '..', 'uploads', 'videos');
   constructor(
     private apiConfig: ApiConfigService,
     private categoryService: CategoryService,
@@ -41,7 +45,11 @@ export class VideoService {
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
-  ) {}
+  ) {
+    if (!fs.existsSync(this.videoUploadPath)) {
+      fs.mkdirSync(this.videoUploadPath, { recursive: true });
+    }
+  }
 
   async sharingVideoUrlByNativeId(videoId: number): Promise<string> {
     try {
@@ -157,7 +165,8 @@ export class VideoService {
     userId: number,
     thumbnails: Array<Express.Multer.File>,
     dto: UploadVideoDTO,
-    videoFile: Express.Multer.File,
+    pathVideo: string,
+    videoFile?: Express.Multer.File,
   ) {
     //find channel by id
     const foundChannel = await this.channelService.getChannelByUserId(userId);
@@ -179,17 +188,11 @@ export class VideoService {
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
-    // const urlS3 = await this.s3.uploadImage(videoFile)
-    // console.log(urlS3);
-    // if (!urlS3) {
-    //   throw new Error('upload s3 fail')
-    // }
-    
     // await this.uploadVideoUrlS3(video.id, urlS3);
     await this.uploadS3Queue.add('upload', {
-      file: videoFile,
-      videoId:video.id
-    })
+      path: pathVideo,
+      videoId: video.id,
+    });
     return video;
   }
 
@@ -239,6 +242,7 @@ export class VideoService {
       throw error;
     }
   }
+
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.deleteVideos(videoIds).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
@@ -259,23 +263,52 @@ export class VideoService {
   async restoreVideos(videoIds: number[]) {
     await this.videoRepository.restoreVideos(videoIds);
   }
-  async downloadVideo(linkS3: string) {
-    return await this.s3.getVideoDownloadLink('images/d5297b10-8135-11ef-9482-69a9835ce969.mp4');
+
+  async downloadVideo(videoId: number) {
+    const from = this.apiConfig.getString('DOWNLOAD_FROM');
+    switch (from) {
+      case 's3':
+        const foundVideo = await this.findOneOrThrow(videoId);
+        if (!foundVideo.urlS3) {
+          return null;
+        }
+        return await this.s3.getVideoDownloadLink(foundVideo.urlS3);
+      case 'vimeo':
+
+      default:
+        break;
+    }
   }
 
   async findOneOrThrow(videoId: number) {
-    const foundVideo = await this.videoRepository.findVideoById(videoId)
+    const foundVideo = await this.videoRepository.findVideoById(videoId);
     if (!foundVideo) {
       throw new NotFoundException({
-        message:ERRORS_DICTIONARY.NOT_FOUND_VIDEO
-      })
+        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+      });
     }
-    return foundVideo
+    return foundVideo;
   }
 
   async uploadVideoUrlS3(videoId: number, urlS3: string) {
-    const foundVideo = await this.findOneOrThrow(videoId)
-    foundVideo.urlS3 = urlS3
-    return await this.videoRepository.save(foundVideo)
+    const foundVideo = await this.findOneOrThrow(videoId);
+    foundVideo.urlS3 = urlS3;
+    return await this.videoRepository.save(foundVideo);
+  }
+
+  async saveVideoToServer(videoFile: Express.Multer.File): Promise<string> {
+    // Generate a file path where the video will be stored
+    const fileName = `${Date.now()}-${videoFile.originalname}`;
+    const filePath = path.join(this.videoUploadPath, fileName);
+
+    // Save the video to the server
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, videoFile.buffer, (err) => {
+        if (err) {
+          reject('Failed to save video');
+        }
+        resolve(filePath);
+      });
+    });
   }
 }
