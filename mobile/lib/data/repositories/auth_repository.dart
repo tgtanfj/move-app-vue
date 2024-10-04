@@ -4,14 +4,14 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
-import 'package:move_app/data/models/email_request_login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/facebook_request_login.dart';
+import 'package:move_app/data/models/login_request_social.dart';
+import 'package:move_app/data/services/api_service_additional.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
 class AuthRepository {
   final ApiService apiService = ApiService();
+  final ApiServiceAdditional apiServiceAdditional = ApiServiceAdditional();
 
   Future<Response> signUpWithEmail(UserModel userModel, String otp) async {
     try {
@@ -81,36 +81,43 @@ class AuthRepository {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email'],
       );
-      final FirebaseAuth _auth = FirebaseAuth.instance;
+
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
-      print("kkk ${googleAuth?.accessToken ??"" }}");
+
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
-      final email = googleUser?.email;
-      print(token);
-      print(email);
-      final User? user = (await _auth.signInWithCredential(credential)).user;
-      EmailRequestLogin emailRequestLogin =
-          EmailRequestLogin(email: email, idToken: token);
-      await sendIdTokenGoogle(emailRequestLogin);
+
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      final String? firebaseIdToken = await user?.getIdToken(true);
+
+      final String? email = googleUser?.email;
+
+      LoginRequestSocial loginRequestGoogle = LoginRequestSocial(
+        email: email,
+        idToken: firebaseIdToken,
+      );
+      await sendIdTokenGoogle(loginRequestGoogle);
+
       return user;
     } catch (e) {
       return null;
     }
   }
 
-  Future<Response?> sendIdTokenGoogle(
-      EmailRequestLogin emailRequestLogin) async {
+  Future<void> sendIdTokenGoogle(LoginRequestSocial loginRequestGoogle) async {
     try {
-      final response = await apiService.request(
-        APIRequestMethod.post,
+      final response = await apiServiceAdditional.request(
+        Method.post,
         ApiUrls.loginGoogle,
-        data: emailRequestLogin.toJson(),
+        data: loginRequestGoogle.toJson(),
         options: Options(
           headers: {
             'Accept': '/',
@@ -118,14 +125,13 @@ class AuthRepository {
           },
         ),
       );
-      print(response.data['data']['accessToken']);
       await SharedPrefer.sharedPrefer
           .setUserToken(response.data['data']['accessToken']);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
     } catch (e) {
-      print(" ${e.toString()}");
+      rethrow;
     }
   }
 
@@ -138,19 +144,23 @@ class AuthRepository {
       if (loginResult.status == LoginStatus.success) {
         final OAuthCredential facebookAuthCredential =
             FacebookAuthProvider.credential(
-                '${loginResult.accessToken?.tokenString}');
+          loginResult.accessToken!.tokenString,
+        );
 
-        print("object $facebookAuthCredential");
         final userData = await FacebookAuth.instance.getUserData();
         final email = userData['email'];
-        print(email);
-        final token = await FirebaseAuth.instance.currentUser?.getIdToken(true);
-        print(token);
-        FacebookRequestLogin facebookRequestLogin =
-        FacebookRequestLogin(email: email, idToken: token);
-        await sendIdTokenFacebook(facebookRequestLogin);
-        return FirebaseAuth.instance
+
+        final UserCredential userCredential = await FirebaseAuth.instance
             .signInWithCredential(facebookAuthCredential);
+
+        final token = await userCredential.user?.getIdToken(true);
+
+        LoginRequestSocial loginRequestFacebook =
+            LoginRequestSocial(email: email, idToken: token);
+
+        await sendIdTokenFacebook(loginRequestFacebook);
+
+        return userCredential;
       } else {
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
@@ -158,17 +168,17 @@ class AuthRepository {
         );
       }
     } catch (e) {
-      print("Error in Facebook login: ${e.toString()}");
+      return null;
     }
   }
 
-  Future<Response> sendIdTokenFacebook(
-      FacebookRequestLogin facebookRequestLogin) async {
+  Future<void> sendIdTokenFacebook(
+      LoginRequestSocial loginRequestFacebook) async {
     try {
-      final response = await apiService.request(
-        APIRequestMethod.post,
+      final response = await apiServiceAdditional.request(
+        Method.post,
         ApiUrls.loginFacebook,
-        data: facebookRequestLogin.toJson(),
+        data: loginRequestFacebook.toJson(),
         options: Options(
           headers: {
             'Accept': '/',
@@ -221,10 +231,10 @@ class AuthRepository {
 
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
+
     try {
-      print('$refreshToken');
-      final response = await apiService.request(
-        APIRequestMethod.get,
+      final response = await apiServiceAdditional.request(
+        Method.get,
         ApiUrls.endPointLogout,
         options: Options(
           headers: {
@@ -234,7 +244,7 @@ class AuthRepository {
           },
         ),
       );
-
+      await SharedPrefer.sharedPrefer.setUserToken('');
       final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.signOut();
       await FacebookAuth.instance.logOut();

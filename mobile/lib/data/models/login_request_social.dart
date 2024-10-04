@@ -1,24 +1,24 @@
-class EmailRequestLogin {
+class LoginRequestSocial {
   final String? idToken;
   final String? email;
 
-  EmailRequestLogin({
+  LoginRequestSocial({
     this.idToken,
     this.email,
   });
 
-  factory EmailRequestLogin.fromJson(Map<String, dynamic> json) {
-    return EmailRequestLogin(
+  factory LoginRequestSocial.fromJson(Map<String, dynamic> json) {
+    return LoginRequestSocial(
       idToken: json['tokenId'] is String? ? json['tokenId'] : '',
       email: json['email'] is String? ? json['email'] : '',
     );
   }
 
-  EmailRequestLogin copyWith({
+  LoginRequestSocial copyWith({
     String? idToken,
     String? email,
   }) {
-    return EmailRequestLogin(
+    return LoginRequestSocial(
       idToken: idToken ?? this.idToken,
       email: email ?? this.email,
     );
