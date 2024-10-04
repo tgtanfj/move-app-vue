@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
-import sizeOf from 'image-size';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { CategoryService } from '../category/category.service';
