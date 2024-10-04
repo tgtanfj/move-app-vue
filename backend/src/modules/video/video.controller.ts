@@ -39,11 +39,11 @@ export class VideoController {
   // @Roles(Role.INSTRUCTOR)
   async getVideosDashboard(
     // @User() user,
-    @Query() paginationDto: PaginationDto
+    @Query() paginationDto: PaginationDto,
   ) {
     return await this.videoService.getVideosDashboard(
       // user.id,
-      paginationDto
+      paginationDto,
     );
   }
   // @UseGuards(JwtAuthGuard)
