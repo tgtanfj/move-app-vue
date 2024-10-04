@@ -72,6 +72,10 @@ const handleOpenOTPVerification = (values) => {
   openOTPModal.value = true
   signupInfo.value = values
 
+  countdown.value = 60
+  clearInterval(timer)
+  isCounting.value = false
+
   const data = getWithExpiry('banOTP')
 
   if (data) {
@@ -91,6 +95,8 @@ const setIsBannedToTrue = () => {
 const handleVerifySuccess = () => {
   openOTPModal.value = false
   isOpen.value = true
+  clearInterval(timer)
+  isCounting.value = false
 }
 
 const startCountdown = () => {
@@ -209,6 +215,7 @@ const resetCountdown = () => {
           @start="startCountdown"
           @reset="resetCountdown"
           @setIsBannedToTrue="setIsBannedToTrue"
+          @resetInterval="resetInterval"
         />
       </div>
     </div>

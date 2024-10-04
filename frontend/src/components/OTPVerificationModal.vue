@@ -32,14 +32,12 @@ const handleSendOTP = () => {
     },
     {
       onSuccess: (response) => {
-        // console.log('OTP verified successfully!', response)
         code.value = ''
         emit('verifySuccess')
         reset()
       },
       onError: (err) => {
         invalidCodeTime.value += 1
-        // console.log('Error verifying OTP:', err)
       }
     }
   )
@@ -60,6 +58,23 @@ const setWithExpiry = (key, value, ttl) => {
   }
 
   localStorage.setItem(key, JSON.stringify(item))
+}
+
+const blockInvalidKeys = (event) => {
+  if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+    event.preventDefault()
+  }
+
+  if (code.value.length >= 6 && event.key !== 'Backspace') {
+    event.preventDefault()
+  }
+}
+
+const limitLength = (event) => {
+  if (event.target.value.length > 6) {
+    event.target.value = event.target.value.slice(0, 6)
+  }
+  code.value = event.target.value
 }
 </script>
 
@@ -82,7 +97,7 @@ const setWithExpiry = (key, value, ttl) => {
             </p>
           </div>
         </div>
-        <Input v-model="code" type="number" maxlength="6" />
+        <Input v-model="code" type="text" @keydown="blockInvalidKeys" @input="limitLength" />
         <p v-if="isError && !props.isBanned" class="text-red-500">
           {{ $t('error_message.wrong_code') }}
         </p>

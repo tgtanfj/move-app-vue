@@ -1,20 +1,25 @@
 <script setup>
-import { ref, watch } from 'vue'
 import { reject } from 'lodash-es'
 import { FileVideo2 } from 'lucide-vue-next'
+import { ref, watch } from 'vue'
 
-import { cn } from '@utils/shadcn.util'
-import { base64ToBlob } from '@utils/convertImage.util'
-import { captureThumbnail, compareBlobs } from '@utils/uploadVideo.util'
+import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 import {
   allowedFormats,
   maxFileSize,
   validImageTypes,
   WORKOUTLEVEL
 } from '@constants/upload-video.constant'
-import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 import { videoService } from '@services/video.services'
+import { base64ToBlob } from '@utils/convertImage.util'
+import { cn } from '@utils/shadcn.util'
+import { captureThumbnail, compareBlobs } from '@utils/uploadVideo.util'
 
+import { Button } from '@/common/ui/button'
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '@/common/ui/dialog'
+import { Input } from '@/common/ui/input'
+import { Label } from '@/common/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -23,19 +28,14 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
-import { Label } from '@/common/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
-import { Textarea } from '@/common/ui/textarea'
-import { Button } from '@/common/ui/button'
-import { useToast } from '@common/ui/toast'
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '@/common/ui/dialog'
 import { Tabs, TabsList } from '@/common/ui/tabs'
-import { Input } from '@/common/ui/input'
+import { Textarea } from '@/common/ui/textarea'
+import { useToast } from '@common/ui/toast'
 
-import UploadVideoProgress from './UploadVideoProgress.vue'
-import Loading from './Loading.vue'
-import ImageLoading from './ImageLoading.vue'
 import VideoIcon from '@assets/icons/videoIcon.vue'
+import ImageLoading from './ImageLoading.vue'
+import Loading from './Loading.vue'
+import UploadVideoProgress from './UploadVideoProgress.vue'
 
 const isOpenUploadVideoModal = ref(false)
 const isOpenUploadVideoDetails = ref(false)
@@ -48,6 +48,7 @@ const workoutLevel = ref('')
 const duration = ref('')
 const tags = ref('')
 const isCommentable = ref(null)
+const videoInput = ref(null)
 
 const categories = ref(null)
 const uploading = ref(false)
@@ -120,6 +121,7 @@ const resetField = () => {
   nullFirstTab.value = false
   nullSecondTab.value = false
   thumbnailTypeValidationErr.value = ''
+  videoInput.value = null
 }
 
 const onCloseConfirmModal = () => {
@@ -198,6 +200,7 @@ const uploadVideo = async (file) => {
   uploading.value = true
   progress.value = 0
   error.value = null
+  videoInput.value = file
 
   if (file) {
     isOpenUploadVideoModal.value = false
@@ -382,6 +385,7 @@ const thirdButton = async (tab) => {
       formData.append('isCommentable', isCommentable.value === 'enabled' ? 'true' : 'false')
       formData.append('url', linkVideoInput.value)
       formData.append('isPublish', 'true')
+      formData.append('video', videoInput.value)
       uploadLoading.value = true
       const uploadVideoData = await videoService.uploadVideo(formData)
 
