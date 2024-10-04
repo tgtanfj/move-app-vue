@@ -5,12 +5,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   ParseArrayPipe,
   Patch,
   Post,
   Put,
   Query,
+  Res,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -28,6 +30,7 @@ import { CreateVideoDTO } from './dto/create-video.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { DeleteVideosDto } from './dto/request/delete-videos.dto';
 import { ThumbnailsValidationPipe } from '@/shared/pipes/thumbnail-validation.pipe';
+import { OptionSharingDTO } from './dto/option-sharing.dto';
 
 @ApiTags('Video')
 @Controller('video')
@@ -35,10 +38,16 @@ export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
   @Get('/dashboard')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Roles(Role.INSTRUCTOR)
-  async getVideosDashboard(@User() user, @Query() paginationDto: PaginationDto) {
-    return await this.videoService.getVideosDashboard(user.id, paginationDto);
+  async getVideosDashboard(
+    // @User() user,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return await this.videoService.getVideosDashboard(
+      // user.id,
+      paginationDto,
+    );
   }
   // @UseGuards(JwtAuthGuard)
   @Post('create-upload-session')
@@ -79,5 +88,13 @@ export class VideoController {
   @Patch('restore')
   async restoreVideos(@Body() deleteVideosDto: DeleteVideosDto) {
     return await this.videoService.restoreVideos(deleteVideosDto.videoIds);
+  }
+  @Get('social-sharing/:videoId')
+  async getUrlSharingSocial(@Param('videoId') videoId: number, @Query() option: OptionSharingDTO) {
+    return await this.videoService.sharingVideoUrlById(videoId, option);
+  }
+  @Get(':videoId')
+  async getUrlVideo(@Param('videoId') videoId: number) {
+    return await this.videoService.sharingVideoUrlByNativeId(videoId);
   }
 }

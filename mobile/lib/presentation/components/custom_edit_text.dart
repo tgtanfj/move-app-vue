@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 
 import '../../config/theme/app_text_styles.dart';
@@ -24,6 +25,7 @@ class CustomEditText extends StatefulWidget {
   final String sufMessage;
   final bool? enable;
   final double? widthMessage;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomEditText({
     super.key,
@@ -46,6 +48,7 @@ class CustomEditText extends StatefulWidget {
     this.cursorColor,
     this.preMessage = "",
     this.sufMessage = "",
+    this.inputFormatters,
     this.enable,
     this.widthMessage,
   });
@@ -96,6 +99,10 @@ class _CustomEditTextState extends State<CustomEditText> {
                 widget.textCapitalization ?? TextCapitalization.none,
             keyboardType: widget.textInputType ?? TextInputType.text,
             obscureText: widget.isPasswordInput ? !isTextVisible : false,
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+              if (widget.inputFormatters != null) ...widget.inputFormatters!,
+            ],
             decoration: InputDecoration(
               counterText: "",
               fillColor: widget.enable == false

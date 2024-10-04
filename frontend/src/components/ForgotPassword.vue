@@ -6,14 +6,12 @@ import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { useForgotPassword } from '../services/forgotpassword.services'
 import { emailSchema } from '../validation/schema'
-import { useForgotPasswordStore } from '@/stores/forgotPassword.js'
 
 const emit = defineEmits(['openLogin'])
 const email = ref('')
+const showError = ref(false)
 const mutation = useForgotPassword()
 const { isPending, isIdle, isSuccess, isError, reset } = mutation
-
-const forgotPasswordStore = useForgotPasswordStore()
 
 const bgColor = computed(() => {
   if (isSuccess.value) {
@@ -34,14 +32,18 @@ const isFillAllFields = computed(() => {
 })
 
 const isFormValid = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const handleSendMail = handleSubmit(async (values) => {
-  email.value = values.email
-  mutation.mutate({ email: values.email })
-  forgotPasswordStore.setEmail(values.email)
-})
+const handleSendMail = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
+  } else {
+    email.value = values.email
+    mutation.mutate({ email: values.email })
+    forgotPasswordStore.setEmail(values.email)
+  }
+}
 
 const openLogin = () => {
   resetForm()
@@ -54,8 +56,12 @@ const openLogin = () => {
   <BaseDialog :title="$t('forgot_password.title')" :description="$t('forgot_password.desc')">
     <form @submit.prevent="handleSendMail">
       <div class="flex flex-col space-y-1.5">
-        <input type="text" class="w-0 h-0" />
-        <custom-input name="email" :defineField="defineField" :errors="errors" />
+        <custom-input
+          name="email"
+          :defineField="defineField"
+          :errors="errors"
+          :show-error="showError"
+        />
       </div>
 
       <div

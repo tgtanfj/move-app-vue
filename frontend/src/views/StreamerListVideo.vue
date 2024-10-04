@@ -1,10 +1,10 @@
 <template>
   <div class="bg-white w-full h-full">
-    <Loading v-if="isLoading" />
-    <template v-else>
+    <Loading v-if="videoStore.isLoading" />
+    <template v-if="!videoStore.isLoading && videoStore.videos">
       <h2 class="text-2xl m-7 font-bold">{{ $t('streamer.videos') }}</h2>
-      <div class="mt-4" v-if="videos.length !== 0">
-        <Table :list="videos" />
+      <div class="mt-4" v-if="videoStore.videos.length !== 0">
+        <Table :list="videoStore.videos" />
         <div class="flex justify-between items-center mt-5">
           <div class="flex gap-3 items-center">
             <p class="text-sm ml-5 uppercase">{{ $t('streamer.show') }}</p>
@@ -35,7 +35,7 @@
                 </Button>
                 <PaginationListItem
                   class="gap-1"
-                  v-for="item in pageCounts"
+                  v-for="item in videoStore.pageCounts"
                   :key="item"
                   @click="handleGetVideosByPageIndex(item)"
                 >
@@ -50,8 +50,8 @@
                   variant="outline"
                   class="pl-2"
                   @click="handleNextPage"
-                  :class="{ invisible: selectedPage === pageCounts.length }"
-                  :disabled="selectedPage === pageCounts.length"
+                  :class="{ invisible: selectedPage === videoStore.pageCounts.length }"
+                  :disabled="selectedPage === videoStore.pageCounts.length"
                 >
                   <ChevronRight size="14" color="#14D2B5" />
                 </Button>
@@ -100,75 +100,35 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { videoService } from '@services/video.services'
 import { ADMIN_BASE } from '@constants/api.constant'
 import axios from 'axios'
+import { useVideoStore } from '../stores/videoManage'
+
+const videoStore = useVideoStore()
 
 const count = ref()
-const videos = ref([])
-const isLoading = ref(false)
-const error = ref('')
-const pageCounts = ref([])
 const selectedPage = ref(1)
-const totalPages = ref()
 
-const { data, isSuccess, isError } = videoService.getUploadVideos(10, 1)
-
-watch(data, (newValue) => {
-  if (isSuccess && newValue.data) {
-    if (data) {
-      videos.value = [...newValue.data]
-      pageCounts.value = [...Array.from({ length: newValue.meta.totalPages }, (_, i) => i + 1)]
-    }
-  } else error.value = isError
+onMounted(async () => {
+  await videoStore.getUploadedVideosList(10, 1)
 })
-watch(count, (newValue) => {
-  getVideosByLimit(newValue, 1)
+watch(count, async (newValue) => {
+  await videoStore.getVideosByLimit(newValue, 1)
 })
 watch(selectedPage, (newValue) => {
   getVideosByLimit(count.value, newValue)
 })
 
-const getVideosByLimit = async (limit, page) => {
-  isLoading.value = true // Set loading state
-  error.value = null // Reset error state
-
-  try {
-    const token = localStorage.getItem('token') // Get token from localStorage
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      params: {
-        take: limit,
-        page: page
-      }
-    }
-
-    const res = await axios.get(`${ADMIN_BASE}/video/dashboard`, config)
-    if ((res.statusCode = 200)) {
-      videos.value = res.data.data
-      pageCounts.value = [
-        ...Array.from({ length: res.data.meta.totalPages }, (_, index) => index + 1)
-      ]
-    } else {
-      throw new Error('No data received')
-    }
-  } catch (err) {
-    error.value = err // Set error message
-  } finally {
-    isLoading.value = false // Reset loading state
-  }
-}
 const handleGetVideosByPageIndex = (item) => {
   selectedPage.value = item
 }
 
 const handleNextPage = () => {
   const temp = selectedPage.value + 1
-  getVideosByLimit(count.value, temp)
+  videoStore.getVideosByLimit(count.value, temp)
   selectedPage.value = temp
 }
 const handlePrevPage = () => {
   const temp = selectedPage.value - 1
-  getVideosByLimit(count.value, temp)
+  videStore.getVideosByLimit(count.value, temp)
   selectedPage.value = temp
 }
 const handleUploadNewVideo = () => {}

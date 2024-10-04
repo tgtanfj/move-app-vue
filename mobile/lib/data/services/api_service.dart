@@ -22,8 +22,6 @@ class ApiService {
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
     ));
-
-    // Thêm Interceptor để cập nhật token trước mỗi request
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         var accessToken = SharedPrefer.sharedPrefer.getUserToken();

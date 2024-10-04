@@ -68,25 +68,29 @@
             :key="item.id"
             :selectedItems="selectedItems"
             @update:selectedItems="handleItemUpdate"
-            @edit:item="handleEditVideo"
+            @delete:item="handleDeleteVideo"
           />
         </TableBody>
       </Table>
     </div>
     <BaseDialog
-      :title="$t('streamer.delete_selected_video_modal_title')"
+      :title="
+        !allSelected
+          ? $t('streamer.delete_selected_video_modal_title')
+          : 'Delete all videos'
+      "
       :description="
         !allSelected
           ? $t('streamer.delete_video_modal_description')
-          : $t('streamer.delete_all_video_modal_title')
+          : 'All of your videos will be permanently deleted. You will lose all datas such from your videos as views, comments & ratings. Are you sure?'
       "
       v-model:open="showConfirmModal"
     >
-      <div class="w-full flex justify-center items-center gap-4">
-        <Button variant="outline" @click="showConfirmModal = false">{{
+      <div class="w-full flex justify-center items-center gap-4 mt-3">
+        <Button variant="outline" class="px-9 text-base text-black hover:text-primary"  @click="showConfirmModal = false">{{
           $t('button.cancel')
         }}</Button>
-        <Button variant="default" @click="handleDeleteVideoList">{{
+        <Button variant="default" class="px-9 text-base" @click="handleDeleteVideoList">{{
           $t('streamer.delete')
         }}</Button>
       </div>
@@ -104,11 +108,14 @@ import { ArrowDownToLine, Trash } from 'lucide-vue-next'
 import { Button } from '@common/ui/button'
 import BaseDialog from './BaseDialog.vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
-import { Input } from '@common/ui/input'
 import { Card, CardContent } from '@common/ui/card'
 import { Label } from '@common/ui/label'
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@common/ui/dialog'
-import Carousel from './Carousel.vue'
+import { useVideoStore } from '../stores/videoManage'
+import { useToast } from '@common/ui/toast/use-toast'
+
+const videoStore = useVideoStore()
+const { toast } = useToast()
 
 const props = defineProps({
   list: {
@@ -150,11 +157,30 @@ const handleClearSelection = () => {
   selectedItems.value = []
 }
 
-const handleDeleteVideoList = () => {
-  showConfirmModal.value = false
-  //send video id arr to BE
-  selectedItems.value = []
+const handleDeleteVideoList = async () => {
+  const removedVideos = await videoStore.deleteVideos(selectedItems.value)
+  if (removedVideos) {
+    videoStore.videos = videoStore.videos.filter((video) => !selectedItems.value.includes(video.id))
+    showConfirmModal.value = false
+    toast({ description: 'Video deleted successfully', variant: 'successfully' })
+    selectedItems.value = []
+  } else {
+    toast({ description: videoStore.errorMsg, variant: 'destructive' })
+  }
 }
+
+const handleDeleteVideo = async (videoId) => {
+  const removedVideos = await videoStore.deleteVideos([videoId])
+  if (removedVideos) {
+    videoStore.videos = videoStore.videos.filter((video) => video.id !== videoId)
+    showConfirmModal.value = false
+    toast({ description: 'Video deleted successfully', variant: 'successfully' })
+    selectedItems.value = []
+  } else {
+    toast({ description: 'Delete video failed', variant: 'destructive' })
+  }
+}
+
 const handleDownloadVideoList = () => {
   console.log(selectedItems)
 }

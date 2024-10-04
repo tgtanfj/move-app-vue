@@ -14,10 +14,12 @@ const emit = defineEmits(['openChangePasswordResult'])
 const oldPassword = ref('')
 const errorMessage = ref('')
 const showPassword = ref(false)
+const showError = ref(false)
+
 const mutation = useChangePassword()
 const { isPending, isError } = mutation
 
-const { values, errors, defineField, handleSubmit } = useForm({
+const { values, errors, defineField } = useForm({
   validationSchema: passwordSchema
 })
 
@@ -26,25 +28,29 @@ const isFillAllFields = computed(() => {
 })
 
 const isFormValid = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const submit = handleSubmit(async (values) => {
-  mutation.mutate(
-    {
-      currentPassword: oldPassword.value,
-      newPassword: values.password
-    },
-    {
-      onSuccess: () => {
-        emit('openChangePasswordResult')
+const submit = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
+  } else {
+    mutation.mutate(
+      {
+        currentPassword: oldPassword.value,
+        newPassword: values.password
       },
-      onError: (error) => {
-        errorMessage.value = error.response?.data?.message
+      {
+        onSuccess: () => {
+          emit('openChangePasswordResult')
+        },
+        onError: (error) => {
+          errorMessage.value = error.response?.data?.message
+        }
       }
-    }
-  )
-})
+    )
+  }
+}
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
@@ -57,14 +63,17 @@ const togglePasswordVisibility = () => {
       <div class="flex flex-col space-y-1.5 mb-4">
         <label>{{ $t('change_password.old_password') }}</label>
         <div class="relative pb-2">
-          <Input :type="showPassword ? 'text' : 'password'" v-model="oldPassword" />
+          <Input :type="showPassword ? 'text' : 'password'" v-model="oldPassword" maxlength="32" />
           <span
             @click="togglePasswordVisibility"
             class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"
           >
-            <Eye v-if="!showPassword" />
-            <EyeOff v-else />
+            <EyeOff v-if="!showPassword" />
+            <Eye v-else />
           </span>
+          <span v-if="isError" class="text-redMisc text-sm italic">{{
+            errorMessage ? errorMessage : $t('change_password.fail_desc')
+          }}</span>
         </div>
       </div>
       <div class="flex flex-col space-y-1.5 mb-4">
@@ -74,6 +83,7 @@ const togglePasswordVisibility = () => {
           :defineField="defineField"
           :errors="errors"
           inputType="password"
+          :show-error="showError"
         />
       </div>
 
@@ -84,11 +94,9 @@ const togglePasswordVisibility = () => {
           :defineField="defineField"
           :errors="errors"
           inputType="password"
+          :show-error="showError"
         />
       </div>
-      <span v-if="isError" class="text-redMisc text-sm italic">{{
-        errorMessage ? errorMessage : $t('change_password.fail_desc')
-      }}</span>
 
       <div class="text-center mt-6">
         <Button

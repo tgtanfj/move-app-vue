@@ -67,17 +67,16 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: RichText(
               text: TextSpan(
-                text: "Can’t find an answer?  ",
+                text: Constants.cantFindAnAnswer,
                 style: AppTextStyles.montserratStyle.regular14Black,
                 children: [
                   TextSpan(
-                    text: "Contact us",
+                    text: Constants.contactUs,
                     style: AppTextStyles.montserratStyle.regular14TiffanyBlue
                         .copyWith(decoration: TextDecoration.underline),
                   ),
                   TextSpan(
-                    text:
-                        " here and we will address your problem as soon as possible.",
+                    text: Constants.hereAndWeWillAddress,
                     style: AppTextStyles.montserratStyle.regular14Black,
                   ),
                 ],
@@ -89,44 +88,3 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
     );
   }
 }
-
-// CustomTile(
-//               title: Constants.titleExample,
-//               titleStyle: AppTextStyles.montserratStyle.bold16black,
-//               expandedContent: Text(
-//                 Constants.contentExample,
-//                 style: AppTextStyles.montserratStyle.regular16Black,
-//               ),
-//             ),
-//             CustomTile(
-//               title: Constants.titleExample,
-//               titleStyle: AppTextStyles.montserratStyle.bold16black,
-//               expandedContent: Text(
-//                 Constants.contentExample,
-//                 style: AppTextStyles.montserratStyle.regular16Black,
-//               ),
-//             ),
-//             CustomTile(
-//               title: Constants.titleExample,
-//               titleStyle: AppTextStyles.montserratStyle.bold16black,
-//               expandedContent: Text(
-//                 Constants.contentExample,
-//                 style: AppTextStyles.montserratStyle.regular16Black,
-//               ),
-//             ),
-//             CustomTile(
-//               title: Constants.titleExample,
-//               titleStyle: AppTextStyles.montserratStyle.bold16black,
-//               expandedContent: Text(
-//                 Constants.contentExample,
-//                 style: AppTextStyles.montserratStyle.regular16Black,
-//               ),
-//             ),
-//             CustomTile(
-//               title: Constants.titleExample,
-//               titleStyle: AppTextStyles.montserratStyle.bold16black,
-//               expandedContent: Text(
-//                 Constants.contentExample,
-//                 style: AppTextStyles.montserratStyle.regular16Black,
-//               ),
-//             ),
