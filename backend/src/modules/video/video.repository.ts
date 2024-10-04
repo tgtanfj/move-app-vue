@@ -94,4 +94,12 @@ export class VideoRepository {
       withDeleted: options.withDeleted,
     });
   }
+
+  async findVideoUrlById(videoId: number): Promise<string> {
+    const video = await this.videoRepository.findOne({
+      where: { id: videoId },
+      select: ['url'],
+    });
+    return video ? video.url : null;
+  }
 }

@@ -1,20 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:move_app/constants/api_urls.dart';
-import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 
-enum APIRequestMethod { get, post, put, delete, patch }
+enum Method { get, post, put, delete, patch }
 
-class ApiService {
+class ApiServiceAdditional {
   late Dio dio;
 
-  static final ApiService _instance = ApiService._internal();
+  static final ApiServiceAdditional _instance = ApiServiceAdditional._internal();
 
-  factory ApiService() {
+  factory ApiServiceAdditional() {
     return _instance;
   }
 
-  ApiService._internal() {
+  ApiServiceAdditional._internal() {
     dio = Dio(BaseOptions(
       baseUrl: ApiUrls.baseUrl,
       connectTimeout: const Duration(seconds: 30),
@@ -22,43 +21,33 @@ class ApiService {
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
     ));
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-        if (accessToken.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $accessToken';
-        }
-        return handler.next(options);
-      },
-    ));
   }
 
   Future<Response<T>> request<T>(
-    APIRequestMethod method,
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Object? data,
-    Options? options,
-  }) async {
+      Method method,
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Object? data,
+        Options? options,
+      }) async {
     try {
       Response<T> response;
       switch (method) {
-        case APIRequestMethod.get:
+        case Method.get:
           response = await dio.get<T>(path,
               queryParameters: queryParameters, options: options);
           break;
-        case APIRequestMethod.post:
-          response = await dio.post<T>(path,
-              data: data, options: options, queryParameters: queryParameters);
+        case Method.post:
+          response = await dio.post<T>(path, data: data, options: options, queryParameters: queryParameters);
           break;
-        case APIRequestMethod.put:
+        case Method.put:
           response = await dio.put<T>(path, data: data, options: options);
           break;
-        case APIRequestMethod.delete:
+        case Method.delete:
           response = await dio.delete<T>(path,
               queryParameters: queryParameters, options: options);
           break;
-        case APIRequestMethod.patch:
+        case Method.patch:
           response = await dio.patch<T>(path, data: data, options: options);
           break;
         default:

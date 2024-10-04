@@ -10,6 +10,7 @@ class Constants {
   static const String signUpWithGoogle = "Sign up with Google";
   static const String signUpWithFaceBook = "Sign up with Facebook";
   static const String signUpWithEmail = "Sign Up With Email";
+  static const String loginSuccessful = "Login successful";
   static const String or = "or";
   static const String email = "Email";
   static const String password = "Password";
@@ -105,6 +106,7 @@ class Constants {
   static const String communityGuideline = 'Community Guideline';
   static const String faq = 'FAQ';
   static const String logout = 'Logout';
+  static const String logout_question = 'Logout ?';
   static const String loginMenu = "Login";
   static const String signUpSuccessful = "Sign Up Successful";
   static const String theEmail = 'The email ';
@@ -126,4 +128,8 @@ class Constants {
   static const String invalidContainUsername =
       'Username containing only letters, numbers, and underscores';
   static const String invalidCity = 'This field is required';
+  static const String confirmLogout = 'Do you want to logout ?';
+  static const String yes = 'Yes';
+  static const String no = 'No';
+
 }

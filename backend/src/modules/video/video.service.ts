@@ -22,6 +22,8 @@ import { Video } from '@/entities/video.entity';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { parseInt } from 'lodash';
 import { stringToBoolean } from '@/shared/utils/stringToBool.util';
+import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
+import { OptionSharingDTO } from './dto/option-sharing.dto';
 
 @Injectable()
 export class VideoService {
@@ -39,6 +41,45 @@ export class VideoService {
     private readonly thumbnailService: ThumbnailService,
   ) {}
 
+  async sharingVideoUrlByNativeId(videoId: number): Promise<string> {
+    try {
+      const videoURL = await this.videoRepository.findVideoUrlById(videoId);
+      if (!videoURL) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+      return videoURL;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async sharingVideoUrlById(videoId: number, optionDTO: OptionSharingDTO): Promise<string> {
+    try {
+      const videoURL = await this.videoRepository.findVideoUrlById(videoId);
+      if (!videoURL) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+      let shareUrl: string;
+      switch (optionDTO.option) {
+        case OPTION.FACEBOOK:
+          shareUrl = `${URL_SHARING_CONSTRAINT.FACEBOOK}${videoURL}`;
+
+          break;
+        case OPTION.TWITTER:
+          shareUrl = `${URL_SHARING_CONSTRAINT.TWITTER}${videoURL}`;
+          break;
+        default:
+          throw new Error('Unsupported sharing option');
+      }
+
+      return shareUrl;
+    } catch (error) {
+      throw error;
+    }
+  }
   async getVideosDashboard(
     // userId: number,
     paginationDto: PaginationDto,
@@ -143,6 +184,7 @@ export class VideoService {
           message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
         });
       }
+      console.log('dto', dto);
 
       if (dto.categoryId) {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
@@ -176,7 +218,6 @@ export class VideoService {
 
       return updatedVideo;
     } catch (error) {
-      // Handle and rethrow the error
       throw error;
     }
   }

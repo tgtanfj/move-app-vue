@@ -33,7 +33,7 @@ class _LoginBodyState extends State<LoginBody>
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
-          Fluttertoast.showToast(msg: "Login successful");
+          Fluttertoast.showToast(msg: Constants.loginSuccessful);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const HomeBody(),
@@ -155,12 +155,16 @@ class _LoginBodyState extends State<LoginBody>
                               backgroundColor: state.isEnabled
                                   ? AppColors.tiffanyBlue
                                   : AppColors.spanishGray,
-                              borderColor: AppColors.spanishGray,
-                              onTap: () {
-                                context.read<LoginBloc>().add(
-                                      LoginWithEmailPasswordEvent(),
-                                    );
-                              },
+                              borderColor: state.isEnabled
+                                  ? AppColors.tiffanyBlue
+                                  : AppColors.spanishGray,
+                              onTap: state.isEnabled
+                                  ? () {
+                                      context.read<LoginBloc>().add(
+                                            LoginWithEmailPasswordEvent(),
+                                          );
+                                    }
+                                  : null,
                             ),
                           ],
                         )
