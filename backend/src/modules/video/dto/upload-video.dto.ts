@@ -1,7 +1,16 @@
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class UploadVideoDTO {
   thumbnails: any;
@@ -41,6 +50,7 @@ export class UploadVideoDTO {
     example: 'abc,asdasd,proooo',
   })
   @IsString()
+  @IsOptional()
   keywords: string;
 
   @ApiProperty({

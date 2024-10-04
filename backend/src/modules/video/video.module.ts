@@ -17,6 +17,8 @@ import { ChannelModule } from '../channel/channel.module';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
+import { BullModule } from '@nestjs/bullmq';
+import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
 
 @Module({
   imports: [
@@ -28,6 +30,10 @@ import { ThumbnailModule } from '../thumbnail/thumbnail.module';
     UserModule,
     ChannelModule,
     ThumbnailModule,
+    BullModule.registerQueue({
+      name: 'upload-s3',
+      prefix: 'video',
+    }),
   ],
   controllers: [VideoController],
   providers: [
@@ -38,6 +44,7 @@ import { ThumbnailModule } from '../thumbnail/thumbnail.module';
     GeneratorService,
     CategoryService,
     VimeoService,
+    UploadS3Processor,
   ],
 })
 export class VideoModule {}

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -9,8 +8,6 @@ import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
-import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
-import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
 
@@ -95,8 +92,6 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             browseButton: () {},
             walletButton: () {},
             settingButton: () {
-              print('object');
-
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },
           ),

@@ -58,9 +58,9 @@ class CustomLogoutButton extends StatelessWidget {
             if (prefix != null) prefix!,
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: (title ?? '').isNotEmpty ? 12 : 0),
+                  horizontal: (title).isNotEmpty ? 12 : 0),
               child: Text(
-                title ?? '',
+                title,
                 style: titleStyle ??
                     AppTextStyles.montserratStyle.regular14Black,
               ),

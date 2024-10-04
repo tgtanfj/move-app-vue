@@ -137,13 +137,13 @@ export class UserService {
       const dataUpdate = dto;
 
       if (file) {
-        const image = await this.awsS3Service.uploadImage(file);
+        const image = await this.awsS3Service.uploadAvatar(file);
         dto.avatar = image;
       }
 
       if (dto.countryId && dto.stateId) {
         const statesOfCountry = await this.countryService.getStatesOfCountry(dto.countryId);
-        const isValidState = statesOfCountry.find((state) => state.id === dto.stateId);
+        const isValidState = statesOfCountry.find((state) => state.id == dto.stateId);
 
         if (!isValidState) {
           throw new BadRequestException(ERRORS_DICTIONARY.INVALID_STATE);
