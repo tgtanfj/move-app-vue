@@ -7,11 +7,9 @@ import type { IFile } from '../interfaces/file.interface';
 import { GeneratorProvider } from '../providers/generator.provider';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
-<<<<<<< HEAD
 import { createWriteStream } from 'fs';
-=======
 import { Upload } from '@aws-sdk/lib-storage';
->>>>>>> 18edda5 ((feature/download-video): api download)
+
 
 @Injectable()
 export class AwsS3Service {
