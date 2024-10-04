@@ -7,6 +7,7 @@ import type { IFile } from '../interfaces/file.interface';
 import { GeneratorProvider } from '../providers/generator.provider';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
+import { createWriteStream } from 'fs';
 
 @Injectable()
 export class AwsS3Service {
@@ -99,4 +100,6 @@ export class AwsS3Service {
   validateRemovedImage(key: string) {
     return !key.includes('templates/');
   }
+
+  
 }
