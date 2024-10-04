@@ -19,6 +19,9 @@ export enum ERRORS_DICTIONARY {
   // USER
   NOT_FOUND_ANY_USER = 'Not found any user',
 
+  SIZE_AVATAR_ERROR = 'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.',
+  ALLOWED_FILE_TYPES = 'Invalid file format. Only JPG, PNG, and GIF are allowed.',
+  DIMENSIONS_AVATAR_ERROR = 'Image dimensions should be between 100x100 and 2000x2000.',
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
   INVALID_STATE = 'Invalid state',
 

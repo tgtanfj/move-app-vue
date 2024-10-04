@@ -8,6 +8,7 @@ import { GeneratorProvider } from '../providers/generator.provider';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
 import { createWriteStream } from 'fs';
+import { validateAvatarFile } from '../utils/validate-avatar.utils';
 
 @Injectable()
 export class AwsS3Service {
@@ -58,6 +59,11 @@ export class AwsS3Service {
     return key;
   }
 
+  async uploadAvatar(file: IFile): Promise<string> {
+    await validateAvatarFile(file);
+    return await this.uploadImage(file);
+  }
+
   getSignedUrl(key: string): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
@@ -100,6 +106,4 @@ export class AwsS3Service {
   validateRemovedImage(key: string) {
     return !key.includes('templates/');
   }
-
-  
 }
