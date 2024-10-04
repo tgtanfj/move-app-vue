@@ -19,7 +19,6 @@ export const passwordSchema = object({
     .matches(REGEX_STRONG_PASSWORD, t('error_message.strong_password')),
   confirmPassword: string()
     .required(t('error_message.required'))
-    .min(8)
     .oneOf([ref('password')], t('error_message.match_password'))
 })
 
@@ -42,18 +41,16 @@ export const registerSchema = object({
 
   confirmPassword: string()
     .required(t('error_message.required'))
-    .oneOf([ref('password')], t('error_message.match_password')),
-  code: string().matches(REGEX_REFERRAL_CODE, t('error_message.referral_code'))
+    .oneOf([ref('password')], t('error_message.match_password'))
 })
 
 export const signinSchema = object({
   email: string()
     .required(t('error_message.required_email'))
     .matches(REGEX_EMAIL, t('error_message.invalid_email')),
-  password: string()
-    .required(t('error_message.required'))
-    .min(8, t('error_message.strong_password'))
-    .max(32, t('error_message.strong_password'))
+  password: string().required(t('error_message.required'))
+  // .min(8, t('error_message.strong_password'))
+  // .max(32, t('error_message.strong_password'))
 })
 
 export const userProfileSchema = yup.object().shape({

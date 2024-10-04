@@ -14,9 +14,6 @@ const props = defineProps({
 })
 //Handle open forgot password
 const emit = defineEmits(['openForgotPassword'])
-const handleOpenForgotPassword = () => {
-  emit('openForgotPassword')
-}
 
 const { values, errors, defineField, handleSubmit } = useForm({
   validationSchema: signinSchema
@@ -24,6 +21,7 @@ const { values, errors, defineField, handleSubmit } = useForm({
 
 const formLogin = ref(false)
 const showPassword = ref(false)
+const showError = ref(false)
 const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 const { toast } = useToast()
@@ -34,18 +32,22 @@ const isFillAllFields = computed(() => {
 })
 
 const isSignIn = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const handleSignIn = handleSubmit(async (values) => {
-  await authStore.loginWithEmail(values)
-  if (authStore.accessToken) {
-    props.closeModal()
-    toast({ description: 'Login successfully', variant: 'successfully' })
+const handleSignIn = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
   } else {
-    toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+    await authStore.loginWithEmail(values)
+    if (authStore.accessToken) {
+      props.closeModal()
+      toast({ description: 'Login successfully', variant: 'successfully' })
+    } else {
+      toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+    }
   }
-})
+}
 
 const handleGoogleSignIn = async () => {
   try {
@@ -100,6 +102,9 @@ const handleFacebookSignIn = async () => {
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
+const handleOpenForgotPassword = () => {
+  emit('openForgotPassword')
+}
 </script>
 
 <template>
@@ -137,10 +142,12 @@ const togglePasswordVisibility = () => {
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
+          :class="showError ? 'border-redMisc' : ''"
           v-model.trim="email"
           v-bind="emailAttrs"
+          maxlength="255"
         />
-        <p class="text-red-500 text-[14px]">{{ errors.email }}</p>
+        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.email }}</p>
       </div>
       <div class="mb-2 flex flex-col">
         <label class="mb-2">Password</label>
@@ -150,16 +157,17 @@ const togglePasswordVisibility = () => {
             class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none z-0 w-full"
             v-model="password"
             v-bind="passwordAttrs"
+            maxlength="32"
           />
           <span
             @click="togglePasswordVisibility"
             class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"
           >
-            <Eye v-if="!showPassword" />
-            <EyeOff v-else />
+            <EyeOff v-if="!showPassword" />
+            <Eye v-else />
           </span>
         </div>
-        <p class="text-red-500 text-[14px]">{{ errors.password }}</p>
+        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.password }}</p>
       </div>
       <div class="ml-[-10px]">
         <Button variant="link" type="button" @click="handleOpenForgotPassword"

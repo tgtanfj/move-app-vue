@@ -1,12 +1,12 @@
 export enum ERRORS_DICTIONARY {
   // Users
-  EMAIL_EXISTED = 'Email already existed',
+  EMAIL_EXISTED = 'Email already exists in the system. Please select another Email',
   USER_NOT_FOUND = 'User not found',
 
   // Auth
 
-  INVALID_OTP = 'Invalid OTP. Please try again.',
-  ACCOUNT_LOCKED = 'Account is temporarily locked. Try again later.',
+  WAIT_ONE_MINUTE = 'Please wait 1 minute to resend the code.',
+  INVALID_OTP = 'Wrong code. Please try again',
   OTP_WRONG_MANY_TIMES = "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later",
 
   // CLASS VALIDATOR
@@ -19,6 +19,9 @@ export enum ERRORS_DICTIONARY {
   // USER
   NOT_FOUND_ANY_USER = 'Not found any user',
 
+  SIZE_AVATAR_ERROR = 'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.',
+  ALLOWED_FILE_TYPES = 'Invalid file format. Only JPG, PNG, and GIF are allowed.',
+  DIMENSIONS_AVATAR_ERROR = 'Image dimensions should be between 100x100 and 2000x2000.',
   NOT_FOUND_ANY_COUNTRY = 'Not found any country',
   INVALID_STATE = 'Invalid state',
 
@@ -29,8 +32,8 @@ export enum ERRORS_DICTIONARY {
   //Account
   NOT_FOUND_ACCOUNT = 'Not found account',
   UPDATE_PASSWORD_FAIL = 'Update password fail',
-  PASSWORD_RESTRICTION = 'New passwords cannot match any of the user previous 2 passwords',
-  PASSWORD_INCORRECT = 'Password mismatch your password',
+  PASSWORD_RESTRICTION = 'Your new password cannot be the same as any of your last two passwords. Please choose a different password.',
+  PASSWORD_INCORRECT = 'You have entered an invalid password',
   WRONG_METHOD = 'Your method cant change password',
 
   // SOCIAL

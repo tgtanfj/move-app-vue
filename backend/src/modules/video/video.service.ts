@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
-import sizeOf from 'image-size';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { CategoryService } from '../category/category.service';
@@ -19,6 +18,11 @@ import { CategoryVideoDetailDto } from '../category/dto/response/category-video-
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { CategoryRepository } from '../category/caregory.repository';
 import { Video } from '@/entities/video.entity';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { parseInt } from 'lodash';
+import { stringToBoolean } from '@/shared/utils/stringToBool.util';
+import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
+import { OptionSharingDTO } from './dto/option-sharing.dto';
 
 @Injectable()
 export class VideoService {
@@ -33,11 +37,54 @@ export class VideoService {
     private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
+    private readonly thumbnailService: ThumbnailService,
   ) {}
 
-  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
+  async sharingVideoUrlByNativeId(videoId: number): Promise<string> {
     try {
-      // const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      const videoURL = await this.videoRepository.findVideoUrlById(videoId);
+      if (!videoURL) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+      return videoURL;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async sharingVideoUrlById(videoId: number, optionDTO: OptionSharingDTO): Promise<string> {
+    try {
+      const videoURL = await this.videoRepository.findVideoUrlById(videoId);
+      if (!videoURL) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+      let shareUrl: string;
+      switch (optionDTO.option) {
+        case OPTION.FACEBOOK:
+          shareUrl = `${URL_SHARING_CONSTRAINT.FACEBOOK}${videoURL}`;
+
+          break;
+        case OPTION.TWITTER:
+          shareUrl = `${URL_SHARING_CONSTRAINT.TWITTER}${videoURL}`;
+          break;
+        default:
+          throw new Error('Unsupported sharing option');
+      }
+
+      return shareUrl;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getVideosDashboard(
+    // userId: number,
+    paginationDto: PaginationDto,
+  ): Promise<object> {
+    try {
+      // const channel = await this.channelService.getChannelByUserId(userId);
       const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
@@ -59,12 +106,14 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [numberOfViews, numberOfComments, ratings] = await Promise.all([
+          const [selectedThumbnail, numberOfViews, numberOfComments, ratings] = await Promise.all([
+            this.thumbnailService.getSelectedThumbnail(video.id),
             this.watchingVideoHistoryService.getNumberOfViews(video.id),
             this.commentService.getNumberOfComments(video.id),
             this.watchingVideoHistoryService.getAverageRating(video.id),
           ]);
 
+          videoDetail.thumbnail_url = selectedThumbnail.image;
           videoDetail.numberOfViews = numberOfViews;
           videoDetail.numberOfComments = numberOfComments;
           videoDetail.ratings = ratings;
@@ -101,22 +150,23 @@ export class VideoService {
     }
   }
 
-  async uploadVideo(channelId: number, thumbnail: Express.Multer.File, dto: UploadVideoDTO) {
+  async uploadVideo(userId: number, thumbnails: Array<Express.Multer.File>, dto: UploadVideoDTO) {
     //find channel by id
-    const foundChannel = null;
-    //validation thumbnail
-    const dimensions = sizeOf(thumbnail.buffer);
-    if (dimensions.height < 720) {
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
+    dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
+    const isPublish = stringToBoolean(dto.isPublish);
+    const isComment = stringToBoolean(dto.isCommentable);
+
+    const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
+    if (!video) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL,
+        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
-    // upload thumbnail into S3
-    const linkThumbNail = await this.s3.uploadImage(thumbnail);
-
-    dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
-    const video = await this.videoRepository.createVideo(2, linkThumbNail, dto);
-    if (!video) {
+    const selected = parseInt(dto.selectedThumbnail);
+    //save thumbnails
+    const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
+    if (!newThumb) {
       throw new BadRequestException({
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
@@ -133,6 +183,7 @@ export class VideoService {
           message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
         });
       }
+      console.log('dto', dto);
 
       if (dto.categoryId) {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
@@ -144,10 +195,10 @@ export class VideoService {
         video.category = category;
       }
 
-      if (thumbnail) {
-        const thumbnailUrl = await this.s3.uploadImage(thumbnail);
-        video.thumbnail_url = thumbnailUrl;
-      }
+      // if (thumbnail) {
+      //   const thumbnailUrl = await this.s3.uploadImage(thumbnail);
+      //   video.thumbnail_url = thumbnailUrl;
+      // }
 
       // Update video properties
       video.title = dto.title || video.title;
@@ -166,7 +217,6 @@ export class VideoService {
 
       return updatedVideo;
     } catch (error) {
-      // Handle and rethrow the error
       throw error;
     }
   }
