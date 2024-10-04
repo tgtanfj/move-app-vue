@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Param,
   ParseArrayPipe,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -49,7 +50,8 @@ export class VideoController {
       paginationDto,
     );
   }
-  // @UseGuards(JwtAuthGuard)
+
+  @UseGuards(JwtAuthGuard)
   @Post('create-upload-session')
   async createUploadSession(@Body() dto: CreateVideoDTO) {
     const data = await this.videoService.createUploadSession(dto.fileSize);
@@ -59,7 +61,6 @@ export class VideoController {
   // @Roles(Role.INSTRUCTOR)
   // @UseGuards(JwtAuthGuard)
   @Post('upload-video')
-  // @UseInterceptors(FilesInterceptor('thumbnails', 6), FileInterceptor('video'))
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'thumbnails', maxCount: 6 },
@@ -72,15 +73,12 @@ export class VideoController {
     @UploadedFiles()
     files: {
       thumbnails?: Express.Multer.File[];
-      video?: Express.Multer.File
+      video?: Express.Multer.File;
     },
     @Body() dto: UploadVideoDTO,
   ) {
-    // const id = user.id;
-    // return files.video;
-    // return files.thumbnails
-    console.log(files);
-    return await this.videoService.uploadVideo(1, files.thumbnails, dto, files.video[0]);
+    const savedVideo = await this.videoService.saveVideoToServer(files.video[0]);
+    return await this.videoService.uploadVideo(1, files.thumbnails, dto, savedVideo, files.video[0]);
   }
 
   @Put('edit-video/:videoId')
@@ -102,17 +100,19 @@ export class VideoController {
   async restoreVideos(@Body() deleteVideosDto: DeleteVideosDto) {
     return await this.videoService.restoreVideos(deleteVideosDto.videoIds);
   }
+
   @Get('social-sharing/:videoId')
   async getUrlSharingSocial(@Param('videoId') videoId: number, @Query() option: OptionSharingDTO) {
     return await this.videoService.sharingVideoUrlById(videoId, option);
   }
+
   @Get(':videoId')
   async getUrlVideo(@Param('videoId') videoId: number) {
     return await this.videoService.sharingVideoUrlByNativeId(videoId);
   }
 
-  @Get('download')
-  async downloadVideo() {
-    return await this.videoService.downloadVideo('');
+  @Get('download/:id')
+  async downloadVideo(@Param('id', ParseIntPipe) videoId: number) {
+    return await this.videoService.downloadVideo(videoId);
   }
 }
