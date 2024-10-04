@@ -27,7 +27,7 @@
     <TableCell>
       <div class="flex invisible gap-3 group-hover:visible">
         <TooltipProvider>
-          <Tooltip delayDuration="50">
+          <Tooltip :delayDuration="50">
             <TooltipTrigger as-child>
               <Upload size="20" color="#12BDA3" />
             </TooltipTrigger>
@@ -58,7 +58,7 @@
             <TooltipContent side="bottom" class="border-primary text-primary">
               <div class="flex flex-col gap-3 cursor-pointer">
                 <!-- Nhấn để hiện modal xóa -->
-                <div class="flex gap-2 items-center" @click="showModalDelete"> 
+                <div class="flex gap-2 items-center" @click="showModalDelete">
                   <Trash size="16" color="#12BDA3" />
                   <span class="text-sm">{{ $t('streamer.delete_video') }}</span>
                 </div>
@@ -78,15 +78,22 @@
   </TableRow>
 
   <BaseDialog
-      :title="$t('streamer.delete_selected_video_modal_title')"
-      :description="$t('streamer.delete_video_modal_description')"
-      v-model:open="showConfirmModal"
-    >
-      <div class="w-full flex justify-center items-center gap-4 mt-3">
-        <Button variant="outline" class="px-9 text-base text-black hover:text-primary" @click="showConfirmModal = false">{{ $t('button.cancel') }}</Button>
-        <Button variant="default" class="px-9 text-base" @click="handleDeleteVideo">{{ $t('streamer.delete') }}</Button>
-      </div>
-    </BaseDialog>
+    :title="$t('streamer.delete_selected_video_modal_title')"
+    :description="$t('streamer.delete_video_modal_description')"
+    v-model:open="showConfirmModal"
+  >
+    <div class="w-full flex justify-center items-center gap-4 mt-3">
+      <Button
+        variant="outline"
+        class="px-9 text-base text-black hover:text-primary"
+        @click="showConfirmModal = false"
+        >{{ $t('button.cancel') }}</Button
+      >
+      <Button variant="default" class="px-9 text-base" @click="handleDeleteVideo">{{
+        $t('streamer.delete')
+      }}</Button>
+    </div>
+  </BaseDialog>
 </template>
 
 <script setup>

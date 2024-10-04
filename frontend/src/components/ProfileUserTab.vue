@@ -51,6 +51,7 @@ const isLoading = ref(false)
 const isSubmitting = ref(false)
 const showError = ref(false)
 const firstSubmittion = ref(true)
+const gender = ref('')
 
 const { toast } = useToast()
 const { handleSubmit, values, setValues, errors, meta } = useForm({
@@ -105,7 +106,7 @@ watch(userData, (newValue) => {
     selectedCountry.value = newValue.country.name || ''
     selectedState.value = newValue.state.name || ''
     selectedCity.value = newValue.city || ''
-
+    gender.value = denormalizeGender(newValue.gender)
     if (newValue.dateOfBirth) {
       const [year, month, day] = newValue.dateOfBirth.split('-')
       selectedDay.value = day || null
@@ -120,14 +121,7 @@ watch(userData, (newValue) => {
       country: newValue.country.name || '',
       state: newValue.state.name || '',
       city: newValue.city || '',
-      gender:
-        newValue.gender === 'M'
-          ? 'male'
-          : newValue.gender === 'F'
-            ? 'female'
-            : newValue.gender === 'O'
-              ? 'rather not say'
-              : ''
+      gender: denormalizeGender(newValue.gender)
     })
   }
 })
@@ -199,6 +193,12 @@ const normalizeGender = (gender) => {
   if (gender === 'male') return 'M'
   if (gender === 'female') return 'F'
   return 'O'
+}
+const denormalizeGender = (gender) => {
+  if (gender === 'M') return 'male'
+  if (gender === 'F') return 'female'
+  if (gender === 'O') return 'rather not say'
+  return ''
 }
 const isFormDataEmpty = (formData) => {
   return formData.entries().next().done
@@ -415,7 +415,7 @@ const handleFileChange = (event) => {
                 <RadioGroup
                   class="flex space-x-3"
                   v-bind="componentField"
-                  v-model="values.gender"
+                  v-model="gender"
                   @change="onGenderChange"
                 >
                   <FormItem class="flex items-center space-y-0 gap-x-2">
@@ -433,7 +433,7 @@ const handleFileChange = (event) => {
                       <RadioGroupItem
                         class="w-[20px] h-[20px]"
                         value="female"
-                        :checked="values.gender === 'female'"
+                        :checked="gender === 'female'"
                       />
                     </FormControl>
                     <FormLabel class="font-normal"> Female </FormLabel>
@@ -443,7 +443,7 @@ const handleFileChange = (event) => {
                       <RadioGroupItem
                         class="w-[20px] h-[20px]"
                         value="rather not say"
-                        :checked="values.gender === 'rather not say'"
+                        :checked="gender === 'rather not say'"
                       />
                     </FormControl>
                     <FormLabel class="font-normal"> Rather not say </FormLabel>
