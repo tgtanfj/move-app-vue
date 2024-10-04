@@ -34,12 +34,12 @@ class ApiService {
   }
 
   Future<Response<T>> request<T>(
-      APIRequestMethod method,
-      String path, {
-        Map<String, dynamic>? queryParameters,
-        Object? data,
-        Options? options,
-      }) async {
+    APIRequestMethod method,
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Object? data,
+    Options? options,
+  }) async {
     try {
       Response<T> response;
       switch (method) {
@@ -48,7 +48,8 @@ class ApiService {
               queryParameters: queryParameters, options: options);
           break;
         case APIRequestMethod.post:
-          response = await dio.post<T>(path, data: data, options: options, queryParameters: queryParameters);
+          response = await dio.post<T>(path,
+              data: data, options: options, queryParameters: queryParameters);
           break;
         case APIRequestMethod.put:
           response = await dio.put<T>(path, data: data, options: options);

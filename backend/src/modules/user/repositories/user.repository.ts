@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../../auth/dto/signup-social.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserRepository {
@@ -47,9 +48,9 @@ export class UserRepository {
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
-    const { email, stripeId } = signUpEmailDto;
+    const { email, stripeId, username } = signUpEmailDto;
 
-    return await this.userRepository.save({ email, stripeId });
+    return await this.userRepository.save({ email, stripeId, username });
   }
 
   async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
@@ -72,5 +73,15 @@ export class UserRepository {
 
   async updateUserByEmail(email: string, user: Partial<User>): Promise<UpdateResult> {
     return await this.userRepository.update(email, user);
+  }
+
+  async updateUser(userId: number, dto: UpdateUserDto): Promise<UpdateResult> {
+    const { countryId, stateId, ...dataUpdated } = dto;
+
+    if (countryId) dataUpdated['country'] = { id: Number(countryId) };
+
+    if (stateId) dataUpdated['state'] = { id: Number(stateId) };
+
+    return await this.userRepository.update(userId, dataUpdated);
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
@@ -24,7 +27,12 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OtpVerificationBloc, OtpVerificationState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state.status == OtpVerificationStatus.success) {
+          Navigator.of(context).pop();
+          Fluttertoast.showToast(msg: Constants.signUpSuccessful);
+        }
+      },
       builder: (context, state) {
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -68,7 +76,7 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                     style: AppTextStyles.montserratStyle.regular14Black,
                     children: [
                       TextSpan(
-                        text: " ${state.email}.",
+                        text: " ${state.userModel?.email}.",
                         style: AppTextStyles.montserratStyle.bold14Black,
                       ),
                       TextSpan(
@@ -82,16 +90,35 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                   height: 34,
                 ),
                 TitleVerificationCode(
-                    title: "${Constants.verificationCode} ",
-                    titleStyle: AppTextStyles.montserratStyle.regular14Black,
-                    subTitle: "${Constants.resendCode} ",
-                    onTapSubTitle: () {}),
+                  title: "${Constants.verificationCode} ",
+                  titleStyle: AppTextStyles.montserratStyle.regular14Black,
+                  subTitle: state.remainingSeconds > 0
+                      ? "${state.remainingSeconds}s"
+                      : "${Constants.resendCode} ",
+                  onTapSubTitle: state.remainingSeconds == 0
+                      ? () {
+                          context
+                              .read<OtpVerificationBloc>()
+                              .add(OtpVerificationResendEvent());
+                        }
+                      : null,
+                ),
                 const SizedBox(
                   height: 8,
                 ),
                 CustomEditText(
                   maxLength: 6,
-                  textInputType: TextInputType.phone,
+                  textInputType: TextInputType.number,
+                  isShowMessage: state.isShowMessageOtp,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  preMessage: state.messageOtp,
+                  textStyle: state.isShowMessageOtp
+                      ? AppTextStyles.montserratStyle.regular14BrinkPink
+                      : AppTextStyles.montserratStyle.regular14Black,
+                  borderColor: AppColors.brinkPink,
+                  cursorColor: state.isShowMessageOtp
+                      ? AppColors.brinkPink
+                      : AppColors.tiffanyBlue,
                   onChanged: (value) {
                     context
                         .read<OtpVerificationBloc>()
@@ -110,7 +137,14 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                   backgroundColor: state.isEnabledSubmit
                       ? AppColors.tiffanyBlue
                       : AppColors.spanishGray,
-                  onTap: () {},
+                  onTap: state.isEnabledSubmit
+                      ? () {
+                          FocusScope.of(context).unfocus();
+                          context
+                              .read<OtpVerificationBloc>()
+                              .add(OtpVerificationSubmitEvent());
+                        }
+                      : null,
                 ),
               ],
             ),

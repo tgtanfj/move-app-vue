@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/auth_repository.dart';
@@ -35,7 +34,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void _onLoginChangeEmailPasswordEvent(
       LoginChangeEmailPasswordEvent event, Emitter emit) async {
     final emailValid = InputValidationHelper.email.hasMatch(event.email);
-    final passwordValid = InputValidationHelper.password.hasMatch(event.password);
+    final passwordValid =
+        InputValidationHelper.password.hasMatch(event.password);
     final isShowEmailMessage =
         state.email != event.email ? false : state.isShowEmailMessage;
     final isShowPasswordMessage =
@@ -74,8 +74,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter emit) async {
-    final facebookAccount =
-        await AuthRepository().loginWithFacebook();
+    final facebookAccount = await AuthRepository().loginWithFacebook();
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
@@ -98,14 +97,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _onLoginWithEmailPasswordEvent(
       LoginWithEmailPasswordEvent event, Emitter<LoginState> emit) async {
     emit(state.copyWith(status: LoginStatus.processing));
-    print(state.email+'---------');
     final UserModel userModel = UserModel(
       email: state.email,
       password: state.password,
     );
     try {
       await authenticationRepository.loginWithEmailPassword(userModel);
-      print(state.email+'---------');
       emit(state.copyWith(
         status: LoginStatus.success,
       ));

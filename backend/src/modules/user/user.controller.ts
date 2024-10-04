@@ -1,10 +1,25 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { UserProfile } from './dto/response/user-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { IFile } from '@/shared/interfaces/file.interface';
 
 @ApiTags('user')
 @ApiBearerAuth('jwt')
@@ -21,5 +36,13 @@ export class UserController {
   @Get('/profile')
   async getProfile(@User() user): Promise<UserProfile> {
     return await this.userService.getProfile(user.id);
+  }
+
+  @Patch('/edit-profile')
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard)
+  async updateUser(@User() user, @UploadedFile() file: IFile, @Body() updateUserDto: UpdateUserDto) {
+    return await this.userService.updateUser(user.id, updateUserDto, file);
   }
 }

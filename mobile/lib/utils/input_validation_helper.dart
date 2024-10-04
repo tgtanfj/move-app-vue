@@ -6,7 +6,6 @@ class InputValidationHelper {
   static final RegExp password = RegExp(
       r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$');
 
-
   static String? validateEmail(String email) {
     if (email.length < 5 || email.length > 255) {
       return Constants.invalidEmail;
@@ -61,16 +60,15 @@ class InputValidationHelper {
   }
 
   static String? validateOtpCode(String input) {
-    const numberPattern = r'^\d+$';
+    const numberPattern = r'^[0-9]+$';
     final regExp = RegExp(numberPattern);
 
     if (!regExp.hasMatch(input)) {
-      return Constants.wrongCode;
+      return Constants.invalidCode;
     }
 
     return null;
   }
-
 
   bool isPasswordValid(String password) {
     if (password.length < 8 || password.length > 32) return false;
@@ -81,4 +79,38 @@ class InputValidationHelper {
     return hasUppercase && hasLowercase && hasDigit && hasSpecial;
   }
 
+  bool isValidEmail(String email) {
+    final RegExp emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+  static String? validateUsername(String username) {
+    if (username.length < 4 || username.length > 25) {
+      return Constants.invalidCharacterUsername;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(username)) {
+      return Constants.invalidContainUsername;
+    }
+    return null;
+  }
+
+  static String? validateFullName(String fullName) {
+    if (fullName.length < 8 || fullName.length > 255) {
+      return Constants.invalidCharacterFullName;
+    }
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(fullName)) {
+      return Constants.invalidSpecialCharacterFullName;
+    }
+    return null;
+  }
+
+  static String? validateCity(String city) {
+    if (city.isEmpty) {
+      return Constants.invalidCity;
+    }
+
+    return null;
+  }
 }

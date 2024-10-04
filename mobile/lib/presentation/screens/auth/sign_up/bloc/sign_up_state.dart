@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/user_model.dart';
 
 enum SignUpStatus {
   initial,
   loading,
   success,
+  completed,
   error,
 }
 
@@ -25,6 +27,7 @@ class SignUpState extends Equatable {
   final bool isShowReferralCodeMessage;
   final String googleAccount;
   final String facebookAccount;
+  final UserModel? userModel;
 
   const SignUpState({
     this.status = SignUpStatus.initial,
@@ -44,6 +47,7 @@ class SignUpState extends Equatable {
     this.isShowReferralCodeMessage = false,
     this.googleAccount = '',
     this.facebookAccount = '',
+    this.userModel,
   });
 
   SignUpState copyWith({
@@ -66,6 +70,7 @@ class SignUpState extends Equatable {
     bool? isShowConfirmPassword,
     String? googleAccount,
     String? facebookAccount,
+    UserModel? userModel,
   }) {
     return SignUpState(
       status: status ?? this.status,
@@ -91,6 +96,7 @@ class SignUpState extends Equatable {
           isShowReferralCodeMessage ?? this.isShowReferralCodeMessage,
       googleAccount: googleAccount ?? this.googleAccount,
       facebookAccount: facebookAccount ?? this.facebookAccount,
+      userModel: userModel ?? this.userModel,
     );
   }
 
@@ -113,5 +119,6 @@ class SignUpState extends Equatable {
         isShowReferralCodeMessage,
         googleAccount,
         facebookAccount,
+        userModel,
       ];
 }

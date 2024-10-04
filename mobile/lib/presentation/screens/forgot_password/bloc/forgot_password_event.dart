@@ -13,6 +13,12 @@ class ForgotPasswordEmailChanged extends ForgotPasswordEvent {
   List<Object?> get props => [email];
 }
 
-class ForgotPasswordSubmitted extends ForgotPasswordEvent {}
+class ForgotPasswordSubmitted extends ForgotPasswordEvent {
+  String email;
+  ForgotPasswordSubmitted(this.email);
+
+  @override
+  List<Object?> get props => [email];
+}
 
 class ForgotPasswordSubmittedSuccess extends ForgotPasswordEvent {}

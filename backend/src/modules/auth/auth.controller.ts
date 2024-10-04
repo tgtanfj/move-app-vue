@@ -13,7 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
-import { SocialTokenDto } from './dto/social-token.dto';
+import { LoginSocialDto } from './dto/login-social.dto';
 
 @ApiTags('Auth')
 @ApiBearerAuth('jwt')
@@ -25,11 +25,12 @@ export class AuthController {
   ) {}
 
   @Post('login/google')
-  async loginGoogle(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
+  async loginGoogle(@Body() loginSocialDto: LoginSocialDto, @Req() req: Request) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
 
     const infoLoginSocial: infoLoginSocial = {
-      idToken: socialTokenDto.idToken,
+      email: loginSocialDto.email,
+      idToken: loginSocialDto.idToken,
       type: TypeAccount.GOOGLE,
       publicIp: publicIp,
       userAgent: req.headers['user-agent'],
@@ -39,11 +40,12 @@ export class AuthController {
   }
 
   @Post('login/facebook')
-  async loginFacebook(@Body() socialTokenDto: SocialTokenDto, @Req() req: Request) {
+  async loginFacebook(@Body() loginSocialDto: LoginSocialDto, @Req() req: Request) {
     const publicIp = await this.publicIpAddressService.getPublicIpAddress();
 
     const infoLoginSocial: infoLoginSocial = {
-      idToken: socialTokenDto.idToken,
+      email: loginSocialDto.email,
+      idToken: loginSocialDto.idToken,
       type: TypeAccount.FACEBOOK,
       publicIp: publicIp,
       userAgent: req.headers['user-agent'],

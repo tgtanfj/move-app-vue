@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -8,6 +7,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_page.dar
 import 'package:move_app/presentation/screens/auth/widgets/custom_expandable_page_view.dart';
 
 import '../../../../../config/theme/app_colors.dart';
+
 class DialogAuthentication extends StatelessWidget {
   const DialogAuthentication({super.key});
   @override
@@ -44,7 +44,10 @@ class DialogAuthentication extends StatelessWidget {
                 dividerColor: AppColors.chineseSilver,
                 tabBarPadding: EdgeInsets.symmetric(horizontal: 16),
                 tabAlignment: TabAlignment.center,
-                tabsWithViews: {Constants.login: LoginPage(), Constants.signUp : SignUpPage()},
+                tabsWithViews: {
+                  Constants.logIn: LoginPage(),
+                  Constants.signUp: SignUpPage()
+                },
               ),
             ],
           ),

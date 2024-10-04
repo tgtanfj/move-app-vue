@@ -3,25 +3,25 @@ import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { useToast } from '@common/ui/toast/use-toast'
+import { Eye, EyeOff } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { signinSchema } from '../validation/schema'
 import { useAuthStore } from '../stores/auth'
+import { signinSchema } from '../validation/schema'
 
 const props = defineProps({
   closeModal: Function
 })
 //Handle open forgot password
 const emit = defineEmits(['openForgotPassword'])
-const handleOpenForgotPassword = () => {
-  emit('openForgotPassword')
-}
 
 const { values, errors, defineField, handleSubmit } = useForm({
   validationSchema: signinSchema
 })
 
 const formLogin = ref(false)
+const showPassword = ref(false)
+const showError = ref(false)
 const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 const { toast } = useToast()
@@ -32,18 +32,22 @@ const isFillAllFields = computed(() => {
 })
 
 const isSignIn = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const handleSignIn = handleSubmit(async (values) => {
-  await authStore.loginWithEmail(values)
-  if (authStore.accessToken) {
-    props.closeModal()
-    toast({ description: 'Login successfully', variant: 'successfully' })
+const handleSignIn = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
   } else {
-    toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+    await authStore.loginWithEmail(values)
+    if (authStore.accessToken) {
+      props.closeModal()
+      toast({ description: 'Login successfully', variant: 'successfully' })
+    } else {
+      toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+    }
   }
-})
+}
 
 const handleGoogleSignIn = async () => {
   try {
@@ -60,7 +64,9 @@ const handleGoogleSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -83,7 +89,9 @@ const handleFacebookSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -91,6 +99,12 @@ const handleFacebookSignIn = async () => {
   }
 }
 
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+const handleOpenForgotPassword = () => {
+  emit('openForgotPassword')
+}
 </script>
 
 <template>
@@ -128,20 +142,32 @@ const handleFacebookSignIn = async () => {
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
-          v-model="email"
+          :class="showError ? 'border-redMisc' : ''"
+          v-model.trim="email"
           v-bind="emailAttrs"
+          maxlength="255"
         />
-        <p class="text-red-500 text-[14px]">{{ errors.email }}</p>
+        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.email }}</p>
       </div>
       <div class="mb-2 flex flex-col">
         <label class="mb-2">Password</label>
-        <input
-          type="password"
-          class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
-          v-model="password"
-          v-bind="passwordAttrs"
-        />
-        <p class="text-red-500 text-[14px]">{{ errors.password }}</p>
+        <div class="relative">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none z-0 w-full"
+            v-model="password"
+            v-bind="passwordAttrs"
+            maxlength="32"
+          />
+          <span
+            @click="togglePasswordVisibility"
+            class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"
+          >
+            <EyeOff v-if="!showPassword" />
+            <Eye v-else />
+          </span>
+        </div>
+        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.password }}</p>
       </div>
       <div class="ml-[-10px]">
         <Button variant="link" type="button" @click="handleOpenForgotPassword"
@@ -152,9 +178,9 @@ const handleFacebookSignIn = async () => {
         type="submit"
         :disabled="!isSignIn || authStore.isLoading"
         :variant="isSignIn ? 'default' : 'disabled'"
+        :isLoading="authStore.isLoading"
       >
-        <span v-if="authStore.isLoading">Logging in...</span>
-        <span v-else>Log In</span>
+        Log In
       </Button>
     </form>
   </div>

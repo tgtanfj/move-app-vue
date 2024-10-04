@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
@@ -14,6 +16,7 @@ import 'package:move_app/presentation/screens/auth/sign_up/widgets/title_edit_te
 import 'package:move_app/presentation/screens/auth/widgets/divider_authentication.dart';
 
 import '../../../../components/custom_button.dart';
+import '../../otp/page/otp_verification_page.dart';
 import '../bloc/sign_up_event.dart';
 
 class SignUpBody extends StatefulWidget {
@@ -23,21 +26,30 @@ class SignUpBody extends StatefulWidget {
   State<SignUpBody> createState() => _SignUpBodyState();
 }
 
-class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMixin {
+class _SignUpBodyState extends State<SignUpBody>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocListener<SignUpBloc, SignUpState>(
-        listener: (context, state) {
-      if (state.status == SignUpStatus.success) {
+    return BlocListener<SignUpBloc, SignUpState>(listener: (context, state) {
+      if (state.status == SignUpStatus.completed) {
         Navigator.of(context).pop();
       }
-    },
-    child: BlocBuilder<SignUpBloc, SignUpState>(
+      if (state.status == SignUpStatus.success) {
+        Fluttertoast.showToast(msg: Constants.loginSuccessful);
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return OtpVerificationPage(userModel: state.userModel);
+          },
+        );
+      }
+    }, child: BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.only(top: 12),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -46,6 +58,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   title: Constants.signUpWithGoogle,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
+                  padding: const EdgeInsets.only(top: 13, bottom: 14, left: 12),
                   onTap: () {
                     context.read<SignUpBloc>().add(SignUpWithGoogleEvent());
                   },
@@ -56,6 +69,7 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   title: Constants.signUpWithFaceBook,
                   titleStyle: AppTextStyles.montserratStyle.bold16Black,
                   borderColor: AppColors.chineseSilver,
+                  padding: const EdgeInsets.only(top: 13, bottom: 14, left: 12),
                   onTap: () {
                     context.read<SignUpBloc>().add(SignUpWithFacebookEvent());
                   },
@@ -67,7 +81,9 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   visible: !state.isClickSignUpWithEmail,
                   child: GestureDetector(
                     onTap: () {
-                      context.read<SignUpBloc>().add(SignUpClickSignUpWithEmailEvent());
+                      context
+                          .read<SignUpBloc>()
+                          .add(SignUpClickSignUpWithEmailEvent());
                     },
                     child: Text(
                       Constants.signUpWithEmail.toUpperCase(),
@@ -92,8 +108,10 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputEmail,
+                        maxLength: 255,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(email: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(email: value.trim()));
                         },
                       ),
                       const SizedBox(height: 10),
@@ -111,7 +129,8 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                         preMessage: state.messageInputPassword,
                         maxLength: 32,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(password: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(password: value.trim()));
                         },
                       ),
                       const SizedBox(height: 10),
@@ -128,7 +147,9 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputConfirmPassword,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(confirmPassword: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(
+                                  confirmPassword: value.trim()));
                         },
                         maxLength: 32,
                       ),
@@ -154,24 +175,29 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                         preMessage: state.messageInputReferralCode,
                         maxLength: 8,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(referralCode: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(
+                                  referralCode: value.trim()));
                         },
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 17),
                       RichText(
                         textAlign: TextAlign.justify,
                         text: TextSpan(
-                          style: AppTextStyles.montserratStyle.regular14sonicSilver,
+                          style: AppTextStyles
+                              .montserratStyle.regular14sonicSilver,
                           children: [
                             const TextSpan(text: Constants.byClickingSignUp),
                             TextSpan(
                               text: Constants.termsOfService,
-                              style: AppTextStyles.montserratStyle.regular14tiffanyBlue,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
                             ),
                             const TextSpan(text: Constants.and),
                             TextSpan(
                               text: Constants.privacyNotice,
-                              style: AppTextStyles.montserratStyle.regular14tiffanyBlue,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
                             ),
                             const TextSpan(text: '.'),
                           ],
@@ -189,9 +215,11 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             : AppColors.spanishGray,
                         onTap: state.isEnableSignUp
                             ? () {
-                          FocusScope.of(context).unfocus();
-                          context.read<SignUpBloc>().add(SignUpWithEmailSubmitEvent());
-                        }
+                                FocusScope.of(context).unfocus();
+                                context
+                                    .read<SignUpBloc>()
+                                    .add(SignUpWithEmailSubmitEvent());
+                              }
                             : null,
                       ),
                     ],

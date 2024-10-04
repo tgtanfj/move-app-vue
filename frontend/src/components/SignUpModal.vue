@@ -2,26 +2,27 @@
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import { Button } from '@common/ui/button'
-import { ErrorMessage, Field, useForm } from 'vee-validate'
-import { computed, ref } from 'vue'
-import { registerSchema } from '../validation/schema.js'
-import { signupService } from '@services/signup.services.js'
-import Loading from './Loading.vue'
-import { useAuthStore } from '../stores/auth'
 import { useToast } from '@common/ui/toast/use-toast'
+import CustomInput from '@components/input-validation/CustomInput.vue'
+import { useForm } from 'vee-validate'
+import { computed, ref } from 'vue'
+import { signupService } from '../services/signup.services'
+import { useAuthStore } from '../stores/auth'
+import { registerSchema } from '../validation/schema.js'
 
 const props = defineProps({
   closeModal: Function
 })
 
 const errorsSignUp = ref('')
+const showError = ref(false)
 const isLoading = ref(false)
 const authStore = useAuthStore()
 const { toast } = useToast()
 
 const emit = defineEmits(['openOtpVerification'])
 
-const { handleSubmit, values, resetForm, errors, meta } = useForm({
+const { handleSubmit, values, resetForm, errors, meta, defineField } = useForm({
   validationSchema: registerSchema
 })
 
@@ -36,30 +37,31 @@ const isFillAllFields = computed(() => {
 })
 
 const isSignUp = computed(() => {
-  return isFillAllFields.value && Object.keys(errors.value).length === 0
+  return isFillAllFields.value
 })
 
-const onSubmit = handleSubmit(async (values) => {
-  const email = values.email
-  const password = values.password
-  const referralCode = values.code ? values.code : ''
+const onSubmit = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
+  } else {
+    const email = values.email
 
-  try {
-    isLoading.value = true
-    const data = await signupService.signupByEmailPassword(email, password, referralCode)
-    isLoading.value = false
-    if (data.success === true) {
-      props.closeModal()
-      emit('openOtpVerification')
+    try {
+      isLoading.value = true
+      const data = await signupService.signupByEmailPassword(email)
+      isLoading.value = false
+      if (data.success === true) {
+        props.closeModal()
+        emit('openOtpVerification', values)
+      }
+    } catch (error) {
+      isLoading.value = false
+      console.error('Signup failed:', error)
+      errorsSignUp.value = error.response.data.message
+      console.error('test:', error.response.data.message)
     }
-  } catch (error) {
-    isLoading.value = false
-    console.error('Signup failed:', error)
-    errorsSignUp.value = error.response.data.message
-    console.error('test:', error.response.data.message)
   }
-})
-
+}
 
 const handleGoogleSignIn = async () => {
   try {
@@ -76,7 +78,9 @@ const handleGoogleSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -99,7 +103,9 @@ const handleFacebookSignIn = async () => {
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
     toast({
-      description: authStore.errorMsg || 'An account with this email already exists using a different login method. Please use the original method to log in',
+      description:
+        authStore.errorMsg ||
+        'An account with this email already exists using a different login method. Please use the original method to log in',
       variant: 'destructive'
     })
   } finally {
@@ -110,13 +116,19 @@ const handleFacebookSignIn = async () => {
 
 <template>
   <div class="flex flex-col justify-center gap-3 pb-3">
-    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg" @click="handleGoogleSignIn">
+    <button
+      class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg"
+      @click="handleGoogleSignIn"
+    >
       <GoogleIcon />
-      <p class="m-auto font-bold">Log In with Google</p>
+      <p class="m-auto font-bold">Sign up with Google</p>
     </button>
-    <button class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg" @click="handleFacebookSignIn">
+    <button
+      class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg"
+      @click="handleFacebookSignIn"
+    >
       <FacebookIcon />
-      <span class="m-auto font-bold">Log In with Facebook</span>
+      <span class="m-auto font-bold">Sign up with Facebook</span>
     </button>
     <div class="flex items-center">
       <div class="border-b-[1px] border-[#999999] h-1 w-full"></div>
@@ -131,57 +143,37 @@ const handleFacebookSignIn = async () => {
       SIGN UP WITH EMAIL
     </p>
     <div v-if="toggleSignWithEmail">
-      <form @submit="onSubmit" class="flex flex-col gap-1">
-        <div class="flex flex-col gap-[4px] mb-2">
-          <label for="email">Email</label>
-          <Field
-            id="email"
+      <form @submit.prevent="onSubmit" class="flex flex-col">
+        <div class="flex flex-col gap-[4px]">
+          <custom-input
+            :label="$t('label.email')"
             name="email"
-            type="email"
-            class="px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-lightGray"
-            v-model="values.email"
-            as="input"
+            :defineField="defineField"
+            :errors="errors"
+            :show-error="showError"
           />
-          <ErrorMessage name="email" class="text-sm text-destructive" />
         </div>
 
-        <div class="flex flex-col gap-[4px] mb-2">
-          <label for="password">Password</label>
-          <Field
-            id="password"
+        <div class="flex flex-col gap-[4px]">
+          <custom-input
+            :label="$t('label.password')"
             name="password"
-            type="password"
-            class="px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-lightGray"
-            v-model="values.password"
-            as="input"
+            :defineField="defineField"
+            :errors="errors"
+            inputType="password"
+            :show-error="showError"
           />
-          <ErrorMessage name="password" class="text-sm text-destructive" />
         </div>
 
-        <div class="flex flex-col gap-[4px] mb-2">
-          <label for="confirmPassword">Confirm Password</label>
-          <Field
-            id="confirmPassword"
+        <div class="flex flex-col gap-[4px]">
+          <custom-input
+            :label="$t('label.confirm_password')"
             name="confirmPassword"
-            type="password"
-            class="px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-lightGray"
-            v-model="values.confirmPassword"
-            as="input"
+            :defineField="defineField"
+            :errors="errors"
+            inputType="password"
+            :show-error="showError"
           />
-          <ErrorMessage name="confirmPassword" class="text-sm text-destructive" />
-        </div>
-
-        <div class="flex flex-col gap-[4px] mb-2">
-          <label for="code">Referral code (Optional)</label>
-          <Field
-            id="code"
-            name="code"
-            type="text"
-            class="px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-lightGray"
-            v-model="values.code"
-            as="input"
-          />
-          <ErrorMessage name="code" class="text-sm text-destructive" />
         </div>
 
         <div class="flex flex-col gap-[4px] mb-2">
@@ -197,11 +189,11 @@ const handleFacebookSignIn = async () => {
         <div>
           <Button
             class="w-full text-base"
-            :disabled="!isSignUp"
+            :disabled="!isSignUp || isLoading"
             :variant="isSignUp ? 'default' : 'disabled'"
             type="submit"
-            ><span v-if="!isLoading">Sign Up</span>
-            <Loading v-if="isLoading" />
+            :isLoading="isLoading"
+            >Sign Up
           </Button>
         </div>
       </form>

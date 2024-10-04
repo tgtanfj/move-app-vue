@@ -37,6 +37,9 @@ class _ContentMenuState extends State<ContentMenu> {
           onTap: () {},
           title: Constants.following,
         ),
+        const SizedBox(
+          height: 24.0,
+        ),
         CustomButton(
           padding: EdgeInsets.zero,
           backgroundColor: AppColors.black,
@@ -46,6 +49,9 @@ class _ContentMenuState extends State<ContentMenu> {
           textAlign: TextAlign.start,
           onTap: () {},
           title: Constants.browse,
+        ),
+        const SizedBox(
+          height: 24.0,
         ),
         CustomButton(
           padding: EdgeInsets.zero,
@@ -57,6 +63,9 @@ class _ContentMenuState extends State<ContentMenu> {
           onTap: () {},
           title: '${Constants.wallet}(0 REP\$)',
         ),
+        const SizedBox(
+          height: 24.0,
+        ),
         CustomButton(
           padding: EdgeInsets.zero,
           backgroundColor: AppColors.black,
@@ -64,8 +73,11 @@ class _ContentMenuState extends State<ContentMenu> {
           borderRadius: 0,
           titleStyle: AppTextStyles.montserratStyle.bold20White,
           textAlign: TextAlign.start,
-          onTap: () {},
+          onTap: widget.settingButton,
           title: Constants.setting,
+        ),
+        const SizedBox(
+          height: 24.0,
         ),
       ],
     );

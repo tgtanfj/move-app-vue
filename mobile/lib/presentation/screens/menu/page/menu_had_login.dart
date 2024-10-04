@@ -8,6 +8,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
@@ -93,7 +94,11 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             followingButton: () {},
             browseButton: () {},
             walletButton: () {},
-            settingButton: () {},
+            settingButton: () {
+              print('object');
+
+              Navigator.of(context).pushNamed(AppRoutes.routeProfile);
+            },
           ),
           GestureDetector(
             onTap: widget.moreButton,
@@ -111,6 +116,9 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             ),
           ),
           widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
+          const SizedBox(
+            height: 40.0,
+          ),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,

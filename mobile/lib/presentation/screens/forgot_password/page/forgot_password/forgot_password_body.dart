@@ -5,7 +5,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
-import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_bloc.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_event.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_state.dart';
@@ -34,11 +34,12 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
           builder: (context, state) {
         double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
         double screenWidth = MediaQuery.of(context).size.width - 40;
+        final bool hasError = state.errorMessage.isNotEmpty;
         return Padding(
           padding: const EdgeInsets.all(20.0),
           child: Center(
             child: Material(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(8.0),
               color: Colors.transparent,
               child: Container(
                 padding: EdgeInsets.only(bottom: keyboardHeight),
@@ -48,7 +49,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                     width: screenWidth,
                     decoration: BoxDecoration(
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -60,7 +61,10 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                         ),
                         const SizedBox(height: 16),
                         CustomEditText(
+                          key: Key(state.errorMessage),
                           title: Constants.enterEmailAddress,
+                          titleStyle:
+                              AppTextStyles.montserratStyle.regular14Black,
                           controller: _emailController,
                           isPasswordInput: false,
                           onChanged: (email) {
@@ -68,12 +72,25 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                                 .read<ForgotPasswordBloc>()
                                 .add(ForgotPasswordEmailChanged(email));
                           },
-                          preMessage: Constants.weSentAnEmailTo,
-                          mainMessage: "janedoe@email.com",
-                          sufMessage: Constants.clickTheLinkToReset,
-                          isShowMessage: state.isEmailSent ? true : false,
-                          backgroundColorMessage: AppColors.bubbles,
-                          borderColor: AppColors.tiffanyBlue,
+                          preMessage: hasError
+                              ? Constants.theEmail
+                              : Constants.weSentAnEmailTo,
+                          mainMessage: state.isEmailSent
+                              ? state.email
+                              : Constants.exampleEmail,
+                          sufMessage: hasError
+                              ? Constants.isNotFound
+                              : Constants.clickTheLinkToReset,
+                          isShowMessage: state.isShowEmailMessage,
+                          backgroundColorMessage: hasError
+                              ? AppColors.lavenderBlush
+                              : AppColors.bubbles,
+                          borderColor: hasError
+                              ? AppColors.brinkPink
+                              : AppColors.tiffanyBlue,
+                          cursorColor: hasError
+                              ? AppColors.brinkPink
+                              : AppColors.tiffanyBlue,
                         ),
                         const SizedBox(height: 24),
                         SizedBox(
@@ -85,9 +102,8 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                             onTap: state.isEmailValid
                                 ? () {
                                     FocusScope.of(context).unfocus();
-                                    context
-                                        .read<ForgotPasswordBloc>()
-                                        .add(ForgotPasswordSubmitted());
+                                    context.read<ForgotPasswordBloc>().add(
+                                        ForgotPasswordSubmitted(state.email));
                                   }
                                 : null,
                             title: state.isEmailSent
@@ -106,22 +122,20 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: CustomButton(
-                            title: Constants.backToLoginPage,
-                            titleStyle: AppTextStyles
-                                .montserratStyle.regular14TiffanyBlue,
-                            borderColor: AppColors.white,
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return const CreateNewPasswordPage();
-                                  });
-                            },
-                          ),
+                        CustomButton(
+                          title: Constants.backToLoginPage,
+                          titleStyle: AppTextStyles
+                              .montserratStyle.regular14TiffanyBlue,
+                          borderColor: AppColors.white,
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DialogAuthentication();
+                              },
+                            );
+                          },
                         ),
                       ],
                     ),

@@ -3,14 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
-import 'package:move_app/data/data_sources/local/shared_preferences.dart';
-import 'package:move_app/data/models/login_request_social.dart';
-import 'package:move_app/data/services/api_service_additional.dart';
+import '../data_sources/local/shared_preferences.dart';
+import '../models/login_request_social.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../services/api_service_additional.dart';
 
 class AuthRepository {
   final ApiService apiService = ApiService();
+
   final ApiServiceAdditional apiServiceAdditional = ApiServiceAdditional();
 
   Future<Response> signUpWithEmail(UserModel userModel, String otp) async {
@@ -21,8 +22,7 @@ class AuthRepository {
         "referralCode": userModel.referralCode,
         "otp": otp
       };
-
-      return await ApiService().request(
+      final signUpResponse = await apiService.request(
         APIRequestMethod.post,
         ApiUrls.signUpEndpoint,
         data: data,
@@ -33,6 +33,11 @@ class AuthRepository {
           },
         ),
       );
+      if (signUpResponse.statusCode == 201) {
+        await loginWithEmailPassword(userModel);
+      }
+
+      return signUpResponse;
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
@@ -50,8 +55,7 @@ class AuthRepository {
   Future<Response> sendVerificationCode(String email) async {
     try {
       final data = {"email": email};
-
-      return await ApiService().request(
+      return await apiService.request(
         APIRequestMethod.post,
         ApiUrls.sendVerificationCodeEndpoint,
         data: data,
@@ -81,12 +85,9 @@ class AuthRepository {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email'],
       );
-
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
-
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
@@ -95,17 +96,13 @@ class AuthRepository {
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       final User? user = userCredential.user;
-
       final String? firebaseIdToken = await user?.getIdToken(true);
-
       final String? email = googleUser?.email;
-
       LoginRequestSocial loginRequestGoogle = LoginRequestSocial(
         email: email,
         idToken: firebaseIdToken,
       );
       await sendIdTokenGoogle(loginRequestGoogle);
-
       return user;
     } catch (e) {
       return null;
@@ -140,26 +137,19 @@ class AuthRepository {
       final LoginResult loginResult = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
       );
-
       if (loginResult.status == LoginStatus.success) {
         final OAuthCredential facebookAuthCredential =
             FacebookAuthProvider.credential(
-          loginResult.accessToken!.tokenString,
+          loginResult.accessToken?.tokenString ?? "",
         );
-
         final userData = await FacebookAuth.instance.getUserData();
         final email = userData['email'];
-
         final UserCredential userCredential = await FirebaseAuth.instance
             .signInWithCredential(facebookAuthCredential);
-
         final token = await userCredential.user?.getIdToken(true);
-
         LoginRequestSocial loginRequestFacebook =
             LoginRequestSocial(email: email, idToken: token);
-
         await sendIdTokenFacebook(loginRequestFacebook);
-
         return userCredential;
       } else {
         throw FirebaseAuthException(
@@ -209,7 +199,6 @@ class AuthRepository {
           },
         ),
       );
-
       await SharedPrefer.sharedPrefer
           .setUserToken(response.data['data']['accessToken']);
       await SharedPrefer.sharedPrefer
@@ -231,7 +220,6 @@ class AuthRepository {
 
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
-
     try {
       final response = await apiServiceAdditional.request(
         Method.get,

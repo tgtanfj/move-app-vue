@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
@@ -16,6 +16,12 @@ import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
 import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
+import { EditVideoDTO } from './dto/edit-video.dto';
+import { CategoryRepository } from '../category/caregory.repository';
+import { Video } from '@/entities/video.entity';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { parseInt } from 'lodash';
+import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 
 @Injectable()
 export class VideoService {
@@ -24,15 +30,22 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
+
     private vimeoService: VimeoService,
+    private readonly categoryRepository: CategoryRepository,
     private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
+    private readonly thumbnailService: ThumbnailService,
   ) {}
 
-  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
+  async getVideosDashboard(
+    // userId: number,
+    paginationDto: PaginationDto,
+  ): Promise<object> {
     try {
-      const channel = await this.channelService.getChannelByUserId(1); // Hard Code get auto channel of userId = 1
+      // const channel = await this.channelService.getChannelByUserId(userId);
+      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -53,12 +66,14 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [numberOfViews, numberOfComments, ratings] = await Promise.all([
+          const [selectedThumbnail, numberOfViews, numberOfComments, ratings] = await Promise.all([
+            this.thumbnailService.getSelectedThumbnail(video.id),
             this.watchingVideoHistoryService.getNumberOfViews(video.id),
             this.commentService.getNumberOfComments(video.id),
             this.watchingVideoHistoryService.getAverageRating(video.id),
           ]);
 
+          videoDetail.thumbnail_url = selectedThumbnail.image;
           videoDetail.numberOfViews = numberOfViews;
           videoDetail.numberOfComments = numberOfComments;
           videoDetail.ratings = ratings;
@@ -95,26 +110,94 @@ export class VideoService {
     }
   }
 
-  async uploadVideo(channelId: number, thumbnail: Express.Multer.File, dto: UploadVideoDTO) {
+  async uploadVideo(userId: number, thumbnails: Array<Express.Multer.File>, dto: UploadVideoDTO) {
     //find channel by id
-    const foundChannel = null;
-    //validation thumbnail
-    const dimensions = sizeOf(thumbnail.buffer);
-    if (dimensions.height < 720) {
-      throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL,
-      });
-    }
-    // upload thumbnail into S3
-    const linkThumbNail = await this.s3.uploadImage(thumbnail);
-
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
     dto.url = `${this.apiConfig.getString('VIMEO_API_URL')}${dto.url}`;
-    const video = await this.videoRepository.createVideo(2, linkThumbNail, dto);
+    const isPublish = stringToBoolean(dto.isPublish);
+    const isComment = stringToBoolean(dto.isCommentable);
+
+    const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
     if (!video) {
       throw new BadRequestException({
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
+    const selected = parseInt(dto.selectedThumbnail);
+    //save thumbnails
+    const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
+    if (!newThumb) {
+      throw new BadRequestException({
+        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+      });
+    }
     return video;
+  }
+
+  async editVideo(videoId: number, dto: EditVideoDTO, thumbnail: Express.Multer.File): Promise<Video> {
+    try {
+      // Find video by id
+      const video = await this.videoRepository.findVideoById(videoId);
+      if (!video) {
+        throw new NotFoundException({
+          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        });
+      }
+
+      if (dto.categoryId) {
+        const category = await this.categoryRepository.findCategoryById(dto.categoryId);
+        if (!category) {
+          throw new NotFoundException({
+            message: ERRORS_DICTIONARY.NOT_FOUND_CATEGORY,
+          });
+        }
+        video.category = category;
+      }
+
+      // if (thumbnail) {
+      //   const thumbnailUrl = await this.s3.uploadImage(thumbnail);
+      //   video.thumbnail_url = thumbnailUrl;
+      // }
+
+      // Update video properties
+      video.title = dto.title || video.title;
+      video.workoutLevel = dto.workoutLevel || video.workoutLevel;
+      video.duration = dto.duration || video.duration;
+      video.keywords = dto.keywords || video.keywords;
+      video.isCommentable = dto.isCommentable !== undefined ? dto.isCommentable : video.isCommentable;
+
+      // Save updated video
+      const updatedVideo = await this.videoRepository.save(video);
+      if (!updatedVideo) {
+        throw new BadRequestException({
+          message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
+        });
+      }
+
+      return updatedVideo;
+    } catch (error) {
+      // Handle and rethrow the error
+      throw error;
+    }
+  }
+  async deleteVideos(videoIds: number[]) {
+    await this.videoRepository.deleteVideos(videoIds).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+    });
+
+    videoIds.forEach(async (videoId) => {
+      try {
+        const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
+        if (!url) return;
+
+        await this.vimeoService.delete(url);
+      } catch (error) {
+        return;
+      }
+    });
+  }
+
+  async restoreVideos(videoIds: number[]) {
+    await this.videoRepository.restoreVideos(videoIds);
   }
 }
