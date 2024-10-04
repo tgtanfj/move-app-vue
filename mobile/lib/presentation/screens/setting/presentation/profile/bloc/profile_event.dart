@@ -11,3 +11,35 @@ class ProfileGenderChangedEvent extends ProfileEvent {
 
   const ProfileGenderChangedEvent({required this.selectedGender});
 }
+
+class ProfileCountrySelectEvent extends ProfileEvent {
+  final int countryId;
+
+  const ProfileCountrySelectEvent({required this.countryId});
+}
+
+class ProfileStateSelectEvent extends ProfileEvent {
+  final int stateId;
+
+  const ProfileStateSelectEvent({required this.stateId});
+}
+
+class ProfileUpdateDateOfBirthEvent extends ProfileEvent {
+  final DateTime dateOfBirth;
+
+  const ProfileUpdateDateOfBirthEvent(this.dateOfBirth);
+}
+
+class ProfileValueChangeEvent extends ProfileEvent {
+  final String? username;
+  final String? fullName;
+  final String? city;
+
+  const ProfileValueChangeEvent({
+    this.username,
+    this.fullName,
+    this.city,
+  });
+}
+
+class ProfileSaveSettingsEvent extends ProfileEvent {}

@@ -5,6 +5,15 @@ abstract class CreateNewPasswordEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class CreateNewPasswordInitialEvent extends CreateNewPasswordEvent {
+  final String token;
+
+  CreateNewPasswordInitialEvent({required this.token});
+
+  @override
+  List<Object?> get props => [token];
+}
+
 class CreateNewPasswordChangedEvent extends CreateNewPasswordEvent {
   final String newPassword;
   CreateNewPasswordChangedEvent(this.newPassword);
@@ -22,7 +31,3 @@ class CreateConfirmPasswordChangedEvent extends CreateNewPasswordEvent {
 }
 
 class CreateNewPasswordSubmittedEvent extends CreateNewPasswordEvent {}
-
-class CreateNewPasswordResetValidationErrorsEvent
-    extends CreateNewPasswordEvent {}
-

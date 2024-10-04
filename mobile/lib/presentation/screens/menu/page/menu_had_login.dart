@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -7,14 +8,20 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
+import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
+
+import '../../../components/logout_dialog.dart';
 
 class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
+  final VoidCallback logoutSuccessEvent;
   const MenuHadLogin(
-      {super.key, required this.moreButton, required this.isMoreEnable});
+      {super.key,required this.logoutSuccessEvent, required this.moreButton, required this.isMoreEnable});
 
   @override
   State<MenuHadLogin> createState() => _MenuHadLoginState();
@@ -87,7 +94,11 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             followingButton: () {},
             browseButton: () {},
             walletButton: () {},
-            settingButton: () {},
+            settingButton: () {
+              print('object');
+
+              Navigator.of(context).pushNamed(AppRoutes.routeProfile);
+            },
           ),
           GestureDetector(
             onTap: widget.moreButton,
@@ -104,8 +115,14 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
               ],
             ),
           ),
-          widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
-          const SizedBox(height: 40.0,),
+          widget.isMoreEnable
+              ? MoreInfomation(faqButton: () {
+                  Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
+                })
+              : const SizedBox(),
+          const SizedBox(
+            height: 40.0,
+          ),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,
@@ -113,7 +130,15 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             borderRadius: 0,
             titleStyle: AppTextStyles.montserratStyle.bold20White,
             textAlign: TextAlign.start,
-            onTap: () {},
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                      return LogoutDialog(yesButton: widget.logoutSuccessEvent);
+
+                },
+              );
+            },
             title: Constants.logout,
           ),
         ],

@@ -14,6 +14,7 @@ import '../../auth/widgets/dialog_authentication.dart';
 class MenuNotLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
+
   const MenuNotLogin(
       {super.key, required this.moreButton, required this.isMoreEnable});
 
@@ -35,7 +36,9 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             followingButton: () {},
             browseButton: () {},
             walletButton: () {},
-            settingButton: () {},
+            settingButton: () {
+              Navigator.of(context).pushNamed(AppRoutes.routeProfile);
+            },
           ),
           GestureDetector(
             onTap: widget.moreButton,
@@ -53,6 +56,16 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             ),
           ),
           widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
+          const SizedBox(
+            height: 40.0,
+          ),
+          widget.isMoreEnable
+              ? MoreInfomation(
+                  faqButton: () {
+                    Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
+                  },
+                )
+              : const SizedBox(),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,

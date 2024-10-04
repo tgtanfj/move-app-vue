@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import '../../config/theme/app_colors.dart';
 import '../../config/theme/app_text_styles.dart';
 
-class GenderRadioItem extends StatelessWidget {
+class CustomRadioItem extends StatelessWidget {
   final String title;
   final dynamic groupValue;
   final dynamic value;
   final Function(dynamic) onChanged;
 
-  const GenderRadioItem({
+  const CustomRadioItem({
     super.key,
     required this.value,
     required this.groupValue,

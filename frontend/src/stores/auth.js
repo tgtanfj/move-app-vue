@@ -19,15 +19,18 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(null)
   const refreshToken = ref(null)
   const isLoading = ref(false)
+  const emailFirebase = ref(null)
 
   // Actions
   const googleSignIn = async () => {
     // Login with Google
     const provider = new GoogleAuthProvider()
+    provider.addScope('email')
     try {
       const result = await signInWithPopup(auth, provider)
       user.value = result.user
       idToken.value = await user.value.getIdToken()
+      emailFirebase.value = await result._tokenResponse.email
       localStorage.setItem('loginMethod', 'google')
     } catch (err) {
       if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
@@ -44,10 +47,12 @@ export const useAuthStore = defineStore('auth', () => {
   const facebookSignIn = async () => {
     // Login with Facebook
     const provider = new FacebookAuthProvider()
+    provider.addScope('email')
     try {
       const result = await signInWithPopup(auth, provider)
       user.value = result.user
       idToken.value = await user.value.getIdToken()
+      emailFirebase.value = await result._tokenResponse.email
       localStorage.setItem('loginMethod', 'facebook')
     } catch (err) {
       if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
@@ -75,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('Unsupported login method')
       }
 
-      const res = await axios.post(apiEndpoint, { idToken: idToken.value })
+      const res = await axios.post(apiEndpoint, { idToken: idToken.value, email: emailFirebase.value })
       accessToken.value = res.data.data.accessToken
       refreshToken.value = res.data.data.refreshToken
       localStorage.setItem('token', accessToken.value)
@@ -221,6 +226,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     refreshToken,
     isLoading,
+    emailFirebase,
     // actions
     googleSignIn,
     facebookSignIn,

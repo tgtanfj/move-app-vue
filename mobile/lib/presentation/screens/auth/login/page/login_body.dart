@@ -6,12 +6,10 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/repositories/auth_repository.dart';
-import 'package:move_app/data/repositories/user_repository.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_bloc.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
-import 'package:move_app/presentation/screens/auth/sign_up/page/sign_up_body.dart';
+import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
 import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
@@ -35,7 +33,7 @@ class _LoginBodyState extends State<LoginBody>
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
-          Fluttertoast.showToast(msg: "Login successful");
+          Fluttertoast.showToast(msg: Constants.loginSuccessful);
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const HomeBody(),
@@ -127,26 +125,46 @@ class _LoginBodyState extends State<LoginBody>
                               preMessage: state.messageInputPassword,
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              Constants.forgotPassword,
-                              style: AppTextStyles
-                                  .montserratStyle.regular14tiffanyBlue,
+                            // Text(
+                            //   Constants.forgotPassword,
+                            //   style: AppTextStyles
+                            //       .montserratStyle.regular14tiffanyBlue,
+                            // ),
+                            CustomButton(
+                              title: Constants.forgotPassword,
+                              titleStyle: AppTextStyles
+                                  .montserratStyle.regular14TiffanyBlue,
+                              borderColor: AppColors.white,
+                              textAlign: TextAlign.left,
+                              padding: EdgeInsets.zero,
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return const ForgotPasswordPage();
+                                    });
+                              },
                             ),
                             const SizedBox(height: 20),
                             CustomButton(
-                              title: Constants.login,
+                              title: Constants.logIn,
                               titleStyle:
                                   AppTextStyles.montserratStyle.bold16White,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               backgroundColor: state.isEnabled
                                   ? AppColors.tiffanyBlue
                                   : AppColors.spanishGray,
-                              borderColor: AppColors.spanishGray,
-                              onTap: () {
-                                context.read<LoginBloc>().add(
-                                      LoginWithEmailPasswordEvent(),
-                                    );
-                              },
+                              borderColor: state.isEnabled
+                                  ? AppColors.tiffanyBlue
+                                  : AppColors.spanishGray,
+                              onTap: state.isEnabled
+                                  ? () {
+                                      context.read<LoginBloc>().add(
+                                            LoginWithEmailPasswordEvent(),
+                                          );
+                                    }
+                                  : null,
                             ),
                           ],
                         )
