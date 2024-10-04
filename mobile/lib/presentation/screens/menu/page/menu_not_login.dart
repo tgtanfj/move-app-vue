@@ -55,10 +55,6 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
               ],
             ),
           ),
-          widget.isMoreEnable ? const MoreInfomation() : const SizedBox(),
-          const SizedBox(
-            height: 40.0,
-          ),
           widget.isMoreEnable
               ? MoreInfomation(
                   faqButton: () {
@@ -66,6 +62,9 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
                   },
                 )
               : const SizedBox(),
+          const SizedBox(
+            height: 40.0,
+          ),
           CustomButton(
             padding: EdgeInsets.zero,
             backgroundColor: AppColors.black,
