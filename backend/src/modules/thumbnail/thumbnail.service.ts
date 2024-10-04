@@ -13,7 +13,7 @@ export class ThumbnailService {
     private s3: AwsS3Service,
     private thumbnailRepository: ThumbnailRepository,
   ) {}
-  
+
   async saveThumbnails(files: Array<Express.Multer.File>, selected: number, videoId: number) {
     const result = await Promise.all(
       files.map(async (file, index) => {

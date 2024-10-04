@@ -250,7 +250,7 @@ export class AuthService {
 
     const otp = await this.generateOtp(email);
 
-    // return this.emailService.sendOTPVerification(email, otp);
+    return this.emailService.sendOTPVerification(email, otp);
   }
 
   async generateOtp(email: string) {
