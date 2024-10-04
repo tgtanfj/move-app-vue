@@ -1,10 +1,15 @@
 import { object, ref, string } from 'yup'
+import * as yup from 'yup'
 import {
   REGEX_EMAIL,
+  REGEX_FULLNAME_CODE,
   REGEX_REFERRAL_CODE,
-  REGEX_STRONG_PASSWORD
+  REGEX_STRONG_PASSWORD,
+  REGEX_USERNAME_CODE
 } from '../constants/regex.constant'
 import { t } from '../helpers/i18n.helper'
+import { toTypedSchema } from '@vee-validate/zod'
+import { z } from 'zod'
 
 export const passwordSchema = object({
   password: string()
@@ -51,22 +56,38 @@ export const signinSchema = object({
     .max(32, t('error_message.strong_password'))
 })
 
-// export const userProfileSchema = toTypedSchema(
-//   z.object({
-//     username: z
-//       .string()
-//       .regex(REGEX_USERNAME_CODE, 'Invalid username')
-//       .min(4, { message: 'Username must be at least 4 characters' })
-//       .max(25, 'Username cannot exceed 25 characters'),
+export const userProfileSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required(t('user_profile.field_required'))
+    .matches(REGEX_USERNAME_CODE, t('user_profile.username_verify_message'))
+    .min(4, t('user_profile.username_verify_message'))
+    .max(25, t('user_profile.username_verify_message')),
+  fullName: yup
+    .string()
+    .matches(/^.{8,255}$/, t('user_profile.fullname_8_255_long'))
+    .matches(/^[A-Za-z0-9\s]*$/, t('user_profile.fullname_no_special_characters')),
+  country: yup.string().required(t('user_profile.field_required')),
+  state: yup.string().required(t('user_profile.field_required')),
+  gender: yup
+    .string()
+    .required(t('user_profile.field_required'))
+    .oneOf(['male', 'female', 'rather not say']),
+  birthday: yup
+    .string()
+    .required(t('user_profile.field_required'))
+    .test('is-valid-date', 'Invalid date format', (value) => {
+      const date = new Date(value)
+      return !isNaN(date.getTime()) // Check if it's a valid date
+    })
+    .test('is-in-range', t('user_profile.invalid_age'), (value) => {
+      const date = new Date(value)
+      const today = new Date()
+      const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+      const maxDate = new Date(today.getFullYear() - 65, today.getMonth(), today.getDate())
 
-//     gender: z.enum(['male', 'female', 'none'], {
-//       required_error: 'You need to select one'
-//     }),
-
-//     fullName: z.string(),
-
-//     country: z.string().nonempty('Country is required'),
-//     state: z.string().nonempty('State is required'),
-//     city: z.string().nonempty('City is required')
-//   })
-// )
+      return date <= minDate && date >= maxDate // Check if the date is in the range
+    }),
+  avatar: yup.mixed().nullable().required(t('user_profile.field_required')),
+  city: yup.string()
+})
