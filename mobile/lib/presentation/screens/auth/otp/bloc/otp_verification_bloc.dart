@@ -60,8 +60,12 @@ class OtpVerificationBloc
     OtpVerificationResendEvent event,
     Emitter<OtpVerificationState> emit,
   ) async {
-    add(OtpVerificationStartTimerEvent());
-    await AuthRepository().sendVerificationCode(state.userModel?.email ?? "");
+    try {
+      await AuthRepository().sendVerificationCode(state.userModel?.email ?? "");
+      add(OtpVerificationStartTimerEvent());
+    } catch (e) {
+      emit(state.copyWith(status: OtpVerificationStatus.error));
+    }
   }
 
   void onOtpVerificationSubmitEvent(
