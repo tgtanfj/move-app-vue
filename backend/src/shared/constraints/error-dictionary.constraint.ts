@@ -5,8 +5,8 @@ export enum ERRORS_DICTIONARY {
 
   // Auth
 
+  WAIT_ONE_MINUTE = 'Please wait 1 minute to resend the code.',
   INVALID_OTP = 'Wrong code. Please try again',
-  ACCOUNT_LOCKED = 'Account is temporarily locked. Try again later.',
   OTP_WRONG_MANY_TIMES = "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later",
 
   // CLASS VALIDATOR
