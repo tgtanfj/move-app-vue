@@ -26,30 +26,18 @@
     </TableCell>
     <TableCell>
       <div class="flex invisible gap-3 group-hover:visible">
+        <!-- Share video -->
         <TooltipProvider>
           <Tooltip delayDuration="50">
             <TooltipTrigger as-child>
               <Upload size="20" color="#12BDA3" />
             </TooltipTrigger>
-            <TooltipContent side="bottom" class="border-primary">
-              <div class="flex gap-3 cursor-pointer">
-                <div class="flex flex-col gap-2 items-center" @click="handleGetFBLink">
-                  <FacebookIcon class="w-[40px] h-[40px]" />
-                  <span class="text-sm">{{ $t('streamer.fb') }}</span>
-                </div>
-                <div class="flex flex-col gap-2 items-center" @click="handleGetTwitterLink">
-                  <TwitterIcon />
-                  <span class="text-sm">{{ $t('streamer.twitter') }}</span>
-                </div>
-                <div class="flex flex-col gap-2 items-center" @click="handleGetLink">
-                  <CopyLinkIcon />
-                  <span class="text-sm">{{ $t('streamer.copy_link') }}</span>
-                </div>
-              </div>
-            </TooltipContent>
+            <ShareVideo :videoIdSelected="props.item.id"/>
           </Tooltip>
         </TooltipProvider>
-        <Pen size="20" color="#12BDA3" @click="handleEditDetails" />
+        <!-- Edit video -->
+        <EditVideo :videoInfoSelected="props.item" />
+        <!-- More -->
         <TooltipProvider>
           <Tooltip delayDuration="50">
             <TooltipTrigger as-child>
@@ -97,10 +85,12 @@ import { Checkbox } from '@common/ui/checkbox'
 import { TableCell, TableRow } from '@common/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
 import { ArrowDownToLine, EllipsisVertical, Pen, Trash, Upload } from 'lucide-vue-next'
-import { defineProps, defineEmits, computed, ref } from 'vue'
+import { computed, ref } from 'vue'
 import BaseDialog from './BaseDialog.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
+import EditVideo from '@components/video-manage/EditVideo.vue'
+import ShareVideo from '@components/video-manage/ShareVideo.vue'
 
 const props = defineProps({
   item: {
@@ -123,11 +113,11 @@ const isChecked = computed(() => {
 
 const detectDuration = (duration) => {
   switch (duration) {
-    case 'less than 30 minutes':
+    case '30 mins':
       return '<30 mins'
-    case 'less than 1 hours':
+    case '< 1 hours':
       return '<1h'
-    case 'more than 1 hours':
+    case '> 1 hours':
       return '>1h'
     default:
       return 'Unknown'
@@ -150,7 +140,4 @@ const handleChange = () => {
   })
 }
 
-const handleEditDetails = () => {
-  emit('edit:item', { item: props.item })
-}
 </script>

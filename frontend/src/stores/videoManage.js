@@ -1,5 +1,4 @@
 import { ADMIN_BASE } from '@constants/api.constant'
-import { videoService } from '@services/video.services'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -7,10 +6,12 @@ import { ref } from 'vue'
 export const useVideoStore = defineStore('video', () => {
   //State
   const videos = ref([])
+  const videoId = ref(null)
   const errorMsg = ref('')
   const isLoading = ref(false)
   const pageCounts = ref([])
   const totalPages = ref()
+  const isCopied = ref(false);
 
   //Action
   const getUploadedVideosList = async (take, page) => {
@@ -38,6 +39,7 @@ export const useVideoStore = defineStore('video', () => {
       isLoading.value = false
     }
   }
+
   const getVideosByLimit = async (limit, page) => {
     isLoading.value = true
     errorMsg.value = null
@@ -76,20 +78,81 @@ export const useVideoStore = defineStore('video', () => {
       return true
     } catch (error) {
       if (error.response && error.response.data) {
-        errorMsg.value = error.response.data.message || "An error occurred"; // Sử dụng thông điệp lỗi nếu có
+        errorMsg.value = error.response.data.message || "An error occurred"
       } else {
-        errorMsg.value = "An unknown error occurred"; // Xử lý lỗi không xác định
+        errorMsg.value = "An unknown error occurred"
       }
     }
   }
 
+  const updateDetailVideo = async (formData) => {
+    try {
+      const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId.value}`, formData)
+      if (res.status === 200) {
+        const index = videos.value.findIndex(video => video.id === videoId.value)
+        if (index !== -1) {
+          videos.value[index] = { ...videos.value[index], ...formData }
+        }
+      }
+      return res.data
+    } catch (error) {
+      console.error('Error updating video:', error)
+    }
+  }
+
+  const shareVideoSocial = async (videoId, option) => {
+    try {
+      const response = await axios.get(`${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`)
+
+      if (response.status === 200) {
+        const shareUrl = response.data.data
+        window.open(shareUrl, '_blank')
+      } else {
+        console.error('Failed to share video:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error sharing video:', error)
+    }
+  }
+
+  const getAndCopyUrlVideo = async (videoId) => {
+    try {
+      const response = await axios.get(`${ADMIN_BASE}/video/${videoId}`)
+
+      if (response.status === 200) {
+        const videoUrl = response.data.data
+
+        await navigator.clipboard.writeText(videoUrl)
+
+        isCopied.value = true;
+
+        setTimeout(() => {
+          isCopied.value = false
+        }, 2000);
+      } else {
+        console.error('Failed to get video URL:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error getting video URL:', error)
+    }
+  }
+
   return {
+    //states
     videos,
+    videoId,
     errorMsg,
     isLoading,
     pageCounts,
+    isCopied,
+
+    //actions
     getUploadedVideosList,
     getVideosByLimit,
-    deleteVideos
+    deleteVideos,
+    updateDetailVideo,
+    shareVideoSocial,
+    getAndCopyUrlVideo
   }
 })
+
