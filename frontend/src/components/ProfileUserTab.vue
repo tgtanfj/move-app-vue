@@ -28,6 +28,8 @@ import ChangePasswordModal from './ChangePasswordModal.vue'
 import OTPVerificationModal from './OTPVerificationModal.vue'
 import SetupEmailModal from './SetupEmailModal.vue'
 import axios from 'axios'
+import { denormalizeGender, normalizeGender } from '@utils/userProfile.util'
+import UploadAvatarFile from './UploadAvatarFile.vue'
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -189,17 +191,6 @@ const openChangePasswordResult = () => {
   openChangePasswordModal.value = false
 }
 
-const normalizeGender = (gender) => {
-  if (gender === 'male') return 'M'
-  if (gender === 'female') return 'F'
-  return 'O'
-}
-const denormalizeGender = (gender) => {
-  if (gender === 'M') return 'male'
-  if (gender === 'F') return 'female'
-  if (gender === 'O') return 'rather not say'
-  return ''
-}
 const isFormDataEmpty = (formData) => {
   return formData.entries().next().done
 }
@@ -266,47 +257,21 @@ const onSubmit = async () => {
     }
   }
 }
-const openFilePicker = () => {
-  fileInput.value.click()
-}
 const onGenderChange = (value) => {
   gender.value = value
 }
 
-const handleFileChange = (event) => {
-  const file = event.target.files[0]
-  const allowedFormats = ['image/jpeg', 'image/png', 'image/gif']
-  if (!allowedFormats.includes(file.type)) {
-    message.value = 'File Format: Only JPG, PNG, and GIF file formats are allowed.'
-    return
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    message.value =
-      'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.'
-    return
-  }
-  const img = new Image()
-  img.onload = () => {
-    // Check image dimensions
-    if (img.width < 100 || img.height < 100 || img.width > 2000 || img.height > 2000) {
-      message.value =
-        'Image Dimensions: Minimum dimensions are 100x100 pixels, and maximum are 2000x2000 pixels.'
-      return
-    }
-
-    setValues({ ...values, avatar: file }, { shouldValidate: false })
+const onFileSelected = (file, imagePreview) => {
+  if (!file) return
+  else {
+    avatar.value = imagePreview
     fileInfo.value = file
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      avatar.value = e.target.result // Set the image preview to the result
-    }
-    reader.readAsDataURL(file)
+    setValues({ ...values, avatar: file }, { shouldValidate: false })
   }
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    img.src = e.target.result
-  }
-  reader.readAsDataURL(file)
+}
+
+const onErrorMessage = (msg) => {
+  message.value = msg
 }
 </script>
 
@@ -325,15 +290,10 @@ const handleFileChange = (event) => {
               alt=""
             />
             <p class="text-red text-sm" v-if="message">{{ message }}</p>
-            <p @click="openFilePicker" id="updateProfilePic" class="text-primary cursor-pointer">
-              {{ $t('user_profile.update_profile_pic') }}
-            </p>
-            <input
-              type="file"
-              accept=".jpg, .png, .gif"
-              ref="fileInput"
-              @change="handleFileChange"
-              style="display: none"
+            <UploadAvatarFile
+              :buttonText="$t('user_profile.update_profile_pic')"
+              @file-selected="onFileSelected"
+              @error-message="onErrorMessage"
             />
           </FormItem>
           <FormMessage :class="{ hidden: !showError }" />

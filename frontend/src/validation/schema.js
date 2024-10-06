@@ -1,5 +1,6 @@
 import { object, ref, string } from 'yup'
 import * as yup from 'yup'
+import { t } from '../helpers/i18n.helper'
 import {
   REGEX_EMAIL,
   REGEX_FULLNAME_CODE,
@@ -7,9 +8,6 @@ import {
   REGEX_STRONG_PASSWORD,
   REGEX_USERNAME_CODE
 } from '../constants/regex.constant'
-import { t } from '../helpers/i18n.helper'
-import { toTypedSchema } from '@vee-validate/zod'
-import { z } from 'zod'
 
 export const passwordSchema = object({
   password: string()
@@ -79,9 +77,11 @@ export const userProfileSchema = yup.object().shape({
     })
     .test('is-in-range', t('user_profile.invalid_age'), (value) => {
       const date = new Date(value)
+      const maxAge = 65
+      const minAge = 18
       const today = new Date()
-      const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
-      const maxDate = new Date(today.getFullYear() - 65, today.getMonth(), today.getDate())
+      const minDate = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate())
+      const maxDate = new Date(today.getFullYear() - maxAge, today.getMonth(), today.getDate())
 
       return date <= minDate && date >= maxDate // Check if the date is in the range
     }),

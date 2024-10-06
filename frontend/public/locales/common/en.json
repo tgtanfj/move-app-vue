@@ -122,7 +122,9 @@
     "fullname_no_special_characters": "Full name must not include special characters.",
     "invalid_age": "Invalid age. Age must be between 18 and 65 years old",
     "field_required": "This field is required",
-    "select_one": "You need to select one"
+    "select_one": "You need to select one",
+    "file_exceed_5MB": "The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.",
+    "file_format_not_meet": "Invalid image"
   },
   "logout": {
     "title": "Log Out",
