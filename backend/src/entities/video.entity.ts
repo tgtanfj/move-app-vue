@@ -72,4 +72,10 @@ export class Video extends BaseEntity {
   shareCount: number;
   @OneToMany(() => Thumbnail, (thumbnail) => thumbnail.video)
   thumbnails: Thumbnail[];
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  urlS3: string;
 }

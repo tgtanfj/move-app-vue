@@ -42,7 +42,7 @@ export class VideoRepository {
       },
       workoutLevel: dto.workoutLevel,
       duration: dto.duration,
-      keywords: dto.keywords,
+      keywords: dto.keywords || null,
       isCommentable: isComment,
       isPublish: isPublish,
       url: dto.url,

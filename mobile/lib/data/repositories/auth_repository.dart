@@ -221,7 +221,7 @@ class AuthRepository {
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
     try {
-      final response = await apiServiceAdditional.request(
+       await apiServiceAdditional.request(
         Method.get,
         ApiUrls.endPointLogout,
         options: Options(
