@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-import 'package:uni_links2/uni_links.dart';
 
 import 'config/app_config.dart';
 
@@ -20,8 +20,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<String?>? _linkSubscription;
+  StreamSubscription<Uri?>? _linkSubscription;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final AppLinks _appLinks = AppLinks();
 
   @override
   void initState() {
@@ -30,23 +31,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initDeepLink() async {
-    try {
-      final initialLink = await getInitialLink();
-      _handleDeepLink(initialLink);
-    } catch (e) {
-      print('Failed to get initial link: $e');
-    }
-
-    _linkSubscription = linkStream.listen((String? link) {
+    _linkSubscription = _appLinks.uriLinkStream.listen((Uri? link) {
       _handleDeepLink(link);
     }, onError: (err) {
       print('Failed to get link: $err');
     });
   }
 
-  void _handleDeepLink(String? link) {
-    if (link != null && link.contains('reset-password')) {
-      final token = link.split('/').last;
+
+  void _handleDeepLink(Uri? link) {
+    print('Received deep link: $link');
+    print('Received deep link: ${link?.path}');
+    final path = link?.queryParameters['path'];
+    if (link != null && path!.contains('reset-password')) {
+      final token = link.pathSegments.last;
+      print('Token acb: $token');
       navigatorKey.currentState?.push(
         MaterialPageRoute(
             builder: (context) => CreateNewPasswordPage(token: token)),
