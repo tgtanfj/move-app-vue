@@ -265,7 +265,7 @@ export class VideoService {
         if (!foundVideo.urlS3) {
           return null;
         }
-        return await this.s3.getVideoDownloadLink(foundVideo.urlS3);
+        return await this.s3.getVideoDownloadLink(foundVideo.urlS3,foundVideo.title);
       case 'vimeo':
 
       default:

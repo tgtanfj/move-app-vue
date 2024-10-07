@@ -136,4 +136,5 @@ class Constants {
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
       ' here and we will address your problem as soon as possible.';
+  static const String anInvalidPassword = "You have entered an invalid password";
 }

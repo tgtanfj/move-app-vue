@@ -34,7 +34,6 @@ class _SignUpBodyState extends State<SignUpBody>
         Navigator.of(context).pop();
       }
       if (state.status == SignUpStatus.success) {
-        Fluttertoast.showToast(msg: Constants.loginSuccessful);
         Navigator.of(context).pop();
         showDialog(
           context: context,

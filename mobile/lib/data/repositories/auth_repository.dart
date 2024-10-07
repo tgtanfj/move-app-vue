@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:either_dart/either.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -80,7 +81,7 @@ class AuthRepository {
     }
   }
 
-  Future<User?> googleLogin() async {
+  Future<Either<String, User?>> googleLogin() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email'],
@@ -103,9 +104,18 @@ class AuthRepository {
         idToken: firebaseIdToken,
       );
       await sendIdTokenGoogle(loginRequestGoogle);
-      return user;
+      return Right(user);
     } catch (e) {
-      return null;
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      rethrow;
     }
   }
 
@@ -132,7 +142,7 @@ class AuthRepository {
     }
   }
 
-  Future<UserCredential?> loginWithFacebook() async {
+  Future<Either<String, UserCredential?>> loginWithFacebook() async {
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login(
         permissions: ['email', 'public_profile'],
@@ -150,7 +160,7 @@ class AuthRepository {
         LoginRequestSocial loginRequestFacebook =
             LoginRequestSocial(email: email, idToken: token);
         await sendIdTokenFacebook(loginRequestFacebook);
-        return userCredential;
+        return Right(userCredential);
       } else {
         throw FirebaseAuthException(
           code: 'ERROR_ABORTED_BY_USER',
@@ -158,7 +168,16 @@ class AuthRepository {
         );
       }
     } catch (e) {
-      return null;
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      rethrow;
     }
   }
 
@@ -186,7 +205,8 @@ class AuthRepository {
     }
   }
 
-  Future<String?> loginWithEmailPassword(UserModel userModel) async {
+  Future<Either<String, String?>> loginWithEmailPassword(
+      UserModel userModel) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.post,
@@ -199,19 +219,23 @@ class AuthRepository {
           },
         ),
       );
-      await SharedPrefer.sharedPrefer
-          .setUserToken(response.data['data']['accessToken']);
-      await SharedPrefer.sharedPrefer
-          .setUserRefreshToken(response.data['data']['refreshToken']);
-      return response.data['data']['accessToken'];
+      if (response.data['data']['accessToken'] != null) {
+        await SharedPrefer.sharedPrefer
+            .setUserToken(response.data['data']['accessToken']);
+        await SharedPrefer.sharedPrefer
+            .setUserRefreshToken(response.data['data']['refreshToken']);
+        return Right(response.data['data']['accessToken']);
+      } else {
+        return const Left("Login Error");
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
           final errorMessage = errorData['message'] ?? 'Unknown error occurred';
-          throw errorMessage;
+          return Left(errorMessage);
         } else {
-          throw Exception();
+          return Left(e.message.toString());
         }
       }
       rethrow;
@@ -221,7 +245,7 @@ class AuthRepository {
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
     try {
-       await apiServiceAdditional.request(
+      await apiServiceAdditional.request(
         Method.get,
         ApiUrls.endPointLogout,
         options: Options(
