@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { User } from './user.entity';
 import { Video } from './video.entity';
+import { CommentReaction } from './comment-reaction.entity';
 
 @Entity('comments')
 @Tree('closure-table')
@@ -28,4 +29,7 @@ export class Comment extends BaseEntity {
 
   @TreeParent()
   parent: Comment;
+
+  @OneToMany(() => CommentReaction, (commentReaction) => commentReaction.comment)
+  commentReactions: CommentReaction[];
 }

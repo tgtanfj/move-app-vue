@@ -14,6 +14,12 @@ export class Category extends BaseEntity {
   })
   image: string;
 
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfViews: string;
+
   @OneToMany(() => Video, (video) => video.category)
   videos: Video[];
 }
