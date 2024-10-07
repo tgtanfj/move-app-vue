@@ -2,7 +2,7 @@
 import { onMounted, onUpdated, ref, watch, watchEffect } from 'vue'
 import { useForm } from 'vee-validate'
 import { userBaseAvatar } from '@constants/userImg.constant'
-import { userProfileSchema } from '../validation/schema'
+import { userProfileSchema } from '../../validation/schema'
 import { useToast } from '@common/ui/toast/use-toast'
 
 import { countriesService } from '@services/countries.services'
@@ -22,11 +22,9 @@ import {
 } from '@/common/ui/select'
 import { Button } from '@/common/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/ui/form'
-import Loading from './Loading.vue'
-import BaseDialog from './BaseDialog.vue'
+import Loading from '../Loading.vue'
+import BaseDialog from '../BaseDialog.vue'
 import ChangePasswordModal from './ChangePasswordModal.vue'
-import OTPVerificationModal from './OTPVerificationModal.vue'
-import SetupEmailModal from './SetupEmailModal.vue'
 import axios from 'axios'
 import { denormalizeGender, normalizeGender } from '@utils/userProfile.util'
 import UploadAvatarFile from './UploadAvatarFile.vue'
@@ -547,15 +545,7 @@ const onErrorMessage = (msg) => {
         </Button>
       </div>
     </form>
-    <SetupEmailModal
-      v-model:open="openSetupEmailModal"
-      @close-setup-email-modal="openSetupEmailModal = false"
-      @handle-submit-form="handleSetupEmail"
-    />
-    <OTPVerificationModal
-      v-model:open="openOTPVerificationModal"
-      @close-modal="openOTPVerificationModal = false"
-    />
+
     <ChangePasswordModal
       v-model:open="openChangePasswordModal"
       @open-change-password-result="openChangePasswordResult"

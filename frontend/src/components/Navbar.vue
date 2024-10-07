@@ -13,18 +13,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import MoreMenuNav from '@components/MoreMenuNav.vue'
 import NavbarLogged from '@components/NavbarLogged.vue'
-import SignInModal from '@components/SignInModal.vue'
+import SignInModal from '@components/auth/SignInModal.vue'
 import { computed, ref } from 'vue'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
-import ForgotPassword from './ForgotPassword.vue'
-import OTPVerificationModal from './OTPVerificationModal.vue'
-import SignUpModal from './SignUpModal.vue'
+import ForgotPassword from '@components/auth/ForgotPassword.vue'
+import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
+import SignUpModal from '@components/auth/SignUpModal.vue'
 
 const countdown = ref(60)
 const isCounting = ref(false)
 let timer = null
-const isBanned = ref(false)
 const isOpen = ref(false)
 const openForgotPassword = ref(false)
 const openOTPModal = ref(false)
@@ -47,49 +46,13 @@ const openLoginModal = () => {
   openForgotPassword.value = false
 }
 
-const getWithExpiry = (key) => {
-  console.log('here')
-  const itemStr = localStorage.getItem(key)
-  console.log('itemStr', itemStr)
-
-  if (!itemStr) {
-    return null
-  }
-
-  const item = JSON.parse(itemStr)
-  const now = new Date()
-  console.log('item', item)
-
-  if (now.getTime() > item.expiry) {
-    localStorage.removeItem(key)
-    return null
-  }
-
-  return item.value
-}
-
 const handleOpenOTPVerification = (values) => {
   openOTPModal.value = true
   signupInfo.value = values
 
   countdown.value = 60
   clearInterval(timer)
-  isCounting.value = false
-
-  const data = getWithExpiry('banOTP')
-
-  if (data) {
-    isBanned.value = true
-    clearInterval(timer)
-    isCounting.value = false
-  } else {
-    isBanned.value = false
-    startCountdown()
-  }
-}
-
-const setIsBannedToTrue = () => {
-  isBanned.value = true
+  startCountdown()
 }
 
 const handleVerifySuccess = () => {
@@ -203,19 +166,20 @@ const resetCountdown = () => {
           <NavbarLogged v-if="isUserLoggedIn" />
         </div>
 
-        <ForgotPassword v-model:open="openForgotPassword" @open-login="openLoginModal" />
+        <ForgotPassword
+          v-if="!isUserLoggedIn"
+          v-model:open="openForgotPassword"
+          @open-login="openLoginModal"
+        />
         <OTPVerificationModal
+          v-if="!isUserLoggedIn"
           v-model:open="openOTPModal"
           :signupInfo="signupInfo"
           :countdown="countdown"
           :isCounting="isCounting"
-          :isBanned="isBanned"
           @verify-success="handleVerifySuccess"
-          @getWithExpiry="getWithExpiry"
           @start="startCountdown"
           @reset="resetCountdown"
-          @setIsBannedToTrue="setIsBannedToTrue"
-          @resetInterval="resetInterval"
         />
       </div>
     </div>

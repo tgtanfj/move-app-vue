@@ -6,8 +6,8 @@ import { useToast } from '@common/ui/toast/use-toast'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { signinSchema } from '../validation/schema'
+import { useAuthStore } from '../../stores/auth'
+import { signinSchema } from '../../validation/schema'
 
 const props = defineProps({
   closeModal: Function

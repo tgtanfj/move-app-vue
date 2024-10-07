@@ -1,7 +1,7 @@
 <script setup>
 import { Button } from '@common/ui/button'
 import SeparatorCross from '@components/SeparatorCross.vue'
-import UserProfileForm from '@components/UserProfileForm.vue'
+import UserProfileForm from '@components/user-profile/UserProfileForm.vue'
 </script>
 
 <template>

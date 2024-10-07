@@ -33,8 +33,8 @@ import { Textarea } from '@/common/ui/textarea'
 import { useToast } from '@common/ui/toast'
 
 import VideoIcon from '@assets/icons/videoIcon.vue'
-import ImageLoading from './ImageLoading.vue'
-import Loading from './Loading.vue'
+import ImageLoading from '../ImageLoading.vue'
+import Loading from '../Loading.vue'
 import UploadVideoProgress from './UploadVideoProgress.vue'
 
 const isOpenUploadVideoModal = ref(false)

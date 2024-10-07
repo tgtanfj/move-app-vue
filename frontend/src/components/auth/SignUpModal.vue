@@ -6,9 +6,9 @@ import { useToast } from '@common/ui/toast/use-toast'
 import CustomInput from '@components/input-validation/CustomInput.vue'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { signupService } from '../services/signup.services'
-import { useAuthStore } from '../stores/auth'
-import { registerSchema } from '../validation/schema.js'
+import { signupService } from '@services/signup.services'
+import { useAuthStore } from '../../stores/auth'
+import { registerSchema } from '../../validation/schema.js'
 
 const props = defineProps({
   closeModal: Function
@@ -58,7 +58,6 @@ const onSubmit = async () => {
       isLoading.value = false
       console.error('Signup failed:', error)
       errorsSignUp.value = error.response.data.message
-      console.error('test:', error.response.data.message)
     }
   }
 }
@@ -153,7 +152,9 @@ const handleFacebookSignIn = async () => {
             :show-error="showError"
           />
         </div>
-
+        <div v-if="errorsSignUp">
+          <p class="text-destructive text-base mt-1">{{ errorsSignUp }}</p>
+        </div>
         <div class="flex flex-col gap-[4px]">
           <custom-input
             :label="$t('label.password')"
@@ -183,9 +184,7 @@ const handleFacebookSignIn = async () => {
             <span class="text-primary cursor-pointer">Privacy Notice</span>.
           </p>
         </div>
-        <div v-if="errorsSignUp">
-          <p class="text-destructive text-base mt-1">{{ errorsSignUp }}</p>
-        </div>
+
         <div>
           <Button
             class="w-full text-base"
