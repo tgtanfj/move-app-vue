@@ -77,7 +77,7 @@
 
 <script setup>
 import Button from '@common/ui/button/Button.vue'
-import Table from '@components/Table.vue'
+import Table from '@components/streamer-videos/Table.vue'
 import { ChevronLeft, ChevronRight, FileVideo2 } from 'lucide-vue-next'
 import {
   Select,

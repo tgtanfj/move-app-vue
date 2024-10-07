@@ -4,8 +4,8 @@ import { Button } from '@common/ui/button'
 import BaseDialog from '@components/BaseDialog.vue'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { useForgotPassword } from '../services/forgotpassword.services'
-import { emailSchema } from '../validation/schema'
+import { useForgotPassword } from '../../services/forgotpassword.services'
+import { emailSchema } from '../../validation/schema'
 
 const emit = defineEmits(['openLogin'])
 const email = ref('')
@@ -41,7 +41,6 @@ const handleSendMail = async () => {
   } else {
     email.value = values.email
     mutation.mutate({ email: values.email })
-    forgotPasswordStore.setEmail(values.email)
   }
 }
 
@@ -49,11 +48,26 @@ const openLogin = () => {
   resetForm()
   reset()
   emit('openLogin')
+  showError.value = false
+}
+
+const resetFormOnClose = () => {
+  resetForm()
+  reset()
+  showError.value = false
 }
 </script>
 
 <template>
-  <BaseDialog :title="$t('forgot_password.title')" :description="$t('forgot_password.desc')">
+  <BaseDialog
+    :title="$t('forgot_password.title')"
+    :description="$t('forgot_password.desc')"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <form @submit.prevent="handleSendMail">
       <div class="flex flex-col space-y-1.5">
         <custom-input
@@ -73,7 +87,7 @@ const openLogin = () => {
           {{ $t('forgot_password.send_mail_success', { email }) }}
         </span>
         <p v-if="isError" class="max-w-[400px] m-auto text-redMisc">
-          {{ $t('forgot_password.send_mail_error') }}
+          {{ $t('forgot_password.send_mail_error', { email }) }}
         </p>
       </div>
 

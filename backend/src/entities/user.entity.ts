@@ -13,6 +13,7 @@ import { RefreshToken } from './refresh-token.entity';
 import { SearchHistory } from './search-history.entity';
 import { State } from './state.entity';
 import { WatchingVideoHistory } from './watching-video-history.entity';
+import { CommentReaction } from './comment-reaction.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -112,4 +113,7 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => State, (state) => state.id)
   state: State;
+
+  @OneToMany(() => CommentReaction, (commentReaction) => commentReaction.user)
+  commentReactions: CommentReaction[];
 }

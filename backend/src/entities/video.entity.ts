@@ -36,6 +36,7 @@ export class Video extends BaseEntity {
 
   @Column({
     type: 'boolean',
+    default: true,
   })
   isCommentable: boolean;
 
@@ -43,6 +44,24 @@ export class Video extends BaseEntity {
     type: 'varchar',
   })
   url: string;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfViews: number;
+
+  @Column({
+    type: 'float',
+    default: 0,
+  })
+  ratings: number;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfComments: number;
 
   @ManyToOne(() => Channel, (channel) => channel.videos)
   channel: Channel;

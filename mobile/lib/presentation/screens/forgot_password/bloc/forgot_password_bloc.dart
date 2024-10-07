@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/repositories/forgot_password_repository.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_event.dart';
 import 'package:move_app/presentation/screens/forgot_password/bloc/forgot_password_state.dart';
-import 'package:move_app/utils/input_validation_helper.dart';
 
 class ForgotPasswordBloc
     extends Bloc<ForgotPasswordEvent, ForgotPasswordState> {
@@ -17,9 +16,9 @@ class ForgotPasswordBloc
       ForgotPasswordEmailChanged event, Emitter<ForgotPasswordState> emit) {
     final isShowEmailMessage =
         state.email != event.email ? false : state.isShowEmailMessage;
-    final isEmailValid = InputValidationHelper().isValidEmail(event.email);
+    final isEmailChanged = event.email.isNotEmpty;
     emit(state.copyWith(
-        isEmailValid: isEmailValid,
+        isEmailValid: isEmailChanged,
         email: event.email,
         isShowEmailMessage: isShowEmailMessage));
   }

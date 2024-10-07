@@ -1,27 +1,20 @@
 <script setup>
 import { Button } from '@common/ui/button'
 import BaseDialog from '@components/BaseDialog.vue'
-import { ref, watch } from 'vue'
-import { Input } from '../common/ui/input'
-import { useOTPVerification } from '../services/optverify.services'
-import { signupService } from '../services/signup.services'
+import { ref } from 'vue'
+import { Input } from '@common/ui/input'
+import { useOTPVerification } from '@services/optverify.services'
+import { signupService } from '@services/signup.services'
 
-const props = defineProps(['signupInfo', 'countdown', 'isCounting', 'isBanned'])
-const emit = defineEmits(['verifySuccess', 'start', 'reset', 'getWithExpiry', 'setIsBannedToTrue'])
+const props = defineProps(['signupInfo', 'countdown', 'isCounting'])
+const emit = defineEmits(['verifySuccess', 'start', 'reset'])
 
-const invalidCodeTime = ref(0)
 const code = ref('')
+const errorMessage = ref('')
+const isBanned = ref(false)
 
 const mutation = useOTPVerification()
 const { isPending, isError, mutate, reset } = mutation
-
-watch(invalidCodeTime, (newValue) => {
-  if (newValue === 3) {
-    setWithExpiry('banOTP', 'ban', 600000)
-    emit('setIsBannedToTrue')
-    reset()
-  }
-})
 
 const handleSendOTP = () => {
   mutate(
@@ -32,12 +25,22 @@ const handleSendOTP = () => {
     },
     {
       onSuccess: (response) => {
-        code.value = ''
+        resetFormOnClose()
         emit('verifySuccess')
-        reset()
       },
       onError: (err) => {
-        invalidCodeTime.value += 1
+        errorMessage.value = err.response?.data?.message
+        if (
+          errorMessage.value ===
+          "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later"
+        ) {
+          isBanned.value = true
+
+          setTimeout(() => {
+            isBanned.value = false
+            reset()
+          }, 600000)
+        }
       }
     }
   )
@@ -47,17 +50,6 @@ const handleResendOTP = async () => {
   await signupService.signupByEmailPassword(props.signupInfo.email)
   reset()
   emit('reset')
-}
-
-const setWithExpiry = (key, value, ttl) => {
-  const now = new Date()
-
-  const item = {
-    value: value,
-    expiry: now.getTime() + ttl
-  }
-
-  localStorage.setItem(key, JSON.stringify(item))
 }
 
 const blockInvalidKeys = (event) => {
@@ -70,16 +62,23 @@ const blockInvalidKeys = (event) => {
   }
 }
 
-const limitLength = (event) => {
-  if (event.target.value.length > 6) {
-    event.target.value = event.target.value.slice(0, 6)
-  }
-  code.value = event.target.value
+const resetFormOnClose = () => {
+  reset()
+  code.value = ''
+  isBanned.value = false
 }
 </script>
 
 <template>
-  <BaseDialog :title="$t('otp_verify.title')" :description="$t('otp_verify.desc')">
+  <BaseDialog
+    :title="$t('otp_verify.title')"
+    :description="$t('otp_verify.desc')"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <form>
       <div class="flex flex-col space-y-1.5">
         <div class="flex gap-2 items-center">
@@ -87,6 +86,7 @@ const limitLength = (event) => {
           <div>
             <Button
               v-if="!props.isCounting"
+              :disabled="isBanned"
               variant="link"
               class="p-0 font-normal text-[14px]"
               @click.prevent="handleResendOTP"
@@ -97,19 +97,16 @@ const limitLength = (event) => {
             </p>
           </div>
         </div>
-        <Input v-model="code" type="text" @keydown="blockInvalidKeys" @input="limitLength" />
-        <p v-if="isError && !props.isBanned" class="text-red-500">
-          {{ $t('error_message.wrong_code') }}
-        </p>
-        <p v-if="props.isBanned" class="text-red-500">
-          {{ $t('error_message.banned') }}
+        <Input v-model="code" type="text" @keydown="blockInvalidKeys" />
+        <p v-if="isError" class="text-red-500">
+          {{ errorMessage }}
         </p>
       </div>
 
       <div class="flex justify-center mt-4">
         <Button
-          :disabled="!code | isPending | props.isBanned"
-          :variant="code ? 'default' : 'disabled'"
+          :disabled="code.length !== 6 || isPending || isBanned"
+          :variant="code.length !== 6 || isBanned ? 'disabled' : 'default'"
           type="submit"
           class="w-[40%]"
           @click.prevent="handleSendOTP"
