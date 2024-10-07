@@ -24,6 +24,30 @@ class SignUpBody extends StatefulWidget {
 
 class _SignUpBodyState extends State<SignUpBody>
     with AutomaticKeepAliveClientMixin {
+
+  final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        setState(() {
+          controller.text = controller.text.trim();
+        });
+        context.read<SignUpBloc>().add(
+            SignUpValuesChangedEvent(email: controller.text.trim()));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -99,12 +123,18 @@ class _SignUpBodyState extends State<SignUpBody>
                             ? AppTextStyles.montserratStyle.regular14BrinkPink
                             : AppTextStyles.montserratStyle.regular14Black,
                         borderColor: AppColors.brinkPink,
+                        controller: controller,
                         cursorColor: state.isShowEmailMessage
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputEmail,
                         maxLength: 255,
+                        focusNode: focusNode,
                         onChanged: (value) {
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(email: value));
+                        },
+                        onSubmitted: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(email: value.trim()));
                         },
