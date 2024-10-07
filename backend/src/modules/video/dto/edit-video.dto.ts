@@ -43,6 +43,6 @@ export class EditVideoDTO {
   @MaxLength(500, { message: 'Keywords should not exceed 500 characters' })
   keywords: string;
 
-  @IsBoolean()
-  isCommentable: boolean = true;
+  @IsString()
+  isCommentable: string;
 }
