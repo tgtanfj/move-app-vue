@@ -18,7 +18,7 @@ export class Category extends BaseEntity {
     type: 'bigint',
     default: 0,
   })
-  numberOfViews: string;
+  numberOfViews: number;
 
   @OneToMany(() => Video, (video) => video.category)
   videos: Video[];
