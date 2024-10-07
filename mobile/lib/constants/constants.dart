@@ -69,6 +69,7 @@ class Constants {
   static const String city = 'City';
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
+  static const String pleaseSelectCountry = 'Please select country';
   static const String malaysia = 'Malaysia';
   static const String to = ' to ';
   static const String exampleEmail = 'p.giggs@email.com.';
@@ -136,5 +137,27 @@ class Constants {
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
       ' here and we will address your problem as soon as possible.';
-  static const String anInvalidPassword = "You have entered an invalid password";
+  static const String anInvalidPassword =
+      "You have entered an invalid password";
+  static const String invalidDateOfBirth = 'Please select your date of birth';
+  static const String invalidAge =
+      'Invalid age. Age must be between 18 and 65 years old';
+  static const String sizeAvatarLimit =
+      'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.';
+  static const String allowFileType =
+      'Invalid file format. Only JPG, PNG, and GIF are allowed.';
+  static const String dimensionAvatar =
+      'Image dimensions should be between 100x100 and 2000x2000.';
+  static const String noImageIsPicked = 'No image is picked';
+  static const String imageJpeg = 'image/jpeg';
+  static const String imagePng = 'image/png';
+  static const String imageGit = 'image/gif';
+  static const String applicationOctetStream = 'application/octet-stream';
+  static const String success = 'Success';
+  static const String failed = 'Failed';
+  static const String unknownErrorOccurred = 'Unknown error occurred';
+  static const String jpg = 'jpg';
+  static const String jpeg = 'jpeg';
+  static const String png = 'png';
+  static const String gif = 'gif';
 }

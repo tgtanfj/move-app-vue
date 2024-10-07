@@ -3,6 +3,7 @@ enum AppImages {
   posterVideo,
   headline,
   headlineFull,
+  defaultAvatar,
 }
 
 extension AppImagesExtension on AppImages {
