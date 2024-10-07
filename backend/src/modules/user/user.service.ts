@@ -137,11 +137,14 @@ export class UserService {
       const dataUpdate = dto;
 
       if (dto.username) {
-        const userExists = await this.userRepository.findOneByUserName(dto.username);
-        if (userExists) {
-          throw new BadRequestException(
-            `The username '${dto.username}' has been taken. Try another username.`,
-          );
+        const user = await this.userRepository.findOne(userId);
+        if (user.username != dto.username) {
+          const userExists = await this.userRepository.findOneByUserName(dto.username);
+          if (userExists) {
+            throw new BadRequestException(
+              `The username '${dto.username}' has been taken. Try another username.`,
+            );
+          }
         }
       }
 
