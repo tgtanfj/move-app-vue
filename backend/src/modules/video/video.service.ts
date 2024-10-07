@@ -219,8 +219,18 @@ export class VideoService {
       video.workoutLevel = dto.workoutLevel || video.workoutLevel;
       video.duration = dto.duration || video.duration;
       video.keywords = dto.keywords || video.keywords;
-      video.isCommentable =
-        dto.isCommentable !== undefined ? Boolean(dto.isCommentable) : video.isCommentable;
+
+      // Convert isCommentable to boolean if it's a string
+      if (dto.isCommentable !== undefined) {
+        if (typeof dto.isCommentable === 'string') {
+          video.isCommentable = dto.isCommentable.toLowerCase() === 'true';
+        } else {
+          video.isCommentable = Boolean(dto.isCommentable);
+        }
+      }
+
+      // Log the updated video object for debugging
+      console.log('Updated video object:', video);
 
       // Save updated video
       const updatedVideo = await this.videoRepository.save(video);
@@ -232,6 +242,7 @@ export class VideoService {
 
       return updatedVideo;
     } catch (error) {
+      console.error('Error updating video:', error);
       throw error;
     }
   }
@@ -265,7 +276,7 @@ export class VideoService {
         if (!foundVideo.urlS3) {
           return null;
         }
-        return await this.s3.getVideoDownloadLink(foundVideo.urlS3,foundVideo.title);
+        return await this.s3.getVideoDownloadLink(foundVideo.urlS3, foundVideo.title);
       case 'vimeo':
 
       default:
