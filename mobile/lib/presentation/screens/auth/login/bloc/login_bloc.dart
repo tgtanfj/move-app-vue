@@ -33,9 +33,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void _onLoginChangeEmailPasswordEvent(
       LoginChangeEmailPasswordEvent event, Emitter emit) async {
-    final emailValid = InputValidationHelper.email.hasMatch(event.email);
-    final passwordValid =
-        InputValidationHelper.password.hasMatch(event.password);
     final isShowEmailMessage =
         state.email != event.email ? false : state.isShowEmailMessage;
     final isShowPasswordMessage =
@@ -44,7 +41,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       state.copyWith(
         email: event.email,
         password: event.password,
-        isEnabled: emailValid && passwordValid,
+        isEnabled: event.email.isNotEmpty && event.password.isNotEmpty,
         isShowEmailMessage: isShowEmailMessage,
         isShowPasswordMessage: isShowPasswordMessage,
       ),
@@ -102,10 +99,31 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       password: state.password,
     );
     try {
-      await authenticationRepository.loginWithEmailPassword(userModel);
-      emit(state.copyWith(
-        status: LoginStatus.success,
-      ));
+      if (!InputValidationHelper.email.hasMatch(state.email) &&
+          InputValidationHelper.password.hasMatch(state.password)) {
+        emit(state.copyWith(
+            status: LoginStatus.failure,
+            isShowEmailMessage: true,
+            messageInputEmail: "Invalid email"));
+      } else if (InputValidationHelper.email.hasMatch(state.email) &&
+          !InputValidationHelper.password.hasMatch(state.password)) {
+        emit(state.copyWith(
+            status: LoginStatus.failure,
+            isShowPasswordMessage: true,
+            messageInputPassword: "You have entered an invalid password"));
+      } else if (!InputValidationHelper.email.hasMatch(state.email) &&
+          !InputValidationHelper.password.hasMatch(state.password)) {
+        emit(state.copyWith(
+          status: LoginStatus.failure,
+          isShowPasswordMessage: true,
+          messageInputPassword: "You have entered an invalid password",
+          isShowEmailMessage: true,
+          messageInputEmail: "Invalid email",
+        ));
+      } else {
+        await authenticationRepository.loginWithEmailPassword(userModel);
+        emit(state.copyWith(status: LoginStatus.success));
+      }
     } catch (e) {
       emit(state.copyWith(
         status: LoginStatus.failure,

@@ -81,11 +81,14 @@ class _LoginBodyState extends State<LoginBody>
                           children: [
                             CustomEditText(
                               title: Constants.email,
+                              maxLength: 255,
                               onChanged: (email) {
                                 context.read<LoginBloc>().add(
-                                    LoginChangeEmailPasswordEvent(
+                                      LoginChangeEmailPasswordEvent(
                                         email: email,
-                                        password: state.password));
+                                        password: state.password,
+                                      ),
+                                    );
                               },
                               isShowMessage: state.isShowEmailMessage,
                               textStyle: state.isShowEmailMessage
@@ -125,11 +128,6 @@ class _LoginBodyState extends State<LoginBody>
                               preMessage: state.messageInputPassword,
                             ),
                             const SizedBox(height: 8),
-                            // Text(
-                            //   Constants.forgotPassword,
-                            //   style: AppTextStyles
-                            //       .montserratStyle.regular14tiffanyBlue,
-                            // ),
                             CustomButton(
                               title: Constants.forgotPassword,
                               titleStyle: AppTextStyles
