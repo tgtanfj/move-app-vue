@@ -7,11 +7,13 @@ import { Video } from './video.entity';
 export class WatchingVideoHistory extends BaseEntity {
   @Column({
     type: 'int',
+    default: 0,
   })
   times: number;
 
   @Column({
     type: 'int',
+    default: 0,
   })
   rate: number;
 

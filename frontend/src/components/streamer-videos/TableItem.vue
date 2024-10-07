@@ -32,7 +32,7 @@
             <TooltipTrigger as-child>
               <Upload size="20" color="#12BDA3" />
             </TooltipTrigger>
-            <ShareVideo :videoIdSelected="props.item.id"/>
+            <ShareVideo :videoIdSelected="props.item.id" />
           </Tooltip>
         </TooltipProvider>
         <!-- Edit video -->
@@ -87,15 +87,15 @@
 <script setup>
 import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
+import StartIcon from '@assets/icons/startIcon.vue'
 import TwitterIcon from '@assets/icons/TwitterIcon.vue'
+import Button from '@common/ui/button/Button.vue'
 import { Checkbox } from '@common/ui/checkbox'
 import { TableCell, TableRow } from '@common/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
 import { ArrowDownToLine, EllipsisVertical, Pen, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
-import BaseDialog from './BaseDialog.vue'
-import StartIcon from '@assets/icons/startIcon.vue'
-import Button from '@common/ui/button/Button.vue'
+import BaseDialog from '../BaseDialog.vue'
 import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
 
@@ -110,7 +110,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item'])
+const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'download:item'])
 
 const showConfirmModal = ref(false)
 
@@ -147,4 +147,11 @@ const handleChange = () => {
   })
 }
 
+const handleEditDetails = () => {
+  emit('edit:item', { item: props.item })
+}
+
+const handleDownloadVideo = () => {
+  emit('download:item', props.item.id)
+}
 </script>

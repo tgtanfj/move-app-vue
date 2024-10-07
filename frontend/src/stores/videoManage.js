@@ -2,6 +2,9 @@ import { ADMIN_BASE } from '@constants/api.constant'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { apiAxios } from '../helpers/axios.helper'
+
+const DOWNLOAD_VIDEO_URL = `/video/download`
 
 export const useVideoStore = defineStore('video', () => {
   //State
@@ -11,7 +14,7 @@ export const useVideoStore = defineStore('video', () => {
   const isLoading = ref(false)
   const pageCounts = ref([])
   const totalPages = ref()
-  const isCopied = ref(false);
+  const isCopied = ref(false)
 
   //Action
   const getUploadedVideosList = async (take, page) => {
@@ -78,9 +81,9 @@ export const useVideoStore = defineStore('video', () => {
       return true
     } catch (error) {
       if (error.response && error.response.data) {
-        errorMsg.value = error.response.data.message || "An error occurred"
+        errorMsg.value = error.response.data.message || 'An error occurred'
       } else {
-        errorMsg.value = "An unknown error occurred"
+        errorMsg.value = 'An unknown error occurred'
       }
     }
   }
@@ -89,7 +92,7 @@ export const useVideoStore = defineStore('video', () => {
     try {
       const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId.value}`, formData)
       if (res.status === 200) {
-        const index = videos.value.findIndex(video => video.id === videoId.value)
+        const index = videos.value.findIndex((video) => video.id === videoId.value)
         if (index !== -1) {
           videos.value[index] = { ...videos.value[index], ...formData }
         }
@@ -102,7 +105,9 @@ export const useVideoStore = defineStore('video', () => {
 
   const shareVideoSocial = async (videoId, option) => {
     try {
-      const response = await axios.get(`${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`)
+      const response = await axios.get(
+        `${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`
+      )
 
       if (response.status === 200) {
         const shareUrl = response.data.data
@@ -124,16 +129,42 @@ export const useVideoStore = defineStore('video', () => {
 
         await navigator.clipboard.writeText(videoUrl)
 
-        isCopied.value = true;
+        isCopied.value = true
 
         setTimeout(() => {
           isCopied.value = false
-        }, 2000);
+        }, 2000)
       } else {
         console.error('Failed to get video URL:', response.statusText)
       }
     } catch (error) {
       console.error('Error getting video URL:', error)
+    }
+  }
+
+  const downloadVideo = async (id) => {
+    try {
+      const response = await apiAxios.get(`${DOWNLOAD_VIDEO_URL}/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error downloading videos:', error)
+      throw error
+    }
+  }
+
+  const downloadVideos = async (videoSelected) => {
+    try {
+      const result = await Promise.all(
+        videoSelected.map(async (id) => {
+          const response = await apiAxios.get(`${DOWNLOAD_VIDEO_URL}/${id}`)
+          return response.data
+        })
+      )
+
+      return result
+    } catch (error) {
+      console.error('Error downloading videos:', error)
+      throw error
     }
   }
 
@@ -152,7 +183,8 @@ export const useVideoStore = defineStore('video', () => {
     deleteVideos,
     updateDetailVideo,
     shareVideoSocial,
-    getAndCopyUrlVideo
+    getAndCopyUrlVideo,
+    downloadVideo,
+    downloadVideos
   }
 })
-

@@ -69,16 +69,13 @@
             :selectedItems="selectedItems"
             @update:selectedItems="handleItemUpdate"
             @delete:item="handleDeleteVideo"
+            @download:item="handleDownloadVideo"
           />
         </TableBody>
       </Table>
     </div>
     <BaseDialog
-      :title="
-        !allSelected
-          ? $t('streamer.delete_selected_video_modal_title')
-          : 'Delete all videos'
-      "
+      :title="!allSelected ? $t('streamer.delete_selected_video_modal_title') : 'Delete all videos'"
       :description="
         !allSelected
           ? $t('streamer.delete_video_modal_description')
@@ -87,9 +84,12 @@
       v-model:open="showConfirmModal"
     >
       <div class="w-full flex justify-center items-center gap-4 mt-3">
-        <Button variant="outline" class="px-9 text-base text-black hover:text-primary"  @click="showConfirmModal = false">{{
-          $t('button.cancel')
-        }}</Button>
+        <Button
+          variant="outline"
+          class="px-9 text-base text-black hover:text-primary"
+          @click="showConfirmModal = false"
+          >{{ $t('button.cancel') }}</Button
+        >
         <Button variant="default" class="px-9 text-base" @click="handleDeleteVideoList">{{
           $t('streamer.delete')
         }}</Button>
@@ -99,20 +99,15 @@
 </template>
 
 <script setup>
-import StartIcon from '@assets/icons/startIcon.vue'
+import { Button } from '@common/ui/button'
 import { Checkbox } from '@common/ui/checkbox'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@common/ui/table'
 import TableItem from './TableItem.vue'
 import { ref, computed, watch, onMounted } from 'vue'
-import { ArrowDownToLine, Trash } from 'lucide-vue-next'
-import { Button } from '@common/ui/button'
-import BaseDialog from './BaseDialog.vue'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
-import { Card, CardContent } from '@common/ui/card'
-import { Label } from '@common/ui/label'
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@common/ui/dialog'
-import { useVideoStore } from '../stores/videoManage'
 import { useToast } from '@common/ui/toast/use-toast'
+import { ArrowDownToLine, Trash } from 'lucide-vue-next'
+import { useVideoStore } from '../../stores/videoManage.js'
+import BaseDialog from '../BaseDialog.vue'
 
 const videoStore = useVideoStore()
 const { toast } = useToast()
@@ -177,7 +172,34 @@ const handleDeleteVideo = async (videoId) => {
   }
 }
 
-const handleDownloadVideoList = () => {
-  console.log(selectedItems)
+const handleDownloadVideoList = async () => {
+  try {
+    const data = await videoStore.downloadVideos(Object.values(selectedItems.value))
+
+    const downloadVideo = (url, index) => {
+      const a = document.createElement('a')
+      a.href = url
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      setTimeout(() => {
+        downloadVideo(data[i].data, i)
+      }, i * 10000)
+    }
+  } catch (error) {
+    console.error('Error downloading video list:', error)
+  }
+}
+
+const handleDownloadVideo = async (id) => {
+  const response = await videoStore.downloadVideo(id)
+
+  const a = document.createElement('a')
+  a.href = response.data
+  a.click()
+  document.body.removeChild(a)
 }
 </script>

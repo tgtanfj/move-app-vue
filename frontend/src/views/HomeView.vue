@@ -1,5 +1,5 @@
 <script setup>
-import UploadVideo from '@components/UploadVideo.vue'
+import UploadVideo from '@components/upload-video/UploadVideo.vue'
 </script>
 
 <template>

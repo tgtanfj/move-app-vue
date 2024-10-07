@@ -6,8 +6,8 @@ import { passwordSchema } from '@/validation/schema.js'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { Input } from '../common/ui/input'
-import BaseDialog from './BaseDialog.vue'
+import { Input } from '@common/ui/input'
+import BaseDialog from '../BaseDialog.vue'
 
 const emit = defineEmits(['openChangePasswordResult'])
 
@@ -19,7 +19,7 @@ const showError = ref(false)
 const mutation = useChangePassword()
 const { isPending, isError } = mutation
 
-const { values, errors, defineField } = useForm({
+const { values, errors, defineField, resetForm } = useForm({
   validationSchema: passwordSchema
 })
 
@@ -43,6 +43,7 @@ const submit = async () => {
       {
         onSuccess: () => {
           emit('openChangePasswordResult')
+          resetFormOnClose()
         },
         onError: (error) => {
           errorMessage.value = error.response?.data?.message
@@ -55,10 +56,24 @@ const submit = async () => {
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
+
+const resetFormOnClose = () => {
+  showError.value = false
+  resetForm()
+  oldPassword.value = ''
+}
 </script>
 
 <template>
-  <BaseDialog :title="$t('change_password.title')" :description="$t('change_password.desc')">
+  <BaseDialog
+    :title="$t('change_password.title')"
+    :description="$t('change_password.desc')"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <form @submit.prevent="submit">
       <div class="flex flex-col space-y-1.5 mb-4">
         <label>{{ $t('change_password.old_password') }}</label>

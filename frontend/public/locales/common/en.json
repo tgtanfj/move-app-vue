@@ -74,7 +74,7 @@
     "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
     "reset_fail_title": "Verification failed",
     "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
-    "send_mail_error": "Failed to send email. Please try again",
+    "send_mail_error": "Email {email} is not found. Please try again",
     "send_mail_success_before": "We've sent an email to",
     "send_mail_success_after": ". Click the link in the email to reset your password.",
     "send_mail_success": "We've sent an email to { email }. Click the link in the email to reset your password."

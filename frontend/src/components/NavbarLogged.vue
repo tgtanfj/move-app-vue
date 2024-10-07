@@ -14,22 +14,20 @@
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" class="mt-3 p-4 pt-5 w-[260px]">
-        <RouterLink to="/profile">
-          <DropdownMenuItem
-            class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
-          >
-            <img
-              :src="authStore.user?.photoURL || defaultAvatar"
-              alt="Avatar"
-              width="40"
-              height="40"
-              class="rounded-full"
-            />
-            <p class="font-semibold text-lg group-hover:text-primary duration-100">
-              {{ authStore.user?.displayName || authStore.user?.name || 'Username' }}
-            </p>
-          </DropdownMenuItem>
-        </RouterLink>
+        <DropdownMenuItem
+          class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
+        >
+          <img
+            :src="authStore.user?.photoURL || defaultAvatar"
+            alt="Avatar"
+            width="40"
+            height="40"
+            class="rounded-full"
+          />
+          <p class="font-semibold text-lg group-hover:text-primary duration-100">
+            {{ authStore.user?.displayName || authStore.user?.name || 'Username' }}
+          </p>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
@@ -46,11 +44,14 @@
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
-        >
-          <SettingIcon class="group-hover:text-primary duration-100" />
-          <p class="font-semibold group-hover:text-primary duration-100">Settings</p>
+        <DropdownMenuItem class="group cursor-pointer px-0 focus:bg-transparent">
+          <RouterLink
+            to="/profile"
+            class="flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+          >
+            <SettingIcon class="group-hover:text-primary duration-100" />
+            <p class="font-semibold group-hover:text-primary duration-100">Settings</p>
+          </RouterLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

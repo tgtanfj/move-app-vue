@@ -23,6 +23,36 @@ export class Channel extends BaseEntity {
   })
   image: string;
 
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isBlueBadge: boolean;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isPinkBadge: boolean;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  facebookLink: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  instagramLink: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  youtubeLink: string;
+
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })
   user: User;
