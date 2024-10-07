@@ -176,12 +176,12 @@ export class AwsS3Service {
     return `${this.configService.awsS3Config.bucketEndpoint}${fileName}`;
   }
 
-  async getVideoDownloadLink(urlS3: string): Promise<string> {
+  async getVideoDownloadLink(urlS3: string, title:string): Promise<string> {
     const key = getKeyS3(urlS3);
     const params: GetObjectCommandInput = {
       Bucket: this.bucketName,
       Key: key,
-      ResponseContentDisposition: `attachment; filename="${key}"`,
+      ResponseContentDisposition: `attachment; filename="${title}${path.extname(key)}"`,
     };
 
     // Tạo signed URL
