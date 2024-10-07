@@ -26,6 +26,7 @@ class CustomEditText extends StatefulWidget {
   final bool? enable;
   final double? widthMessage;
   final List<TextInputFormatter>? inputFormatters;
+  final String? initialValue;
 
   const CustomEditText({
     super.key,
@@ -51,6 +52,7 @@ class CustomEditText extends StatefulWidget {
     this.inputFormatters,
     this.enable,
     this.widthMessage,
+    this.initialValue,
   });
 
   @override
@@ -65,7 +67,7 @@ class _CustomEditTextState extends State<CustomEditText> {
   void initState() {
     super.initState();
     isTextVisible = !widget.isPasswordInput;
-    _controller = widget.controller ?? TextEditingController();
+    _controller = TextEditingController(text: widget.initialValue);
   }
 
   @override

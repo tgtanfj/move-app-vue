@@ -166,9 +166,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) {
     emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(city: event.city);
-    final isShowCityMessage = state.user?.username != event.city
-        ? false
-        : state.isShowFullNameMessage;
+    final isShowCityMessage =
+        state.user?.username != event.city ? false : state.isShowCityMessage;
     emit(state.copyWith(
       user: updateUser,
       isShowCityMessage: isShowCityMessage,
@@ -253,7 +252,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }, (r) {
       if (r != null) {
         final avatarPath = r.path;
-        print("Image Local Path: $avatarPath");
         emit(state.copyWith(
           imageLocal: r,
           user: state.user?.copyWith(avatar: avatarPath),

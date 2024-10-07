@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/constants.dart';
@@ -36,32 +35,13 @@ class UserRepository {
       FormData formData = FormData.fromMap(user?.editUserToJson() ?? {});
 
       if (avatarFile != null) {
-        final fileExtension = avatarFile.path.split('.').last.toLowerCase();
-        String mimeType;
-
-        switch (fileExtension) {
-          case 'jpg':
-          case 'jpeg':
-            mimeType = 'image/jpeg';
-            break;
-          case 'png':
-            mimeType = 'image/png';
-            break;
-          case 'gif':
-            mimeType = 'image/gif';
-            break;
-          default:
-            mimeType = 'application/octet-stream';
-            break;
-        }
-
         formData.files.add(
           MapEntry(
             'avatar',
             await MultipartFile.fromFile(
               avatarFile.path,
               filename: avatarFile.path.split('/').last,
-              contentType: MediaType.parse(mimeType),
+              contentType: DioMediaType.parse(Constants.imagePng),
             ),
           ),
         );
@@ -79,15 +59,16 @@ class UserRepository {
         ),
       );
       if (response.statusCode == 200) {
-        return const Right('Success');
+        return const Right(Constants.success);
       } else {
-        return const Left('Failed');
+        return const Left(Constants.failed);
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
           return Left(errorMessage);
         } else {
           return Left(e.message.toString());

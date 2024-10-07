@@ -102,8 +102,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                       ),
                     ),
                     CustomEditText(
-                      controller:
-                          TextEditingController(text: state.user?.username),
+                      initialValue: state.user?.username,
                       isShowMessage: state.isShowUsernameMessage,
                       title: Constants.username,
                       textStyle: state.isShowUsernameMessage
@@ -123,16 +122,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
+                      initialValue: state.user?.email,
                       title: Constants.email,
                       textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      controller:
-                          TextEditingController(text: state.user?.email),
                       enable: false,
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      controller:
-                          TextEditingController(text: state.user?.fullName),
+                      initialValue: state.user?.fullName,
                       isShowMessage: state.isShowFullNameMessage,
                       title: Constants.fullName,
                       textStyle: state.isShowFullNameMessage
@@ -221,7 +218,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      controller: TextEditingController(text: state.user?.city),
+                      initialValue: state.user?.city,
                       title: Constants.city,
                       isShowMessage: state.isShowCityMessage,
                       textStyle: state.isShowCityMessage

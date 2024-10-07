@@ -149,4 +149,15 @@ class Constants {
   static const String dimensionAvatar =
       'Image dimensions should be between 100x100 and 2000x2000.';
   static const String noImageIsPicked = 'No image is picked';
+  static const String imageJpeg = 'image/jpeg';
+  static const String imagePng = 'image/png';
+  static const String imageGit = 'image/gif';
+  static const String applicationOctetStream = 'application/octet-stream';
+  static const String success = 'Success';
+  static const String failed = 'Failed';
+  static const String unknownErrorOccurred = 'Unknown error occurred';
+  static const String jpg = 'jpg';
+  static const String jpeg = 'jpeg';
+  static const String png = 'png';
+  static const String gif = 'gif';
 }

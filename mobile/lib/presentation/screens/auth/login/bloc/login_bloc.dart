@@ -50,42 +50,34 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onLoginWithGoogleEvent(LoginWithGoogleEvent event, Emitter emit) async {
-    try {
-      final user = await AuthRepository().googleLogin();
-      user.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
-      }, (r) {
-        emit(state.copyWith(
-          status: LoginStatus.success,
-          googleAccount: user.toString(),
-        ));
-      });
-    } catch (error) {
+    final user = await AuthRepository().googleLogin();
+    user.fold((l) {
       emit(state.copyWith(
         status: LoginStatus.failure,
-        errorMessage: error.toString(),
+        errorMessage: l,
       ));
-    }
+    }, (r) {
+      emit(state.copyWith(
+        status: LoginStatus.success,
+        googleAccount: user.toString(),
+      ));
+    });
   }
 
   void _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter emit) async {
-    try {
-      final facebookAccount = await AuthRepository().loginWithFacebook();
-      facebookAccount.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
-      }, (r) {
-        emit(state.copyWith(
-          status: LoginStatus.success,
-          facebookAccount: facebookAccount.toString(),
-        ));
-      });
-    } catch (error) {
+    final facebookAccount = await AuthRepository().loginWithFacebook();
+    facebookAccount.fold((l) {
       emit(state.copyWith(
         status: LoginStatus.failure,
-        errorMessage: error.toString(),
+        errorMessage: l,
       ));
-    }
+    }, (r) {
+      emit(state.copyWith(
+        status: LoginStatus.success,
+        facebookAccount: facebookAccount.toString(),
+      ));
+    });
   }
 
   Future<void> _onLoginWithEmailPasswordEvent(
@@ -116,23 +108,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         isShowEmailMessage: true,
         messageInputEmail: Constants.invalidEmail,
       ));
-    }
-    try {
+    } else {
       final result =
           await authenticationRepository.loginWithEmailPassword(userModel);
       result.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
+        emit(
+          state.copyWith(
+            status: LoginStatus.failure,
+            isShowPasswordMessage: true,
+            messageInputPassword: l,
+            isShowEmailMessage: true,
+            messageInputEmail: l,
+          ),
+        );
       }, (r) {
         emit(state.copyWith(status: LoginStatus.success));
       });
-    } catch (e) {
-      emit(state.copyWith(
-        status: LoginStatus.failure,
-        isShowPasswordMessage: true,
-        messageInputPassword: e.toString(),
-        isShowEmailMessage: true,
-        messageInputEmail: e.toString(),
-      ));
     }
   }
 }
