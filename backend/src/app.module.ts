@@ -15,13 +15,14 @@ import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { RedisModule } from './shared/services/redis/redis.module';
 import { DeeplinkModule } from './modules/deep-link/deep-link.module';
 import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
-import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { VideoModule } from './modules/video/video.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
 import { ApiConfigService } from './shared/services/api-config.service';
+import { SearchModule } from './modules/search/search.module';
+import { FaqsModule } from './modules/faqs/faqs.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -43,6 +44,8 @@ import { ApiConfigService } from './shared/services/api-config.service';
     VideoModule,
     CategoryModule,
     ThumbnailModule,
+    FaqsModule,
+    SearchModule,
     BullModule.forRootAsync({
       inject: [ApiConfigService],
       useFactory: async (apiConfig: ApiConfigService) => ({
@@ -54,6 +57,7 @@ import { ApiConfigService } from './shared/services/api-config.service';
         },
       }),
     }),
+    FaqsModule,
   ],
   providers: [
     {

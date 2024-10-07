@@ -44,5 +44,5 @@ export class EditVideoDTO {
   keywords: string;
 
   @IsBoolean()
-  isCommentable: boolean = true;
+  isCommentable: string;
 }

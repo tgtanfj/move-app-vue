@@ -205,8 +205,6 @@ export class VideoService {
           message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
         });
       }
-      console.log('dto', dto);
-
       if (dto.categoryId) {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
         if (!category) {
@@ -217,17 +215,12 @@ export class VideoService {
         video.category = category;
       }
 
-      // if (thumbnail) {
-      //   const thumbnailUrl = await this.s3.uploadImage(thumbnail);
-      //   video.thumbnail_url = thumbnailUrl;
-      // }
-
-      // Update video properties
       video.title = dto.title || video.title;
       video.workoutLevel = dto.workoutLevel || video.workoutLevel;
       video.duration = dto.duration || video.duration;
       video.keywords = dto.keywords || video.keywords;
-      video.isCommentable = dto.isCommentable !== undefined ? dto.isCommentable : video.isCommentable;
+      video.isCommentable =
+        dto.isCommentable !== undefined ? Boolean(dto.isCommentable) : video.isCommentable;
 
       // Save updated video
       const updatedVideo = await this.videoRepository.save(video);
