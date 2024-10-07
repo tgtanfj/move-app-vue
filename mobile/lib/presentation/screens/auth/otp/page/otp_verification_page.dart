@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/models/user_model.dart';
@@ -19,8 +18,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OtpVerificationBloc>(
-      create: (context) =>
-          OtpVerificationBloc()..add(OtpVerificationInitialEvent(widget.userModel)),
+      create: (context) => OtpVerificationBloc()
+        ..add(OtpVerificationInitialEvent(widget.userModel)),
       child: const OtpVerificationBody(),
     );
   }

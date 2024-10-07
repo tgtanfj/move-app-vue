@@ -1,4 +1,10 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  GetObjectCommandInput,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import * as mime from 'mime-types';
@@ -7,7 +13,12 @@ import type { IFile } from '../interfaces/file.interface';
 import { GeneratorProvider } from '../providers/generator.provider';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
-
+import { createWriteStream } from 'fs';
+import { validateAvatarFile } from '../utils/validate-avatar.utils';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Upload } from '@aws-sdk/lib-storage';
+import { getKeyS3 } from '../utils/get-key-s3.util';
 @Injectable()
 export class AwsS3Service {
   private readonly s3Client: S3Client;
@@ -57,6 +68,38 @@ export class AwsS3Service {
     return key;
   }
 
+  async uploadAvatar(file: IFile): Promise<string> {
+    await validateAvatarFile(file);
+    return await this.uploadImage(file);
+  }
+
+  async uploadVideo(file: IFile) {
+    const extension = mime.extension(file.mimetype);
+    if (!extension) {
+      throw new Error('Invalid file mimetype');
+    }
+
+    const fileName = this.generatorService.fileName(<string>extension);
+    const key = 'images/' + fileName; // Use just the key for S3
+
+    // Use Upload to handle the upload
+    const uploader = new Upload({
+      client: this.s3Client,
+      params: {
+        Bucket: this.bucketName,
+        Key: key,
+        Body: file.buffer, // This can be a stream as well
+        ContentType: file.mimetype,
+        ACL: 'public-read',
+      },
+    });
+
+    // Start the upload and wait for it to finish
+    await uploader.done();
+
+    // Return the full S3 URL
+    return `${this.configService.awsS3Config.bucketEndpoint}${key}`;
+  }
   getSignedUrl(key: string): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
@@ -98,5 +141,55 @@ export class AwsS3Service {
 
   validateRemovedImage(key: string) {
     return !key.includes('templates/');
+  }
+
+  async uploadVideoFromPath(filePath: string): Promise<string> {
+    if (!fs.existsSync(filePath)) {
+      throw new Error('File does not exist on the server');
+    }
+
+    const extension = path.extname(filePath).slice(1).toLowerCase();
+    if (!extension) {
+      throw new Error('Invalid file extension');
+    }
+
+    const contentType = mime.lookup(extension) || 'application/octet-stream';
+
+    // Generate a unique file name for the S3 bucket
+    const fileName = `videos/${Date.now()}-${path.basename(filePath)}`;
+
+    const fileStream = fs.createReadStream(filePath);
+
+    const uploader = new Upload({
+      client: this.s3Client,
+      params: {
+        Bucket: this.bucketName,
+        Key: fileName,
+        Body: fileStream,
+        ContentType: contentType,
+        ACL: 'public-read',
+      },
+    });
+
+    await uploader.done();
+
+    return `${this.configService.awsS3Config.bucketEndpoint}${fileName}`;
+  }
+
+  async getVideoDownloadLink(urlS3: string, title:string): Promise<string> {
+    const key = getKeyS3(urlS3);
+    const params: GetObjectCommandInput = {
+      Bucket: this.bucketName,
+      Key: key,
+      ResponseContentDisposition: `attachment; filename="${title}${path.extname(key)}"`,
+    };
+
+    // Tạo signed URL
+    const command = new GetObjectCommand(params);
+    const url = await getSignedUrl(this.s3Client, command, {
+      expiresIn: this.expiresIn, // Thời gian link có hiệu lực (seconds)
+    });
+
+    return url; // Trả về URL tải về
   }
 }

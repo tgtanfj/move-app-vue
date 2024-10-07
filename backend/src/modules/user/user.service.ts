@@ -136,14 +136,26 @@ export class UserService {
     try {
       const dataUpdate = dto;
 
+      if (dto.username) {
+        const user = await this.userRepository.findOne(userId);
+        if (user.username != dto.username) {
+          const userExists = await this.userRepository.findOneByUserName(dto.username);
+          if (userExists) {
+            throw new BadRequestException(
+              `The username '${dto.username}' has been taken. Try another username.`,
+            );
+          }
+        }
+      }
+
       if (file) {
-        const image = await this.awsS3Service.uploadImage(file);
+        const image = await this.awsS3Service.uploadAvatar(file);
         dto.avatar = image;
       }
 
       if (dto.countryId && dto.stateId) {
         const statesOfCountry = await this.countryService.getStatesOfCountry(dto.countryId);
-        const isValidState = statesOfCountry.find((state) => state.id === dto.stateId);
+        const isValidState = statesOfCountry.find((state) => state.id == dto.stateId);
 
         if (!isValidState) {
           throw new BadRequestException(ERRORS_DICTIONARY.INVALID_STATE);

@@ -4,11 +4,13 @@ class Constants {
   static const String category = 'Category';
   static const String viewAll = 'View All';
   static const String videosYouMayLike = 'Videos you may like';
-  static const String login = "Log In";
+  static const String logIn = "Log In";
+  static const String login = "Login";
   static const String signUp = "Sign Up";
   static const String signUpWithGoogle = "Sign up with Google";
   static const String signUpWithFaceBook = "Sign up with Facebook";
   static const String signUpWithEmail = "Sign Up With Email";
+  static const String loginSuccessful = "Login successful";
   static const String or = "or";
   static const String email = "Email";
   static const String password = "Password";
@@ -30,7 +32,7 @@ class Constants {
   static const String newPassword = 'New password';
   static const String confirmNewPassword = 'Confirm new password';
   static const String confirm = 'Confirm';
-  static const String passwordResetSuccessful = 'Password Reset Successfull';
+  static const String passwordResetSuccessful = 'Password Reset Successful';
   static const String resetPassword = 'Reset Password';
   static const String enterEmailAddress =
       'Enter email address for your account';
@@ -69,7 +71,7 @@ class Constants {
   static const String pleaseSelectState = 'Please select state';
   static const String pleaseSelectCountry = 'Please select country';
   static const String malaysia = 'Malaysia';
-  static const String to = 'to';
+  static const String to = ' to ';
   static const String exampleEmail = 'p.giggs@email.com.';
   static const String loginWithGoogle = "Log In With Google";
   static const String loginWithFacebook = "Log In With Facebook";
@@ -105,8 +107,15 @@ class Constants {
   static const String communityGuideline = 'Community Guideline';
   static const String faq = 'FAQ';
   static const String logout = 'Logout';
+  static const String logout_question = 'Logout ?';
   static const String loginMenu = "Login";
   static const String signUpSuccessful = "Sign Up Successful";
+  static const String theEmail = 'The email ';
+  static const String isNotFound = ' is not found. Please try again.';
+  static const String titleExample =
+      'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam';
+  static const String contentExample =
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic.';
   static const String statesNotFound = 'States not found!';
   static const String userNotFound = 'User not found!';
   static const String countriesNotFound = 'Countries not found!';
@@ -120,6 +129,16 @@ class Constants {
   static const String invalidContainUsername =
       'Username containing only letters, numbers, and underscores';
   static const String invalidCity = 'This field is required';
+  static const String confirmLogout = 'Do you want to logout ?';
+  static const String yes = 'Yes';
+  static const String no = 'No';
+
+  static const String cantFindAnAnswer = 'Can’t find an answer? ';
+  static const String contactUs = 'Contact Us';
+  static const String hereAndWeWillAddress =
+      ' here and we will address your problem as soon as possible.';
+  static const String anInvalidPassword =
+      "You have entered an invalid password";
   static const String invalidDateOfBirth = 'Please select your date of birth';
   static const String invalidAge =
       'Invalid age. Age must be between 18 and 65 years old';

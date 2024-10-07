@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -106,8 +107,9 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                 ),
                 CustomEditText(
                   maxLength: 6,
-                  textInputType: TextInputType.phone,
+                  textInputType: TextInputType.number,
                   isShowMessage: state.isShowMessageOtp,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   preMessage: state.messageOtp,
                   textStyle: state.isShowMessageOtp
                       ? AppTextStyles.montserratStyle.regular14BrinkPink

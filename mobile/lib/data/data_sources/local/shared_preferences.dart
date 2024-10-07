@@ -20,6 +20,10 @@ class SharedPrefer {
     await _prefsInstance.setString(SharedPreferencesKey.token, value);
   }
 
+  Future<void> setUserEmail(String value) async {
+    await _prefsInstance.setString(SharedPreferencesKey.token, value);
+  }
+
   String getUserToken() {
     return _prefsInstance.getString(SharedPreferencesKey.token) ?? "";
   }

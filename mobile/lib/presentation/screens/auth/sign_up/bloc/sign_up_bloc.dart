@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/user_model.dart';
@@ -6,11 +5,6 @@ import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_event.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
-
-import '../../../../../data/services/api_service.dart';
-
-import '../../../../../data/repositories/auth_repository.dart';
-import '../../login/bloc/login_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState()) {
@@ -101,16 +95,20 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         validPassword == null &&
         doMatchPassword &&
         validReferralCode == null) {
+      emit(state.copyWith(status: SignUpStatus.loading));
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
         emit(
             state.copyWith(status: SignUpStatus.success, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
-          emit(state.copyWith(
+          emit(
+            state.copyWith(
               status: SignUpStatus.error,
               isShowEmailMessage: true,
-              messageInputEmail: e.toString()));
+              messageInputEmail: e.toString(),
+            ),
+          );
         }
       }
     }
@@ -122,7 +120,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (user != null) {
         emit(state.copyWith(
-          status: SignUpStatus.success,
+          status: SignUpStatus.completed,
           googleAccount: user.toString(),
         ));
       } else {
@@ -143,7 +141,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
-          status: SignUpStatus.success,
+          status: SignUpStatus.completed,
           facebookAccount: facebookAccount.toString(),
         ));
       } else {

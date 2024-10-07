@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_bloc.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
@@ -24,20 +24,25 @@ class SignUpBody extends StatefulWidget {
   State<SignUpBody> createState() => _SignUpBodyState();
 }
 
-class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMixin {
+class _SignUpBodyState extends State<SignUpBody>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocListener<SignUpBloc, SignUpState>(
-        listener: (context, state) {
+    return BlocListener<SignUpBloc, SignUpState>(listener: (context, state) {
+      if (state.status == SignUpStatus.completed) {
+        Navigator.of(context).pop();
+      }
       if (state.status == SignUpStatus.success) {
         Navigator.of(context).pop();
-        showDialog(context: context, builder: (BuildContext context) {
-          return OtpVerificationPage(userModel: state.userModel);
-        },);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return OtpVerificationPage(userModel: state.userModel);
+          },
+        );
       }
-    },
-    child: BlocBuilder<SignUpBloc, SignUpState>(
+    }, child: BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return SingleChildScrollView(
           child: Container(
@@ -73,7 +78,9 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                   visible: !state.isClickSignUpWithEmail,
                   child: GestureDetector(
                     onTap: () {
-                      context.read<SignUpBloc>().add(SignUpClickSignUpWithEmailEvent());
+                      context
+                          .read<SignUpBloc>()
+                          .add(SignUpClickSignUpWithEmailEvent());
                     },
                     child: Text(
                       Constants.signUpWithEmail.toUpperCase(),
@@ -98,8 +105,10 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputEmail,
+                        maxLength: 255,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(email: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(email: value.trim()));
                         },
                       ),
                       const SizedBox(height: 10),
@@ -117,7 +126,8 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                         preMessage: state.messageInputPassword,
                         maxLength: 32,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(password: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(password: value.trim()));
                         },
                       ),
                       const SizedBox(height: 10),
@@ -134,7 +144,9 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputConfirmPassword,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(confirmPassword: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(
+                                  confirmPassword: value.trim()));
                         },
                         maxLength: 32,
                       ),
@@ -160,24 +172,29 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                         preMessage: state.messageInputReferralCode,
                         maxLength: 8,
                         onChanged: (value) {
-                          context.read<SignUpBloc>().add(SignUpValuesChangedEvent(referralCode: value.trim()));
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(
+                                  referralCode: value.trim()));
                         },
                       ),
                       const SizedBox(height: 17),
                       RichText(
                         textAlign: TextAlign.justify,
                         text: TextSpan(
-                          style: AppTextStyles.montserratStyle.regular14sonicSilver,
+                          style: AppTextStyles
+                              .montserratStyle.regular14sonicSilver,
                           children: [
                             const TextSpan(text: Constants.byClickingSignUp),
                             TextSpan(
                               text: Constants.termsOfService,
-                              style: AppTextStyles.montserratStyle.regular14tiffanyBlue,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
                             ),
                             const TextSpan(text: Constants.and),
                             TextSpan(
                               text: Constants.privacyNotice,
-                              style: AppTextStyles.montserratStyle.regular14tiffanyBlue,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
                             ),
                             const TextSpan(text: '.'),
                           ],
@@ -195,9 +212,11 @@ class _SignUpBodyState extends State<SignUpBody> with AutomaticKeepAliveClientMi
                             : AppColors.spanishGray,
                         onTap: state.isEnableSignUp
                             ? () {
-                          FocusScope.of(context).unfocus();
-                          context.read<SignUpBloc>().add(SignUpWithEmailSubmitEvent());
-                        }
+                                FocusScope.of(context).unfocus();
+                                context
+                                    .read<SignUpBloc>()
+                                    .add(SignUpWithEmailSubmitEvent());
+                              }
                             : null,
                       ),
                     ],

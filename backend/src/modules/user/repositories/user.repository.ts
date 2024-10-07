@@ -39,6 +39,14 @@ export class UserRepository {
     return foundUser;
   }
 
+  async findOneByUserName(username: string): Promise<User> {
+    const foundUser = await this.userRepository.findOneBy({
+      username,
+    });
+
+    return foundUser;
+  }
+
   async findUserAccountWithEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email: email },
@@ -48,9 +56,9 @@ export class UserRepository {
   }
 
   async createUserByEmail(signUpEmailDto: SignUpEmailDto): Promise<User> {
-    const { email, stripeId } = signUpEmailDto;
+    const { email, stripeId, username } = signUpEmailDto;
 
-    return await this.userRepository.save({ email, stripeId });
+    return await this.userRepository.save({ email, stripeId, username });
   }
 
   async createUserBySocial(signUpDto: SignUpSocialDto): Promise<User> {
