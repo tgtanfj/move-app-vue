@@ -78,6 +78,8 @@ export class VideoController {
     @Body() dto: UploadVideoDTO,
   ) {
     const savedVideo = await this.videoService.saveVideoToServer(files.video[0]);
+    console.log(savedVideo);
+    
     return await this.videoService.uploadVideo(1, files.thumbnails, dto, savedVideo, files.video[0]);
   }
 
