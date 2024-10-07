@@ -38,18 +38,24 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _handleDeepLink(Uri? uri) {
+    print('Received deep link: $uri');
 
-  void _handleDeepLink(Uri? link) {
-    print('Received deep link: $link');
-    print('Received deep link: ${link?.path}');
-    final path = link?.queryParameters['path'];
-    if (link != null && path!.contains('reset-password')) {
-      final token = link.pathSegments.last;
-      print('Token acb: $token');
-      navigatorKey.currentState?.push(
-        MaterialPageRoute(
-            builder: (context) => CreateNewPasswordPage(token: token)),
-      );
+    if (uri != null && uri.host == 'reset-password') {
+      final token = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+
+      if (token != null && token.isNotEmpty) {
+        print('Extracted token: $token');
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (context) => CreateNewPasswordPage(token: token),
+          ),
+        );
+      } else {
+        print('Token is missing or empty.');
+      }
+    } else {
+      print('Invalid deep link or host.');
     }
   }
 

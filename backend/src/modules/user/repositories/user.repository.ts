@@ -39,6 +39,14 @@ export class UserRepository {
     return foundUser;
   }
 
+  async findOneByUserName(username: string): Promise<User> {
+    const foundUser = await this.userRepository.findOneBy({
+      username,
+    });
+
+    return foundUser;
+  }
+
   async findUserAccountWithEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email: email },
