@@ -42,6 +42,6 @@ export class FaqsRepository {
 
   // Delete an FAQ by ID
   async remove(id: number): Promise<void> {
-    await this.faqsRepository.update(id, { isActive: false });
+    await this.faqsRepository.delete(id);
   }
 }
