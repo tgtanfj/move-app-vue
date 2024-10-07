@@ -15,4 +15,5 @@ class AppColors {
   static const bubbles = Color(0xffE6FFFB);
   static const transparent = Colors.transparent;
   static const cultured = Color(0xFFF4F4F4);
+  static const rajah  = Color(0xffFFB564);
 }

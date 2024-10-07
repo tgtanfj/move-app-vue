@@ -136,5 +136,19 @@ class Constants {
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
       ' here and we will address your problem as soon as possible.';
-  static const String anInvalidPassword = "You have entered an invalid password";
+  static const String anInvalidPassword =
+      "You have entered an invalid password";
+
+  static const String writeComment = "Write a comment";
+  static const String reply = "Reply";
+  static const String repSender = "REPs Sender";
+  static const String send = "Send";
+  static const String cancel = "Cancel";
+  static const String lorem ="Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
+  static const String seeMore = "See More";
+  static const String seeLess = "See Less";
+  static const String cancelComment ="Cancel Comment?";
+  static const String areUSure ="Are you sure to cancel this comment?";
+
+
 }

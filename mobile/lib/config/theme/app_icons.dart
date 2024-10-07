@@ -20,7 +20,18 @@ enum AppIcons {
   arrowDown,
   addVideo,
   closeWhite,
-  faqs
+  faqs,
+  like,
+  likeFilled,
+  dislike,
+  dislikeFilled,
+  moveReps,
+  dots,
+  arrowUpTiffany,
+  arrowDownTiffany,
+  repsSender,
+  verify,
+  locReps
 }
 
 extension AppIconsExtension on AppIcons {
