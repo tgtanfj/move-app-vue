@@ -103,7 +103,7 @@ import StartIcon from '@assets/icons/startIcon.vue'
 import { Checkbox } from '@common/ui/checkbox'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@common/ui/table'
 import TableItem from './TableItem.vue'
-import { defineProps, ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { ArrowDownToLine, Trash } from 'lucide-vue-next'
 import { Button } from '@common/ui/button'
 import BaseDialog from './BaseDialog.vue'
@@ -126,10 +126,6 @@ const props = defineProps({
 
 const selectedItems = ref([])
 const showConfirmModal = ref(false)
-const showEditModal = ref(false)
-
-//Video Infor Edit
-const editItem = ref(null)
 
 const allSelected = computed(() => {
   return props.list.length > 0 && selectedItems.value.length === props.list.length
@@ -183,10 +179,5 @@ const handleDeleteVideo = async (videoId) => {
 
 const handleDownloadVideoList = () => {
   console.log(selectedItems)
-}
-
-const handleEditVideo = ({ item }) => {
-  showEditModal.value = true
-  editItem.value = { ...item }
 }
 </script>

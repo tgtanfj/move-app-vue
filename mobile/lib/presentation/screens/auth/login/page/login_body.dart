@@ -34,10 +34,10 @@ class _LoginBodyState extends State<LoginBody>
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
           Fluttertoast.showToast(msg: Constants.loginSuccessful);
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const HomeBody(),
-            ),
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeBody()),
+                (Route<dynamic> route) => false,
           );
         }
       },

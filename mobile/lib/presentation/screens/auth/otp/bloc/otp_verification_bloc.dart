@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_event.dart';

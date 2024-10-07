@@ -1,12 +1,14 @@
 <script setup>
-import { ref, watch, watchEffect } from 'vue'
+import { onMounted, onUpdated, ref, watch, watchEffect } from 'vue'
 import { useForm } from 'vee-validate'
+import { userBaseAvatar } from '@constants/userImg.constant'
+import { userProfileSchema } from '../validation/schema'
+import { useToast } from '@common/ui/toast/use-toast'
 
 import { countriesService } from '@services/countries.services'
-import { userProfileService } from '@services/userProflie.services'
 
 import { DAYS, MONTHS, YEARS } from '@constants/date.constant'
-import { userBaseAvatar } from '@constants/userImg.constant'
+import { ADMIN_BASE, COUNTRY_BASE } from '@constants/api.constant'
 
 import { Input } from '@/common/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
@@ -20,11 +22,14 @@ import {
 } from '@/common/ui/select'
 import { Button } from '@/common/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/ui/form'
-
+import Loading from './Loading.vue'
 import BaseDialog from './BaseDialog.vue'
 import ChangePasswordModal from './ChangePasswordModal.vue'
 import OTPVerificationModal from './OTPVerificationModal.vue'
 import SetupEmailModal from './SetupEmailModal.vue'
+import axios from 'axios'
+import { denormalizeGender, normalizeGender } from '@utils/userProfile.util'
+import UploadAvatarFile from './UploadAvatarFile.vue'
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -40,35 +45,70 @@ const openSetupEmailModal = ref(false)
 const openOTPVerificationModal = ref(false)
 const openChangePasswordModal = ref(false)
 const openChangePasswordResultModal = ref(false)
+const fileInput = ref(null)
+const fileInfo = ref(null)
+const avatar = ref(null)
+const message = ref('')
+const isLoading = ref(false)
+const isSubmitting = ref(false)
+const showError = ref(false)
+const firstSubmittion = ref(true)
+const gender = ref('')
 
+const { toast } = useToast()
 const { handleSubmit, values, setValues, errors, meta } = useForm({
   initialValues: {
-    avatar: '',
+    avatar: null,
     username: '',
     email: '',
     fullName: '',
     gender: '',
-    birthday: ''
+    birthday: '',
+    country: '',
+    state: '',
+    city: ''
+  },
+  validationSchema: userProfileSchema,
+  validateOnMount: false
+})
+
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const token = localStorage.getItem('token')
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    const response = await axios.get(`${ADMIN_BASE}/user/profile`, config)
+    if (response.status === 200 && response.data) {
+      userData.value = response.data.data
+    } else throw new Error(response.error)
+  } catch (err) {
+    console.log(err)
+  } finally {
+    isLoading.value = false
   }
 })
 
-const {
-  data: initUserData,
-  isLoading: initUserLoading,
-  isSuccess: initUserIsSuccess
-} = userProfileService.getUserProfile()
-
-watch(initUserData, (newValue) => {
-  if (initUserIsSuccess && newValue) {
-    userData.value = newValue.data
+onMounted(async () => {
+  try {
+    const res = await axios.get(`${ADMIN_BASE}/countries`)
+    if (res.status === 200) {
+      countries.value = res.data.data
+    } else throw new Error(res.error)
+  } catch (error) {
+    console.log(error.message)
   }
 })
 
 watch(userData, (newValue) => {
   if (newValue) {
-    selectedCountry.value = newValue.country || ''
-    selectedState.value = newValue.state || ''
+    selectedCountry.value = newValue.country.name || ''
+    selectedState.value = newValue.state.name || ''
     selectedCity.value = newValue.city || ''
+    gender.value = denormalizeGender(newValue.gender)
     if (newValue.dateOfBirth) {
       const [year, month, day] = newValue.dateOfBirth.split('-')
       selectedDay.value = day || null
@@ -80,42 +120,52 @@ watch(userData, (newValue) => {
       username: newValue.username || '',
       email: newValue.email || '',
       fullName: newValue.fullName || '',
-      gender: newValue.gender || ''
+      country: newValue.country.name || '',
+      state: newValue.state.name || '',
+      city: newValue.city || '',
+      gender: denormalizeGender(newValue.gender)
     })
   }
 })
 
-const { data } = countriesService.getAllCountries()
+watch(selectedCountry, async (newValue) => {
+  const temp = countries.value.filter((item) => item.name === newValue)
 
-watchEffect(() => {
-  if (data.value) {
-    countries.value = data.value.data
+  try {
+    const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
+    if (res.status === 200) {
+      states.value = res.data.data
+    } else throw new Error(res.error)
+  } catch (error) {
+    console.log(error.message)
   }
 })
 
-const {
-  data: statesData,
-  isLoading: statesLoading,
-  isError: iErrorStates,
-  isSuccess: statesIsSuccess
-} = countriesService.getAllStates(selectedCountry)
-
-watchEffect(() => {
-  if (statesData.value) {
-    states.value = statesData.value.data.states
+watch(selectedState, async (newValue) => {
+  try {
+    const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
+      params: {
+        country: selectedCountry.value,
+        state: newValue
+      }
+    })
+    if (res.status === 200) {
+      cities.value = res.data.data
+    } else throw new Error(res.error)
+  } catch (error) {
+    console.log(error.message)
   }
 })
 
-const {
-  data: citiesData,
-  isLoading: citiesLoading,
-  isError: iErrorCities,
-  isSuccess: citiesIsSuccess
-} = countriesService.getAllCities(selectedCountry, selectedState)
-
-watchEffect(() => {
-  if (citiesData.value) {
-    cities.value = citiesData.value.data
+watch([selectedDay, selectedMonth, selectedYear], () => {
+  if (selectedDay.value && selectedMonth.value && selectedYear.value) {
+    setValues(
+      {
+        ...values,
+        birthday: `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
+      },
+      { shouldValidate: false }
+    )
   }
 })
 
@@ -125,9 +175,7 @@ const handleSetupEmail = () => {
 }
 
 const onCountryChange = (value) => {
-  selectedCountry.value = value
-  selectedState.value = ''
-  selectedCity.value = ''
+  console.log(value)
 }
 
 const onStateChange = (value) => {
@@ -138,317 +186,390 @@ const onCityChange = (value) => {
   selectedCity.value = value
 }
 
-const openChangePasswordResult = (result) => {
+const openChangePasswordResult = () => {
   openChangePasswordResultModal.value = true
   openChangePasswordModal.value = false
 }
 
-const onSubmit = handleSubmit((values) => {
-  values.birthday = `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
-  console.log('Submitting...', values)
-})
+const isFormDataEmpty = (formData) => {
+  return formData.entries().next().done
+}
+
+const onSubmit = async () => {
+  if (Object.keys(errors.value).length > 0) {
+    showError.value = true
+  } else {
+    isSubmitting.value = true
+    const token = localStorage.getItem('token')
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    const formData = new FormData()
+
+    if (userData.value.username !== values.username) formData.append('username', values.username)
+    if (fileInfo.value) formData.append('avatar', fileInfo.value)
+    if (values.fullName !== userData.value.fullName) formData.append('fullName', values.fullName)
+    if (values.birthday !== userData.value.dateOfBirth)
+      formData.append('dateOfBirth', values.birthday)
+    if (normalizeGender(values.gender) !== userData.value.gender)
+      formData.append('gender', normalizeGender(values.gender))
+    if (values.country !== userData.value.country.name) {
+      const countryId = countries.value.filter((item) => item.name === values.country)[0].id
+      formData.append('countryId', countryId)
+    }
+    if (values.state !== userData.value.state.name) {
+      const stateId = states.value.filter((item) => item.name === values.state)[0].id
+      formData.append('stateId', stateId)
+    }
+    if (values.city !== userData.value.city) formData.append('city', values.city || '')
+
+    if (isFormDataEmpty(formData)) {
+      return
+    } else {
+      try {
+        const response = await axios.patch(`${ADMIN_BASE}/user/edit-profile`, formData, config)
+
+        if (response.status === 200) {
+          userData.value = {
+            ...values,
+            country: {
+              id: countries.value.filter((item) => item.name === values.country)[0].id,
+              name: values.country
+            },
+            state: {
+              id: states.value.filter((item) => item.name === values.state)[0].id,
+              name: values.state
+            },
+            city: values.city,
+            gender: normalizeGender(values.gender)
+          }
+          toast({ description: 'Updated Profile Successfully', variant: 'successfully' })
+        } else throw new Error(response.error)
+      } catch (err) {
+        toast({ description: err.message, variant: 'destructive' })
+      } finally {
+        isSubmitting.value = false
+        showError.value = false
+      }
+    }
+  }
+}
+const onGenderChange = (value) => {
+  gender.value = value
+}
+
+const onFileSelected = (file, imagePreview) => {
+  if (!file) return
+  else {
+    avatar.value = imagePreview
+    fileInfo.value = file
+    setValues({ ...values, avatar: file }, { shouldValidate: false })
+  }
+}
+
+const onErrorMessage = (msg) => {
+  message.value = msg
+}
 </script>
 
 <template>
-  <form class="" @submit.prevent="onSubmit">
-    <div class="flex flex-col gap-3">
-      <p>{{ $t('user_profile.profile_pic') }}</p>
-      <img
-        class="w-[56px] h-[56px] rounded-full"
-        :src="values.avatar ? values.avatar : userBaseAvatar"
-        v-bind="componentField"
-        alt=""
-      />
-      <p class="text-primary">{{ $t('user_profile.update_profile_pic') }}</p>
-    </div>
-    <div class="flex flex-col gap-4 mb-2 w-[80%] mt-6">
-      <div class="flex flex-col gap-1">
-        <FormField v-slot="{ componentField }" name="username">
+  <div>
+    <Loading v-if="isLoading" />
+    <form class="" @submit.prevent="onSubmit" v-else>
+      <div class="flex flex-col gap-3">
+        <FormField v-slot="componentField" name="avatar">
           <FormItem>
-            <FormLabel>{{ $t('user_profile.username') }}</FormLabel>
-            <FormControl>
-              <Input
-                class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
-                type="text"
-                placeholder="Username"
-                v-model="values.username"
-                v-bind="componentField"
-              />
-            </FormControl>
-            <FormMessage />
+            <p>{{ $t('user_profile.profile_pic') }}</p>
+            <img
+              class="w-[56px] h-[56px] rounded-full"
+              :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
+              v-bind="componentField"
+              alt=""
+            />
+            <p class="text-red text-sm" v-if="message">{{ message }}</p>
+            <UploadAvatarFile
+              :buttonText="$t('user_profile.update_profile_pic')"
+              @file-selected="onFileSelected"
+              @error-message="onErrorMessage"
+            />
           </FormItem>
+          <FormMessage :class="{ hidden: !showError }" />
         </FormField>
       </div>
-
-      <div class="flex flex-col gap-1">
-        <FormField v-slot="{ componentField }" name="email">
-          <FormItem>
-            <FormLabel>{{ $t('user_profile.email') }}</FormLabel>
-            <FormControl>
-              <div class="relative">
+      <div class="flex flex-col gap-4 mb-2 w-[80%] mt-6">
+        <div class="flex flex-col gap-1">
+          <FormField v-slot="{ componentField }" name="username">
+            <FormItem>
+              <FormLabel :class="{ 'text-black': !showError && errors.username }">
+                Username
+              </FormLabel>
+              <FormControl>
                 <Input
-                  disabled
-                  class="placeholder:italic h-[40px] px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                  class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                  :class="{ 'border-red-500': showError && errors.username }"
                   type="text"
-                  placeholder="No email found"
-                  v-model="values.email"
+                  placeholder="Username"
                   v-bind="componentField"
                 />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <FormField v-slot="{ componentField }" name="fullName">
-          <FormItem>
-            <FormLabel>{{ $t('user_profile.fullname') }}</FormLabel>
-            <FormControl>
-              <Input
-                class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
-                type="text"
-                placeholder="Full name"
-                v-model="values.fullName"
-                v-bind="componentField"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label>{{ $t('user_profile.password') }}</label>
-        <p class="text-primary underline cursor-pointer" @click="openChangePasswordModal = true">
-          {{ $t('change_password.title') }}
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <FormField v-slot="{ componentField }" type="radio" name="gender">
-          <FormItem class="space-y-2">
-            <FormLabel>{{ $t('user_profile.gender') }}</FormLabel>
-
-            <FormControl>
-              <RadioGroup class="flex space-x-3" v-model="values.gender" v-bind="componentField">
-                <FormItem class="flex items-center space-y-0 gap-x-2">
-                  <FormControl>
-                    <RadioGroupItem class="w-[20px] h-[20px]" value="male" />
-                  </FormControl>
-                  <FormLabel class="font-normal"> {{ $t('user_profile.male') }} </FormLabel>
-                </FormItem>
-                <FormItem class="flex items-center space-y-0 gap-x-2">
-                  <FormControl>
-                    <RadioGroupItem class="w-[20px] h-[20px]" value="female" />
-                  </FormControl>
-                  <FormLabel class="font-normal"> {{ $t('user_profile.female') }} </FormLabel>
-                </FormItem>
-                <FormItem class="flex items-center space-y-0 gap-x-2">
-                  <FormControl>
-                    <RadioGroupItem class="w-[20px] h-[20px]" value="none" />
-                  </FormControl>
-                  <FormLabel class="font-normal">
-                    {{ $t('user_profile.rather_not_say') }}
-                  </FormLabel>
-                </FormItem>
-              </RadioGroup>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label>{{ $t('user_profile.birth') }}</label>
-        <div class="flex items-center justify-start gap-2">
-          <Select v-model="selectedDay">
-            <SelectTrigger class="w-[74px] h-[40px] rounded-lg border-[#cccccc]">
-              <SelectValue placeholder="Day" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup v-for="item in DAYS" :key="item">
-                <SelectItem class="pl-2" :value="item.toString()">{{ item }}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select v-model="selectedMonth">
-            <SelectTrigger class="w-[74px] h-[40px] rounded-lg border-[#cccccc]">
-              <SelectValue placeholder="Month" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup v-for="item in MONTHS" :key="item">
-                <SelectItem class="pl-2" :value="item.num.toString()">{{ item.text }}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select v-model="selectedYear">
-            <SelectTrigger class="w-[90px] h-[40px] rounded-lg border-[#cccccc]">
-              <SelectValue placeholder="Year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup v-for="item in YEARS" :key="item">
-                <SelectItem class="pl-2" :value="item.toString()">{{ item }}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="flex flex-col gap-1 w-full">
-          <FormField v-slot="{ componentField }" name="country">
-            <FormItem>
-              <FormLabel>{{ $t('user_profile.country') }}</FormLabel>
-
-              <Select v-bind="componentField" v-model="selectedCountry" @change="onCountryChange">
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem
-                      v-for="(country, index) in countries"
-                      :key="index"
-                      :value="country.name"
-                    >
-                      {{ country.name }}
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
+              </FormControl>
+              <FormMessage :class="{ hidden: !showError }" />
             </FormItem>
           </FormField>
         </div>
-        <div class="flex flex-col gap-1 w-full">
-          <FormField v-slot="{ componentField }" name="state">
+        <div class="flex flex-col gap-1">
+          <FormField v-slot="{ componentField }" name="email">
             <FormItem>
-              <FormLabel>{{ $t('user_profile.state') }}</FormLabel>
-
-              <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select state" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem
-                      v-if="statesData"
-                      v-for="(state, index) in states"
-                      :key="index"
-                      :value="state.name"
-                    >
-                      {{ state.name }}
-                    </SelectItem>
-                    <p
-                      disabled
-                      v-if="!statesData && !statesLoading"
-                      class="text-lightGray font-[14px] italic"
-                    >
-                      Please select country first
-                    </p>
-                    <p disabled v-if="statesLoading" class="text-lightGray font-[14px] italic">
-                      Loading...
-                    </p>
-                    <p
-                      disabled
-                      v-if="statesIsSuccess && (!states || states.length === 0)"
-                      class="text-lightGray font-[14px] italic"
-                    >
-                      No states found
-                    </p>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <div class="relative">
+                  <Input
+                    disabled
+                    class="placeholder:italic h-[40px] px-3 py-2 border-[1px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                    type="text"
+                    placeholder="No email found"
+                    v-bind="componentField"
+                  />
+                  <p
+                    @click="openSetupEmailModal = true"
+                    class="absolute top-3 right-8 text-primary cursor-pointer"
+                  >
+                    Setup email
+                  </p>
+                </div>
+              </FormControl>
+              <FormMessage :class="{ hidden: !showError }" />
             </FormItem>
           </FormField>
         </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="flex flex-col gap-1 w-full">
-          <FormField v-slot="{ componentField }" name="city">
+        <div class="flex flex-col gap-1">
+          <FormField v-slot="{ componentField }" name="fullName">
             <FormItem>
-              <FormLabel>{{ $t('user_profile.city') }}</FormLabel>
-
-              <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select city" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem
-                      v-if="citiesData"
-                      v-for="(city, index) in cities"
-                      :key="index"
-                      :value="city"
-                    >
-                      {{ city }}
-                    </SelectItem>
-                    <p
-                      disabled
-                      v-if="!statesData && !citiesLoading"
-                      class="text-lightGray font-[14px] italic"
-                    >
-                      Please select state first
-                    </p>
-                    <p disabled v-if="citiesLoading" class="text-lightGray font-[14px] italic">
-                      Loading...
-                    </p>
-                    <p
-                      disabled
-                      v-if="citiesIsSuccess && (!cities || cities.length === 0)"
-                      class="text-lightGray font-[14px] italic"
-                    >
-                      No cities found
-                    </p>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
+              <FormLabel :class="{ 'text-black': !showError && errors.fullName }">
+                Full Name
+              </FormLabel>
+              <FormControl>
+                <Input
+                  class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                  :class="{ 'border-red-500': showError && errors.fullName }"
+                  type="text"
+                  placeholder="Full name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage :class="{ hidden: !showError }" />
             </FormItem>
           </FormField>
         </div>
-        <div class="flex flex-col gap-1 w-full"></div>
+        <div class="flex flex-col gap-1">
+          <label>Password</label>
+          <p class="text-primary underline cursor-pointer">Change password</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <FormField v-slot="{ componentField }" type="radio" name="gender">
+            <FormItem class="space-y-2">
+              <FormLabel :class="{ 'text-black': !showError && errors.gender }"> Gender </FormLabel>
+              <FormControl>
+                <RadioGroup
+                  class="flex space-x-3"
+                  v-bind="componentField"
+                  v-model="gender"
+                  @change="onGenderChange"
+                >
+                  <FormItem class="flex items-center space-y-0 gap-x-2">
+                    <FormControl>
+                      <RadioGroupItem
+                        class="w-[20px] h-[20px]"
+                        value="male"
+                        :checked="gender === 'male'"
+                      />
+                    </FormControl>
+                    <FormLabel class="font-normal"> Male </FormLabel>
+                  </FormItem>
+                  <FormItem class="flex items-center space-y-0 gap-x-2">
+                    <FormControl>
+                      <RadioGroupItem
+                        class="w-[20px] h-[20px]"
+                        value="female"
+                        :checked="gender === 'female'"
+                      />
+                    </FormControl>
+                    <FormLabel class="font-normal"> Female </FormLabel>
+                  </FormItem>
+                  <FormItem class="flex items-center space-y-0 gap-x-2">
+                    <FormControl>
+                      <RadioGroupItem
+                        class="w-[20px] h-[20px]"
+                        value="rather not say"
+                        :checked="gender === 'rather not say'"
+                      />
+                    </FormControl>
+                    <FormLabel class="font-normal"> Rather not say </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage :class="{ hidden: !showError }" />
+            </FormItem>
+          </FormField>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label>Date of birth</label>
+          <FormField v-slot="{ componentField }" name="birthday">
+            <FormItem class="flex items-center justify-start gap-2">
+              <Select v-model="selectedDay">
+                <SelectTrigger class="w-[74px] h-[40px] mt-2 rounded-lg border-[#cccccc]">
+                  <SelectValue placeholder="Day" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup v-for="item in DAYS" :key="item">
+                    <SelectItem class="pl-2" :value="item.toString()">{{ item }}</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select v-model="selectedMonth">
+                <SelectTrigger class="w-[74px] h-[40px] rounded-lg border-[#cccccc]">
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup v-for="item in MONTHS" :key="item">
+                    <SelectItem class="pl-2" :value="item.num.toString()">{{
+                      item.text
+                    }}</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select v-model="selectedYear">
+                <SelectTrigger class="w-[90px] h-[40px] rounded-lg border-[#cccccc]">
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup v-for="item in YEARS" :key="item">
+                    <SelectItem class="pl-2" :value="item.toString()">{{ item }}</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormItem>
+            <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+          </FormField>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1 w-full">
+            <FormField v-slot="{ componentField }" name="country">
+              <FormItem>
+                <FormLabel :class="{ 'text-black': !showError && errors.country }">
+                  Country
+                </FormLabel>
+                <Select v-bind="componentField" v-model="selectedCountry" @change="onCountryChange">
+                  <FormControl>
+                    <SelectTrigger :class="{ 'border-red-500': showError && errors.country }">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem
+                        v-for="(country, index) in countries"
+                        :key="index"
+                        :value="country.name"
+                      >
+                        {{ country.name }}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage :class="{ hidden: !showError }" />
+              </FormItem>
+            </FormField>
+          </div>
+          <div class="flex flex-col gap-1 w-full">
+            <FormField v-slot="{ componentField }" name="state">
+              <FormItem>
+                <FormLabel :class="{ 'text-black': !showError && errors.state }"> State </FormLabel>
+                <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
+                  <FormControl>
+                    <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup v-if="!states">
+                      <SelectItem> Loading </SelectItem>
+                    </SelectGroup>
+                    <SelectGroup v-else>
+                      <SelectItem v-for="(state, index) in states" :key="index" :value="state.name">
+                        {{ state.name }}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage :class="{ hidden: !showError }" />
+              </FormItem>
+            </FormField>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1 w-full">
+            <FormField v-slot="{ componentField }" name="city">
+              <FormItem>
+                <FormLabel>State</FormLabel>
+                <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue :placeholder="selectedCity || 'Select city'" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup v-if="!cities">
+                      <SelectItem> Loading </SelectItem>
+                    </SelectGroup>
+                    <SelectGroup v-else>
+                      <SelectItem v-for="city in states" :key="city.id" :value="city.name">
+                        {{ city.name }}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage :class="{ hidden: !showError }" />
+              </FormItem>
+            </FormField>
+          </div>
+          <div class="flex flex-col gap-1 w-full"></div>
+        </div>
+        <Button type="submit" class="w-[230px] mt-6">
+          <template v-if="isSubmitting">
+            <Loading />
+          </template>
+          <template v-else>
+            {{ $t('user_profile.save') }}
+          </template>
+        </Button>
       </div>
-
-      <Button type="submit" class="w-[230px] mt-6">{{ $t('user_profile.save') }}</Button>
-    </div>
-  </form>
-
-  <SetupEmailModal
-    v-model:open="openSetupEmailModal"
-    @close-setup-email-modal="openSetupEmailModal = false"
-    @handle-submit-form="handleSetupEmail"
-  />
-
-  <OTPVerificationModal
-    v-model:open="openOTPVerificationModal"
-    @close-modal="openOTPVerificationModal = false"
-  />
-
-  <ChangePasswordModal
-    v-model:open="openChangePasswordModal"
-    @open-change-password-result="openChangePasswordResult"
-  />
-
-  <BaseDialog
-    v-model:open="openChangePasswordResultModal"
-    :title="$t('change_password.title')"
-    :description="$t('change_password.success_desc')"
-  >
-    <div class="flex justify-center">
-      <Button class="w-[60%]" @click="openChangePasswordResultModal = false">{{
-        $t('button.ok')
-      }}</Button>
-    </div>
-  </BaseDialog>
+    </form>
+    <SetupEmailModal
+      v-model:open="openSetupEmailModal"
+      @close-setup-email-modal="openSetupEmailModal = false"
+      @handle-submit-form="handleSetupEmail"
+    />
+    <OTPVerificationModal
+      v-model:open="openOTPVerificationModal"
+      @close-modal="openOTPVerificationModal = false"
+    />
+    <ChangePasswordModal
+      v-model:open="openChangePasswordModal"
+      @open-change-password-result="openChangePasswordResult"
+    />
+    <BaseDialog
+      v-model:open="openChangePasswordResultModal"
+      :title="$t('change_password.title')"
+      :description="$t('change_password.success_desc')"
+    >
+      <div class="flex justify-center">
+        <Button class="w-[60%]" @click="openChangePasswordResultModal = false">{{
+          $t('button.ok')
+        }}</Button>
+      </div>
+    </BaseDialog>
+  </div>
 </template>
