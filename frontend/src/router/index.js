@@ -1,5 +1,5 @@
+import Faq from '@views/Faq.vue'
 import StreamerCashout from '@views/StreamerCashout.vue'
-import StreamerListVideo from '@views/StreamerListVideo.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -48,11 +48,11 @@ const router = createRouter({
     },
     {
       path: '/streamer',
-      component: () => import('../views/StreamerLayout.vue'),
+      component: () => import('../layout/StreamerLayout.vue'),
       children: [
         {
           path: 'videos',
-          component: StreamerListVideo
+          component: () => import('../views/StreamerListVideo.vue')
         },
         {
           path: 'cashout',
@@ -61,9 +61,15 @@ const router = createRouter({
       ]
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('../views/UserProfile.vue')
+      path: '/move',
+      name: 'move',
+      component: () => import('../layout/ServiceLayout.vue'),
+      children: [
+        {
+          path: 'faq',
+          component: () => import('../views/Faq.vue')
+        }
+      ]
     }
   ],
   scrollBehavior(to, from, savedPosition) {
