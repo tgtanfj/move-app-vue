@@ -18,6 +18,16 @@ export class CommentReactionController {
     return await this.commentReactionService.create(userId, createCommentReactionDto);
   }
 
+  @Get('')
+  async getAllCommentReaction() {
+    return await this.commentReactionService.getAll();
+  }
+
+  @Get(':id')
+  async getOne(@Param('id') id: number) {
+    return await this.commentReactionService.getOne(id);
+  }
+
   @Patch(':id')
   async updateCommentReaction(@Param('id') id: number, @Body() dto: UpdateCommentReactionDto) {
     return await this.commentReactionService.update(id, dto);
