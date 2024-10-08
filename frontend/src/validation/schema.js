@@ -44,9 +44,8 @@ export const registerSchema = object({
 
 export const signinSchema = object({
   email: string()
-    .required(t('error_message.required_email'))
     .matches(REGEX_EMAIL, t('error_message.invalid_email')),
-  password: string().required(t('error_message.required'))
+  password: string()
   // .min(8, t('error_message.strong_password'))
   // .max(32, t('error_message.strong_password'))
 })

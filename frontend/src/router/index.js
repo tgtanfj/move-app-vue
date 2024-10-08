@@ -29,6 +29,10 @@ const router = createRouter({
           path: '/categories/:title',
           name: 'category-id',
           component: () => import('../components/categories/CategoryId.vue')
+        },
+        {
+          path: '/video/:id',
+          component: () => import('../views/ShowVideoDetail.vue')
         }
       ]
     },
@@ -50,8 +54,20 @@ const router = createRouter({
           component: StreamerCashout
         }
       ]
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/UserProfile.vue')
     }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
 })
 
 export default router
