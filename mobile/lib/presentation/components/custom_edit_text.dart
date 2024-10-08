@@ -26,6 +26,8 @@ class CustomEditText extends StatefulWidget {
   final bool? enable;
   final double? widthMessage;
   final List<TextInputFormatter>? inputFormatters;
+  final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
   final String? initialValue;
 
   const CustomEditText({
@@ -52,6 +54,8 @@ class CustomEditText extends StatefulWidget {
     this.inputFormatters,
     this.enable,
     this.widthMessage,
+    this.onSubmitted,
+    this.focusNode,
     this.initialValue,
   });
 
@@ -104,7 +108,9 @@ class _CustomEditTextState extends State<CustomEditText> {
             style: widget.textStyle ??
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
-            controller: _controller,
+            onSubmitted: widget.onSubmitted,
+            controller: widget.controller ?? _controller,
+            focusNode: widget.focusNode,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization:
@@ -112,7 +118,6 @@ class _CustomEditTextState extends State<CustomEditText> {
             keyboardType: widget.textInputType ?? TextInputType.text,
             obscureText: widget.isPasswordInput ? !isTextVisible : false,
             inputFormatters: [
-              FilteringTextInputFormatter.deny(RegExp(r'\s')),
               if (widget.inputFormatters != null) ...widget.inputFormatters!,
             ],
             decoration: InputDecoration(
