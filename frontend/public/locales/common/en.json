@@ -185,5 +185,18 @@
     "upload_complete": "Upload complete",
     "progress_text": "Feel free to add your video details, tags and settings in the meantime!",
     "upload_video_title_progress": "Uploading video"
+  },
+  "sidebar": {
+    "followed_channels": "Followed channels",
+    "not_login": "You have not followed any instructors yet.",
+    "interested": "Interested in getting fit?",
+    "sign_up": "Sign up",
+    "sign_up_title": "Sign up now to follow your favourite instructor!"
+  },
+  "homepage": {
+    "featured": "Featured",
+    "categories" : "Categories",
+    "view_all": "View all",
+    "video_may_you_like": "Videos you may like"
   }
 }

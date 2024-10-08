@@ -13,13 +13,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import MoreMenuNav from '@components/MoreMenuNav.vue'
 import NavbarLogged from '@components/NavbarLogged.vue'
+import ForgotPassword from '@components/auth/ForgotPassword.vue'
+import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
+import SignUpModal from '@components/auth/SignUpModal.vue'
 import { computed, ref } from 'vue'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
-import ForgotPassword from '@components/auth/ForgotPassword.vue'
-import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
-import SignUpModal from '@components/auth/SignUpModal.vue'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -55,11 +55,11 @@ const handleOpenOTPVerification = (values) => {
   startCountdown()
 }
 
-const handleVerifySuccess = () => {
+const handleVerifySuccess = async (values) => {
   openOTPModal.value = false
-  isOpen.value = true
   clearInterval(timer)
   isCounting.value = false
+  await authStore.loginWithEmail(values)
 }
 
 const startCountdown = () => {
@@ -81,7 +81,7 @@ const resetCountdown = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-black text-white">
+  <nav class="w-full bg-black text-white fixed z-50">
     <div class="flex items-center justify-between px-[40px] py-3">
       <ul class="flex flex-1 items-center gap-[35px]">
         <li class="font-semibold text-[16px]">Following</li>

@@ -8,13 +8,25 @@ export class FaqsRepository {
   constructor(@InjectRepository(FAQs) private readonly faqsRepository: Repository<FAQs>) {}
   // Create a new FAQ
   async create(faq: Partial<FAQs>): Promise<FAQs> {
+    const count = await this.faqsRepository.count();
+    if (count >= 30) {
+      throw new Error('Cannot create more than 30 FAQs');
+    }
+
+    const existingFaq = await this.faqsRepository.findOne({ where: { question: faq.question } });
+    if (existingFaq) {
+      throw new Error('A FAQ with this question already exists');
+    }
     const newFaq = this.faqsRepository.create(faq);
     return this.faqsRepository.save(newFaq);
   }
-  
+
   // Get all FAQs
   async findAll(): Promise<FAQs[]> {
-    return this.faqsRepository.find();
+    return this.faqsRepository.find({
+      where: { isActive: true },
+      take: 30,
+    });
   }
 
   // Get a single FAQ by ID

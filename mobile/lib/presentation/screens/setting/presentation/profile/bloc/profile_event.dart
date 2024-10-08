@@ -30,16 +30,24 @@ class ProfileUpdateDateOfBirthEvent extends ProfileEvent {
   const ProfileUpdateDateOfBirthEvent(this.dateOfBirth);
 }
 
-class ProfileValueChangeEvent extends ProfileEvent {
+class ProfileUsernameChangeEvent extends ProfileEvent {
   final String? username;
+
+  const ProfileUsernameChangeEvent({this.username});
+}
+
+class ProfileFullNameChangeEvent extends ProfileEvent {
   final String? fullName;
+
+  const ProfileFullNameChangeEvent({this.fullName});
+}
+
+class ProfileCityChangeEvent extends ProfileEvent {
   final String? city;
 
-  const ProfileValueChangeEvent({
-    this.username,
-    this.fullName,
-    this.city,
-  });
+  const ProfileCityChangeEvent({this.city});
 }
 
 class ProfileSaveSettingsEvent extends ProfileEvent {}
+
+class ProfileUpdateAvatarEvent extends ProfileEvent {}

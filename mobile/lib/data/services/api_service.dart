@@ -22,6 +22,7 @@ class ApiService {
       contentType: "application/json: charset=utf-8",
       responseType: ResponseType.json,
     ));
+
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         var accessToken = SharedPrefer.sharedPrefer.getUserToken();

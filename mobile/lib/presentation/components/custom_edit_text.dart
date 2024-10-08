@@ -28,6 +28,7 @@ class CustomEditText extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
+  final String? initialValue;
 
   const CustomEditText({
     super.key,
@@ -54,7 +55,8 @@ class CustomEditText extends StatefulWidget {
     this.enable,
     this.widthMessage,
     this.onSubmitted,
-    this.focusNode
+    this.focusNode,
+    this.initialValue,
   });
 
   @override
@@ -63,11 +65,21 @@ class CustomEditText extends StatefulWidget {
 
 class _CustomEditTextState extends State<CustomEditText> {
   late bool isTextVisible;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     isTextVisible = !widget.isPasswordInput;
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller != null) {
+      widget.controller?.dispose();
+    }
+    super.dispose();
   }
 
   @override
