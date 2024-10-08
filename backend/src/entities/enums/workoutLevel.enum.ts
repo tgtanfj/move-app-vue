@@ -1,5 +1,5 @@
 export enum WorkoutLevel {
-  BEGINER = 'beginner',
+  BEGINNER = 'beginner',
   INTERMEDIATE = 'intermediate',
   ADVANCED = 'advanced',
 }

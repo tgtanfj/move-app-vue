@@ -1,11 +1,26 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ChannelRepository } from './channel.repository';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Channel } from '@/entities/channel.entity';
+import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
+import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import { ChannelProfileDto } from './dto/response/channel-profile.dto';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { FollowService } from '../follow/follow.service';
+import { ChannelItemDto } from './dto/response/channel-item.dto';
+import { VideoService } from '../video/video.service';
+import { VideoItemDto } from '../video/dto/response/video-item.dto';
+import { SocialLink } from './dto/response/channel-profile.dto';
+import { ChannelVideosDto } from './dto/response/channel-videos.dto';
 
 @Injectable()
 export class ChannelService {
-  constructor(private readonly channelRepository: ChannelRepository) {}
+  constructor(
+    private readonly channelRepository: ChannelRepository,
+    private readonly followService: FollowService,
+    @Inject(forwardRef(() => VideoService))
+    private readonly videoService: VideoService,
+  ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
     return await this.channelRepository.getChannelByUserId(userId).catch((error) => {
@@ -17,5 +32,77 @@ export class ChannelService {
     return await this.channelRepository.findOne(channelId).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
+  }
+
+  async getChannelVideos(
+    channelId: number,
+    userId: number,
+    workoutLevel: FilterWorkoutLevel = undefined,
+    categoryId: number = undefined,
+    sortBy: SortBy = undefined,
+  ): Promise<ChannelVideosDto> {
+    const channel = await this.channelRepository.findOne(channelId).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+    });
+
+    const channelVideosDto: ChannelVideosDto = new ChannelVideosDto();
+
+    channelVideosDto.videos = await this.videoService.getChannelVideos(channelId, {
+      workoutLevel,
+      categoryId,
+      sortBy,
+    });
+
+    return channelVideosDto;
+  }
+
+  async getChannelProfile(channelId: number, userId: number) {
+    const channel = await this.channelRepository.findOne(channelId, { user: true }).catch((error) => {
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+    });
+
+    const channelProfileDto: ChannelProfileDto = plainToInstance(ChannelProfileDto, channel, {
+      excludeExtraneousValues: true,
+    });
+
+    const [isFollowed, numberOfFollowers, followingChannels, socialLinks] = await Promise.all([
+      this.followService.isFollowed(userId, channelId),
+      this.followService.getNumberOfFollowers(channelId),
+      this.followService
+        .getFollowingChannels(channel.user.id, 4, { channel: true })
+        .then(async (followings) => {
+          return await Promise.all(
+            followings.map(async (follow) => {
+              const channelItem = plainToInstance(ChannelItemDto, follow.channel, {
+                excludeExtraneousValues: true,
+              });
+
+              channelItem.numberOfFollowers = await this.followService.getNumberOfFollowers(channelId);
+
+              return channelItem;
+            }),
+          );
+        }),
+      this.getSocialLinks(channel.facebookLink, channel.youtubeLink, channel.instagramLink),
+    ]);
+
+    channelProfileDto.isFollowed = isFollowed;
+    channelProfileDto.numberOfFollowers = numberOfFollowers;
+    channelProfileDto.followingChannels = followingChannels;
+    channelProfileDto.socialLinks = socialLinks;
+
+    return channelProfileDto;
+  }
+
+  private async getSocialLinks(facebookLink: string, youtubeLink: string, instagramLink: string) {
+    const socialLinks: SocialLink[] = [];
+
+    if (facebookLink) socialLinks.push({ name: 'facebook', link: facebookLink });
+
+    if (youtubeLink) socialLinks.push({ name: 'youtube', link: youtubeLink });
+
+    if (instagramLink) socialLinks.push({ name: 'instagram', link: instagramLink });
+
+    return socialLinks;
   }
 }
