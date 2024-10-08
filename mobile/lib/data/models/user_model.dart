@@ -61,6 +61,7 @@ class UserModel {
     CountryModel? country,
     StateModel? state,
     String? city,
+    String? referralCode,
   }) {
     return UserModel(
       avatar: avatar ?? this.avatar,
