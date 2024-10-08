@@ -1,10 +1,10 @@
 <script setup>
 import { Button } from '@common/ui/button'
-import BaseDialog from '@components/BaseDialog.vue'
-import { ref } from 'vue'
 import { Input } from '@common/ui/input'
+import BaseDialog from '@components/BaseDialog.vue'
 import { useOTPVerification } from '@services/optverify.services'
 import { signupService } from '@services/signup.services'
+import { ref } from 'vue'
 
 const props = defineProps(['signupInfo', 'countdown', 'isCounting'])
 const emit = defineEmits(['verifySuccess', 'start', 'reset'])
@@ -26,7 +26,10 @@ const handleSendOTP = () => {
     {
       onSuccess: (response) => {
         resetFormOnClose()
-        emit('verifySuccess')
+        emit('verifySuccess', {
+          email: props.signupInfo.email,
+          password: props.signupInfo.password
+        })
       },
       onError: (err) => {
         errorMessage.value = err.response?.data?.message
@@ -49,6 +52,7 @@ const handleSendOTP = () => {
 const handleResendOTP = async () => {
   await signupService.signupByEmailPassword(props.signupInfo.email)
   reset()
+  code.value = ''
   emit('reset')
 }
 
@@ -105,8 +109,8 @@ const resetFormOnClose = () => {
 
       <div class="flex justify-center mt-4">
         <Button
-          :disabled="code.length !== 6 || isPending || isBanned"
-          :variant="code.length !== 6 || isBanned ? 'disabled' : 'default'"
+          :disabled="!code || isPending || isBanned"
+          :variant="!code || isBanned ? 'disabled' : 'default'"
           type="submit"
           class="w-[40%]"
           @click.prevent="handleSendOTP"

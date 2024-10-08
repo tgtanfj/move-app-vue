@@ -8,7 +8,29 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/UserLayout.vue'),
+      children: [
+        {
+          path: '/',
+          name: 'home-page',
+          component: () => import('../views/HomeView.vue')
+        },
+        {
+          path: '/profile',
+          name: 'profile',
+          component: () => import('../views/UserProfile.vue')
+        },
+        {
+          path: '/categories',
+          name: 'categories',
+          component: () => import('../views/CategoriesView.vue')
+        },
+        {
+          path: '/categories/:title',
+          name: 'category-id',
+          component: () => import('../components/categories/CategoryId.vue')
+        }
+      ]
     },
     {
       path: '/reset-password/:token',
@@ -28,11 +50,6 @@ const router = createRouter({
           component: StreamerCashout
         }
       ]
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('../views/UserProfile.vue')
     }
   ]
 })

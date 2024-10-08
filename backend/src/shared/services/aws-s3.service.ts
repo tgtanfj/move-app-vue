@@ -176,7 +176,7 @@ export class AwsS3Service {
     return `${this.configService.awsS3Config.bucketEndpoint}${fileName}`;
   }
 
-  async getVideoDownloadLink(urlS3: string, title:string): Promise<string> {
+  async getVideoDownloadLink(urlS3: string, title: string): Promise<string> {
     const key = getKeyS3(urlS3);
     const params: GetObjectCommandInput = {
       Bucket: this.bucketName,
