@@ -81,7 +81,7 @@ const resetCountdown = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-black text-white">
+  <nav class="w-full bg-black text-white fixed z-50">
     <div class="flex items-center justify-between px-[40px] py-3">
       <ul class="flex flex-1 items-center gap-[35px]">
         <li class="font-semibold text-[16px]">Following</li>

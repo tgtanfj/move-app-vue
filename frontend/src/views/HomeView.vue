@@ -1,8 +1,9 @@
 <script setup>
-import UploadVideo from '@components/upload-video/UploadVideo.vue'
+import HomePage from '@components/home/HomePage.vue'
 </script>
 
 <template>
-  <div>Home</div>
-  <UploadVideo />
+  <div class="w-full h-full flex">
+    <HomePage />
+  </div>
 </template>
