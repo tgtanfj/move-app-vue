@@ -42,13 +42,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleDeepLink(Uri? uri) {
-    print('Received deep link: $uri');
-
     if (uri != null && uri.host == 'reset-password') {
       final token = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
 
       if (token != null && token.isNotEmpty) {
-        print('Extracted token: $token');
         navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (context) => CreateNewPasswordPage(token: token),

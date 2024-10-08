@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -6,6 +7,9 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_tile.dart';
+import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_bloc.dart';
+import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_event.dart';
+import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_state.dart';
 
 class ViewFAQsBody extends StatefulWidget {
   const ViewFAQsBody({super.key});
@@ -16,8 +20,13 @@ class ViewFAQsBody extends StatefulWidget {
 
 class _ViewFAQsBodyState extends State<ViewFAQsBody> {
   @override
+  void initState() {
+    super.initState();
+    context.read<ViewFaqsBloc>().add(FetchFaqsEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: const AppBarWidget(),
       backgroundColor: AppColors.white,
@@ -25,9 +34,7 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            height: 16,
-          ),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Row(
@@ -41,28 +48,41 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
               ],
             ),
           ),
-          const SizedBox(
-            height: 16,
+          const SizedBox(height: 16),
+          BlocBuilder<ViewFaqsBloc, ViewFaqsState>(
+            builder: (context, state) {
+              if (state is ViewFaqsLoadingState) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is ViewFaqsLoadedState) {
+                final faqs = state.faqs;
+                return Expanded(
+                    child: faqs.isNotEmpty
+                        ? ListView.builder(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            shrinkWrap: true,
+                            itemCount: faqs.length,
+                            itemBuilder: (context, index) => CustomTile(
+                              title: faqs[index].question ?? '',
+                              titleStyle:
+                                  AppTextStyles.montserratStyle.bold16black,
+                              expandedContent: Text(
+                                faqs[index].answer ?? '',
+                                style: AppTextStyles
+                                    .montserratStyle.regular16Black,
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Text("No data"),
+                          ));
+              } else if (state is ViewFaqsErrorState) {
+                return Center(child: Text(state.errorMessage));
+              }
+              return const SizedBox();
+            },
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            height: height * 0.7,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: 20,
-              itemBuilder: (context, index) => CustomTile(
-                title: Constants.titleExample,
-                titleStyle: AppTextStyles.montserratStyle.bold16black,
-                expandedContent: Text(
-                  Constants.contentExample,
-                  style: AppTextStyles.montserratStyle.regular16Black,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: RichText(

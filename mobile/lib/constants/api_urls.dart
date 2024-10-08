@@ -11,4 +11,5 @@ class ApiUrls {
   static const String endPointLogout = 'auth/log-out';
   static const String loginGoogle = 'auth/login/google';
   static const String loginFacebook = 'auth/login/facebook';
+  static const String faqsEndPoint = 'faqs';
 }
