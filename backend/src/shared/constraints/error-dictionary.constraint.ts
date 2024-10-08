@@ -49,4 +49,8 @@ export enum ERRORS_DICTIONARY {
   //category
   NOT_FOUND_CATEGORY = 'Not found category',
   CAN_NOT_DELETE_VIDEOS = 'Can not delete videos',
+
+  // Comment
+  NOT_FOUND_COMMENT = 'Not found comment',
+  NOT_FOUND_COMMENT_REACTION = 'Not found comment reaction',
 }
