@@ -4,17 +4,17 @@ import { Video } from './video.entity';
 
 @Entity('views')
 export class Views extends BaseEntity {
-  @ManyToOne(()=>Video,(video)=>video.views)
-  video:Video
-  
+  @ManyToOne(() => Video, (video) => video.views)
+  video: Video;
+
   @Column({
     type: 'date',
   })
-  view_date: Date;
+  viewDate: Date;
 
   @Column({
     type: 'bigint',
-    default:1
+    default: 1,
   })
   totalView: number;
 }
