@@ -8,6 +8,7 @@ import { WatchingVideoHistory } from './watching-video-history.entity';
 import { Comment } from './comment.entity';
 import { Category } from './category.entity';
 import { Thumbnail } from './thumbnail.entity';
+import { Views } from './views.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
@@ -97,4 +98,7 @@ export class Video extends BaseEntity {
     nullable: true,
   })
   urlS3: string;
+
+  @OneToMany(() => Views, (view) => view.video)
+  views: Views[];
 }
