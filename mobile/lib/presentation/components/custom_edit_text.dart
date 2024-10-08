@@ -109,7 +109,7 @@ class _CustomEditTextState extends State<CustomEditText> {
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
-            controller: widget.controller,
+            controller: widget.controller ?? _controller,
             focusNode: widget.focusNode,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
