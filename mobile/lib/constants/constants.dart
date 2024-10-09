@@ -136,5 +136,16 @@ class Constants {
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
       ' here and we will address your problem as soon as possible.';
-  static const String anInvalidPassword = "You have entered an invalid password";
+  static const String anInvalidPassword =
+      "You have entered an invalid password";
+  static const String giftReps = 'Gift REPs';
+  static const String share = 'Share';
+  static const String reportVideo = 'Report video';
+  static const String rate = 'Rate';
+  static const String channel = 'channel';
+  static const String s = "'s";
+  static const String view = 'View';
+  static const String loading = 'Loading';
+  static const String quality = 'Quality';
+  static const String auto = 'Auto';
 }

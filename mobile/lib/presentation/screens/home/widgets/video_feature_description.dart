@@ -26,13 +26,13 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
                 heightAvatar: 40.0,
                 widthAvatar: 40.0,
                 radiusAvatar: 32.0,
-                imageUrl: 'https://www.1zoom.me/big2/946/289597-frederika.jpg'),
+                imageUrl: 'https://www.1zoom.me/big2/946/289597-frederika.jpg'), // TODO: add user avatar
             const SizedBox(
               width: 13.0,
             ),
             Expanded(
               child: Text(
-                'Leg days ',
+                'Leg days ', // TODO: add title
                 style: AppTextStyles.montserratStyle.bold18black,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -53,7 +53,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
             ),
             Flexible(
               child: Text(
-                'Name of Personsssssssssssssssssssssssssssssssssssssssss',
+                'Name of Personss', // TODO: add nameuser
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: AppTextStyles.montserratStyle.regular14graniteGray,
@@ -68,7 +68,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
               width: 53.0,
             ),
             Text(
-              'Just More',
+              'Just More', // TODO: add category
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.montserratStyle.regular14graniteGray,
@@ -83,11 +83,11 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
             SizedBox(
               width: 53.0,
             ),
-            TypeLabel(typeLabel: 'Intermediate'),
+            TypeLabel(typeLabel: 'Intermediate'), // ToDO: add type
             SizedBox(
               width: 9.0,
             ),
-            TypeLabel(typeLabel: '<30 mins'),
+            TypeLabel(typeLabel: '<30 mins'), // TODO: add type time
           ],
         )
       ],

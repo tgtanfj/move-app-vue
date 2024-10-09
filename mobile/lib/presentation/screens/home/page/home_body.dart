@@ -10,6 +10,7 @@ import 'package:move_app/presentation/screens/home/widgets/list_videos_may_u_lik
 import 'package:move_app/presentation/screens/home/widgets/slide_show_videos_feature.dart';
 import 'package:move_app/presentation/screens/home/widgets/horizontal_divider.dart';
 
+
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
 
@@ -76,6 +77,7 @@ class _HomeBodyState extends State<HomeBody> {
                     style: AppTextStyles.montserratStyle.bold20black,
                   ),
                   GestureDetector(
+                    onTap: () {},
                     child: Text(Constants.viewAll,
                         style:
                             AppTextStyles.montserratStyle.regular18tiffanyBlue),
