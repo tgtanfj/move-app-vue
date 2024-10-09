@@ -1,15 +1,9 @@
 <script setup>
 import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
-import { ChevronRight, Heart, Share2, Star, X } from 'lucide-vue-next'
+import { ChevronRight, Heart, Star } from 'lucide-vue-next'
 import { Tabs, TabsList, TabsContent } from '@common/ui/tabs'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@common/ui/dropdown-menu'
+
 import defaultAvatar from '@assets/icons/default-avatar.png'
 import InstaIcon from '@assets/icons/InstaIcon.vue'
 import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'

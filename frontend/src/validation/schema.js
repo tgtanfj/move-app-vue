@@ -43,11 +43,12 @@ export const registerSchema = object({
 })
 
 export const signinSchema = object({
-  email: string()
+  email: string().required(t('error_message.required_email'))
     .matches(REGEX_EMAIL, t('error_message.invalid_email')),
-  password: string()
-  // .min(8, t('error_message.strong_password'))
-  // .max(32, t('error_message.strong_password'))
+  password: string().required(t('error_message.required'))
+    .min(8, t('error_message.invalid_password'))
+    .max(32, t('error_message.invalid_password'))
+    .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password')),
 })
 
 export const userProfileSchema = yup.object().shape({

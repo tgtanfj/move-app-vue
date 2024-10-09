@@ -42,6 +42,7 @@ const submit = async () => {
     v-if="!isSuccess && !isError"
     :title="$t('forgot_password.create_password')"
     :description="$t('forgot_password.create_password_desc')"
+    class="mt-0"
   >
     <form @submit.prevent="submit">
       <div class="flex flex-col space-y-1.5 mb-4">
@@ -77,7 +78,6 @@ const submit = async () => {
       </div>
     </form>
   </BaseCard>
-
   <BaseCard
     v-if="isSuccess || isError"
     :title="

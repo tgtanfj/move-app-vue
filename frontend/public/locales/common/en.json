@@ -138,6 +138,7 @@
   "error_message": {
     "required": "This field is required",
     "invalid_email": "Invalid email",
+    "invalid_password": "You have entered an invalid password",
     "required_email": "Please enter your email",
     "password_length": "Password must be between 8 and 32 characters",
     "strong_password": "Please choose a stronger password. Try a combination of letters, numbers, and special character",
