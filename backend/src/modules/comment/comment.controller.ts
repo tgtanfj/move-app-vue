@@ -27,7 +27,7 @@ export class CommentController {
   @Get(':videoId/comments')
   async getCommentsOfVideo(@Param('videoId') videoId: number, @Query() query: QueryCommentDto) {
     const { limit, cursor } = query;
-    return await this.commentService.getComments(videoId, limit, cursor);
+    return await this.commentService.getCommentsOfVideo(videoId, limit, cursor);
   }
 
   @Get(':id')

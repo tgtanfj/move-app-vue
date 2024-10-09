@@ -1,7 +1,7 @@
 import { Comment } from './../../entities/comment.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { LessThan, Repository, UpdateResult } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 
@@ -32,18 +32,21 @@ export class CommentRepository {
     return await this.commentRepository.find();
   }
 
-  async getComments(videoId: number, limit: number, cursor?: number) {
-    const query = this.commentRepository
-      .createQueryBuilder('comment')
-      .leftJoinAndSelect('comment.user', 'user')
-      .where('comment.videoId = :videoId', { videoId })
-      .orderBy('comment.createdAt', 'DESC')
-      .limit(limit);
+  async getCommentsOfVideo(videoId: number, limit: number, cursor?: number) {
+    const whereCondition: any = { video: { id: videoId }, parent: null };
+
     if (cursor) {
-      query.andWhere('comment.id < :cursor', { cursor });
+      whereCondition.id = cursor ? LessThan(cursor) : undefined;
     }
 
-    return query.getMany();
+    const rootComments = await this.commentRepository.find({
+      where: whereCondition,
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+
+    return rootComments;
   }
 
   async create(userId: number, dto: CreateCommentDto): Promise<Comment> {

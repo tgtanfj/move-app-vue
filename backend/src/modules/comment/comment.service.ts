@@ -18,20 +18,16 @@ export class CommentService {
     return await this.commentRepository.getNumberOfComments(videoId);
   }
 
-  async getComments(videoId: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getComments(videoId, limit, cursor);
+  async getCommentsOfVideo(videoId: number, limit: number, cursor?: number) {
+    return await this.commentRepository.getCommentsOfVideo(videoId, limit, cursor);
   }
 
   async getOne(id: number): Promise<Comment> {
-    return await this.commentRepository.getOne(id).catch((e) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_COMMENT);
-    });
+    return await this.commentRepository.getOne(id);
   }
 
   async getAll(): Promise<Comment[]> {
-    return await this.commentRepository.getAll().catch((e) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_COMMENT);
-    });
+    return await this.commentRepository.getAll();
   }
 
   async create(userId: number, dto: CreateCommentDto): Promise<Comment> {
@@ -47,13 +43,13 @@ export class CommentService {
       await this.videoRepository.save(video);
       return comment;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT);
     }
   }
 
   async update(commentId: number, dto: UpdateCommentDto): Promise<UpdateResult> {
     return await this.commentRepository.update(commentId, dto).catch((error) => {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_UPDATE_COMMENT);
     });
   }
 
@@ -65,7 +61,7 @@ export class CommentService {
       video.numberOfComments--;
       await this.videoRepository.save(video);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT);
     }
   }
 }
