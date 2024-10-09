@@ -24,10 +24,20 @@ export class CommentController {
     return await this.commentService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':videoId/comments')
-  async getCommentsOfVideo(@Param('videoId') videoId: number, @Query() query: QueryCommentDto) {
+  async getCommentsOfVideo(@Param('videoId') videoId: number, @Query() query: QueryCommentDto, @User() user) {
     const { limit, cursor } = query;
-    return await this.commentService.getCommentsOfVideo(videoId, limit, cursor);
+    const userId = user.id;
+    return await this.commentService.getCommentsOfVideo(userId, videoId, limit, cursor);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/reply')
+  async getReplyComments(@Param('id') id: number, @Query() query: QueryCommentDto, @User() user) {
+    const { limit, cursor } = query;
+    const userId = user.id;
+    return await this.commentService.getReplyComments(userId, id, limit, cursor);
   }
 
   @Get(':id')
