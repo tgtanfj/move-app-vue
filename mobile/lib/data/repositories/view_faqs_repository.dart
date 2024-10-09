@@ -14,7 +14,7 @@ class ViewFaqsRepository {
         APIRequestMethod.get,
         ApiUrls.faqsEndPoint,
       );
-
+      print(response.data);
       if (response.data != null &&
           response.data is Map &&
           response.data.containsKey('data')) {

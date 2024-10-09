@@ -5,6 +5,8 @@ abstract class ViewFaqsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class ViewFaqsInitialEvent extends ViewFaqsEvent {}
+
 class FetchFaqsEvent extends ViewFaqsEvent {}
 
 class LoadMoreFaqsEvent extends ViewFaqsEvent {}

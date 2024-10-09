@@ -161,4 +161,5 @@ class Constants {
   static const String jpeg = 'jpeg';
   static const String png = 'png';
   static const String gif = 'gif';
+  static const String noData = 'No data';
 }

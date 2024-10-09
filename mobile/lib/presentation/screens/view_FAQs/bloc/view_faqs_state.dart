@@ -1,25 +1,35 @@
 import 'package:equatable/equatable.dart';
 import 'package:move_app/data/models/faqs_model.dart';
 
-abstract class ViewFaqsState extends Equatable {
-  @override
-  List<Object> get props => [];
+enum ViewFaqsStatus {
+  initial,
+  loaded,
+  loading,
+  error,
 }
 
-class ViewFaqsInitialState extends ViewFaqsState {}
+final class ViewFaqsState extends Equatable {
+  final ViewFaqsStatus? status;
+  final List<FaqModel>? faqs;
+  final String? errorMessage;
+  const ViewFaqsState({this.status, this.faqs, this.errorMessage});
 
-class ViewFaqsLoadingState extends ViewFaqsState {}
+  static ViewFaqsState initialState() => const ViewFaqsState(
+        status: ViewFaqsStatus.initial,
+      );
 
-class ViewFaqsLoadedState extends ViewFaqsState {
-  final List<FaqModel> faqs;
-  ViewFaqsLoadedState({required this.faqs});
+  ViewFaqsState copyWith({
+    ViewFaqsStatus? status,
+    List<FaqModel>? faqs,
+    String? errorMessage,
+  }) {
+    return ViewFaqsState(
+      status: status ?? this.status,
+      faqs: faqs ?? this.faqs,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+
   @override
-  List<Object> get props => [faqs];
-}
-
-class ViewFaqsErrorState extends ViewFaqsState {
-  final String errorMessage;
-  ViewFaqsErrorState({required this.errorMessage});
-  @override
-  List<Object> get props => [errorMessage];
+  List<Object?> get props => [status, faqs, errorMessage];
 }

@@ -16,8 +16,7 @@ class FaqsModel {
     return {
       'faqs': faqs.map((faq) => faq.toJson()).toList(),
     };
-  }
-}
+  }}
 
 class FaqModel {
   final int? id;
