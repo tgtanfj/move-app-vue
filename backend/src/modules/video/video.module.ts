@@ -45,4 +45,3 @@ import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
   exports: [VideoService, VideoRepository],
 })
 export class VideoModule {}
-``

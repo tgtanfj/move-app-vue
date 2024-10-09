@@ -317,11 +317,7 @@ export class VideoService {
     });
   }
 
-<<<<<<< HEAD
   async getChannelVideos(channelId: number, queries: any, paginationDto: PaginationDto): Promise<object> {
-=======
-  async getChannelVideos(channelId: number, queries: any): Promise<VideoItemDto[]> {
->>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
     const { workoutLevel, categoryId, sortBy } = queries;
 
     let searchConditions: any = {
@@ -336,11 +332,7 @@ export class VideoService {
     }
 
     if (workoutLevel) {
-<<<<<<< HEAD
       if (workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
-=======
-      if(workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
->>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
         searchConditions = { ...searchConditions, workoutLevel };
     }
 
@@ -349,7 +341,6 @@ export class VideoService {
       title: 'ASC',
     };
 
-<<<<<<< HEAD
     const [videos, total] = await this.videoRepository.find(
       channelId,
       searchConditions,
@@ -408,55 +399,5 @@ export class VideoService {
       videoItems,
       new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
     );
-=======
-    console.log(searchConditions);
-
-    return await this.videoRepository.find(channelId, searchConditions, order).then(async (videos) => {
-      return await Promise.all(
-        videos.map(async (video) => {
-          const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
-
-          const [thumbnail, videoLength] = await Promise.all([
-            this.thumbnailService.getSelectedThumbnail(video.id),
-            this.vimeoService.getVideoLength(video.url),
-          ]);
-          videoItemDto.thumbnailURL = thumbnail.image;
-          videoItemDto.videoLength = videoLength;
-
-          videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
-            excludeExtraneousValues: true,
-          });
-
-          videoItemDto.category = plainToInstance(CategoryVideoDetailDto, video.category, {
-            excludeExtraneousValues: true,
-          });
-
-          console.log(videoItemDto);
-          return videoItemDto;
-        }),
-      ).then((videos) => {
-        return videos.sort((video1, video2) => {
-          switch (sortBy) {
-            case SortBy.MOST_RECENT:
-              return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-            case SortBy.VIEWS_HIGH_TO_LOW:
-              return video2.numberOfViews - video1.numberOfViews;
-            case SortBy.VIEWS_LOW_TO_HIGH:
-              return video1.numberOfViews - video2.numberOfViews;
-            case SortBy.DURATION_HIGH_TO_LOW:
-              return video2.videoLength - video1.videoLength;
-            case SortBy.DURATION_LOW_TO_HIGH:
-              return video1.videoLength - video2.videoLength;
-            case SortBy.RATINGS_HIGH_TO_LOW:
-              return video2.ratings - video1.ratings;
-            case SortBy.RATINGS_LOW_TO_HIGH:
-              return video1.ratings - video2.ratings;
-            default:
-              return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-          }
-        });
-      });
-    });
->>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
   }
 }
