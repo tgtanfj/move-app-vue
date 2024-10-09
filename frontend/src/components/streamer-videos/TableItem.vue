@@ -120,11 +120,11 @@ const isChecked = computed(() => {
 
 const detectDuration = (duration) => {
   switch (duration) {
-    case '30 mins':
-      return '<30 mins'
-    case '< 1 hours':
+    case 'less than 30 minutes':
+      return '< 30 mins'
+    case 'less than 1 hours':
       return '<1h'
-    case '> 1 hours':
+    case 'more than 1 hours':
       return '>1h'
     default:
       return 'Unknown'

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_section_title.dart';
 import 'package:move_app/presentation/components/custom_tab_bar.dart';
 import 'package:move_app/presentation/screens/setting/bloc/setting_bloc.dart';
@@ -23,6 +24,7 @@ class _SettingBodyState extends State<SettingBody> {
       listener: (context, state) {},
       child: BlocBuilder<SettingBloc, SettingState>(builder: (context, state) {
         return const Scaffold(
+          appBar: AppBarWidget(),
           backgroundColor: AppColors.white,
           body: SafeArea(
             child: Padding(

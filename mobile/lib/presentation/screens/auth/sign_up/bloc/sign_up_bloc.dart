@@ -99,7 +99,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
         emit(
-            state.copyWith(status: SignUpStatus.success, userModel: userModel));
+            state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
           emit(
@@ -120,7 +120,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (user != null) {
         emit(state.copyWith(
-          status: SignUpStatus.completed,
+          status: SignUpStatus.success,
           googleAccount: user.toString(),
         ));
       } else {
@@ -141,7 +141,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       if (facebookAccount != null) {
         emit(state.copyWith(
-          status: SignUpStatus.completed,
+          status: SignUpStatus.success,
           facebookAccount: facebookAccount.toString(),
         ));
       } else {

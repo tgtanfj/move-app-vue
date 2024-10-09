@@ -185,5 +185,43 @@
     "upload_complete": "Upload complete",
     "progress_text": "Feel free to add your video details, tags and settings in the meantime!",
     "upload_video_title_progress": "Uploading video"
+  },
+  "sidebar": {
+    "followed_channels": "Followed channels",
+    "not_login": "You have not followed any instructors yet.",
+    "interested": "Interested in getting fit?",
+    "sign_up": "Sign up",
+    "sign_up_title": "Sign up now to follow your favourite instructor!"
+  },
+  "homepage": {
+    "featured": "Featured",
+    "categories": "Categories",
+    "view_all": "View all",
+    "video_may_you_like": "Videos you may like"
+  },
+  "service": {
+    "faq": "FAQ",
+    "about_us": "About us",
+    "community_guildlines": "Community Guildlines",
+    "term_of_service": "Term of Service",
+    "privacy_policy": "Privacy Policy",
+    "contact_us": "Contact us",
+    "cant_find_answer": "Can't find answer?",
+    "address_problem": "here and we will address your problem as soon as posible."
+  },
+  "comment": {
+    "cancel" : "Cancel",
+    "cancel_reservation":"Cancel Reservation?",
+    "are_you_sure": "Are you sure you want to cancel this reservation?",
+    "no": "No",
+    "yes": "Yes",
+    "send": "Send",
+    "read_more": "Read more",
+    "show_less": "Show less",
+    "hide": "Hide",
+    "replies": "replies",
+    "show_more_replies": "Show more replies",
+    "reply": "Reply",
+    "show": "Show"
   }
 }

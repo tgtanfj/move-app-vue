@@ -7,6 +7,7 @@ class AppConfigLoading {
       ..indicatorSize = 45.0
       ..radius = 10.0
       ..dismissOnTap = false
+      ..userInteractions =false
       ..maskType = EasyLoadingMaskType.black;
   }
 }

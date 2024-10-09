@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
@@ -13,6 +14,7 @@ import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_sta
 
 import '../../../../../config/theme/app_colors.dart';
 import '../../../../../config/theme/app_icons.dart';
+import '../../../home/page/home_body.dart';
 import '../widgets/title_verification_code.dart';
 
 class OtpVerificationBody extends StatefulWidget {
@@ -27,8 +29,16 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
   Widget build(BuildContext context) {
     return BlocConsumer<OtpVerificationBloc, OtpVerificationState>(
       listener: (context, state) {
+        state.status == OtpVerificationStatus.loading
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
         if (state.status == OtpVerificationStatus.success) {
           Navigator.of(context).pop();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeBody()),
+                (Route<dynamic> route) => false,
+          );
           Fluttertoast.showToast(msg: Constants.signUpSuccessful);
         }
       },

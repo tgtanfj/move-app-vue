@@ -4,6 +4,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_tab_bar.dart';
 import 'package:move_app/presentation/screens/channel/presentation/about/page/about_page.dart';
 
@@ -15,6 +16,7 @@ class ChannelBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarWidget(),
       backgroundColor: AppColors.white,
       body: SafeArea(
           child: Column(

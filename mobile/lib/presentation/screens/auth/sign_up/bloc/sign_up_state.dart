@@ -4,8 +4,8 @@ import 'package:move_app/data/models/user_model.dart';
 enum SignUpStatus {
   initial,
   loading,
+  goOn,
   success,
-  completed,
   error,
 }
 

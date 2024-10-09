@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/presentation/screens/channel/page/channel_page.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
 
@@ -10,6 +12,7 @@ import 'config/app_config.dart';
 void main() async {
   await AppConfig.init();
   runApp(const MyApp());
+  AppConfigLoading.configLoading();
 }
 
 class MyApp extends StatefulWidget {
@@ -39,13 +42,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleDeepLink(Uri? uri) {
-    print('Received deep link: $uri');
-
     if (uri != null && uri.host == 'reset-password') {
       final token = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
 
       if (token != null && token.isNotEmpty) {
-        print('Extracted token: $token');
         navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (context) => CreateNewPasswordPage(token: token),
@@ -75,17 +75,19 @@ class _MyAppState extends State<MyApp> {
       ),
       navigatorKey: navigatorKey,
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1.0),
-            devicePixelRatio: 1.0,
+        return FlutterEasyLoading(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: const TextScaler.linear(1.0),
+              devicePixelRatio: 1.0,
+            ),
+            child: child!,
           ),
-          child: child!,
         );
       },
       // initialRoute: AppRoutes.getInitialRoute(),
       // routes: AppRoutes.getRoutes(),
-      home: ChannelPage(),
+      home: const ChannelPage(),
     );
   }
 }

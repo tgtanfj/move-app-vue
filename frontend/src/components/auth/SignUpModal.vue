@@ -5,7 +5,7 @@ import { Button } from '@common/ui/button'
 import { useToast } from '@common/ui/toast/use-toast'
 import CustomInput from '@components/input-validation/CustomInput.vue'
 import { useForm } from 'vee-validate'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { signupService } from '@services/signup.services'
 import { useAuthStore } from '../../stores/auth'
 import { registerSchema } from '../../validation/schema.js'
@@ -111,6 +111,11 @@ const handleFacebookSignIn = async () => {
     authStore.isLoading = false
   }
 }
+
+const clearErrorAPI = () => {
+  errorsSignUp.value = ''
+}
+
 </script>
 
 <template>
@@ -150,6 +155,7 @@ const handleFacebookSignIn = async () => {
             :defineField="defineField"
             :errors="errors"
             :show-error="showError"
+            @clearErrorAPI="clearErrorAPI"
           />
         </div>
         <div v-if="errorsSignUp">
