@@ -32,6 +32,7 @@ import { getKeyS3 } from '@/shared/utils/get-key-s3.util';
 import { Between, FindOptionsOrder } from 'typeorm';
 import { VideoItemDto } from './dto/response/video-item.dto';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 
 @Injectable()
 export class VideoService {
@@ -367,7 +368,9 @@ export class VideoService {
           excludeExtraneousValues: true,
         });
 
-        console.log(videoItemDto);
+        videoItemDto.numberOfViews = fixIntNumberResponse(videoItemDto.numberOfViews);
+        videoItemDto.channel.numberOfFollowers = fixIntNumberResponse(videoItemDto.channel.numberOfFollowers);
+
         return videoItemDto;
       }),
     ).then((videos) => {
