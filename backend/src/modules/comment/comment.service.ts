@@ -18,8 +18,12 @@ export class CommentService {
     return await this.commentRepository.getNumberOfComments(videoId);
   }
 
-  async getCommentsOfVideo(videoId: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getCommentsOfVideo(videoId, limit, cursor);
+  async getCommentsOfVideo(userId: number, videoId: number, limit: number, cursor?: number) {
+    return await this.commentRepository.getCommentsOfVideo(userId, videoId, limit, cursor);
+  }
+
+  async getReplyComments(userId: number, id: number, limit: number, cursor?: number) {
+    return await this.commentRepository.getReplyComments(userId, id, limit, cursor);
   }
 
   async getOne(id: number): Promise<Comment> {
@@ -32,8 +36,16 @@ export class CommentService {
 
   async create(userId: number, dto: CreateCommentDto): Promise<Comment> {
     try {
+      let videoId: number;
+      dto.videoId && (videoId = dto.videoId);
+
+      if (dto.commentId && !dto.videoId) {
+        const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
+        videoId = comment.video.id;
+      }
+
       const comment = await this.commentRepository.create(userId, dto);
-      const video = await this.videoRepository.findOne(dto.videoId);
+      const video = await this.videoRepository.findOne(videoId);
 
       if (!video) {
         throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);

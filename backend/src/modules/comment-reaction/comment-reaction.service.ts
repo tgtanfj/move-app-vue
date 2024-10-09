@@ -15,15 +15,11 @@ export class CommentReactionService {
   ) {}
 
   async getOne(id: number): Promise<CommentReaction> {
-    return await this.commentReactionRepository.getOne(id).catch((e) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_COMMENT_REACTION);
-    });
+    return await this.commentReactionRepository.getOne(id);
   }
 
   async getAll(): Promise<CommentReaction[]> {
-    return await this.commentReactionRepository.getAll().catch((e) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_COMMENT_REACTION);
-    });
+    return await this.commentReactionRepository.getAll();
   }
 
   async create(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
@@ -35,7 +31,7 @@ export class CommentReactionService {
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
       return commentReaction;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT_REACTION);
     }
   }
 
@@ -46,7 +42,7 @@ export class CommentReactionService {
       comment.numberOfLike += dto.isLike ? 1 : -1;
       return await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_UPDATE_COMMENT_REACTION);
     }
   }
 
@@ -58,7 +54,7 @@ export class CommentReactionService {
       result.affected === 1 && (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_COMMENT_REACTION);
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT_REACTION);
     }
   }
 }

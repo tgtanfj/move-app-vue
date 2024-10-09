@@ -56,4 +56,7 @@ export enum ERRORS_DICTIONARY {
   NOT_CREATE_COMMENT = 'Can not create comment',
   NOT_DELETE_COMMENT = 'Can not delete comment',
   NOT_FOUND_COMMENT_REACTION = 'Not found comment reaction',
+  NOT_UPDATE_COMMENT_REACTION = 'Can not update comment reaction',
+  NOT_CREATE_COMMENT_REACTION = 'Can not create comment reaction',
+  NOT_DELETE_COMMENT_REACTION = 'Can not delete comment reaction',
 }
