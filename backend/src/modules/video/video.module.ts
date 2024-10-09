@@ -12,10 +12,7 @@ import { CategoryService } from '../category/category.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
 import { UserModule } from '../user/user.module';
 import { JwtService } from '@nestjs/jwt';
-import { CommentModule } from '../comment/comment.module';
 import { ChannelModule } from '../channel/channel.module';
-import { ThumbnailService } from '../thumbnail/thumbnail.service';
-import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
 import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
@@ -25,7 +22,6 @@ import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
     TypeOrmModule.forFeature([Video]),
     UserModule,
     CategoryModule,
-    CommentModule,
     WatchingVideoHistoryModule,
     UserModule,
     ChannelModule,
@@ -46,5 +42,6 @@ import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
     VimeoService,
     UploadS3Processor,
   ],
+  exports: [VideoService, VideoRepository],
 })
 export class VideoModule {}
