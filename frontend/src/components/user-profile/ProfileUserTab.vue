@@ -501,7 +501,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
-                <FormLabel>State</FormLabel>
+                <FormLabel>City</FormLabel>
                 <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
                   <FormControl>
                     <SelectTrigger>

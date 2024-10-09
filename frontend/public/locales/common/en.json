@@ -208,5 +208,20 @@
     "contact_us": "Contact us",
     "cant_find_answer": "Can't find answer?",
     "address_problem": "here and we will address your problem as soon as posible."
+  },
+  "comment": {
+    "cancel" : "Cancel",
+    "cancel_reservation":"Cancel Reservation?",
+    "are_you_sure": "Are you sure you want to cancel this reservation?",
+    "no": "No",
+    "yes": "Yes",
+    "send": "Send",
+    "read_more": "Read more",
+    "show_less": "Show less",
+    "hide": "Hide",
+    "replies": "replies",
+    "show_more_replies": "Show more replies",
+    "reply": "Reply",
+    "show": "Show"
   }
 }

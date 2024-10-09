@@ -14,10 +14,10 @@ import defaultAvatar from '@assets/icons/default-avatar.png'
 import InstaIcon from '@assets/icons/InstaIcon.vue'
 import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
 import FBIcon from '@assets/icons/FBIcon.vue'
-import CommentVideo from '@components/showVideoDetail/CommentVideo.vue'
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import TwitterIcon from '@assets/icons/TwitterIcon.vue'
 import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
+import Comment from '@components/comment/Comment.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -30,13 +30,12 @@ const props = defineProps({
 <template>
   <div class="flex-[2.8]">
     <!-- video play -->
-    <div class="w-full h-[520px]">
-      <iframe
-        class="w-full h-full"
+    <video width="100%" height="auto" controls autoplay loop muted class="h-[519px]">
+      <source
         src="https://move-project.s3.us-east-1.amazonaws.com/videos/1728017172580-1728017169372-Y2meta.app-Nature%20Beautiful%20short%20video%20720p%20HD.mp4"
-        frameborder="0"
-      ></iframe>
-    </div>
+        type="video/mp4"
+      />
+    </video>
     <!-- /video play -->
 
     <!-- Video actions and info -->
@@ -74,20 +73,26 @@ const props = defineProps({
               <div class="flex items-center justify-between mb-2">
                 <h3 class="ml-2 font-semibold">Share via</h3>
                 <DropdownMenuItem class="cursor-pointer focus:bg-transparent">
-                  <X width="20px"/>
+                  <X width="20px" />
                 </DropdownMenuItem>
               </div>
-              
+
               <div class="flex">
-                <DropdownMenuItem class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent">
+                <DropdownMenuItem
+                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
+                >
                   <FacebookIcon class="w-[40px] h-[40px]" />
                   <span class="text-sm">{{ $t('streamer.fb') }}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent">
+                <DropdownMenuItem
+                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
+                >
                   <TwitterIcon />
                   <span class="text-sm">{{ $t('streamer.twitter') }}</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent">
+                <DropdownMenuItem
+                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
+                >
                   <CopyLinkIcon />
                   <span class="text-sm">{{ $t('streamer.copy_link') }}</span>
                 </DropdownMenuItem>
@@ -140,7 +145,7 @@ const props = defineProps({
       <!-- /Video channel -->
       <DropdownMenuSeparator class="my-4" />
 
-      <CommentVideo />
+      <Comment class="mt-10" />
     </div>
   </div>
 </template>

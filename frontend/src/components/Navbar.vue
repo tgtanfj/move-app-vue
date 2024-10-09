@@ -85,7 +85,6 @@ const resetCountdown = () => {
     <div class="flex items-center justify-between px-[40px] py-3">
       <ul class="flex flex-1 items-center gap-[35px]">
         <li class="font-semibold text-[16px]">Following</li>
-        <li class="font-semibold text-[16px]">Browse</li>
         <li class="my-auto">
           <MoreMenuNav />
         </li>
