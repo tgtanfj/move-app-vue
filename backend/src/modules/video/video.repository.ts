@@ -1,7 +1,13 @@
 import { Video } from '@/entities/video.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, FindOptionsOrder, FindOptionsRelations, Repository } from 'typeorm';
+import {
+  FindOneOptions,
+  FindOptionsOrder,
+  FindOptionsRelations,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { channel } from 'diagnostics_channel';
@@ -101,5 +107,31 @@ export class VideoRepository {
       select: ['url'],
     });
     return video ? video.url : null;
+  }
+
+  async find(
+    channelId: number,
+    queries: FindOptionsWhere<Video> = {},
+    order: FindOptionsOrder<Video> = {},
+    paginationDto: PaginationDto,
+    relations: FindOptionsRelations<Video> = {
+      category: true,
+      channel: true,
+    },
+    withDeleted: boolean = false,
+  ): Promise<[Video[], number]> {
+    return await this.videoRepository.findAndCount({
+      where: {
+        channel: {
+          id: channelId,
+        },
+        ...queries,
+      },
+      skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
+      take: paginationDto.take,
+      order,
+      relations,
+      withDeleted,
+    });
   }
 }

@@ -74,4 +74,20 @@ export class VimeoService {
       });
     }
   }
+
+  async getVideoLength(url: string): Promise<any> {
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+      // console.log(response.data);
+      return response.data.duration;
+    } catch (error) {
+      throw new NotFoundException({
+        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+      });
+    }
+  }
 }
