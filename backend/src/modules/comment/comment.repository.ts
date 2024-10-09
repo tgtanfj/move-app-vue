@@ -51,10 +51,10 @@ export class CommentRepository {
           this.getReactionsInComment(comment.id),
           this.getTotalDonations(comment.user.id, videoId),
         ]);
-        const checkLike = !!reactions.find((reaction) => reaction.user.id === userId);
+        const checkLike = reactions.find((reaction) => reaction.user.id === userId);
         return {
           ...comment,
-          isLike: checkLike,
+          isLike: checkLike?.isLike,
           totalDonation: donation,
         };
       }),
