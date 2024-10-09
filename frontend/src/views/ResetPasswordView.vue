@@ -47,7 +47,7 @@ const submit = async () => {
     <form @submit.prevent="submit">
       <div class="flex flex-col space-y-1.5 mb-4">
         <custom-input
-          :label="$t('label.password')"
+          :label="$t('label.new_password')"
           name="password"
           :defineField="defineField"
           :errors="errors"
@@ -58,7 +58,7 @@ const submit = async () => {
 
       <div class="flex flex-col space-y-1.5">
         <custom-input
-          :label="$t('label.confirm_password')"
+          :label="$t('label.confirm_new_password')"
           name="confirmPassword"
           :defineField="defineField"
           :errors="errors"

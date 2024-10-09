@@ -95,7 +95,9 @@
     "confirm_password": "Confirm password",
     "email": "Email",
     "verify_code": "Verification Code",
-    "referral_code": "Referral code (Optional)"
+    "referral_code": "Referral code (Optional)",
+    "new_password": "New password",
+    "confirm_new_password": "Confirm new password"
   },
   "user_profile": {
     "title": "Settings",
@@ -211,8 +213,8 @@
     "address_problem": "here and we will address your problem as soon as posible."
   },
   "comment": {
-    "cancel" : "Cancel",
-    "cancel_reservation":"Cancel Reservation?",
+    "cancel": "Cancel",
+    "cancel_reservation": "Cancel Reservation?",
     "are_you_sure": "Are you sure you want to cancel this reservation?",
     "no": "No",
     "yes": "Yes",
