@@ -82,48 +82,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future<void> _onLoginWithEmailPasswordEvent(
       LoginWithEmailPasswordEvent event, Emitter<LoginState> emit) async {
-    final validEmail = InputValidationHelper.email.hasMatch(state.email);
-    final validPassword =
-        InputValidationHelper.password.hasMatch(state.password);
     emit(state.copyWith(status: LoginStatus.processing));
     final UserModel userModel = UserModel(
       email: state.email,
       password: state.password,
     );
-    if (!validEmail && validPassword) {
-      emit(state.copyWith(
-          status: LoginStatus.failure,
-          isShowEmailMessage: true,
-          messageInputEmail: Constants.invalidEmail));
-    } else if (validEmail && !validPassword) {
-      emit(state.copyWith(
+    final result =
+        await authenticationRepository.loginWithEmailPassword(userModel);
+    result.fold((l) {
+      emit(
+        state.copyWith(
           status: LoginStatus.failure,
           isShowPasswordMessage: true,
-          messageInputPassword: Constants.anInvalidPassword));
-    } else if (!validEmail && !validPassword) {
-      emit(state.copyWith(
-        status: LoginStatus.failure,
-        isShowPasswordMessage: true,
-        messageInputPassword: Constants.anInvalidPassword,
-        isShowEmailMessage: true,
-        messageInputEmail: Constants.invalidEmail,
-      ));
-    } else {
-      final result =
-          await authenticationRepository.loginWithEmailPassword(userModel);
-      result.fold((l) {
-        emit(
-          state.copyWith(
-            status: LoginStatus.failure,
-            isShowPasswordMessage: true,
-            messageInputPassword: l,
-            isShowEmailMessage: true,
-            messageInputEmail: l,
-          ),
-        );
-      }, (r) {
-        emit(state.copyWith(status: LoginStatus.success));
-      });
-    }
+          messageInputPassword: l,
+        ),
+      );
+    }, (r) {
+      emit(state.copyWith(status: LoginStatus.success));
+    });
   }
 }

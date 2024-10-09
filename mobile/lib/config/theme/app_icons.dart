@@ -20,7 +20,9 @@ enum AppIcons {
   arrowDown,
   addVideo,
   closeWhite,
-  faqs
+  faqs,
+  closeCircle,
+  back
 }
 
 extension AppIconsExtension on AppIcons {
