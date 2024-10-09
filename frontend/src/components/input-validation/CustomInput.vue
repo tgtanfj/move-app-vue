@@ -37,6 +37,12 @@ const [fieldName, fieldNameAttrs] = props.defineField(props.name)
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
 }
+
+const emit = defineEmits(['clearErrorAPI'])
+
+const changeInput = () => {
+  emit('clearErrorAPI')
+}
 </script>
 
 <template>
@@ -49,6 +55,7 @@ const togglePasswordVisibility = () => {
         v-model.trim="fieldName"
         v-bind="fieldNameAttrs"
         :id="name"
+        @input="changeInput"
         class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none w-full"
         :class="showError && errors[name] ? 'border-redMisc' : ''"
         maxlength="255"

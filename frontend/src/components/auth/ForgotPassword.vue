@@ -11,7 +11,9 @@ const emit = defineEmits(['openLogin'])
 const email = ref('')
 const showError = ref(false)
 const mutation = useForgotPassword()
+const isBanned = ref(false)
 const { isPending, isIdle, isSuccess, isError, reset } = mutation
+let banned
 
 const bgColor = computed(() => {
   if (isSuccess.value) {
@@ -41,6 +43,10 @@ const handleSendMail = async () => {
   } else {
     email.value = values.email
     mutation.mutate({ email: values.email })
+    isBanned.value = true
+    banned = setTimeout(() => {
+      isBanned.value = false
+    }, 60000)
   }
 }
 
@@ -55,6 +61,10 @@ const resetFormOnClose = () => {
   resetForm()
   reset()
   showError.value = false
+}
+
+const clearErrorAPI = () => {
+  reset()
 }
 </script>
 
@@ -75,9 +85,9 @@ const resetFormOnClose = () => {
           :defineField="defineField"
           :errors="errors"
           :show-error="showError"
+          @clearErrorAPI="clearErrorAPI"
         />
       </div>
-
       <div
         v-if="(isSuccess && !isPending) || (isError && !isPending)"
         class="border rounded-md px-3 py-5 text-center"
@@ -94,7 +104,7 @@ const resetFormOnClose = () => {
       <div class="flex justify-center mt-3">
         <Button
           type="submit"
-          :disabled="!isFormValid || isPending"
+          :disabled="!isFormValid || isPending || isBanned"
           :variant="isFormValid ? 'default' : 'disabled'"
           >{{
             isPending
