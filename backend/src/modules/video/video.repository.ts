@@ -113,19 +113,22 @@ export class VideoRepository {
     channelId: number,
     queries: FindOptionsWhere<Video> = {},
     order: FindOptionsOrder<Video> = {},
+    paginationDto: PaginationDto,
     relations: FindOptionsRelations<Video> = {
       category: true,
       channel: true,
     },
     withDeleted: boolean = false,
-  ): Promise<Video[]> {
-    return await this.videoRepository.find({
+  ): Promise<[Video[], number]> {
+    return await this.videoRepository.findAndCount({
       where: {
         channel: {
           id: channelId,
         },
         ...queries,
       },
+      skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
+      take: paginationDto.take,
       order,
       relations,
       withDeleted,

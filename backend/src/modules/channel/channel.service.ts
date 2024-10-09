@@ -12,6 +12,7 @@ import { VideoService } from '../video/video.service';
 import { VideoItemDto } from '../video/dto/response/video-item.dto';
 import { SocialLink } from './dto/response/channel-profile.dto';
 import { ChannelVideosDto } from './dto/response/channel-videos.dto';
+import { PaginationDto } from '../video/dto/request/pagination.dto';
 
 @Injectable()
 export class ChannelService {
@@ -36,27 +37,31 @@ export class ChannelService {
 
   async getChannelVideos(
     channelId: number,
-    userId: number,
+    userId: number = undefined,
     workoutLevel: FilterWorkoutLevel = undefined,
     categoryId: number = undefined,
     sortBy: SortBy = undefined,
-  ): Promise<ChannelVideosDto> {
-    const channel = await this.channelRepository.findOne(channelId).catch((error) => {
+    paginationDto: PaginationDto = {
+      take: 9,
+      page: 1,
+    },
+  ): Promise<object> {
+    await this.channelRepository.findOne(channelId).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
 
-    const channelVideosDto: ChannelVideosDto = new ChannelVideosDto();
-
-    channelVideosDto.videos = await this.videoService.getChannelVideos(channelId, {
-      workoutLevel,
-      categoryId,
-      sortBy,
-    });
-
-    return channelVideosDto;
+    return await this.videoService.getChannelVideos(
+      channelId,
+      {
+        workoutLevel,
+        categoryId,
+        sortBy,
+      },
+      paginationDto,
+    );
   }
 
-  async getChannelProfile(channelId: number, userId: number) {
+  async getChannelProfile(channelId: number, userId: number = null) {
     const channel = await this.channelRepository.findOne(channelId, { user: true }).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
@@ -65,8 +70,10 @@ export class ChannelService {
       excludeExtraneousValues: true,
     });
 
-    const [isFollowed, numberOfFollowers, followingChannels, socialLinks] = await Promise.all([
-      this.followService.isFollowed(userId, channelId),
+    let isFollowed = null;
+    if (userId) isFollowed = await this.followService.isFollowed(userId, channelId);
+
+    const [numberOfFollowers, followingChannels, socialLinks] = await Promise.all([
       this.followService.getNumberOfFollowers(channelId),
       this.followService
         .getFollowingChannels(channel.user.id, 4, { channel: true })

@@ -51,7 +51,7 @@ export class VideoController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('create-upload-session')
   async createUploadSession(@Body() dto: CreateVideoDTO) {
     const data = await this.videoService.createUploadSession(dto.fileSize);

@@ -2,17 +2,30 @@ import { UserService } from '@/modules/user/user.service';
 import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ERRORS_DICTIONARY } from '../constraints/error-dictionary.constraint';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+
+    if (isPublic && !token) {
+      // 💡 See this condition
+      return true;
+    }
 
     if (!token) {
       throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);

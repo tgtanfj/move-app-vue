@@ -317,7 +317,7 @@ export class VideoService {
     });
   }
 
-  async getChannelVideos(channelId: number, queries: any): Promise<VideoItemDto[]> {
+  async getChannelVideos(channelId: number, queries: any, paginationDto: PaginationDto): Promise<object> {
     const { workoutLevel, categoryId, sortBy } = queries;
 
     let searchConditions: any = {
@@ -332,7 +332,7 @@ export class VideoService {
     }
 
     if (workoutLevel) {
-      if(workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
+      if (workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
         searchConditions = { ...searchConditions, workoutLevel };
     }
 
@@ -341,53 +341,63 @@ export class VideoService {
       title: 'ASC',
     };
 
-    console.log(searchConditions);
+    const [videos, total] = await this.videoRepository.find(
+      channelId,
+      searchConditions,
+      order,
+      paginationDto,
+    );
 
-    return await this.videoRepository.find(channelId, searchConditions, order).then(async (videos) => {
-      return await Promise.all(
-        videos.map(async (video) => {
-          const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
+    const videoItems = await Promise.all(
+      videos.map(async (video) => {
+        const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
-          const [thumbnail, videoLength] = await Promise.all([
-            this.thumbnailService.getSelectedThumbnail(video.id),
-            this.vimeoService.getVideoLength(video.url),
-          ]);
-          videoItemDto.thumbnailURL = thumbnail.image;
-          videoItemDto.videoLength = videoLength;
+        const [thumbnail, videoLength] = await Promise.all([
+          this.thumbnailService.getSelectedThumbnail(video.id),
+          this.vimeoService.getVideoLength(video.url),
+        ]);
+        videoItemDto.thumbnailURL = thumbnail.image;
+        videoItemDto.videoLength = videoLength;
 
-          videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
-            excludeExtraneousValues: true,
-          });
-
-          videoItemDto.category = plainToInstance(CategoryVideoDetailDto, video.category, {
-            excludeExtraneousValues: true,
-          });
-
-          console.log(videoItemDto);
-          return videoItemDto;
-        }),
-      ).then((videos) => {
-        return videos.sort((video1, video2) => {
-          switch (sortBy) {
-            case SortBy.MOST_RECENT:
-              return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-            case SortBy.VIEWS_HIGH_TO_LOW:
-              return video2.numberOfViews - video1.numberOfViews;
-            case SortBy.VIEWS_LOW_TO_HIGH:
-              return video1.numberOfViews - video2.numberOfViews;
-            case SortBy.DURATION_HIGH_TO_LOW:
-              return video2.videoLength - video1.videoLength;
-            case SortBy.DURATION_LOW_TO_HIGH:
-              return video1.videoLength - video2.videoLength;
-            case SortBy.RATINGS_HIGH_TO_LOW:
-              return video2.ratings - video1.ratings;
-            case SortBy.RATINGS_LOW_TO_HIGH:
-              return video1.ratings - video2.ratings;
-            default:
-              return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-          }
+        videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
+          excludeExtraneousValues: true,
         });
+
+        videoItemDto.category = plainToInstance(CategoryVideoDetailDto, video.category, {
+          excludeExtraneousValues: true,
+        });
+
+        console.log(videoItemDto);
+        return videoItemDto;
+      }),
+    ).then((videos) => {
+      return videos.sort((video1, video2) => {
+        switch (sortBy) {
+          case SortBy.MOST_RECENT:
+            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
+          case SortBy.VIEWS_HIGH_TO_LOW:
+            return video2.numberOfViews - video1.numberOfViews;
+          case SortBy.VIEWS_LOW_TO_HIGH:
+            return video1.numberOfViews - video2.numberOfViews;
+          case SortBy.DURATION_HIGH_TO_LOW:
+            return video2.videoLength - video1.videoLength;
+          case SortBy.DURATION_LOW_TO_HIGH:
+            return video1.videoLength - video2.videoLength;
+          case SortBy.RATINGS_HIGH_TO_LOW:
+            return video2.ratings - video1.ratings;
+          case SortBy.RATINGS_LOW_TO_HIGH:
+            return video1.ratings - video2.ratings;
+          default:
+            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
+        }
       });
     });
+
+    const totalPages = Math.ceil(total / paginationDto.take);
+
+    return objectResponse(
+      videoItems,
+      new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
+    );
   }
 }

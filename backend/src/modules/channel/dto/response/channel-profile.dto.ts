@@ -30,7 +30,7 @@ export class ChannelProfileDto {
   numberOfFollowers: number;
 
   @Expose()
-  isFollowed: boolean;
+  isFollowed?: boolean = null;
 
   @Expose()
   followingChannels: ChannelItemDto[];
