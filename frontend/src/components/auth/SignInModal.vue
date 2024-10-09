@@ -39,12 +39,23 @@ const handleSignIn = async () => {
   if (Object.keys(errors.value).length > 0) {
     showError.value = true
   } else {
+    showError.value = false
+
     await authStore.loginWithEmail(values)
+
     if (authStore.accessToken) {
       props.closeModal()
       toast({ description: 'Login successfully', variant: 'successfully' })
     } else {
-      toast({ description: `${authStore.errorMsg}`, variant: 'destructive' })
+      showError.value = true
+
+      if (authStore.errorMsg === 'Email or password invalid') {
+        errors.value.email = 'Invalid email'
+        errors.value.password = 'You have entered an invalid password'
+      } else {
+        errors.value.email = ''
+        errors.value.password = authStore.errorMsg
+      }
     }
   }
 }
@@ -142,12 +153,12 @@ const handleOpenForgotPassword = () => {
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
-          :class="showError ? 'border-redMisc' : ''"
+          :class="showError && errors.email ? 'border-redMisc' : ''"
           v-model.trim="email"
           v-bind="emailAttrs"
           maxlength="255"
         />
-        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.email }}</p>
+        <p v-if="showError && errors.email" class="text-red-500 text-[14px]">{{ errors.email }}</p>
       </div>
       <div class="mb-2 flex flex-col">
         <label class="mb-2">Password</label>
@@ -155,6 +166,7 @@ const handleOpenForgotPassword = () => {
           <input
             :type="showPassword ? 'text' : 'password'"
             class="py-2 px-3 mb-1 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none z-0 w-full"
+            :class="showError && errors.password ? 'border-redMisc' : ''"
             v-model="password"
             v-bind="passwordAttrs"
             maxlength="32"
@@ -167,12 +179,14 @@ const handleOpenForgotPassword = () => {
             <Eye v-else />
           </span>
         </div>
-        <p v-if="showError" class="text-red-500 text-[14px]">{{ errors.password }}</p>
+        <p v-if="showError && errors.password" class="text-red-500 text-[14px]">
+          {{ errors.password }}
+        </p>
       </div>
       <div class="ml-[-10px]">
-        <Button variant="link" type="button" @click="handleOpenForgotPassword"
-          >Forgot password?</Button
-        >
+        <Button variant="link" type="button" @click="handleOpenForgotPassword">
+          Forgot password?
+        </Button>
       </div>
       <Button
         type="submit"

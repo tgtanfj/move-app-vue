@@ -29,15 +29,12 @@ class HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<HomeBody> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
-  late String _searchQuery;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    _searchQuery = '';
-
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         context.read<HomeBloc>().add(HomeLoadSearchHistoryEvent());
@@ -56,8 +53,9 @@ class _HomeBodyState extends State<HomeBody> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return BlocListener<HomeBloc, HomeState>(
-        listener: (context, state) {},
-        child: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+      listener: (context, state) {},
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
           return Scaffold(
             appBar: state.isVisible
                 ? CustomSearchBox(
@@ -245,6 +243,8 @@ class _HomeBodyState extends State<HomeBody> {
               ],
             ),
           );
-        }));
+        },
+      ),
+    );
   }
 }

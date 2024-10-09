@@ -47,7 +47,7 @@
         <DropdownMenuItem class="group cursor-pointer px-0 focus:bg-transparent">
           <RouterLink
             to="/profile"
-            class="flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+            class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
           >
             <SettingIcon class="group-hover:text-primary duration-100" />
             <p class="font-semibold group-hover:text-primary duration-100">Settings</p>

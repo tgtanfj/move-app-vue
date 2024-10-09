@@ -106,6 +106,7 @@ class Constants {
   static const String aboutUs = 'About Us';
   static const String communityGuideline = 'Community Guideline';
   static const String faq = 'FAQ';
+  static const String faqsNotFound = 'FAQs not found!';
   static const String logout = 'Logout';
   static const String logout_question = 'Logout ?';
   static const String loginMenu = "Login";
@@ -160,6 +161,7 @@ class Constants {
   static const String jpeg = 'jpeg';
   static const String png = 'png';
   static const String gif = 'gif';
+  static const String noData = 'No data';
   static const String categories = "Categories";
   static const String channels = "Channels";
   static const String videos = "Videos";

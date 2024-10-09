@@ -1,15 +1,15 @@
 <script setup>
-import { onMounted, onUpdated, ref, watch, watchEffect } from 'vue'
-import { useForm } from 'vee-validate'
-import { userBaseAvatar } from '@constants/userImg.constant'
-import { userProfileSchema } from '../../validation/schema'
 import { useToast } from '@common/ui/toast/use-toast'
+import { userBaseAvatar } from '@constants/userImg.constant'
+import { useForm } from 'vee-validate'
+import { onMounted, ref, watch } from 'vue'
+import { userProfileSchema } from '../../validation/schema'
 
-import { countriesService } from '@services/countries.services'
-
-import { DAYS, MONTHS, YEARS } from '@constants/date.constant'
 import { ADMIN_BASE, COUNTRY_BASE } from '@constants/api.constant'
+import { DAYS, MONTHS, YEARS } from '@constants/date.constant'
 
+import { Button } from '@/common/ui/button'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/ui/form'
 import { Input } from '@/common/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import {
@@ -20,13 +20,11 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
-import { Button } from '@/common/ui/button'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/ui/form'
-import Loading from '../Loading.vue'
-import BaseDialog from '../BaseDialog.vue'
-import ChangePasswordModal from './ChangePasswordModal.vue'
-import axios from 'axios'
 import { denormalizeGender, normalizeGender } from '@utils/userProfile.util'
+import axios from 'axios'
+import BaseDialog from '../BaseDialog.vue'
+import Loading from '../Loading.vue'
+import ChangePasswordModal from './ChangePasswordModal.vue'
 import UploadAvatarFile from './UploadAvatarFile.vue'
 
 const selectedDay = ref(null)
@@ -39,7 +37,6 @@ const selectedCountry = ref('')
 const selectedState = ref('')
 const selectedCity = ref('')
 const userData = ref(null)
-const openSetupEmailModal = ref(false)
 const openOTPVerificationModal = ref(false)
 const openChangePasswordModal = ref(false)
 const openChangePasswordResultModal = ref(false)
@@ -103,8 +100,8 @@ onMounted(async () => {
 
 watch(userData, (newValue) => {
   if (newValue) {
-    selectedCountry.value = newValue.country.name || ''
-    selectedState.value = newValue.state.name || ''
+    selectedCountry.value = newValue.country?.name || ''
+    selectedState.value = newValue.state?.name || ''
     selectedCity.value = newValue.city || ''
     gender.value = denormalizeGender(newValue.gender)
     if (newValue.dateOfBirth) {
@@ -118,8 +115,8 @@ watch(userData, (newValue) => {
       username: newValue.username || '',
       email: newValue.email || '',
       fullName: newValue.fullName || '',
-      country: newValue.country.name || '',
-      state: newValue.state.name || '',
+      country: newValue.country?.name || '',
+      state: newValue.state?.name || '',
       city: newValue.city || '',
       gender: denormalizeGender(newValue.gender)
     })
@@ -166,11 +163,6 @@ watch([selectedDay, selectedMonth, selectedYear], () => {
     )
   }
 })
-
-const handleSetupEmail = () => {
-  openSetupEmailModal.value = false
-  openOTPVerificationModal.value = true
-}
 
 const onCountryChange = (value) => {
   console.log(value)
@@ -330,12 +322,6 @@ const onErrorMessage = (msg) => {
                     placeholder="No email found"
                     v-bind="componentField"
                   />
-                  <p
-                    @click="openSetupEmailModal = true"
-                    class="absolute top-3 right-8 text-primary cursor-pointer"
-                  >
-                    Setup email
-                  </p>
                 </div>
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -361,10 +347,14 @@ const onErrorMessage = (msg) => {
             </FormItem>
           </FormField>
         </div>
+
         <div class="flex flex-col gap-1">
-          <label>Password</label>
-          <p class="text-primary underline cursor-pointer">Change password</p>
+          <label>{{ $t('user_profile.password') }}</label>
+          <p class="text-primary underline cursor-pointer" @click="openChangePasswordModal = true">
+            {{ $t('change_password.title') }}
+          </p>
         </div>
+
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" type="radio" name="gender">
             <FormItem class="space-y-2">
@@ -511,7 +501,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
-                <FormLabel>State</FormLabel>
+                <FormLabel>City</FormLabel>
                 <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
                   <FormControl>
                     <SelectTrigger>
