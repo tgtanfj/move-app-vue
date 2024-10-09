@@ -11,7 +11,7 @@ export class CreateCommentDto {
   content: string;
 
   @ApiProperty({
-    description: 'id video ',
+    description: 'id video',
   })
   @IsNotEmpty()
   @IsNumber()
