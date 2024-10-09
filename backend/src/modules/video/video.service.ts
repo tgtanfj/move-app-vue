@@ -40,7 +40,6 @@ export class VideoService {
 
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
-    private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
@@ -117,16 +116,14 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [selectedThumbnail, numberOfViews, numberOfComments, ratings] = await Promise.all([
+          const [selectedThumbnail, numberOfViews, ratings] = await Promise.all([
             this.thumbnailService.getSelectedThumbnail(video.id),
             this.watchingVideoHistoryService.getNumberOfViews(video.id),
-            this.commentService.getNumberOfComments(video.id),
             this.watchingVideoHistoryService.getAverageRating(video.id),
           ]);
 
           videoDetail.thumbnail_url = selectedThumbnail.image;
           videoDetail.numberOfViews = numberOfViews;
-          videoDetail.numberOfComments = numberOfComments;
           videoDetail.ratings = ratings;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {

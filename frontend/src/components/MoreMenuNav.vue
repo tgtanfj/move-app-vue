@@ -12,8 +12,9 @@
       </DropdownMenuItem>
       <DropdownMenuItem
         class="flex gap-3 items-center py-2 px-1 cursor-pointer group hover:text-primary focus:bg-transparent"
+        @click="router.push('/move/faq')"
       >
-        <p class="font-semibold group-hover:text-primary duration-100">FQA</p>
+        <p class="font-semibold group-hover:text-primary duration-100">FAQ</p>
       </DropdownMenuItem>
       <DropdownMenuItem
         class="flex gap-3 items-center py-2 px-1 cursor-pointer group hover:text-primary focus:bg-transparent"
@@ -44,4 +45,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 </script>
