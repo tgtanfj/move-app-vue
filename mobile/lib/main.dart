@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-import 'package:move_app/presentation/screens/view_faqs/page/view_faqs_page.dart';
+import 'package:move_app/presentation/screens/view_FAQs/page/view_FAQs_page.dart';
 
 import 'config/app_config.dart';
 
