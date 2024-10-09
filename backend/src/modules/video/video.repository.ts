@@ -113,22 +113,33 @@ export class VideoRepository {
     channelId: number,
     queries: FindOptionsWhere<Video> = {},
     order: FindOptionsOrder<Video> = {},
+<<<<<<< HEAD
     paginationDto: PaginationDto,
+=======
+>>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
     relations: FindOptionsRelations<Video> = {
       category: true,
       channel: true,
     },
     withDeleted: boolean = false,
+<<<<<<< HEAD
   ): Promise<[Video[], number]> {
     return await this.videoRepository.findAndCount({
+=======
+  ): Promise<Video[]> {
+    return await this.videoRepository.find({
+>>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
       where: {
         channel: {
           id: channelId,
         },
         ...queries,
       },
+<<<<<<< HEAD
       skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
       take: paginationDto.take,
+=======
+>>>>>>> 041f1107dc5765a39b0e0cd6f1853d6fc8aeca00
       order,
       relations,
       withDeleted,
