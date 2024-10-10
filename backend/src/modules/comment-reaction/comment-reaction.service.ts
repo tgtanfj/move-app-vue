@@ -3,7 +3,6 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { UpdateResult } from 'typeorm';
 import { CommentReactionRepository } from './comment-reaction.repository';
 import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
-import { UpdateCommentReactionDto } from './dto/update-comment-reaction.dto';
 import { CommentRepository } from '../comment/comment.repository';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 
@@ -35,23 +34,24 @@ export class CommentReactionService {
     }
   }
 
-  async update(commentReactionId: number, dto: UpdateCommentReactionDto): Promise<UpdateResult> {
+  async update(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     try {
-      const commentReaction = await this.commentReactionRepository.update(commentReactionId, dto);
+      const commentReaction = await this.commentReactionRepository.update(userId, dto);
       const comment = commentReaction.comment;
       comment.numberOfLike += dto.isLike ? 1 : -1;
-      return await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
+      await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
+      return commentReaction;
     } catch (error) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_UPDATE_COMMENT_REACTION);
     }
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(userId: number, commentId: number): Promise<void> {
     try {
-      const commentReaction = await this.commentReactionRepository.getOneWithComment(id);
-      const result = await this.commentReactionRepository.delete(id);
-      const comment = await this.commentRepository.getOne(commentReaction.comment.id);
-      result.affected === 1 && (comment.numberOfLike -= 1);
+      const commentReaction = await this.commentReactionRepository.getOneWithUserComment(userId, commentId);
+      const result = await this.commentReactionRepository.delete(commentReaction.id);
+      const comment = await this.commentRepository.getOne(commentId);
+      result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
     } catch (error) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT_REACTION);

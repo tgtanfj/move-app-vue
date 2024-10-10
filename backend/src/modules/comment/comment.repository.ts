@@ -34,6 +34,10 @@ export class CommentRepository {
     return await this.commentRepository.findOne({ where: { id: id }, relations: { video: true } });
   }
 
+  async getOneWithUser(id: number): Promise<Comment> {
+    return await this.commentRepository.findOne({ where: { id: id }, relations: { user: true } });
+  }
+
   async getAll(): Promise<Comment[]> {
     return await this.commentRepository.find();
   }
@@ -113,7 +117,7 @@ export class CommentRepository {
     return totalDonations;
   }
 
-  async create(userId: number, dto: CreateCommentDto): Promise<Comment> {
+  async create(userId: number, dto: CreateCommentDto) {
     const { videoId, commentId, ...data } = dto;
     data['video'] = videoId ? { id: videoId } : null;
     data['user'] = { id: userId };
@@ -130,8 +134,11 @@ export class CommentRepository {
     data['parent'] = commentId ? { id: commentId } : null;
 
     const newComment = this.commentRepository.create(data);
+    const comment = await this.commentRepository.save(newComment);
+    const commentRes = await this.getOneWithUser(comment.id);
+    const totalDonation = await this.getTotalDonations(userId, videoId);
 
-    return await this.commentRepository.save(newComment);
+    return { ...commentRes, totalDonation };
   }
 
   async update(commentId: number, dto: UpdateCommentDto | Partial<Comment>): Promise<UpdateResult> {

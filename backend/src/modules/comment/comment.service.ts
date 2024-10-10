@@ -34,7 +34,7 @@ export class CommentService {
     return await this.commentRepository.getAll();
   }
 
-  async create(userId: number, dto: CreateCommentDto): Promise<Comment> {
+  async create(userId: number, dto: CreateCommentDto) {
     try {
       let videoId: number;
       dto.videoId && (videoId = dto.videoId);
