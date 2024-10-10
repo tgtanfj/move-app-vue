@@ -3,6 +3,7 @@ import 'package:move_app/data/models/state_model.dart';
 import 'package:move_app/presentation/screens/setting/presentation/profile/widgets/gender_radio_group.dart';
 
 class UserModel {
+  final int? id;
   final String? avatar;
   final String? email;
   final String? username;
@@ -14,22 +15,36 @@ class UserModel {
   final StateModel? state;
   final String? city;
   final String? referralCode;
-
-  UserModel(
-      {this.avatar,
-      this.email,
-      this.username,
-      this.password,
-      this.fullName,
-      this.gender,
-      this.dateOfBirth,
-      this.country,
-      this.state,
-      this.city,
-      this.referralCode});
+  final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final DateTime? deletedAt;
+  final String? role;
+  final bool? isActive;
+  final String? stripeId;
+  UserModel({
+    this.id,
+    this.avatar,
+    this.email,
+    this.username,
+    this.password,
+    this.fullName,
+    this.gender,
+    this.dateOfBirth,
+    this.country,
+    this.state,
+    this.city,
+    this.referralCode,
+    this.updatedAt,
+    this.createdAt,
+    this.deletedAt,
+    this.role,
+    this.isActive,
+    this.stripeId,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      id: json['id'] as int?,
       avatar: json['avatar'] is String? ? json['avatar'] : '',
       email: json['email'] is String? ? json['email'] : '',
       username: json['username'] is String? ? json['username'] : '',
@@ -47,10 +62,24 @@ class UserModel {
           : StateModel(id: 0, name: ''),
       city: json['city'] is String? ? json['city'] : '',
       referralCode: json['referralCode'] is String? ? json['referralCode'] : '',
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
+      deletedAt: json['deletedAt'] != null
+          ? DateTime.parse(json['deletedAt'])
+          : null,
+      role: json['role'] is String ? json['role'] : '',
+      isActive: json['isActive'] as bool?,
+      stripeId: json['stripeId'] is String ? json['stripeId'] : '',
+
     );
   }
 
   UserModel copyWith({
+    int? id,
     String? avatar,
     String? email,
     String? username,
@@ -62,8 +91,15 @@ class UserModel {
     StateModel? state,
     String? city,
     String? referralCode,
+    DateTime? updatedAt,
+    DateTime? createdAt,
+    DateTime? deletedAt,
+    String? role,
+    bool? isActive,
+    String? stripeId,
   }) {
     return UserModel(
+      id: id ?? this.id,
       avatar: avatar ?? this.avatar,
       email: email ?? this.email,
       username: username ?? this.username,
@@ -75,6 +111,12 @@ class UserModel {
       state: state ?? this.state,
       city: city ?? this.city,
       referralCode: referralCode ?? this.referralCode,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      role: role ?? this.role,
+      isActive: isActive ?? this.isActive,
+      stripeId: stripeId ?? this.stripeId,
     );
   }
 

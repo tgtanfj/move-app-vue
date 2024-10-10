@@ -194,6 +194,18 @@ class Constants {
   static const String seeLess = "See Less";
   static const String cancelComment ="Cancel Comment?";
   static const String areUSure ="Are you sure to cancel this comment?";
+  static const String writeReply = "Write a reply";
+  static const String justNow = "Just now";
+  static const String secondsAgo = "seconds ago";
+  static const String minutesAgo = "minutes ago";
+  static const String hoursAgo = "hours ago";
+  static const String daysAgo = "days ago";
+  static const String weeksAgo = "weeks ago";
+  static const String monthsAgo = "months ago";
+  static const String yeasAgo = "years ago";
+  static const String notFound = "Not Found";
+
+
 
 
 }
