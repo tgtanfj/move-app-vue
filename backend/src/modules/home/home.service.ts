@@ -34,7 +34,7 @@ export class HomeService {
     postedDateValid.setDate(postedDateValid.getDate() - numberDayValid);
 
     const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 2);
+    yesterday.setDate(yesterday.getDate() - 1);
     const formattedYesterday = yesterday.toISOString().split('T')[0];
 
     const result = await this.videoRepository
