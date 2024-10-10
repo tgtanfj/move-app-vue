@@ -69,6 +69,7 @@ class Constants {
   static const String city = 'City';
   static const String saveSetting = 'Save settings';
   static const String pleaseSelectState = 'Please select state';
+  static const String pleaseSelectCountry = 'Please select country';
   static const String malaysia = 'Malaysia';
   static const String to = ' to ';
   static const String exampleEmail = 'p.giggs@email.com.';
@@ -105,6 +106,7 @@ class Constants {
   static const String aboutUs = 'About Us';
   static const String communityGuideline = 'Community Guideline';
   static const String faq = 'FAQ';
+  static const String faqsNotFound = 'FAQs not found!';
   static const String logout = 'Logout';
   static const String logout_question = 'Logout ?';
   static const String loginMenu = "Login";
@@ -138,6 +140,40 @@ class Constants {
       ' here and we will address your problem as soon as possible.';
   static const String anInvalidPassword =
       "You have entered an invalid password";
+  static const String invalidDateOfBirth = 'Please select your date of birth';
+  static const String invalidAge =
+      'Invalid age. Age must be between 18 and 65 years old';
+  static const String sizeAvatarLimit =
+      'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.';
+  static const String allowFileType =
+      'Invalid file format. Only JPG, PNG, and GIF are allowed.';
+  static const String dimensionAvatar =
+      'Image dimensions should be between 100x100 and 2000x2000.';
+  static const String noImageIsPicked = 'No image is picked';
+  static const String imageJpeg = 'image/jpeg';
+  static const String imagePng = 'image/png';
+  static const String imageGit = 'image/gif';
+  static const String applicationOctetStream = 'application/octet-stream';
+  static const String success = 'Success';
+  static const String failed = 'Failed';
+  static const String unknownErrorOccurred = 'Unknown error occurred';
+  static const String jpg = 'jpg';
+  static const String jpeg = 'jpeg';
+  static const String png = 'png';
+  static const String gif = 'gif';
+  static const String noData = 'No data';
+  static const String videos = 'Videos';
+  static const String about = 'About';
+  static const String isFollowing = 'is following';
+  static const String socialNetwork = 'Social network';
+  static const String facebook = 'facebook';
+  static const String twitter = 'twitter';
+  static const String youtube = 'youtube';
+  static const String followers = 'followers';
+  static const String categories = "Categories";
+  static const String channels = "Channels";
+  static const String searchResults = "Search Result";
+
   static const String giftReps = 'Gift REPs';
   static const String share = 'Share';
   static const String reportVideo = 'Report video';

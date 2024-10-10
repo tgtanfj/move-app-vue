@@ -1,9 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:either_dart/either.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
+
 import '../data_sources/local/shared_preferences.dart';
 import '../models/login_request_social.dart';
 import '../models/user_model.dart';

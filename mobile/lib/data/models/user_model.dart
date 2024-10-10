@@ -1,5 +1,6 @@
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/state_model.dart';
+import 'package:move_app/presentation/screens/setting/presentation/profile/widgets/gender_radio_group.dart';
 
 class UserModel {
   final String? avatar;
@@ -34,7 +35,7 @@ class UserModel {
       username: json['username'] is String? ? json['username'] : '',
       password: json['password'] is String? ? json['password'] : '',
       fullName: json['fullName'] is String? ? json['fullName'] : '',
-      gender: json['gender'] is String? ? json['gender'] : '',
+      gender: json['gender'] is String? ? json['gender'] : Gender.male,
       dateOfBirth: json['dateOfBirth'] != null
           ? DateTime.parse(json['dateOfBirth'])
           : null,
@@ -60,6 +61,7 @@ class UserModel {
     CountryModel? country,
     StateModel? state,
     String? city,
+    String? referralCode,
   }) {
     return UserModel(
       avatar: avatar ?? this.avatar,
@@ -80,6 +82,19 @@ class UserModel {
     return {
       'email': email,
       'password': password,
+    };
+  }
+
+  Map<String, dynamic> editUserToJson() {
+    return {
+      'avatar': avatar,
+      'username': username,
+      'fullName': fullName,
+      'gender': gender,
+      'dateOfBirth': dateOfBirth.toString(),
+      'countryId': country?.id,
+      'stateId': state?.id,
+      'city': city,
     };
   }
 }

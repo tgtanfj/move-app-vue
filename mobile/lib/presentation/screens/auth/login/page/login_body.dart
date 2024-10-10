@@ -13,6 +13,7 @@ import 'package:move_app/presentation/screens/forgot_password/page/forgot_passwo
 import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
+import '../../../home/page/home_page.dart';
 import '../../widgets/divider_authentication.dart';
 import '../bloc/login_event.dart';
 
@@ -36,7 +37,7 @@ class _LoginBodyState extends State<LoginBody>
           Fluttertoast.showToast(msg: Constants.loginSuccessful);
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeBody()),
+            MaterialPageRoute(builder: (context) => const HomePage()),
                 (Route<dynamic> route) => false,
           );
         }

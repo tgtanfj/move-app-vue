@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { FaqsRepository } from './faqs.repository';
 import { FAQs } from '@/entities/faq.entity';
+import { CreateFaqDto } from './dto/create-faq.dto';
+import { UpdateFaqDto } from './dto/update-faq.dto';
 
 @Injectable()
 export class FaqsService {
   constructor(private readonly faqsRepository: FaqsRepository) {}
 
   // Create a new FAQ
-  async create(faq: Partial<FAQs>): Promise<FAQs> {
-    const newFaq = { ...faq, isActive: true };
+  async create(faq: CreateFaqDto): Promise<FAQs> {
+    const newFaq = {
+      ...faq,
+      isActive: faq.isActive !== undefined ? faq.isActive.toLowerCase() === 'true' : true,
+    };
     return this.faqsRepository.create(newFaq);
   }
 
@@ -23,8 +28,12 @@ export class FaqsService {
   }
 
   // Update an existing FAQ
-  async update(id: number, faq: Partial<FAQs>): Promise<FAQs> {
-    return this.faqsRepository.update(id, faq);
+  async update(id: number, faq: UpdateFaqDto): Promise<FAQs> {
+    const updatedFaq = {
+      ...faq,
+      isActive: faq.isActive !== undefined ? faq.isActive.toLowerCase() === 'true' : undefined,
+    };
+    return this.faqsRepository.update(id, updatedFaq);
   }
 
   // Delete an FAQ by ID

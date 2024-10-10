@@ -10,6 +10,7 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String? prefixIconPath;
   final String? suffixIconPath;
   final bool isEnableIcon;
+  final VoidCallback? onSearchButtonTap;
 
   const AppBarWidget({
     super.key,
@@ -18,6 +19,7 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.prefixIconPath,
     this.suffixIconPath,
     this.isEnableIcon = true,
+    this.onSearchButtonTap,
   });
 
   @override
@@ -56,7 +58,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: () {},
+                onTap: widget.onSearchButtonTap,
                 child: SvgPicture.asset(
                   widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
                   width: 24.0,

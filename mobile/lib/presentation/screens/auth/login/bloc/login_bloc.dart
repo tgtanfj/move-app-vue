@@ -50,89 +50,55 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onLoginWithGoogleEvent(LoginWithGoogleEvent event, Emitter emit) async {
-    try {
-      final user = await AuthRepository().googleLogin();
-      user.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
-      }, (r) {
-        emit(state.copyWith(
-          status: LoginStatus.success,
-          googleAccount: user.toString(),
-        ));
-      });
-    } catch (error) {
+    final user = await AuthRepository().googleLogin();
+    user.fold((l) {
       emit(state.copyWith(
         status: LoginStatus.failure,
-        errorMessage: error.toString(),
+        errorMessage: l,
       ));
-    }
+    }, (r) {
+      emit(state.copyWith(
+        status: LoginStatus.success,
+        googleAccount: user.toString(),
+      ));
+    });
   }
 
   void _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter emit) async {
-    try {
-      final facebookAccount = await AuthRepository().loginWithFacebook();
-      facebookAccount.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
-      }, (r) {
-        emit(state.copyWith(
-          status: LoginStatus.success,
-          facebookAccount: facebookAccount.toString(),
-        ));
-      });
-    } catch (error) {
+    final facebookAccount = await AuthRepository().loginWithFacebook();
+    facebookAccount.fold((l) {
       emit(state.copyWith(
         status: LoginStatus.failure,
-        errorMessage: error.toString(),
+        errorMessage: l,
       ));
-    }
+    }, (r) {
+      emit(state.copyWith(
+        status: LoginStatus.success,
+        facebookAccount: facebookAccount.toString(),
+      ));
+    });
   }
 
   Future<void> _onLoginWithEmailPasswordEvent(
       LoginWithEmailPasswordEvent event, Emitter<LoginState> emit) async {
-    final validEmail = InputValidationHelper.email.hasMatch(state.email);
-    final validPassword =
-        InputValidationHelper.password.hasMatch(state.password);
     emit(state.copyWith(status: LoginStatus.processing));
     final UserModel userModel = UserModel(
       email: state.email,
       password: state.password,
     );
-    if (!validEmail && validPassword) {
-      emit(state.copyWith(
-          status: LoginStatus.failure,
-          isShowEmailMessage: true,
-          messageInputEmail: Constants.invalidEmail));
-    } else if (validEmail && !validPassword) {
-      emit(state.copyWith(
+    final result =
+        await authenticationRepository.loginWithEmailPassword(userModel);
+    result.fold((l) {
+      emit(
+        state.copyWith(
           status: LoginStatus.failure,
           isShowPasswordMessage: true,
-          messageInputPassword: Constants.anInvalidPassword));
-    } else if (!validEmail && !validPassword) {
-      emit(state.copyWith(
-        status: LoginStatus.failure,
-        isShowPasswordMessage: true,
-        messageInputPassword: Constants.anInvalidPassword,
-        isShowEmailMessage: true,
-        messageInputEmail: Constants.invalidEmail,
-      ));
-    }
-    try {
-      final result =
-          await authenticationRepository.loginWithEmailPassword(userModel);
-      result.fold((l) {
-        emit(state.copyWith(status: LoginStatus.failure));
-      }, (r) {
-        emit(state.copyWith(status: LoginStatus.success));
-      });
-    } catch (e) {
-      emit(state.copyWith(
-        status: LoginStatus.failure,
-        isShowPasswordMessage: true,
-        messageInputPassword: e.toString(),
-        isShowEmailMessage: true,
-        messageInputEmail: e.toString(),
-      ));
-    }
+          messageInputPassword: l,
+        ),
+      );
+    }, (r) {
+      emit(state.copyWith(status: LoginStatus.success));
+    });
   }
 }

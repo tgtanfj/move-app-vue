@@ -1,4 +1,4 @@
-import 'package:either_dart/either.dart';
+import 'package:dartz/dartz.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/state_model.dart';
 import 'package:move_app/data/services/api_service.dart';
