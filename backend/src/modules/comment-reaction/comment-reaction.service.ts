@@ -48,9 +48,10 @@ export class CommentReactionService {
 
   async delete(userId: number, commentId: number): Promise<void> {
     try {
-      const result = await this.commentReactionRepository.delete(userId, commentId);
+      const commentReaction = await this.commentReactionRepository.getOneWithUserComment(userId, commentId);
+      const result = await this.commentReactionRepository.delete(commentReaction.id);
       const comment = await this.commentRepository.getOne(commentId);
-      result.affected === 1 && (comment.numberOfLike -= 1);
+      result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
     } catch (error) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT_REACTION);

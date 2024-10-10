@@ -15,6 +15,16 @@ export class CommentReactionRepository {
     return await this.commentReactionRepository.findOneBy({ id: id });
   }
 
+  async getOneWithUserComment(userId: number, commentId: number): Promise<CommentReaction> {
+    const commentReaction = await this.commentReactionRepository.findOne({
+      where: {
+        user: { id: userId },
+        comment: { id: commentId },
+      },
+    });
+    return commentReaction;
+  }
+
   async getOneWithComment(id: number): Promise<CommentReaction> {
     return await this.commentReactionRepository.findOne({
       where: { id: id },
@@ -45,13 +55,7 @@ export class CommentReactionRepository {
     return await this.commentReactionRepository.save(commentReaction);
   }
 
-  async delete(userId: number, commentId: number): Promise<DeleteResult> {
-    const commentReaction = await this.commentReactionRepository.findOne({
-      where: {
-        user: { id: userId },
-        comment: { id: commentId },
-      },
-    });
-    return await this.commentReactionRepository.delete({ id: commentReaction.id });
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.commentReactionRepository.delete({ id: id });
   }
 }
