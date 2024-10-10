@@ -4,7 +4,6 @@ import { JwtAuthGuard } from '@/shared/guards';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentReactionService } from './comment-reaction.service';
 import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
-import { DeleteCommentReactionDto } from './dto/delete-comment-reaction.dto';
 
 @ApiTags('comment reaction')
 @ApiBearerAuth('jwt')
