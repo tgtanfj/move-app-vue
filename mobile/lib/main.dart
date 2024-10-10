@@ -75,9 +75,16 @@ class _MyAppState extends State<MyApp> {
       ),
       navigatorKey: navigatorKey,
       builder: (context, child) {
+        final width = MediaQuery.of(context).size.width;
+        double textScaleFactor;
+        if (width < 400) {
+          textScaleFactor = 0.8; 
+        } else {  
+          textScaleFactor = 1.0; 
+        }
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(0.8),
+            textScaler: TextScaler.linear(textScaleFactor),
             devicePixelRatio: 1.0,
           ),
           child: child!,

@@ -133,14 +133,14 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               child: Row(
                 children: [
                   TypeLabel(
-                    typeLabel: Constants.intermediate == 'Intermediate'
+                    typeLabel: Constants.intermediate == 'Intermediate' // TODO: add type label
                         ? Constants.interm
                         : Constants.intermediate,
                   ),
                   SizedBox(
                     width: 6.0,
                   ),
-                  TypeLabel(typeLabel: '<30 mins'),
+                  TypeLabel(typeLabel: '<30 mins' ), // TODO: add type label
                 ],
               ),
             ),
@@ -174,7 +174,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 width: 12.0,
               ),
               Text(
-                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",
+                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",  // TODO: add channel name
                 style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
               ),
               const SizedBox(
