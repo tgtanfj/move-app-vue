@@ -28,6 +28,8 @@ enum AppIcons {
   youtubeLogo,
   twitterLogo,
   blueCheckCircle,
+  closeCircle,
+  back
 }
 
 extension AppIconsExtension on AppIcons {
