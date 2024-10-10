@@ -29,4 +29,11 @@ export class ChannelRepository {
       withDeleted,
     });
   }
+
+  async searchChannels(keyword: string): Promise<Channel[]> {
+    return this.channelRepository
+      .createQueryBuilder('channel')
+      .where('channel.name ILIKE :keyword', { keyword: `%${keyword}%` })
+      .getMany();
+  }
 }
