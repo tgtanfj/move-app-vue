@@ -162,6 +162,14 @@ class Constants {
   static const String png = 'png';
   static const String gif = 'gif';
   static const String noData = 'No data';
+  static const String videos = 'Videos';
+  static const String about = 'About';
+  static const String isFollowing = 'is following';
+  static const String socialNetwork = 'Social network';
+  static const String facebook = 'facebook';
+  static const String twitter = 'twitter';
+  static const String youtube = 'youtube';
+  static const String followers = 'followers';
   static const String categories = "Categories";
   static const String channels = "Channels";
   static const String videos = "Videos";

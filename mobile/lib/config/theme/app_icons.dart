@@ -21,6 +21,13 @@ enum AppIcons {
   addVideo,
   closeWhite,
   faqs,
+  next,
+  heart,
+  fillHeart,
+  more,
+  youtubeLogo,
+  twitterLogo,
+  blueCheckCircle,
   closeCircle,
   back
 }
