@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;
@@ -48,8 +49,11 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               )
             : const SizedBox(),
         Expanded(
-          child: SvgPicture.asset(
-            AppIcons.moveWhiteTextLogo.svgAssetPath,
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.home),
+            child: SvgPicture.asset(
+              AppIcons.moveWhiteTextLogo.svgAssetPath,
+            ),
           ),
         ),
         widget.isEnableIcon

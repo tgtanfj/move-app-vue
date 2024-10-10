@@ -172,7 +172,16 @@ class Constants {
   static const String followers = 'followers';
   static const String categories = "Categories";
   static const String channels = "Channels";
-  static const String videos = "Videos";
   static const String searchResults = "Search Result";
 
+  static const String giftReps = 'Gift REPs';
+  static const String share = 'Share';
+  static const String reportVideo = 'Report video';
+  static const String rate = 'Rate';
+  static const String channel = 'channel';
+  static const String s = "'s";
+  static const String view = 'View';
+  static const String loading = 'Loading';
+  static const String quality = 'Quality';
+  static const String auto = 'Auto';
 }

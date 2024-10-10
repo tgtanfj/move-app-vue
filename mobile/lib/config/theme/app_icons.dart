@@ -29,7 +29,13 @@ enum AppIcons {
   twitterLogo,
   blueCheckCircle,
   closeCircle,
-  back
+  back,
+  arrowRight,
+  arrowRightTiffany,
+  dotsTiffany,
+  heartTiffany,
+  filter,
+  arrowWhiteLeft,
 }
 
 extension AppIconsExtension on AppIcons {
