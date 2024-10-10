@@ -22,7 +22,7 @@ const props = defineProps({
 <template>
   <div class="flex-[2.8]">
     <!-- video play -->
-    <video width="100%" height="auto" controls autoplay loop muted class="h-[519px]">
+    <video width="100%" height="auto" controls autoplay muted class="h-[519px]">
       <source
         src="https://move-project.s3.us-east-1.amazonaws.com/videos/1728017172580-1728017169372-Y2meta.app-Nature%20Beautiful%20short%20video%20720p%20HD.mp4"
         type="video/mp4"
