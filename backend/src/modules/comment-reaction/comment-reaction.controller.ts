@@ -36,10 +36,9 @@ export class CommentReactionController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  async deleteCommentReaction(@User() user, @Body() dto: DeleteCommentReactionDto) {
+  @Delete(':commentId')
+  async deleteCommentReaction(@User() user, @Param('commentId') commentId: number) {
     const userId = user.id;
-    const commentId = dto.commentId;
     return await this.commentReactionService.delete(userId, commentId);
   }
 }
