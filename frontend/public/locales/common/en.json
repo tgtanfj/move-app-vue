@@ -226,5 +226,16 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "view_channel": {
+    "about": "About",
+    "videos": "Videos",
+    "no_bio": "No information found.",
+    "no_social_network": "No social network found.",
+    "following": "{name} is following",
+    "follow": "follow",
+    "share": "share",
+    "not_upload_video": "{name} has not uploaded any videos yet.",
+    "all_videos": "All videos"
   }
 }
