@@ -14,7 +14,7 @@ export const useVideoStore = defineStore('video', () => {
   const isLoading = ref(false)
   const pageCounts = ref([])
   const totalPages = ref()
-  const isCopied = ref(false)
+  const isCopied = ref(false);
 
   //Action
   const getUploadedVideosList = async (take, page) => {
@@ -81,33 +81,40 @@ export const useVideoStore = defineStore('video', () => {
       return true
     } catch (error) {
       if (error.response && error.response.data) {
-        errorMsg.value = error.response.data.message || 'An error occurred'
+        errorMsg.value = error.response.data.message || "An error occurred"
       } else {
-        errorMsg.value = 'An unknown error occurred'
+        errorMsg.value = "An unknown error occurred"
       }
     }
   }
 
   const updateDetailVideo = async (formData) => {
     try {
-      const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId.value}`, formData)
+      const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId.value}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       if (res.status === 200) {
-        const index = videos.value.findIndex((video) => video.id === videoId.value)
+        const index = videos.value.findIndex(video => video.id === videoId.value);
         if (index !== -1) {
-          videos.value[index] = { ...videos.value[index], ...formData }
+          videos.value[index] = { ...videos.value[index], ...formData };
         }
       }
-      return res.data
+      return res.data;
     } catch (error) {
-      console.error('Error updating video:', error)
+      console.error('Error updating video:', error);
     }
+
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(key, value); // In ra key-value của formData
+    // }
   }
 
   const shareVideoSocial = async (videoId, option) => {
     try {
-      const response = await axios.get(
-        `${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`
-      )
+      const response = await axios.get(`${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`)
 
       if (response.status === 200) {
         const shareUrl = response.data.data
@@ -129,11 +136,11 @@ export const useVideoStore = defineStore('video', () => {
 
         await navigator.clipboard.writeText(videoUrl)
 
-        isCopied.value = true
+        isCopied.value = true;
 
         setTimeout(() => {
           isCopied.value = false
-        }, 2000)
+        }, 2000);
       } else {
         console.error('Failed to get video URL:', response.statusText)
       }

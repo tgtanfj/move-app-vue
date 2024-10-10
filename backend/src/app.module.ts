@@ -23,6 +23,10 @@ import { BullModule } from '@nestjs/bullmq';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SearchModule } from './modules/search/search.module';
 import { FaqsModule } from './modules/faqs/faqs.module';
+import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
+import { HomeModule } from './modules/home/home.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { VideoTrendModule } from './modules/video-trend/video-trend.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,6 +50,7 @@ import { FaqsModule } from './modules/faqs/faqs.module';
     ThumbnailModule,
     FaqsModule,
     SearchModule,
+    CommentReactionModule,
     BullModule.forRootAsync({
       inject: [ApiConfigService],
       useFactory: async (apiConfig: ApiConfigService) => ({
@@ -58,6 +63,9 @@ import { FaqsModule } from './modules/faqs/faqs.module';
       }),
     }),
     FaqsModule,
+    HomeModule,
+    ScheduleModule.forRoot(),
+    VideoTrendModule,
   ],
   providers: [
     {

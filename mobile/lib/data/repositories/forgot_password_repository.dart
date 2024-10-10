@@ -1,5 +1,5 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:either_dart/either.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/services/api_service.dart';
 

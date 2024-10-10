@@ -42,11 +42,12 @@ const submit = async () => {
     v-if="!isSuccess && !isError"
     :title="$t('forgot_password.create_password')"
     :description="$t('forgot_password.create_password_desc')"
+    class="mt-0"
   >
     <form @submit.prevent="submit">
       <div class="flex flex-col space-y-1.5 mb-4">
         <custom-input
-          :label="$t('label.password')"
+          :label="$t('label.new_password')"
           name="password"
           :defineField="defineField"
           :errors="errors"
@@ -57,7 +58,7 @@ const submit = async () => {
 
       <div class="flex flex-col space-y-1.5">
         <custom-input
-          :label="$t('label.confirm_password')"
+          :label="$t('label.confirm_new_password')"
           name="confirmPassword"
           :defineField="defineField"
           :errors="errors"
@@ -77,7 +78,6 @@ const submit = async () => {
       </div>
     </form>
   </BaseCard>
-
   <BaseCard
     v-if="isSuccess || isError"
     :title="

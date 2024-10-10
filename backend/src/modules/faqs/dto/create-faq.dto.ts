@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateFaqDto {
   @ApiProperty({
     description: 'type of question',
     example: 'S',
   })
-  @Expose()
   @IsString()
   question: string;
 
@@ -15,11 +14,10 @@ export class CreateFaqDto {
     description: 'content of question',
     example: 'cong thuc abc la:',
   })
-  @Expose()
   @IsString()
   answer: string;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  isActive?: boolean;
+  isActive?: string;
 }

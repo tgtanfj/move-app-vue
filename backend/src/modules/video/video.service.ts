@@ -1,3 +1,4 @@
+import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
@@ -16,7 +17,7 @@ import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
 import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
-import { CategoryRepository } from '../category/caregory.repository';
+import { CategoryRepository } from '../category/category.repository';
 import { Video } from '@/entities/video.entity';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { parseInt } from 'lodash';
@@ -28,6 +29,10 @@ import { Queue } from 'bullmq';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getKeyS3 } from '@/shared/utils/get-key-s3.util';
+import { Between, FindOptionsOrder } from 'typeorm';
+import { VideoItemDto } from './dto/response/video-item.dto';
+import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 
 @Injectable()
 export class VideoService {
@@ -40,7 +45,6 @@ export class VideoService {
 
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
-    private readonly commentService: CommentService,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
@@ -117,16 +121,14 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [selectedThumbnail, numberOfViews, numberOfComments, ratings] = await Promise.all([
+          const [selectedThumbnail, numberOfViews, ratings] = await Promise.all([
             this.thumbnailService.getSelectedThumbnail(video.id),
             this.watchingVideoHistoryService.getNumberOfViews(video.id),
-            this.commentService.getNumberOfComments(video.id),
             this.watchingVideoHistoryService.getAverageRating(video.id),
           ]);
 
           videoDetail.thumbnail_url = selectedThumbnail.image;
           videoDetail.numberOfViews = numberOfViews;
-          videoDetail.numberOfComments = numberOfComments;
           videoDetail.ratings = ratings;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
@@ -257,7 +259,7 @@ export class VideoService {
         const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
         if (!url) return;
 
-        await this.vimeoService.delete(url);
+        // await this.vimeoService.delete(url);
       } catch (error) {
         return;
       }
@@ -314,5 +316,91 @@ export class VideoService {
         resolve(filePath);
       });
     });
+  }
+
+  async getChannelVideos(channelId: number, queries: any, paginationDto: PaginationDto): Promise<object> {
+    const { workoutLevel, categoryId, sortBy } = queries;
+
+    let searchConditions: any = {
+      channel: {
+        id: channelId,
+      },
+      isPublish: true,
+    };
+
+    if (categoryId) {
+      searchConditions = { ...searchConditions, category: { id: categoryId } };
+    }
+
+    if (workoutLevel) {
+      if (workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
+        searchConditions = { ...searchConditions, workoutLevel };
+    }
+
+    const order: FindOptionsOrder<Video> = {
+      createdAt: 'DESC',
+      title: 'ASC',
+    };
+
+    const [videos, total] = await this.videoRepository.find(
+      channelId,
+      searchConditions,
+      order,
+      paginationDto,
+    );
+
+    const videoItems = await Promise.all(
+      videos.map(async (video) => {
+        const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
+
+        const [thumbnail, videoLength] = await Promise.all([
+          this.thumbnailService.getSelectedThumbnail(video.id),
+          this.vimeoService.getVideoLength(video.url),
+        ]);
+        videoItemDto.thumbnailURL = thumbnail.image;
+        videoItemDto.videoLength = videoLength;
+
+        videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
+          excludeExtraneousValues: true,
+        });
+
+        videoItemDto.category = plainToInstance(CategoryVideoDetailDto, video.category, {
+          excludeExtraneousValues: true,
+        });
+
+        videoItemDto.numberOfViews = fixIntNumberResponse(videoItemDto.numberOfViews);
+        videoItemDto.channel.numberOfFollowers = fixIntNumberResponse(videoItemDto.channel.numberOfFollowers);
+
+        return videoItemDto;
+      }),
+    ).then((videos) => {
+      return videos.sort((video1, video2) => {
+        switch (sortBy) {
+          case SortBy.MOST_RECENT:
+            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
+          case SortBy.VIEWS_HIGH_TO_LOW:
+            return video2.numberOfViews - video1.numberOfViews;
+          case SortBy.VIEWS_LOW_TO_HIGH:
+            return video1.numberOfViews - video2.numberOfViews;
+          case SortBy.DURATION_HIGH_TO_LOW:
+            return video2.videoLength - video1.videoLength;
+          case SortBy.DURATION_LOW_TO_HIGH:
+            return video1.videoLength - video2.videoLength;
+          case SortBy.RATINGS_HIGH_TO_LOW:
+            return video2.ratings - video1.ratings;
+          case SortBy.RATINGS_LOW_TO_HIGH:
+            return video1.ratings - video2.ratings;
+          default:
+            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
+        }
+      });
+    });
+
+    const totalPages = Math.ceil(total / paginationDto.take);
+
+    return objectResponse(
+      videoItems,
+      new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
+    );
   }
 }

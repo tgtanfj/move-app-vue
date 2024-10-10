@@ -31,7 +31,22 @@ enum AppIcons {
   arrowDownTiffany,
   repsSender,
   verify,
-  locReps
+  locReps,
+  next,
+  heart,
+  fillHeart,
+  more,
+  youtubeLogo,
+  twitterLogo,
+  blueCheckCircle,
+  closeCircle,
+  back,
+  arrowRight,
+  arrowRightTiffany,
+  dotsTiffany,
+  heartTiffany,
+  filter,
+  arrowWhiteLeft,
 }
 
 extension AppIconsExtension on AppIcons {

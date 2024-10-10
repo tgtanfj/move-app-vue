@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -24,14 +25,44 @@ class SignUpBody extends StatefulWidget {
 
 class _SignUpBodyState extends State<SignUpBody>
     with AutomaticKeepAliveClientMixin {
+  final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(() {
+      if (!focusNode.hasFocus) {
+        setState(() {
+          controller.text = controller.text.trim();
+        });
+        context
+            .read<SignUpBloc>()
+            .add(SignUpValuesChangedEvent(email: controller.text.trim()));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return BlocListener<SignUpBloc, SignUpState>(listener: (context, state) {
-      if (state.status == SignUpStatus.completed) {
+      if (state.status == SignUpStatus.success) {
         Navigator.of(context).pop();
       }
-      if (state.status == SignUpStatus.success) {
+      if (state.status == SignUpStatus.loading) {
+        EasyLoading.show();
+      } else {
+        EasyLoading.dismiss();
+      }
+      if (state.status == SignUpStatus.goOn) {
         Navigator.of(context).pop();
         showDialog(
           context: context,
@@ -99,12 +130,19 @@ class _SignUpBodyState extends State<SignUpBody>
                             ? AppTextStyles.montserratStyle.regular14BrinkPink
                             : AppTextStyles.montserratStyle.regular14Black,
                         borderColor: AppColors.brinkPink,
+                        controller: controller,
                         cursorColor: state.isShowEmailMessage
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputEmail,
                         maxLength: 255,
+                        focusNode: focusNode,
                         onChanged: (value) {
+                          context
+                              .read<SignUpBloc>()
+                              .add(SignUpValuesChangedEvent(email: value));
+                        },
+                        onSubmitted: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(email: value.trim()));
                         },

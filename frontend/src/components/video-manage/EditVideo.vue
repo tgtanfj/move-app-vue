@@ -1,3 +1,328 @@
+<script setup>
+import { Pen } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '@/common/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/common/ui/select'
+import { Label } from '@/common/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
+import { Textarea } from '@/common/ui/textarea'
+import { Button } from '@/common/ui/button'
+import { Tabs, TabsList } from '@/common/ui/tabs'
+import { Input } from '@/common/ui/input'
+import Loading from '../Loading.vue'
+import ImageLoading from '../ImageLoading.vue'
+import VideoIcon from '@assets/icons/videoIcon.vue'
+import { cn } from '@utils/shadcn.util'
+import { useVideoStore } from '../../stores/videoManage'
+import {
+  allowedFormats,
+  maxFileSize,
+  validImageTypes,
+  WORKOUTLEVEL,
+  DURATIONTYPE
+} from '@constants/upload-video.constant'
+
+const props = defineProps({
+  videoInfoSelected: {
+    type: Object,
+    required: true
+  }
+})
+
+const videoStore = useVideoStore()
+const videoDataEdit = ref({})
+const isOpenUploadVideoDetails = ref(false)
+
+const uploading = ref(false)
+const progress = ref(0)
+const error = ref(null)
+const images = ref([])
+const imagesAfterConvert = ref([])
+const selectedIndex = ref(null)
+const imagesSelected = ref(null)
+const imageSelectedFile = ref(null);
+const fileInputThumb = ref(null)
+const uploadLoading = ref(null)
+
+const validateSizeTypeErr = ref('')
+const titleErr = ref('')
+const thumbnailErr = ref('')
+const categoryErr = ref('')
+const workoutLevelErr = ref('')
+const durationErr = ref('')
+const isCommentableErr = ref('')
+const thumbnailTypeValidationErr = ref('')
+
+const nullFirstTab = ref(false)
+const nullSecondTab = ref(false)
+
+const tabChange = ref('details')
+const charCount = ref(0)
+const charLimit = 500
+
+const title = computed(() => videoDataEdit.value.title)
+const thumbnail = computed(() => videoDataEdit.value.thumbnail_url)
+const category = computed(() => videoDataEdit.value.category.id)
+const displayWorkoutLevel = computed(() => capitalizeFirstLetter(videoDataEdit.value.workoutLevel))
+const displayDurationLevel = computed(() => convertDuration(videoDataEdit.value.duration))
+const keywords = computed(() => videoDataEdit.value.keywords)
+const isCommentable = ref(videoDataEdit.value.isCommentable)
+const categories = ref([
+  {
+    id: 1,
+    title: 'Gym'
+  },
+  {
+    id: 2,
+    title: 'MMA'
+  }
+])
+
+watch(
+  () => props.videoInfoSelected,
+  (newValue) => {
+    if (newValue) {
+      videoDataEdit.value = { ...newValue }
+      isCommentable.value = newValue.isCommentable
+    }
+  },
+  { immediate: true }
+)
+
+watch(title, (newValue) => {
+  if (newValue) titleErr.value = ''
+})
+
+watch(category, (newValue) => {
+  if (newValue) categoryErr.value = ''
+})
+
+watch(isCommentable, (newValue) => {
+  if (newValue) isCommentableErr.value = ''
+})
+
+const handleEditVideo = () => {
+  videoDataEdit.value = { ...props.videoInfoSelected }
+  videoStore.videoId = props.videoInfoSelected.id
+  console.log(videoDataEdit.value)
+}
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+const convertDuration = (durationLong) => {
+  switch (durationLong) {
+    case 'less than 30 minutes':
+      return '30 mins'
+    case 'less than 1 hours':
+      return '< 1 hour'
+    case 'more than 1 hours':
+      return '> 1 hour'
+    default:
+      return durationLong
+  }
+}
+
+const resetField = () => {
+  title.value = ''
+  imagesSelected.value = ''
+  keywords.value = ''
+  category.value = ''
+  isCommentable.value = videoDataEdit.value.isCommentable
+  tabChange.value = 'details'
+  images.value = [videoDataEdit.value.thumbnail_url]
+  imagesSelected.value = []
+  validateSizeTypeErr.value = ''
+  titleErr.value = ''
+  thumbnailErr.value = ''
+  categoryErr.value = ''
+  workoutLevelErr.value = ''
+  durationErr.value = ''
+  isCommentableErr.value = ''
+  uploadLoading.value = null
+  uploading.value = null
+  nullFirstTab.value = false
+  nullSecondTab.value = false
+  thumbnailTypeValidationErr.value = ''
+}
+
+const onDialogClose = (isOpen) => {
+  if (!isOpen) {
+    resetField()
+    images.value.forEach((image) => {
+      if (typeof image === 'string' && image.startsWith('blob:')) {
+        URL.revokeObjectURL(image)
+      }
+    })
+  }
+  if (isOpen) {
+    images.value.push(videoDataEdit.value.thumbnail_url)
+    imagesSelected.value = videoDataEdit.value.thumbnail_url
+  }
+}
+
+const changeTab = (newTab) => {
+  tabChange.value = newTab
+}
+
+const handleInput = (inputValue) => {
+  let validInput = ''
+  for (const char of inputValue) {
+    if (REGEX_UPLOADVIDE_TEXTAREA.test(char)) {
+      validInput += char
+    }
+  }
+  keywords.value = validInput
+  charCount.value = keywords.value.length
+}
+
+const selectFilesThumbnail = () => {
+  fileInputThumb.value.click()
+}
+
+const changeSelectedImage = (image) => {
+  thumbnail.value = image
+  imagesSelected.value = image
+}
+
+const changeWorkoutLevel = (level) => {
+  workoutLevelErr.value = ''
+  videoDataEdit.value.workoutLevel = level
+}
+
+const changeDuration = (value) => {
+  durationErr.value = ''
+  videoDataEdit.value.duration = value
+}
+
+const handleThumbnailUpload = (event) => {
+  if (!validImageTypes.includes(event.target.files[0].type)) {
+    reject((thumbnailTypeValidationErr.value = 'File Format, File Size Limit Requirement Not Meet'))
+    return
+  }
+
+  const files = Array.from(event.target.files)
+  const newImages = []
+
+  const promises = files.map((file) => {
+    imageSelectedFile.value = file;
+    return new Promise((resolve) => {
+      const imageUrl = URL.createObjectURL(file)
+      newImages.push(imageUrl)
+      resolve()
+    })
+  })
+
+  Promise.all(promises)
+    .then(() => {
+      images.value.unshift(...newImages)
+
+      if (images.value.length > 6) {
+        images.value = images.value.slice(0, 6)
+      }
+
+      thumbnailErr.value = ''
+
+      if (images.value.length > 0) {
+        imagesSelected.value = images.value[0]
+        thumbnail.value = images.value[0]
+      }
+    })
+    .catch((error) => {
+      console.error('Error when read image: ', error)
+    })
+}
+
+const firstButton = (tab) => {
+  if (!title.value) {
+    titleErr.value = 'Please enter a title'
+  }
+  if (!imagesSelected.value) {
+    thumbnailErr.value = 'Please upload thumbnail'
+  }
+  if (imagesSelected.value && title.value) {
+    changeTab(tab)
+  }
+}
+
+const secondButton = (tab) => {
+  if (!category.value) {
+    categoryErr.value = 'Please select a category'
+  }
+  if (!displayDurationLevel.value) {
+    durationErr.value = 'Please select a duration'
+  }
+  if (!displayWorkoutLevel.value) {
+    workoutLevelErr.value = 'Please select a level'
+  }
+  if (category.value && displayDurationLevel.value && displayWorkoutLevel.value) {
+    changeTab(tab)
+  }
+}
+
+const thirdButton = async (tab) => {
+  if (!isCommentable.value) isCommentableErr.value = 'Please select comment setting'
+  if (isCommentable.value) {
+    if (!title.value || !imagesSelected.value) {
+      nullFirstTab.value = true
+      if (!title.value) titleErr.value = 'Please enter a title'
+      if (!imagesSelected.value) thumbnailErr.value = 'Please upload thumbnail'
+    } else {
+      nullFirstTab.value = false
+    }
+    if (!category.value || !displayWorkoutLevel.value || !displayDurationLevel.value) {
+      nullSecondTab.value = true
+      if (!category.value) categoryErr.value = 'Please select a category'
+      if (!displayWorkoutLevel.value) workoutLevelErr.value = 'Please select a level'
+      if (!displayDurationLevel.value) durationErr.value = 'Please select a duration'
+    } else {
+      nullSecondTab.value = false
+    }
+    if (!nullFirstTab.value && !nullSecondTab.value) {
+      const durationText =
+        displayDurationLevel.value === '30 mins'
+          ? 'less than 30 minutes'
+          : displayDurationLevel.value === '< 1 hour'
+            ? 'less than 1 hours'
+            : displayDurationLevel.value === '> 1 hour'
+              ? 'more than 1 hours'
+              : 'unknown'
+      const workoutLevelText =
+        displayWorkoutLevel.value === 'Beginner'
+          ? 'beginner'
+          : displayWorkoutLevel.value === 'Intermediate'
+            ? 'intermediate'
+            : displayWorkoutLevel.value === 'Advanced'
+              ? 'advanced'
+              : 'unknown'
+
+      const formData = new FormData()
+      formData.append('thumbnail', imageSelectedFile.value)
+      formData.append('title', title.value)
+      formData.append('categoryId', category.value)
+      formData.append('workoutLevel', workoutLevelText)
+      formData.append('duration', durationText)
+      formData.append('keywords', keywords.value)
+      formData.append('isCommentable', isCommentable.value === 'true' ? true : false)
+
+      const response = await videoStore.updateDetailVideo(formData)
+
+      if (response && response.statusCode === 200) {
+        isOpenUploadVideoDetails.value = false
+      }
+    }
+  }
+}
+</script>
+
 <template>
   <Dialog v-model:open="isOpenUploadVideoDetails" @update:open="onDialogClose">
     <DialogTrigger>
@@ -164,7 +489,7 @@
                       {{ categoryErr }}
                     </div>
                   </div>
-                  <Select v-model="videoDataEdit.categoryId">
+                  <Select v-model="videoDataEdit.category.id">
                     <SelectTrigger class="w-[330px] h-[40px] rounded-lg border-primary">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -190,8 +515,8 @@
                         @click="changeWorkoutLevel(item.title)"
                         class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer"
                         :class="{
-                          'bg-primary text-white': item.title === videoDataEdit.workoutLevel,
-                          'bg-[#EEEEEE] text-black': item.title !== videoDataEdit.workoutLevel
+                          'bg-primary text-white': item.title === displayWorkoutLevel, // Beginner !== beginner
+                          'bg-[#EEEEEE] text-black': item.title !== displayWorkoutLevel
                         }"
                       >
                         <p class="text-[11px] font-bold">{{ item.title }}</p>
@@ -212,8 +537,8 @@
                         @click="changeDuration(item.title)"
                         class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer"
                         :class="{
-                          'bg-primary text-white': item.title === videoDataEdit.duration,
-                          'bg-[#EEEEEE] text-black': item.title !== videoDataEdit.duration
+                          'bg-primary text-white': item.title === displayDurationLevel, // < 30mins === less than 30 mins
+                          'bg-[#EEEEEE] text-black': item.title !== displayDurationLevel
                         }"
                       >
                         <p class="text-[11px] font-bold">{{ item.title }}</p>
@@ -326,304 +651,3 @@
     </DialogContent>
   </Dialog>
 </template>
-
-<script setup>
-import { Pen } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '@/common/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/common/ui/select'
-import { Label } from '@/common/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
-import { Textarea } from '@/common/ui/textarea'
-import { Button } from '@/common/ui/button'
-import { Tabs, TabsList } from '@/common/ui/tabs'
-import { Input } from '@/common/ui/input'
-import Loading from '../Loading.vue'
-import ImageLoading from '../ImageLoading.vue'
-import VideoIcon from '@assets/icons/videoIcon.vue'
-import { cn } from '@utils/shadcn.util'
-import { useVideoStore } from '../../stores/videoManage'
-import {
-  allowedFormats,
-  maxFileSize,
-  validImageTypes,
-  WORKOUTLEVEL,
-  DURATIONTYPE
-} from '@constants/upload-video.constant'
-
-const props = defineProps({
-  videoInfoSelected: {
-    type: Object,
-    required: true
-  }
-})
-
-const videoStore = useVideoStore()
-const videoDataEdit = ref({})
-const isOpenUploadVideoDetails = ref(false)
-
-const uploading = ref(false)
-const progress = ref(0)
-const error = ref(null)
-const images = ref([])
-const imagesAfterConvert = ref([])
-const selectedIndex = ref(null)
-const imagesSelected = ref(null)
-const fileInputThumb = ref(null)
-const uploadLoading = ref(null)
-
-const validateSizeTypeErr = ref('')
-const titleErr = ref('')
-const thumbnailErr = ref('')
-const categoryErr = ref('')
-const workoutLevelErr = ref('')
-const durationErr = ref('')
-const isCommentableErr = ref('')
-const thumbnailTypeValidationErr = ref('')
-
-const nullFirstTab = ref(false)
-const nullSecondTab = ref(false)
-
-const tabChange = ref('details')
-const charCount = ref(0)
-const charLimit = 500
-
-const title = computed(() => videoDataEdit.value.title)
-const thumbnail = computed(() => videoDataEdit.value.thumbnail_url)
-const category = computed(() => videoDataEdit.value.categoryId)
-const workoutLevel = computed(() => videoDataEdit.value.workoutLevel)
-const duration = computed(() => videoDataEdit.value.duration)
-const keywords = computed(() => videoDataEdit.value.keywords)
-const isCommentable = ref(videoDataEdit.value.isCommentable)
-const categories = ref([
-  {
-    id: 1,
-    title: 'Gym'
-  },
-  {
-    id: 2,
-    title: 'Yoga'
-  }
-])
-
-watch(
-  () => props.videoInfoSelected,
-  (newValue) => {
-    if (newValue) {
-      videoDataEdit.value = { ...newValue }
-      isCommentable.value = newValue.isCommentable
-    }
-  },
-  { immediate: true }
-)
-
-watch(title, (newValue) => {
-  if (newValue) titleErr.value = ''
-})
-
-watch(category, (newValue) => {
-  if (newValue) categoryErr.value = ''
-})
-
-watch(isCommentable, (newValue) => {
-  if (newValue) isCommentableErr.value = ''
-})
-
-const handleEditVideo = () => {
-  videoDataEdit.value = { ...props.videoInfoSelected }
-  videoStore.videoId = props.videoInfoSelected.id
-}
-
-const resetField = () => {
-  title.value = ''
-  imagesSelected.value = ''
-  keywords.value = ''
-  duration.value = ''
-  workoutLevel.value = ''
-  category.value = ''
-  isCommentable.value = videoDataEdit.value.isCommentable
-  tabChange.value = 'details'
-  images.value = []
-  imagesSelected.value = []
-  validateSizeTypeErr.value = ''
-  titleErr.value = ''
-  thumbnailErr.value = ''
-  categoryErr.value = ''
-  workoutLevelErr.value = ''
-  durationErr.value = ''
-  isCommentableErr.value = ''
-  uploadLoading.value = null
-  uploading.value = null
-  nullFirstTab.value = false
-  nullSecondTab.value = false
-  thumbnailTypeValidationErr.value = ''
-}
-
-const onDialogClose = (isOpen) => {
-  if (!isOpen) {
-    resetField()
-  }
-  if (isOpen) {
-    images.value.push(videoDataEdit.value.thumbnail_url)
-    imagesSelected.value = videoDataEdit.value.thumbnail_url
-  }
-}
-
-const changeTab = (newTab) => {
-  tabChange.value = newTab
-}
-
-const handleInput = (inputValue) => {
-  let validInput = ''
-  for (const char of inputValue) {
-    if (REGEX_UPLOADVIDE_TEXTAREA.test(char)) {
-      validInput += char
-    }
-  }
-  keywords.value = validInput
-  charCount.value = keywords.value.length
-}
-
-const selectFilesThumbnail = () => {
-  fileInputThumb.value.click()
-}
-
-const changeSelectedImage = (image) => {
-  thumbnail.value = image
-  imagesSelected.value = image
-}
-
-const changeWorkoutLevel = (level) => {
-  workoutLevelErr.value = ''
-  videoDataEdit.value.workoutLevel = level
-}
-
-const changeDuration = (value) => {
-  durationErr.value = ''
-  videoDataEdit.value.duration = value
-}
-
-const handleThumbnailUpload = (event) => {
-  if (!validImageTypes.includes(event.target.files[0].type)) {
-    reject((thumbnailTypeValidationErr.value = 'File Format, File Size Limit Requirement Not Meet'))
-    return
-  }
-
-  const files = Array.from(event.target.files)
-  const newImages = []
-
-  const promises = files.map((file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const base64String = e.target.result
-        newImages.push(base64String) 
-        resolve()
-      }
-      reader.onerror = (error) => reject(error)
-
-      reader.readAsDataURL(file)
-    })
-  })
-
-  Promise.all(promises)
-    .then(() => {
-      images.value.unshift(...newImages)
-
-      if (images.value.length > 6) {
-        images.value = images.value.slice(0, 6)
-      }
-
-      thumbnailErr.value = ''
-
-      if (images.value.length > 0) {
-        imagesSelected.value = images.value[0]
-        thumbnail.value = images.value[0]
-      }
-    })
-    .catch((error) => {
-      console.error('Error when read image: ', error)
-    })
-}
-
-const firstButton = (tab) => {
-  if (!title.value) {
-    titleErr.value = 'Please enter a title'
-  }
-  if (!imagesSelected.value) {
-    thumbnailErr.value = 'Please upload thumbnail'
-  }
-  if (imagesSelected.value && title.value) {
-    changeTab(tab)
-  }
-}
-
-const secondButton = (tab) => {
-  if (!category.value) {
-    categoryErr.value = 'Please select a category'
-  }
-  if (!duration.value) {
-    durationErr.value = 'Please select a duration'
-  }
-  if (!workoutLevel.value) {
-    workoutLevelErr.value = 'Please select a level'
-  }
-  if (category.value && duration.value && workoutLevel.value) {
-    changeTab(tab)
-  }
-}
-
-const thirdButton = async (tab) => {
-  if (!isCommentable.value) isCommentableErr.value = 'Please select comment setting'
-  if (isCommentable.value) {
-    if (!title.value || !imagesSelected.value) {
-      nullFirstTab.value = true
-      if (!title.value) titleErr.value = 'Please enter a title'
-      if (!imagesSelected.value) thumbnailErr.value = 'Please upload thumbnail'
-    } else {
-      nullFirstTab.value = false
-    }
-    if (!category.value || !workoutLevel.value || !duration.value) {
-      nullSecondTab.value = true
-      if (!category.value) categoryErr.value = 'Please select a category'
-      if (!workoutLevel.value) workoutLevelErr.value = 'Please select a level'
-      if (!duration.value) durationErr.value = 'Please select a duration'
-    } else {
-      nullSecondTab.value = false
-    }
-    if (!nullFirstTab.value && !nullSecondTab.value) {
-      const durationText =
-        duration.value === '30 mins'
-          ? 'less than 30 minutes'
-          : duration.value === '< 1 hour'
-            ? 'less than 1 hours'
-            : duration.value === '> 1 hour'
-              ? 'more than 1 hours'
-              : 'unknown'
-
-      const jsonData = {
-        title: title.value,
-        categoryId: category.value,
-        // thumbnail: imagesSelected.value,
-        workoutLevel: workoutLevel.value.toLowerCase(), // lowercase cho workoutLevel
-        duration: durationText,
-        isCommentable: isCommentable.value === 'true' ? true : false,
-        keywords: keywords.value
-      }
-      
-      const response = await videoStore.updateDetailVideo(jsonData)
-
-      if (response && response.statusCode === 200) {
-        isOpenUploadVideoDetails.value = false
-      }
-    }
-  }
-}
-</script>

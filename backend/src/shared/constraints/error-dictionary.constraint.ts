@@ -46,7 +46,21 @@ export enum ERRORS_DICTIONARY {
   UPLOAD_VIDEO_FAIL = 'Upload video fail',
   NOT_FOUND_VIDEO = 'Not found video',
   UPDATE_VIDEO_FAIL = 'Update video fail',
+
   //category
   NOT_FOUND_CATEGORY = 'Not found category',
   CAN_NOT_DELETE_VIDEOS = 'Can not delete videos',
+
+  // Comment
+  NOT_FOUND_COMMENT = 'Not found comment',
+  NOT_UPDATE_COMMENT = 'Can not update comment',
+  NOT_CREATE_COMMENT = 'Can not create comment',
+  NOT_DELETE_COMMENT = 'Can not delete comment',
+  NOT_FOUND_COMMENT_REACTION = 'Not found comment reaction',
+  NOT_UPDATE_COMMENT_REACTION = 'Can not update comment reaction',
+  NOT_CREATE_COMMENT_REACTION = 'Can not create comment reaction',
+  NOT_DELETE_COMMENT_REACTION = 'Can not delete comment reaction',
+
+  //Payment
+  ADD_PAYMENT_METHOD_FAIL = 'Add payment method fail',
 }
