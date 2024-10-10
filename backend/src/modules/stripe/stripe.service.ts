@@ -19,8 +19,8 @@ export class StripeService {
     });
   }
 
-  async listPaymentMethod(stripeId: string) {
-    const paymentMethods = await this.stripe.customers.listPaymentMethods(stripeId, {
+  async listPaymentMethod(customerId: string) {
+    const paymentMethods = await this.stripe.customers.listPaymentMethods(customerId, {
       type: 'card',
     });
 
