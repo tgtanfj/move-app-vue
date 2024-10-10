@@ -43,6 +43,13 @@ const emit = defineEmits(['clearErrorAPI'])
 const changeInput = () => {
   emit('clearErrorAPI')
 }
+
+const handlePasswordInput = (event) => {
+  const char = event.key
+  if (char === ' ') {
+    event.preventDefault();
+  }
+}
 </script>
 
 <template>
@@ -69,6 +76,7 @@ const changeInput = () => {
         class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-primary focus:outline-none w-full"
         :class="showError && errors[name] ? 'border-redMisc' : ''"
         maxlength="32"
+        @keydown="handlePasswordInput"
       />
       <span
         v-if="inputType === 'password'"
