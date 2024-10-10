@@ -54,6 +54,7 @@ dependencies:
   image: ^4.2.0
   dartz: ^0.10.1
   app_links: ^6.3.2
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

@@ -162,4 +162,10 @@ class Constants {
   static const String png = 'png';
   static const String gif = 'gif';
   static const String noData = 'No data';
+  static const String videos = 'Videos';
+  static const String about = 'About';
+  static const String sortFilter = 'Sort & filter';
+  static const String level = 'LEVEL';
+  static const String sortBy = 'SORT BY';
+  static const String categorySortFilter = 'CATEGORY';
 }

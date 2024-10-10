@@ -55,6 +55,8 @@ class MontserratStyles {
       customMontserratStyle(12, AppColors.black, AppFontWeight.regular.weight);
   final regular16Black =
       customMontserratStyle(16, Colors.black, AppFontWeight.regular.weight);
+  final regular16TiffanyBlue = customMontserratStyle(
+      16, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
   final regular16BrinkPink = customMontserratStyle(
       16, AppColors.brinkPink, AppFontWeight.regular.weight);
   final bold16Black =
@@ -72,7 +74,6 @@ class MontserratStyles {
       14, AppColors.sonicSilver, AppFontWeight.regular.weight);
   final regular14Black =
       customMontserratStyle(14, Colors.black, AppFontWeight.regular.weight);
-
   final regular14BrinkPink = customMontserratStyle(
       14, AppColors.brinkPink, AppFontWeight.regular.weight);
   final bold14tiffanyBlue = customMontserratStyle(
@@ -81,11 +82,12 @@ class MontserratStyles {
       16, AppColors.chineseSilver, AppFontWeight.bold.weight);
   final bold14Black =
       customMontserratStyle(14, AppColors.black, AppFontWeight.bold.weight);
+  final bold14White =
+      customMontserratStyle(14, AppColors.white, AppFontWeight.bold.weight);
   final regular14TiffanyBlue = customMontserratStyle(
       14, AppColors.tiffanyBlue, AppFontWeight.regular.weight);
   final bold16TiffanyBlue = customMontserratStyle(
       16, AppColors.tiffanyBlue, AppFontWeight.bold.weight);
-
   final bold20Black =
       customMontserratStyle(20, AppColors.black, AppFontWeight.bold.weight);
   final bold23White =
@@ -110,4 +112,6 @@ class MontserratStyles {
       customMontserratStyle(20, AppColors.white, AppFontWeight.bold.weight);
   final regular16White =
       customMontserratStyle(16, AppColors.white, AppFontWeight.regular.weight);
+  final medium16TiffanyBlue = customMontserratStyle(
+      16, AppColors.tiffanyBlue, AppFontWeight.medium.weight);
 }
