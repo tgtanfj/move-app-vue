@@ -19,10 +19,30 @@ class ForgotPasswordBody extends StatefulWidget {
 
 class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
   final TextEditingController _emailController = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        _emailController.text = _emailController.text.trim();
+      });
+      context
+          .read<ForgotPasswordBloc>()
+          .add(ForgotPasswordEmailChanged(_emailController.text.trim()));
+    }
+  }
 
   @override
   void dispose() {
+    focusNode.removeListener(_onFocusChange);
     _emailController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -66,6 +86,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           titleStyle:
                               AppTextStyles.montserratStyle.regular14Black,
                           controller: _emailController,
+                          focusNode: focusNode,
                           isPasswordInput: false,
                           onChanged: (email) {
                             context
