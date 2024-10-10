@@ -1,16 +1,97 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { SearchService } from './search.service';
-import { CreateSearchDto } from './dto/create-search.dto';
-import { UpdateSearchDto } from './dto/update-search.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { CreateSearchHistoryDto } from './dto/create-search.dto';
+import { SearchHistory } from '@/entities/search-history.entity';
+import { JwtAuthGuard } from '@/shared/guards';
+import { User } from '@/shared/decorators/user.decorator';
 
 @ApiTags('Search')
-@Controller('search')
+@ApiBearerAuth('jwt')
+@Controller()
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return ' This Get ';
+  @Get('/search/categories')
+  @ApiQuery({ name: 'q', required: true, type: String, description: 'Search query' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for categories' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit for categories' })
+  async searchCategories(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
+    try {
+      const searchParams = { query, page, limit };
+      const categories = await this.searchService.searchCategories(searchParams);
+      return { type: 'categories', data: categories };
+    } catch (error) {
+      throw new HttpException('Failed to search categories', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('/search/channels')
+  @ApiQuery({ name: 'q', required: true, type: String, description: 'Search query' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for channels' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit for channels' })
+  async searchChannels(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
+    try {
+      const searchParams = { query, page, limit };
+      const channels = await this.searchService.searchChannels(searchParams);
+      return { type: 'channels', data: channels };
+    } catch (error) {
+      throw new HttpException('Failed to search channels', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('/search/videos')
+  @ApiQuery({ name: 'q', required: true, type: String, description: 'Search query' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for videos' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit for videos' })
+  async searchVideos(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
+    try {
+      const searchParams = { query, page, limit };
+      const videos = await this.searchService.searchVideos(searchParams);
+      return { type: 'videos', data: videos };
+    } catch (error) {
+      throw new HttpException('Failed to search videos', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('/search/suggestion')
+  async suggestionVideo(@Query('q') query: string) {
+    try {
+      const results = await this.searchService.suggestion(query);
+      return results;
+    } catch (error) {
+      throw new HttpException('Failed to get suggestions', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/search/history')
+  async saveSearchHistory(@User() user, @Body() createSearchHistoryDto: CreateSearchHistoryDto) {
+    try {
+      const userId = user.id;
+      const { content } = createSearchHistoryDto;
+      const result = await this.searchService.saveSearchHistory(userId, content);
+      return result;
+    } catch (error) {
+      throw new HttpException('Failed to save search history', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/search/history')
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for search history' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit for search history' })
+  async getSearchHistory(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @User() user,
+  ): Promise<SearchHistory[]> {
+    try {
+      const userId = user.id;
+      const result = await this.searchService.getSearchHistory(page, limit, userId);
+      return result;
+    } catch (error) {
+      throw new HttpException('Failed to get search history', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
