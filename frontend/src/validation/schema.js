@@ -46,9 +46,7 @@ export const signinSchema = object({
     .matches(REGEX_EMAIL, t('error_message.invalid_email')),
   password: string()
     .required(t('error_message.required'))
-    .min(8, t('error_message.invalid_password'))
     .max(32, t('error_message.invalid_password'))
-    .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password'))
 })
 
 export const userProfileSchema = yup.object().shape({

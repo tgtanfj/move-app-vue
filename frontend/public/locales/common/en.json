@@ -20,7 +20,7 @@
     "fb": "Facebook",
     "twitter": "Twitter",
     "copy_link": "Copy Link",
-    "link_copied": "Link Copied",
+    "link_copied": "Link copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
@@ -226,6 +226,21 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "video_detail": {
+    "share_via": "Share via",
+    "share": "SHARE",
+    "rate": "RATE VIDEO",
+    "follow": "FOLLOW",
+    "watch_also": "WATCH ALSO",
+    "views": "views",
+    "follower": "followers"
+  },
+  "login": {
+    "google": "Log In with Google",
+    "facebook": "Log In with Facebook",
+    "email": "LOG IN WITH EMAIL",
+    "forgot_password": "Forgot password?"
   },
   "view_channel": {
     "about": "About",

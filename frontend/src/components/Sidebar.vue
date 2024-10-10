@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-[56px]">
     <div className="grid h-screen flex-none w-[241px] min-h-screen">
       <div className="hidden border-r bg-gray-100/40 lg:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
@@ -69,7 +69,7 @@ const sidebarList = [
   {
     name: 'Home',
     icon: House,
-    path: '/'
+    path: '/streamer'
   },
   {
     name: 'Videos',

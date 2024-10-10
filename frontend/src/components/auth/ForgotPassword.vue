@@ -42,11 +42,17 @@ const handleSendMail = async () => {
     showError.value = true
   } else {
     email.value = values.email
-    mutation.mutate({ email: values.email })
-    isBanned.value = true
-    banned = setTimeout(() => {
-      isBanned.value = false
-    }, 60000)
+    mutation.mutate(
+      { email: values.email },
+      {
+        onSuccess: () => {
+          isBanned.value = true
+          banned = setTimeout(() => {
+            isBanned.value = false
+          }, 60000)
+        }
+      }
+    )
   }
 }
 
