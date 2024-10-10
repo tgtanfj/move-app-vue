@@ -40,7 +40,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: widget.prefixButton,
+                onTap: widget.prefixButton ??
+                    () => Navigator.pushNamed(context, AppRoutes.routeMenu),
                 child: SvgPicture.asset(
                   widget.prefixIconPath ?? AppIcons.drawer.svgAssetPath,
                   height: 18.0,
