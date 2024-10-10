@@ -24,6 +24,9 @@ import { ApiConfigService } from './shared/services/api-config.service';
 import { SearchModule } from './modules/search/search.module';
 import { FaqsModule } from './modules/faqs/faqs.module';
 import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
+import { HomeModule } from './modules/home/home.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { VideoTrendModule } from './modules/video-trend/video-trend.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,6 +63,9 @@ import { CommentReactionModule } from './modules/comment-reaction/comment-reacti
       }),
     }),
     FaqsModule,
+    HomeModule,
+    ScheduleModule.forRoot(),
+    VideoTrendModule,
   ],
   providers: [
     {
