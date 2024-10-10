@@ -5,7 +5,8 @@ import 'package:move_app/config/theme/app_icons.dart';
 
 class StarAndText extends StatelessWidget {
   final TextStyle textStyle;
-  const StarAndText({super.key, required this.textStyle});
+  final double? ratings;
+  const StarAndText({super.key, required this.textStyle, this.ratings});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class StarAndText extends StatelessWidget {
           width: 7.0,
         ),
         Text(
-          '4.5',
+          ratings.toString(),
           style: textStyle,
         ),
       ],

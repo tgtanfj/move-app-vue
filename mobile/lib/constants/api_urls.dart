@@ -12,4 +12,9 @@ class ApiUrls {
   static const String loginGoogle = 'auth/login/google';
   static const String loginFacebook = 'auth/login/facebook';
   static const String faqsEndPoint = 'faqs';
+  static const String searchResultCategory = 'search/categories';
+  static const String searchResultChannel = 'search/channels';
+  static const String searchResultVideo = 'search/videos';
+  static const String suggestionEndpoint = 'search/suggestion';
+  static const String searchHistoryEndpoint = 'search/history';
 }

@@ -172,7 +172,6 @@ class Constants {
   static const String followers = 'followers';
   static const String categories = "Categories";
   static const String channels = "Channels";
-  static const String videos = "Videos";
   static const String searchResults = "Search Result";
 
 }

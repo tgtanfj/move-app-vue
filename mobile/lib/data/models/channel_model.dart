@@ -5,23 +5,25 @@ class ChannelModel {
   final String? name;
   final String? bio;
   final String? image;
-  final bool? isBlueBadge;
+  final bool isBlueBadge;
   final bool? isPinkBadge;
   final List<SocialNetworkModel>? socialLinks;
   final int? numberOfFollowed;
   final bool? isFollowed;
   final List<FollowingChannelModel>? followingChannels;
+  final String? numberOfFollowers;
 
-  ChannelModel({
+  ChannelModel({    
     this.name,
     this.bio,
     this.image,
-    this.isBlueBadge,
+    this.isBlueBadge = false,
     this.isPinkBadge,
     this.socialLinks,
     this.numberOfFollowed,
     this.isFollowed,
     this.followingChannels,
+    this.numberOfFollowers,
   });
 
   ChannelModel copyWith({
@@ -34,6 +36,7 @@ class ChannelModel {
     int? numberOfFollowed,
     bool? isFollowed,
     List<FollowingChannelModel>? followingChannels,
+    String? numberOfFollowers,
   }) {
     return ChannelModel(
       name: name ?? this.name,
@@ -44,6 +47,7 @@ class ChannelModel {
       socialLinks: socialLinks ?? this.socialLinks,
       numberOfFollowed: numberOfFollowed ?? this.numberOfFollowed,
       followingChannels: followingChannels ?? this.followingChannels,
+      numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers
     );
   }
 
@@ -62,6 +66,8 @@ class ChannelModel {
       followingChannels: (json['followingChannels'] as List<dynamic>?)
           ?.map((e) => FollowingChannelModel.fromJson(e))
           .toList(),
+      numberOfFollowers:
+      json['numberOfFollowers'] is String? ? json['numberOfFollowers'] : '',
     );
   }
 }

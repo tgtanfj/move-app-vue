@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/suggestion_model.dart';
 
 enum HomeStatus {
   initial,
@@ -9,36 +10,30 @@ enum HomeStatus {
 
 final class HomeState extends Equatable {
   final HomeStatus? status;
-  final bool isVisible;
-  final List<String>? searchHistory;
+
 
   const HomeState({
     this.status,
-    this.isVisible = false,
-    this.searchHistory,
   });
 
   static HomeState initial() => const HomeState(
         status: HomeStatus.initial,
-        isVisible: false,
-        searchHistory: [],
+
       );
 
   HomeState copyWith({
     HomeStatus? status,
     bool? isVisible,
     List<String>? searchHistory,
+    String? searchQuery,
+    SuggestionModel? suggestionList,
   }) {
     return HomeState(
       status: status ?? this.status,
-      isVisible: isVisible ?? this.isVisible,
-      searchHistory: searchHistory ?? this.searchHistory,
     );
   }
 
   @override
   List<Object?> get props => [
-        isVisible,
-        searchHistory,
       ];
 }
