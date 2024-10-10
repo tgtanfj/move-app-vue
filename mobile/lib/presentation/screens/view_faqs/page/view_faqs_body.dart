@@ -96,6 +96,7 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
               ),
             ),
           ),
+          const SizedBox(height: 52),
         ],
       ),
     );

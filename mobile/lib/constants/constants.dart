@@ -184,4 +184,16 @@ class Constants {
   static const String loading = 'Loading';
   static const String quality = 'Quality';
   static const String auto = 'Auto';
+  static const String writeComment = "Write a comment";
+  static const String reply = "Reply";
+  static const String repSender = "REPs Sender";
+  static const String send = "Send";
+  static const String cancel = "Cancel";
+  static const String lorem ="Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
+  static const String seeMore = "See More";
+  static const String seeLess = "See Less";
+  static const String cancelComment ="Cancel Comment?";
+  static const String areUSure ="Are you sure to cancel this comment?";
+
+
 }
