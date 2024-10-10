@@ -60,7 +60,7 @@ export enum ERRORS_DICTIONARY {
   NOT_UPDATE_COMMENT_REACTION = 'Can not update comment reaction',
   NOT_CREATE_COMMENT_REACTION = 'Can not create comment reaction',
   NOT_DELETE_COMMENT_REACTION = 'Can not delete comment reaction',
-  
+
   //Payment
   ADD_PAYMENT_METHOD_FAIL = 'Add payment method fail',
 }

@@ -9,7 +9,6 @@ import { Public } from '@/shared/decorators/public.decorator';
 import { QueryChannelDto } from './dto/request/query-channel.dto';
 import { Type } from 'class-transformer';
 
-
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
 @Controller('channel')
