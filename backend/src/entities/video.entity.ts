@@ -13,7 +13,7 @@ import { VideoViewHistorys } from './video-view-history.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
-  @Index() // Tạo index cho trường title để tối ưu tìm kiếm
+  @Index() 
   @Column({
     type: 'varchar',
     length: 255,
@@ -71,23 +71,18 @@ export class Video extends BaseEntity {
   })
   numberOfComments: number;
 
-  // Liên kết với bảng Channel (Nhiều video thuộc về một Channel)
   @ManyToOne(() => Channel, (channel) => channel.videos)
   channel: Channel;
 
-  // Liên kết với bảng Comment (Một video có nhiều bình luận)
   @OneToMany(() => Comment, (comment) => comment.video)
   comments: Comment[];
 
-  // Liên kết với bảng Donation (Một video có thể có nhiều lượt donate)
   @OneToMany(() => Donation, (donation) => donation.video)
   donations: Donation[];
 
-  // Liên kết với bảng WatchingVideoHistory (Lưu lịch sử xem của video)
   @OneToMany(() => WatchingVideoHistory, (watchingVideoHistory) => watchingVideoHistory.video)
   watchingVideoHistories: WatchingVideoHistory[];
 
-  // Liên kết với bảng Category (Nhiều video thuộc một category)
   @ManyToOne(() => Category, (category) => category.videos)
   category: Category;
 
@@ -103,7 +98,6 @@ export class Video extends BaseEntity {
   })
   shareCount: number;
 
-  // Liên kết với bảng Thumbnail (Một video có nhiều thumbnail)
   @OneToMany(() => Thumbnail, (thumbnail) => thumbnail.video)
   thumbnails: Thumbnail[];
 
@@ -116,10 +110,9 @@ export class Video extends BaseEntity {
 
   @OneToMany(() => Views, (view) => view.video)
   views: Views[];
-  // Liên kết với bảng VideoViewHistory (Một video có nhiều lịch sử lượt xem)
+
   @OneToMany(() => VideoViewHistorys, (videoViewHistory) => videoViewHistory.video)
   viewHistories: VideoViewHistorys[];
 
-  // Trường không được lưu vào cơ sở dữ liệu, chỉ tính toán tạm thời
   viewGrowthRate?: number;
 }

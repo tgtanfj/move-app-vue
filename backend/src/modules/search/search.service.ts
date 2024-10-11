@@ -16,7 +16,6 @@ export class SearchService {
     @InjectRepository(SearchHistory) private readonly searchHistoryRepository: Repository<SearchHistory>,
   ) {}
 
-
   async searchCategories(params: { query: string; page: number; limit: number }): Promise<Category[]> {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
@@ -30,7 +29,6 @@ export class SearchService {
       .take(limit)
       .getMany();
   }
-
 
   async searchChannels(params: { query: string; page: number; limit: number }): Promise<Channel[]> {
     const { query, page, limit } = params;
@@ -46,7 +44,6 @@ export class SearchService {
       .take(limit)
       .getMany();
   }
-
 
   async searchVideos(params: { query: string; page: number; limit: number }): Promise<Video[]> {
     const { query, page, limit } = params;
@@ -74,7 +71,6 @@ export class SearchService {
     return limitedVideos;
   }
 
- 
   private async getVideosWithHighestViewsYesterday(
     keyword: string,
     offset: number,
@@ -164,5 +160,13 @@ export class SearchService {
       skip: offset,
       take: limit,
     });
+  }
+
+  async deleteSearchHistory(userId: number, content: string): Promise<void> {
+    try {
+      await this.searchHistoryRepository.delete({ user: { id: userId }, content });
+    } catch (error) {
+      throw new Error('Failed to delete search history');
+    }
   }
 }

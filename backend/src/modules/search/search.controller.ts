@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Delete,
+} from '@nestjs/common';
 import { SearchService } from './search.service';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateSearchHistoryDto } from './dto/create-search.dto';
@@ -92,6 +102,18 @@ export class SearchController {
       return result;
     } catch (error) {
       throw new HttpException('Failed to get search history', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/search/history')
+  async deleteSearchHistory(@User() user, @Query('content') content: string) {
+    try {
+      const userId = user.id;
+      await this.searchService.deleteSearchHistory(userId, content);
+      return { message: 'Search history deleted successfully' };
+    } catch (error) {
+      throw new HttpException('Failed to delete search history', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
