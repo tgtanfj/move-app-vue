@@ -21,7 +21,7 @@ class SocialNetworkModel {
 
   factory SocialNetworkModel.fromJson(Map<String, dynamic> json) {
     return SocialNetworkModel(
-      name: json['name'] is int? ? json['name'] : '',
+      name: json['name'] is String? ? json['name'] : '',
       link: json['link'] is String? ? json['link'] : '',
     );
   }
@@ -30,8 +30,8 @@ class SocialNetworkModel {
     switch (name) {
       case 'facebook':
         return AppIcons.facebookLogo.svgAssetPath;
-      case 'twitter':
-        return AppIcons.twitterLogo.svgAssetPath;
+      case 'instagram':
+        return AppIcons.instagram.svgAssetPath;
       case 'youtube':
         return AppIcons.youtubeLogo.svgAssetPath;
       default:
