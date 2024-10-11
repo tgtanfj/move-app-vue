@@ -34,7 +34,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
       });
       context
           .read<ForgotPasswordBloc>()
-          .add(ForgotPasswordEmailChanged(_emailController.text.trim()));
+          .add(ForgotPasswordEmailChangedEvent(_emailController.text.trim()));
     }
   }
 
@@ -91,16 +91,22 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           onChanged: (email) {
                             context
                                 .read<ForgotPasswordBloc>()
-                                .add(ForgotPasswordEmailChanged(email));
+                                .add(ForgotPasswordEmailChangedEvent(email));
                           },
                           preMessage: hasError
-                              ? Constants.theEmail
+                              ? state.isEmailValid
+                                  ? Constants.theEmail
+                                  : Constants.invalidEmail
                               : Constants.weSentAnEmailTo,
                           mainMessage: state.isEmailSent
                               ? state.email
-                              : Constants.exampleEmail,
+                              : state.isEmailValid
+                                  ? Constants.exampleEmail
+                                  : "",
                           sufMessage: hasError
-                              ? Constants.isNotFound
+                              ? state.isEmailValid
+                                  ? Constants.isNotFound
+                                  : ""
                               : Constants.clickTheLinkToReset,
                           isShowMessage: state.isShowEmailMessage,
                           backgroundColorMessage: hasError
@@ -116,26 +122,46 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                         const SizedBox(height: 24),
                         SizedBox(
                           child: CustomButton(
-                            borderColor: state.isEmailValid
-                                ? AppColors.tiffanyBlue
+                            borderColor: state.email.isNotEmpty
+                                ? (state.isEmailSent &&
+                                        state.remainingSeconds > 0
+                                    ? AppColors.spanishGray
+                                    : AppColors.tiffanyBlue)
                                 : AppColors.spanishGray,
-                            isEnabled: state.isEmailValid,
-                            onTap: state.isEmailValid
+                            isEnabled: state.email.isNotEmpty &&
+                                (state.isEmailSent
+                                    ? state.remainingSeconds == 0
+                                    : !state.isEmailSent),
+                            onTap: state.email.isNotEmpty &&
+                                    (state.isEmailSent
+                                        ? state.remainingSeconds == 0
+                                        : !state.isEmailSent)
                                 ? () {
                                     FocusScope.of(context).unfocus();
                                     context.read<ForgotPasswordBloc>().add(
-                                        ForgotPasswordSubmitted(state.email));
+                                        ForgotPasswordSubmittedEvent(
+                                            state.email));
                                   }
                                 : null,
                             title: state.isEmailSent
-                                ? Constants.resendTheLink
+                                ? (state.remainingSeconds > 0
+                                    ? '${Constants.resendTheLink} (${state.remainingSeconds}s)'
+                                    : Constants.resendTheLink)
                                 : Constants.sendPasswordResetEmail,
-                            titleStyle: state.isEmailValid
-                                ? AppTextStyles.montserratStyle.bold16White
+                            titleStyle: state.email.isNotEmpty
+                                ? (state.isEmailSent &&
+                                        state.remainingSeconds > 0
+                                    ? AppTextStyles
+                                        .montserratStyle.bold16chineseSilverGray
+                                    : AppTextStyles.montserratStyle.bold16White)
                                 : AppTextStyles
                                     .montserratStyle.bold16chineseSilverGray,
-                            backgroundColor: state.isEmailValid
-                                ? AppColors.tiffanyBlue
+                            backgroundColor: state.email.isNotEmpty
+                                ? (state.isEmailSent
+                                    ? (state.remainingSeconds > 0
+                                        ? AppColors.spanishGray
+                                        : AppColors.tiffanyBlue)
+                                    : AppColors.tiffanyBlue)
                                 : AppColors.spanishGray,
                             maxLines: 1,
                             textOverflow: TextOverflow.ellipsis,
