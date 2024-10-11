@@ -16,6 +16,7 @@ import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { IFile } from '@/shared/interfaces/file.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CountryService } from '../country/country.service';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class UserService {
@@ -40,10 +41,15 @@ export class UserService {
   }
 
   async getProfile(id: number): Promise<UserProfile> {
-    const relations = { country: true, state: true };
-    const foundUser = this.userRepository.findOne(id, relations);
+    const relations = { country: true, state: true, channel: true };
+    const foundUser = await this.userRepository.findOne(id, relations);
 
-    return plainToInstance(UserProfile, foundUser, { excludeExtraneousValues: true });
+    const userProfile = plainToInstance(UserProfile, foundUser, { excludeExtraneousValues: true });
+
+    userProfile.isBlueBadge = foundUser.channel ? foundUser.channel.isBlueBadge : false;
+    userProfile.isPinkBadge = foundUser.channel ? foundUser.channel.isPinkBadge : false;
+
+    return userProfile;
   }
 
   async findOneByEmail(email: string): Promise<User> {

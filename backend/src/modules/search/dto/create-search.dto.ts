@@ -9,5 +9,4 @@ export class CreateSearchHistoryDto {
   @IsString()
   @IsNotEmpty()
   content: string;
-
 }
