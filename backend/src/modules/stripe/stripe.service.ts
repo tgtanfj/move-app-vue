@@ -52,4 +52,13 @@ export class StripeService {
         throw new BadRequestException(ERRORS_DICTIONARY.ADD_PAYMENT_METHOD_FAIL);
       });
   }
+
+  async detachPaymentMethod(detachPaymentMethod: AttachPaymentMethodDto) {
+    const { paymentMethodId } = detachPaymentMethod;
+
+    await this.stripe.paymentMethods.detach(paymentMethodId).catch((err) => {
+      console.log(err);
+      throw new BadRequestException(ERRORS_DICTIONARY.DETACH_PAYMENT_METHOD_FAIL);
+    });
+  }
 }
