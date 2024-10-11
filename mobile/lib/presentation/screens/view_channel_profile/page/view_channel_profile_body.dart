@@ -26,11 +26,9 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
   Widget build(BuildContext context) {
     return BlocListener<ViewChannelProfileBloc, ViewChannelProfileState>(
         listener: (context, state) {
-      if (state.status == ViewChannelProfileStatus.processing) {
-        EasyLoading.show();
-      } else {
-        EasyLoading.dismiss();
-      }
+      state.status == ViewChannelProfileStatus.processing
+          ? EasyLoading.show()
+          : EasyLoading.dismiss();
     }, child: BlocBuilder<ViewChannelProfileBloc, ViewChannelProfileState>(
             builder: (context, state) {
       return Scaffold(

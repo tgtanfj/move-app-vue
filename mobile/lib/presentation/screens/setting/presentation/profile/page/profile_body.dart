@@ -32,11 +32,9 @@ class _ProfileBodyState extends State<ProfileBody> {
         if (state.status == ProfileStatus.success) {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const HomePage()));
-          if (state.status == ProfileStatus.processing) {
-            EasyLoading.show();
-          } else {
-            EasyLoading.dismiss();
-          }
+          state.status == ProfileStatus.processing
+              ? EasyLoading.show()
+              : EasyLoading.dismiss();
         }
       },
       child: BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
