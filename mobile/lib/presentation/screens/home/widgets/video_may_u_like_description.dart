@@ -90,6 +90,7 @@ class VideoMayULikeDescription extends StatelessWidget {
             TypeLabel(typeLabel: '<30 mins'),
           ],
         )
+        
       ],
     );
   }

@@ -3,7 +3,7 @@ import VideoRelate from '@components/showVideoDetail/VideoRelate.vue'
 
 // const props = defineProps({
 //   videoDetail: {
-//     type: Object,
+//     type: Array,
 //     required: true
 //   }
 // })
@@ -116,7 +116,7 @@ const videos = [
 
 <template>
   <div class="flex-1 p-4">
-    <h3 class="text-sm font-semibold mb-4">WATCH ALSO</h3>
+    <h3 class="text-sm font-semibold mb-4">{{ $t('video_detail.watch_also') }}</h3>
     <div class="flex flex-col gap-6">
       <div v-for="video in videos" :key="video.id">
         <VideoRelate :video="video" />

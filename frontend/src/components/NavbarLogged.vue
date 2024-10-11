@@ -29,12 +29,14 @@
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
-        >
-          <DashboardIcon class="group-hover:text-primary duration-100" />
-          <p class="font-semibold group-hover:text-primary duration-100">Dashboard</p>
-        </DropdownMenuItem>
+        <RouterLink to="/streamer">
+          <DropdownMenuItem
+            class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          >
+            <DashboardIcon class="group-hover:text-primary duration-100" />
+            <p class="font-semibold group-hover:text-primary duration-100">Dashboard</p>
+          </DropdownMenuItem>
+        </RouterLink>
         <DropdownMenuItem
           class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
@@ -59,7 +61,9 @@
           class="flex gap-3 px-0 items-center py-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <LogoutIcon class="group-hover:text-primary duration-100" />
-          <p class="font-semibold group-hover:text-primary duration-100">Log Out</p>
+          <p class="font-semibold group-hover:text-primary duration-100">
+            {{ $t('logout.title') }}
+          </p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -34,7 +34,7 @@ class _ContentMenuState extends State<ContentMenu> {
           borderRadius: 0,
           titleStyle: AppTextStyles.montserratStyle.bold20White,
           textAlign: TextAlign.start,
-          onTap: () {},
+          onTap: widget.followingButton,
           title: Constants.following,
         ),
         const SizedBox(

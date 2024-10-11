@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { Video } from './video.entity';
 
 @Entity('categories')
 export class Category extends BaseEntity {
+  @Index()
   @Column({
     type: 'varchar',
   })

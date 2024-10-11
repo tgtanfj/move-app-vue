@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { WorkoutLevel } from './enums/workoutLevel.enum';
 import { DurationType } from './enums/durationType.enum';
@@ -9,28 +9,34 @@ import { Comment } from './comment.entity';
 import { Category } from './category.entity';
 import { Thumbnail } from './thumbnail.entity';
 import { Views } from './views.entity';
+import { VideoViewHistorys } from './video-view-history.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
+  @Index() 
   @Column({
     type: 'varchar',
+    length: 255,
   })
   title: string;
 
   @Column({
     type: 'enum',
     enum: WorkoutLevel,
+    default: WorkoutLevel.BEGINNER,
   })
   workoutLevel: WorkoutLevel;
 
   @Column({
     type: 'enum',
     enum: DurationType,
+    default: DurationType.LESS_30_MINS,
   })
   duration: DurationType;
 
   @Column({
     type: 'varchar',
+    length: 255,
     nullable: true,
   })
   keywords: string;
@@ -43,6 +49,7 @@ export class Video extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    length: 255,
   })
   url: string;
 
@@ -90,15 +97,22 @@ export class Video extends BaseEntity {
     default: 0,
   })
   shareCount: number;
+
   @OneToMany(() => Thumbnail, (thumbnail) => thumbnail.video)
   thumbnails: Thumbnail[];
 
   @Column({
     type: 'varchar',
     nullable: true,
+    length: 255,
   })
   urlS3: string;
 
   @OneToMany(() => Views, (view) => view.video)
   views: Views[];
+
+  @OneToMany(() => VideoViewHistorys, (videoViewHistory) => videoViewHistory.video)
+  viewHistories: VideoViewHistorys[];
+
+  viewGrowthRate?: number;
 }

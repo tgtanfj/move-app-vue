@@ -35,4 +35,13 @@ class SharedPrefer {
   String getUserRefreshToken() {
     return _prefsInstance.getString(SharedPreferencesKey.refreshToken) ?? "";
   }
+
+  Future<void> saveSearchHistory(List<String> history) async {
+    await _prefsInstance.setStringList(SharedPreferencesKey.searchHistory, history);
+  }
+
+  Future<List<String>> loadSearchHistory() async {
+    final history = _prefsInstance.getStringList(SharedPreferencesKey.searchHistory) ?? [];
+    return history;
+  }
 }

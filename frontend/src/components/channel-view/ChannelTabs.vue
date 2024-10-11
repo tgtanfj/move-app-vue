@@ -1,7 +1,7 @@
 <script setup>
-import VideosTab from './VideosTab.vue'
-import AboutTab from './AboutTab.vue'
 import { ref } from 'vue'
+import AboutTab from './AboutTab.vue'
+import VideosTab from './VideosTab.vue'
 
 const tabShow = ref(1)
 
@@ -23,7 +23,7 @@ const changeTab = (tab) => {
           'border-white': tabShow !== 1
         }"
       >
-        Videos
+        {{ $t('view_channel.videos') }}
       </div>
       <div
         @click="changeTab(2)"
@@ -33,7 +33,7 @@ const changeTab = (tab) => {
           'border-white': tabShow !== 2
         }"
       >
-        About
+        {{ $t('view_channel.about') }}
       </div>
     </div>
     <div v-show="tabShow === 1">

@@ -10,6 +10,7 @@ class StarAndText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         SvgPicture.asset(AppIcons.star.svgAssetPath),
         const SizedBox(

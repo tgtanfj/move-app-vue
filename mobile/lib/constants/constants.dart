@@ -173,4 +173,29 @@ class Constants {
   static const String channelNotFound = 'Channel not found';
   static const String noSocialNetworkFound = 'No social network found.';
   static const String noInformationFound = 'No information found.';
+  static const String categories = "Categories";
+  static const String channels = "Channels";
+  static const String searchResults = "Search Result";
+
+  static const String giftReps = 'Gift REPs';
+  static const String share = 'Share';
+  static const String reportVideo = 'Report video';
+  static const String rate = 'Rate';
+  static const String channel = 'channel';
+  static const String s = "'s";
+  static const String view = 'View';
+  static const String loading = 'Loading';
+  static const String quality = 'Quality';
+  static const String auto = 'Auto';
+  static const String writeComment = "Write a comment";
+  static const String reply = "Reply";
+  static const String repSender = "REPs Sender";
+  static const String send = "Send";
+  static const String cancel = "Cancel";
+  static const String lorem =
+      "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
+  static const String seeMore = "See More";
+  static const String seeLess = "See Less";
+  static const String cancelComment = "Cancel Comment?";
+  static const String areUSure = "Are you sure to cancel this comment?";
 }

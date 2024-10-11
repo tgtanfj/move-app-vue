@@ -39,23 +39,12 @@ const handleSignIn = async () => {
   if (Object.keys(errors.value).length > 0) {
     showError.value = true
   } else {
-    showError.value = false
-
     await authStore.loginWithEmail(values)
-
     if (authStore.accessToken) {
       props.closeModal()
       toast({ description: 'Login successfully', variant: 'successfully' })
     } else {
       showError.value = true
-
-      if (authStore.errorMsg === 'Email or password invalid') {
-        errors.value.email = 'Invalid email'
-        errors.value.password = 'You have entered an invalid password'
-      } else {
-        errors.value.email = ''
-        errors.value.password = authStore.errorMsg
-      }
     }
   }
 }
@@ -116,6 +105,19 @@ const togglePasswordVisibility = () => {
 const handleOpenForgotPassword = () => {
   emit('openForgotPassword')
 }
+
+const handlePasswordInput = (event) => {
+  const char = event.key
+  if (char === ' ') {
+    event.preventDefault();
+  } else {
+    authStore.errorMsg = '' 
+  }
+}
+
+const handleInput = () => {
+  authStore.errorMsg = ''
+}
 </script>
 
 <template>
@@ -125,14 +127,14 @@ const handleOpenForgotPassword = () => {
       @click="handleGoogleSignIn"
     >
       <GoogleIcon />
-      <span class="m-auto font-bold">Log In with Google</span>
+      <span class="m-auto font-bold">{{ $t('login.google') }}</span>
     </button>
     <button
       class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg"
       @click="handleFacebookSignIn"
     >
       <FacebookIcon />
-      <p class="m-auto font-bold">Log In with Facebook</p>
+      <p class="m-auto font-bold">{{ $t('login.facebook') }}</p>
     </button>
     <div class="flex items-center">
       <div class="border-b-[1px] border-[#999999] h-1 w-full"></div>
@@ -144,24 +146,25 @@ const handleOpenForgotPassword = () => {
       @click="formLogin = true"
       v-if="!formLogin"
     >
-      LOG IN WITH EMAIL
+    {{ $t('login.email') }}
     </p>
 
     <form @submit.prevent="handleSignIn" v-if="formLogin" class="flex flex-col gap-1" novalidate>
       <div class="mb-2 flex flex-col">
-        <label class="mb-2">Email</label>
+        <label class="mb-2">{{ $t('label.email') }}</label>
         <input
           type="email"
           class="text-[16px] mb-1 py-2 px-3 border-darkGray border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none"
           :class="showError && errors.email ? 'border-redMisc' : ''"
           v-model.trim="email"
           v-bind="emailAttrs"
+          @input="handleInput"
           maxlength="255"
         />
         <p v-if="showError && errors.email" class="text-red-500 text-[14px]">{{ errors.email }}</p>
       </div>
       <div class="mb-2 flex flex-col">
-        <label class="mb-2">Password</label>
+        <label class="mb-2">{{ $t('label.password') }}</label>
         <div class="relative">
           <input
             :type="showPassword ? 'text' : 'password'"
@@ -170,6 +173,7 @@ const handleOpenForgotPassword = () => {
             v-model="password"
             v-bind="passwordAttrs"
             maxlength="32"
+            @keydown="handlePasswordInput"
           />
           <span
             @click="togglePasswordVisibility"
@@ -183,9 +187,12 @@ const handleOpenForgotPassword = () => {
           {{ errors.password }}
         </p>
       </div>
+      <p v-if="showError && authStore.errorMsg" class="text-red-500 text-[14px]">
+        {{ authStore.errorMsg }}
+      </p>
       <div class="ml-[-10px]">
         <Button variant="link" type="button" @click="handleOpenForgotPassword">
-          Forgot password?
+          {{ $t('login.forgot_password') }}
         </Button>
       </div>
       <Button

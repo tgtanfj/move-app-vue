@@ -3,15 +3,13 @@ import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { ChevronRight, Heart, Star } from 'lucide-vue-next'
 import { Tabs, TabsList, TabsContent } from '@common/ui/tabs'
-
+import { DropdownMenuSeparator } from '@common/ui/dropdown-menu'
 import defaultAvatar from '@assets/icons/default-avatar.png'
 import InstaIcon from '@assets/icons/InstaIcon.vue'
 import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
 import FBIcon from '@assets/icons/FBIcon.vue'
-import FacebookIcon from '@assets/icons/FacebookIcon.vue'
-import TwitterIcon from '@assets/icons/TwitterIcon.vue'
-import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
 import Comment from '@components/comment/Comment.vue'
+import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -24,7 +22,7 @@ const props = defineProps({
 <template>
   <div class="flex-[2.8]">
     <!-- video play -->
-    <video width="100%" height="auto" controls autoplay loop muted class="h-[519px]">
+    <video width="100%" height="auto" controls autoplay muted class="h-[519px]">
       <source
         src="https://move-project.s3.us-east-1.amazonaws.com/videos/1728017172580-1728017169372-Y2meta.app-Nature%20Beautiful%20short%20video%20720p%20HD.mp4"
         type="video/mp4"
@@ -40,7 +38,7 @@ const props = defineProps({
       </div>
 
       <div class="flex gap-2 mt-2">
-        <p class="text-red-500 font-semibold"><span class="font-semibold">10.3</span>k views</p>
+        <p class="text-red-500 font-semibold"><span class="font-semibold">10.3</span>k {{ $t('video_detail.views') }}</p>
         <p class="font-semibold text-primary">• Just Move</p>
       </div>
 
@@ -51,48 +49,13 @@ const props = defineProps({
         </div>
         <div class="flex items-center gap-5">
           <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
-            <Heart width="20px" class="text-primary" /> FOLLOW
+            <Heart width="20px" class="text-primary" /> {{ $t('video_detail.follow') }}
           </div>
           <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
-            <Star width="20px" class="text-primary" /> RATE VIDEO
+            <Star width="20px" class="text-primary" /> {{ $t('video_detail.rate') }}
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
-            >
-              <Share2 width="20px" class="text-primary" /> SHARE
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="end">
-              <div class="flex items-center justify-between mb-2">
-                <h3 class="ml-2 font-semibold">Share via</h3>
-                <DropdownMenuItem class="cursor-pointer focus:bg-transparent">
-                  <X width="20px" />
-                </DropdownMenuItem>
-              </div>
-
-              <div class="flex">
-                <DropdownMenuItem
-                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
-                >
-                  <FacebookIcon class="w-[40px] h-[40px]" />
-                  <span class="text-sm">{{ $t('streamer.fb') }}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
-                >
-                  <TwitterIcon />
-                  <span class="text-sm">{{ $t('streamer.twitter') }}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
-                >
-                  <CopyLinkIcon />
-                  <span class="text-sm">{{ $t('streamer.copy_link') }}</span>
-                </DropdownMenuItem>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ShareLinkVideo />
         </div>
       </div>
       <!-- /Video actions and info -->
@@ -103,7 +66,7 @@ const props = defineProps({
           <img :src="defaultAvatar" alt="ava channel" class="w-[56px] h-[56px] rounded-full" />
           <div>
             <h3 class="text-xl font-semibold">dianeTV</h3>
-            <p class="text-gray-500 font-medium">10355 followers</p>
+            <p class="text-gray-500 font-medium">10355 {{ $t('video_detail.follower') }}</p>
           </div>
         </div>
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>

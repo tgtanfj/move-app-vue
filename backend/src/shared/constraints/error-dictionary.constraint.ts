@@ -63,4 +63,5 @@ export enum ERRORS_DICTIONARY {
 
   //Payment
   ADD_PAYMENT_METHOD_FAIL = 'Add payment method fail',
+  DETACH_PAYMENT_METHOD_FAIL = 'Delete payment method fail',
 }
