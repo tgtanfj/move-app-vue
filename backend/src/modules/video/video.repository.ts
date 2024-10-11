@@ -134,4 +134,7 @@ export class VideoRepository {
       withDeleted,
     });
   }
+  async getVideos() {
+    return await this.videoRepository.find()
+  }
 }

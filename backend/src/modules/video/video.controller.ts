@@ -115,4 +115,9 @@ export class VideoController {
   async downloadVideo(@Param('id', ParseIntPipe) videoId: number) {
     return await this.videoService.downloadVideo(videoId);
   }
+
+  @Get()
+  async test() {
+    return await this.videoService.sortVideoByPriority()
+  }
 }
