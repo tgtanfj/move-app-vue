@@ -6,6 +6,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Public } from '@/shared/decorators/public.decorator';
 
 @ApiTags('comment')
 @ApiBearerAuth('jwt')
@@ -24,20 +25,28 @@ export class CommentController {
     return await this.commentService.getAll();
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get(':videoId/comments')
-  async getCommentsOfVideo(@Param('videoId') videoId: number, @Query() query: QueryCommentDto, @User() user) {
+  async getCommentsOfVideo(
+    @Param('videoId') videoId: number,
+    @Query() query: QueryCommentDto,
+    @User() user?,
+  ) {
     const { limit, cursor } = query;
-    const userId = user.id;
-    return await this.commentService.getCommentsOfVideo(userId, videoId, limit, cursor);
+    const userId = user ? user.id : undefined;
+
+    return await this.commentService.getCommentsOfVideo(videoId, limit, cursor, userId);
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get(':id/reply')
-  async getReplyComments(@Param('id') id: number, @Query() query: QueryCommentDto, @User() user) {
+  async getReplyComments(@Param('id') id: number, @Query() query: QueryCommentDto, @User() user?) {
     const { limit, cursor } = query;
-    const userId = user.id;
-    return await this.commentService.getReplyComments(userId, id, limit, cursor);
+    const userId = user ? user.id : undefined;
+
+    return await this.commentService.getReplyComments(id, limit, cursor, userId);
   }
 
   @Get(':id')

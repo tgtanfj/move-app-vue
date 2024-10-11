@@ -7,8 +7,6 @@ import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constra
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { CategoryService } from '../category/category.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
-import { CommentService } from '../comment/comment.service';
-import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
 import { ChannelService } from '../channel/channel.service';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { plainToInstance } from 'class-transformer';
@@ -33,6 +31,7 @@ import { Between, FindOptionsOrder } from 'typeorm';
 import { VideoItemDto } from './dto/response/video-item.dto';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
 import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
+import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
 
 @Injectable()
 export class VideoService {
@@ -45,9 +44,9 @@ export class VideoService {
 
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
-    private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
+    private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
@@ -121,15 +120,9 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [selectedThumbnail, numberOfViews, ratings] = await Promise.all([
-            this.thumbnailService.getSelectedThumbnail(video.id),
-            this.watchingVideoHistoryService.getNumberOfViews(video.id),
-            this.watchingVideoHistoryService.getAverageRating(video.id),
-          ]);
+          const selectedThumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
 
           videoDetail.thumbnail_url = selectedThumbnail.image;
-          videoDetail.numberOfViews = numberOfViews;
-          videoDetail.ratings = ratings;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
             excludeExtraneousValues: true,
@@ -402,5 +395,58 @@ export class VideoService {
       videoItems,
       new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
     );
+  }
+
+  getMax(videos: Video[]) {
+    return {
+      views: Math.max(...videos.map((video) => video.numberOfViews)),
+      rates: Math.max(...videos.map((video) => video.ratings)),
+      comments: Math.max(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  getMin(videos: Video[]) {
+    return {
+      views: Math.min(...videos.map((video) => video.numberOfViews)),
+      rates: Math.min(...videos.map((video) => video.ratings)),
+      comments: Math.min(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  weightedVideo(video: Video, minValues: any, maxValues: any) {
+    const normalizedViews =
+      (video.numberOfViews - minValues.views) / (maxValues.views - minValues.views || 1);
+    const normalizedRates = (video.ratings - minValues.rates) / (maxValues.rates - minValues.rates || 1);
+    const normalizedComments =
+      (video.numberOfComments - minValues.comments) / (maxValues.comments - minValues.comments || 1);
+
+    // Trọng số cho mỗi tiêu chí
+    const weightViews = 0.45;
+    const weightRates = 0.35;
+    const weightComments = 0.2;
+
+    // Tính điểm tổng cho video
+    const totalScore =
+      normalizedViews * weightViews + normalizedRates * weightRates + normalizedComments * weightComments;
+
+    return { ...video, totalScore };
+  }
+  async sortVideoByPriority() {
+    const videos = await this.videoRepository.getVideos();
+    const min = this.getMin(videos);
+    const max = this.getMax(videos);
+    const calVideos = videos.map((video) => {
+      const result = this.weightedVideo(video, min, max);
+      return {
+        result,
+      };
+    });
+    const sortedVideos = calVideos.sort((a: any, b: any) => b.result.totalScore - a.result.totalScore);
+    return sortedVideos;
+  }
+
+  async getVideoDetails(videoId: number, userId?: number): Promise<Video> {
+    if (userId) {
+      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId);
+    }
+    return await this.videoRepository.findVideoById(videoId);
   }
 }

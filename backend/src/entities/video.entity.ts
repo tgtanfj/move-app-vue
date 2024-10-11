@@ -13,7 +13,7 @@ import { VideoViewHistorys } from './video-view-history.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
-  @Index() 
+  @Index()
   @Column({
     type: 'varchar',
     length: 255,
