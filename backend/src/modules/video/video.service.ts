@@ -403,4 +403,50 @@ export class VideoService {
       new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
     );
   }
+
+  getMax(videos: Video[]) {
+    return {
+      views: Math.max(...videos.map((video) => video.numberOfViews)),
+      rates: Math.max(...videos.map((video) => video.ratings)),
+      comments: Math.max(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  getMin(videos: Video[]) {
+    return {
+      views: Math.min(...videos.map((video) => video.numberOfViews)),
+      rates: Math.min(...videos.map((video) => video.ratings)),
+      comments: Math.min(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  weightedVideo(video: Video, minValues: any, maxValues: any) {
+    const normalizedViews =
+      (video.numberOfViews - minValues.views) / (maxValues.views - minValues.views || 1);
+    const normalizedRates = (video.ratings - minValues.rates) / (maxValues.rates - minValues.rates || 1);
+    const normalizedComments =
+      (video.numberOfComments - minValues.comments) / (maxValues.comments - minValues.comments || 1);
+
+    // Trọng số cho mỗi tiêu chí
+    const weightViews = 0.45;
+    const weightRates = 0.35;
+    const weightComments = 0.2;
+
+    // Tính điểm tổng cho video
+    const totalScore =
+      normalizedViews * weightViews + normalizedRates * weightRates + normalizedComments * weightComments;
+
+    return { ...video, totalScore };
+  }
+  async sortVideoByPriority() {
+    const videos = await this.videoRepository.getVideos();
+    const min = this.getMin(videos);
+    const max = this.getMax(videos);
+    const calVideos = videos.map((video) => {
+      const result = this.weightedVideo(video, min, max);
+      return {
+        result,
+      };
+    });
+    const sortedVideos = calVideos.sort((a: any, b: any) => b.result.totalScore - a.result.totalScore);
+    return sortedVideos;
+  }
 }

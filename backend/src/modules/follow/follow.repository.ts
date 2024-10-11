@@ -1,5 +1,5 @@
 import { Follow } from '@/entities/follow.entity';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, Repository } from 'typeorm';
 
@@ -42,6 +42,34 @@ export class FollowRepository {
       },
       take: limit,
       relations,
+    });
+  }
+  async save(userId: number, channelId: number) {
+    const newIns = this.followRepository.create({
+      user: {
+        id: userId,
+      },
+      channel: {
+        id: channelId,
+      },
+    });
+    return await this.followRepository.save(newIns);
+  }
+
+  async delete(follow:Follow) {
+    return await this.followRepository.delete(follow.id)
+  }
+
+  async findOneFollow(userId: number, channelId: number) {
+    return  await this.followRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+        channel: {
+          id: channelId,
+        },
+      },
     });
   }
 }
