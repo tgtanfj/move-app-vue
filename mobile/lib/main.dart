@@ -1,10 +1,9 @@
 import 'dart:async';
-
 import 'package:app_links/app_links.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
-import 'package:move_app/presentation/screens/channel/page/channel_page.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
 
@@ -38,7 +37,9 @@ class _MyAppState extends State<MyApp> {
     _linkSubscription = _appLinks.uriLinkStream.listen((Uri? link) {
       _handleDeepLink(link);
     }, onError: (err) {
-      print('Failed to get link: $err');
+      if (kDebugMode) {
+        print('Failed to get link: $err');
+      }
     });
   }
 
@@ -53,10 +54,14 @@ class _MyAppState extends State<MyApp> {
           ),
         );
       } else {
+        if (kDebugMode) {
         print('Token is missing or empty.');
+        }
       }
     } else {
-      print('Invalid deep link or host.');
+      if (kDebugMode) {
+        print('Invalid deep link or host.');
+      }
     }
   }
 
@@ -79,19 +84,18 @@ class _MyAppState extends State<MyApp> {
         final width = MediaQuery.of(context).size.width;
         double textScaleFactor;
         if (width < 400) {
-          textScaleFactor = 0.8; 
-        } else {  
-          textScaleFactor = 1.0; 
+          textScaleFactor = 0.8;
+        } else {
+          textScaleFactor = 1.0;
         }
         return FlutterEasyLoading(
           child: MediaQuery(
             data: MediaQuery.of(context).copyWith(
-              textScaler:  TextScaler.linear(textScaleFactor),
+              textScaler: TextScaler.linear(textScaleFactor),
               devicePixelRatio: 1.0,
             ),
             child: child!,
           ),
-        
         );
       },
       initialRoute: AppRoutes.getInitialRoute(),

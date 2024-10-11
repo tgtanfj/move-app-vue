@@ -10,7 +10,6 @@ import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
-import 'package:move_app/presentation/screens/video_detail/widgets/dialog_cancel_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/item_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
 

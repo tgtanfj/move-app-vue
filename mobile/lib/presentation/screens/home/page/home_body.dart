@@ -210,7 +210,6 @@ class _HomeBodyState extends State<HomeBody> {
                                       MaterialTapTargetSize.shrinkWrap),
                               icon: SvgPicture.asset(
                                 AppIcons.closeCircle.svgAssetPath,
-                                color: AppColors.chineseSilver,
                                 width: 24,
                                 height: 24,
                               ),
