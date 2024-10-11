@@ -5,20 +5,31 @@ abstract class ForgotPasswordEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class ForgotPasswordEmailChanged extends ForgotPasswordEvent {
+class ForgotPasswordEmailChangedEvent extends ForgotPasswordEvent {
   final String email;
-  ForgotPasswordEmailChanged(this.email);
+  ForgotPasswordEmailChangedEvent(this.email);
 
   @override
   List<Object?> get props => [email];
 }
 
-class ForgotPasswordSubmitted extends ForgotPasswordEvent {
+class ForgotPasswordSubmittedEvent extends ForgotPasswordEvent {
   String email;
-  ForgotPasswordSubmitted(this.email);
+  ForgotPasswordSubmittedEvent(this.email);
 
   @override
   List<Object?> get props => [email];
 }
 
-class ForgotPasswordSubmittedSuccess extends ForgotPasswordEvent {}
+class ForgotPasswordSubmittedSuccessEvent extends ForgotPasswordEvent {}
+
+class ForgotPasswordStartTimerEvent extends ForgotPasswordEvent {}
+
+class ForgotPasswordTickEvent extends ForgotPasswordEvent {
+  final int remainingSeconds;
+
+  ForgotPasswordTickEvent(this.remainingSeconds);
+
+  @override
+  List<Object?> get props => [remainingSeconds];
+}

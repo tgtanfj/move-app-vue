@@ -7,6 +7,7 @@ class ForgotPasswordState extends Equatable {
   final String errorMessage;
   final bool isShowEmailMessage;
   final String token;
+  final int remainingSeconds;
 
   const ForgotPasswordState({
     required this.isEmailValid,
@@ -15,6 +16,7 @@ class ForgotPasswordState extends Equatable {
     required this.errorMessage,
     required this.isShowEmailMessage,
     required this.token,
+    required this.remainingSeconds,
   });
 
   factory ForgotPasswordState.initial() {
@@ -25,6 +27,7 @@ class ForgotPasswordState extends Equatable {
       errorMessage: '',
       isShowEmailMessage: false,
       token: '',
+      remainingSeconds: 10,
     );
   }
 
@@ -34,14 +37,16 @@ class ForgotPasswordState extends Equatable {
       String? email,
       String? errorMessage,
       bool? isShowEmailMessage,
-      String? token}) {
+      String? token,
+      int? remainingSeconds}) {
     return ForgotPasswordState(
         isEmailValid: isEmailValid ?? this.isEmailValid,
         email: email ?? this.email,
         isEmailSent: isEmailSent ?? this.isEmailSent,
         errorMessage: errorMessage ?? this.errorMessage,
         isShowEmailMessage: isShowEmailMessage ?? this.isShowEmailMessage,
-        token: token ?? this.token);
+        token: token ?? this.token,
+        remainingSeconds: remainingSeconds ?? this.remainingSeconds);
   }
 
   @override
@@ -51,6 +56,7 @@ class ForgotPasswordState extends Equatable {
         isEmailSent,
         errorMessage,
         isShowEmailMessage,
-        token
+        token,
+        remainingSeconds
       ];
 }
