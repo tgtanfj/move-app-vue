@@ -12,7 +12,7 @@ import { VideoModule } from '../video/video.module';
   imports: [
     TypeOrmModule.forFeature([WatchingVideoHistory]),
     JwtModule,
-    UserModule,
+    forwardRef(() => UserModule),
     forwardRef(() => VideoModule),
   ],
   controllers: [WatchingVideoHistoryController],
