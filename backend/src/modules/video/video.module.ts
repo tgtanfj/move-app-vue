@@ -1,5 +1,4 @@
 import { VideoService } from '@/modules/video/video.service';
-import { WatchingVideoHistoryModule } from './../watching-video-history/watching-video-history.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { VideoController } from './video.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,15 +15,16 @@ import { ChannelModule } from '../channel/channel.module';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
 import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
+import { WatchingVideoHistoryModule } from '../watching-video-history/watching-video-history.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Video]),
     UserModule,
     CategoryModule,
-    WatchingVideoHistoryModule,
     UserModule,
     forwardRef(() => ChannelModule),
+    forwardRef(() => WatchingVideoHistoryModule),
     ThumbnailModule,
     BullModule.registerQueue({
       name: 'upload-s3',

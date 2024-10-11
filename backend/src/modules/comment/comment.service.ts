@@ -18,12 +18,12 @@ export class CommentService {
     return await this.commentRepository.getNumberOfComments(videoId);
   }
 
-  async getCommentsOfVideo(userId: number, videoId: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getCommentsOfVideo(userId, videoId, limit, cursor);
+  async getCommentsOfVideo(id: number, limit: number, cursor?: number, userId?: number) {
+    return await this.commentRepository.getCommentsOfVideo(id, limit, cursor, userId);
   }
 
-  async getReplyComments(userId: number, id: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getReplyComments(userId, id, limit, cursor);
+  async getReplyComments(id: number, limit: number, cursor?: number, userId?: number) {
+    return await this.commentRepository.getReplyComments(id, limit, cursor, userId);
   }
 
   async getOne(id: number): Promise<Comment> {

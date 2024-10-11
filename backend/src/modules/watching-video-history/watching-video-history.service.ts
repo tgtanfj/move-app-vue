@@ -1,28 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { WatchingVideoHistoryRepository } from './watching-video-history.repository';
+import { RateDto } from './dto/rate.dto';
+import { VideoRepository } from '../video/video.repository';
 
 @Injectable()
 export class WatchingVideoHistoryService {
-  constructor(private readonly watchingVideoHistoryRepository: WatchingVideoHistoryRepository) {}
+  constructor(
+    private readonly watchingVideoHistoryRepository: WatchingVideoHistoryRepository,
+    private readonly videoRepository: VideoRepository,
+  ) {}
 
-  async getAverageRating(videoId: number): Promise<number> {
-    const watchingVideoHistories = await this.watchingVideoHistoryRepository.findAllByVideoId(videoId);
-
-    if (!watchingVideoHistories.length) {
-      return 0;
-    }
-
-    const totalRating = watchingVideoHistories.reduce((sum, history) => sum + history.rate, 0);
-    const avgRating = totalRating / watchingVideoHistories.length;
-
-    return avgRating;
+  async createOrUpdate(userId: number, videoId: number) {
+    return await this.watchingVideoHistoryRepository.createOrUpdate(userId, videoId);
   }
 
-  async getNumberOfViews(videoId: number): Promise<number> {
-    const watchingVideoHistories = await this.watchingVideoHistoryRepository.findAllByVideoId(videoId);
+  async rate(userId: number, dto?: RateDto) {
+    const videoId = dto.videoId;
+    const videoHistory = await this.watchingVideoHistoryRepository.rate(userId, dto);
 
-    const totalViews = watchingVideoHistories.reduce((sum, history) => sum + history.times, 0);
+    const [video, ratings] = await Promise.all([
+      this.videoRepository.findVideoById(videoId),
+      this.watchingVideoHistoryRepository.averageRateByVideoId(videoId),
+    ]);
 
-    return totalViews;
+    video.ratings = ratings;
+    await this.videoRepository.save(video);
+
+    return videoHistory;
   }
 }
