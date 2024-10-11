@@ -55,8 +55,11 @@ export class SearchService {
       offset,
       limit,
     );
+
     const searchedVideos = await this.videoRepository
       .createQueryBuilder('video')
+      .leftJoinAndSelect('video.category', 'category')
+      .leftJoinAndSelect('video.channel', 'channel')
       .where('video.title ILIKE :keyword', { keyword })
       .skip(offset)
       .take(limit)
@@ -67,6 +70,7 @@ export class SearchService {
     const uniqueVideos = combinedVideos.filter(
       (video, index, self) => index === self.findIndex((v) => v.id === video.id),
     );
+
     const limitedVideos = uniqueVideos.slice(0, limit);
     return limitedVideos;
   }
