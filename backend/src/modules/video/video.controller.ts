@@ -26,14 +26,16 @@ import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { User } from '@/shared/decorators/user.decorator';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { DeleteVideosDto } from './dto/request/delete-videos.dto';
 import { ThumbnailsValidationPipe } from '@/shared/pipes/thumbnail-validation.pipe';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
+import { Public } from '@/shared/decorators/public.decorator';
 
 @ApiTags('Video')
+@ApiBearerAuth('jwt')
 @Controller('video')
 export class VideoController {
   constructor(private readonly videoService: VideoService) {}
@@ -104,6 +106,14 @@ export class VideoController {
   @Get('social-sharing/:videoId')
   async getUrlSharingSocial(@Param('videoId') videoId: number, @Query() option: OptionSharingDTO) {
     return await this.videoService.sharingVideoUrlById(videoId, option);
+  }
+
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  @Get(':videoId/details')
+  async getVideoDetails(@Param('videoId') videoId: number, @User() user?) {
+    const userId = user ? user.id : undefined;
+    return await this.videoService.getVideoDetails(videoId, userId);
   }
 
   @Get(':videoId')
