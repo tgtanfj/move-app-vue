@@ -7,7 +7,7 @@ export class VideoViewHistorys extends BaseEntity {
   @ManyToOne(() => Video, (video) => video.viewHistories, { onDelete: 'CASCADE' })
   video: Video;
 
-  @Index() 
+  @Index()
   @Column({
     type: 'date',
   })
