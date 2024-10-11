@@ -35,7 +35,7 @@ export class CommentController {
   ) {
     const { limit, cursor } = query;
     const userId = user ? user.id : undefined;
-    console.log(userId);
+
     return await this.commentService.getCommentsOfVideo(videoId, limit, cursor, userId);
   }
 
