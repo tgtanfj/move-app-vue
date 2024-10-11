@@ -33,6 +33,8 @@ class ForgotPasswordBloc
 
   void _onForgotPasswordSubmitted(ForgotPasswordSubmittedEvent event,
       Emitter<ForgotPasswordState> emit) async {
+    emit(state.copyWith(email: state.email.trim()));
+
     if (state.isEmailValid) {
       final emailExists =
           await forgotPasswordRepository.checkEmailExists(state.email);
