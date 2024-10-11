@@ -113,7 +113,6 @@ export class VideoRepository {
     channelId: number,
     queries: FindOptionsWhere<Video> = {},
     order: FindOptionsOrder<Video> = {},
-    paginationDto: PaginationDto,
     relations: FindOptionsRelations<Video> = {
       category: true,
       channel: true,
@@ -127,14 +126,12 @@ export class VideoRepository {
         },
         ...queries,
       },
-      skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
-      take: paginationDto.take,
       order,
       relations,
       withDeleted,
     });
   }
   async getVideos() {
-    return await this.videoRepository.find()
+    return await this.videoRepository.find();
   }
 }

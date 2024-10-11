@@ -20,9 +20,9 @@ import { WatchingVideoHistoryModule } from '../watching-video-history/watching-v
 @Module({
   imports: [
     TypeOrmModule.forFeature([Video]),
-    UserModule,
     CategoryModule,
-    UserModule,
+    WatchingVideoHistoryModule,
+    forwardRef(() => UserModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => WatchingVideoHistoryModule),
     ThumbnailModule,

@@ -1,5 +1,5 @@
 import { UserService } from '@/modules/user/user.service';
-import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ERRORS_DICTIONARY } from '../constraints/error-dictionary.constraint';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
