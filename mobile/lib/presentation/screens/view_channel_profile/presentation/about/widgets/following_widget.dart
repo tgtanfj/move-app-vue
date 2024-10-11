@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/data/models/following_channel_model.dart';
-import 'package:move_app/presentation/screens/channel/presentation/about/widgets/following_item.dart';
+
+import 'following_item.dart';
 
 class FollowingWidget extends StatelessWidget {
   final List<FollowingChannelModel> followingChannels;

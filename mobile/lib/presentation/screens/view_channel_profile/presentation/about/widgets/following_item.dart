@@ -39,7 +39,7 @@ class FollowingItem extends StatelessWidget {
           children: [
             Text(followingChannel.name ?? '',
                 style: AppTextStyles.montserratStyle.regular20Black),
-            const SizedBox(width: 7),
+            SizedBox(width: followingChannel.isBlueBadge ?? false ? 7 : 0),
             followingChannel.isBlueBadge ?? false
                 ? SvgPicture.asset(
                     AppIcons.blueCheckCircle.svgAssetPath,
@@ -47,7 +47,7 @@ class FollowingItem extends StatelessWidget {
                     height: 16,
                   )
                 : const SizedBox(),
-            const SizedBox(width: 7),
+            SizedBox(width: followingChannel.isPinkBadge ?? false ? 7 : 0),
             followingChannel.isPinkBadge ?? false
                 ? SvgPicture.asset(
                     AppIcons.starFlower.svgAssetPath,
@@ -57,7 +57,7 @@ class FollowingItem extends StatelessWidget {
                 : const SizedBox(),
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 3),
         Text(
           '${followingChannel.numberOfFollowers ?? 0} ${Constants.followers}',
           style: AppTextStyles.montserratStyle.regular13GraniteGray,

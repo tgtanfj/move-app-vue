@@ -170,4 +170,7 @@ class Constants {
   static const String twitter = 'twitter';
   static const String youtube = 'youtube';
   static const String followers = 'followers';
+  static const String channelNotFound = 'Channel not found';
+  static const String noSocialNetworkFound = 'No social network found.';
+  static const String noInformationFound = 'No information found.';
 }
