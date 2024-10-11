@@ -23,6 +23,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         message: data?.message ? data.message : 'success',
         meta: data?.meta || undefined,
         success: true,
+        
       })),
     );
   }
