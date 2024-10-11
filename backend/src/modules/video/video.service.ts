@@ -1,5 +1,5 @@
 import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ApiConfigService } from '../../shared/services/api-config.service';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
@@ -44,9 +44,10 @@ export class VideoService {
 
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
+    private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
+    @Inject(forwardRef(() => ChannelService))
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
-    private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
@@ -335,12 +336,8 @@ export class VideoService {
       title: 'ASC',
     };
 
-    const [videos, total] = await this.videoRepository.find(
-      channelId,
-      searchConditions,
-      order,
-      paginationDto,
-    );
+    const [videos, total] = await this.videoRepository.find(channelId, searchConditions, order);
+    console.log([videos, total], searchConditions);
 
     const videoItems = await Promise.all(
       videos.map(async (video) => {
@@ -367,7 +364,7 @@ export class VideoService {
         return videoItemDto;
       }),
     ).then((videos) => {
-      return videos.sort((video1, video2) => {
+      const sortedVideos = videos.sort((video1, video2) => {
         switch (sortBy) {
           case SortBy.MOST_RECENT:
             return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
@@ -387,6 +384,9 @@ export class VideoService {
             return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
         }
       });
+
+      const startIndex = PaginationDto.getSkip(paginationDto.take, paginationDto.page);
+      return sortedVideos.slice(startIndex, startIndex + paginationDto.take);
     });
 
     const totalPages = Math.ceil(total / paginationDto.take);
