@@ -9,13 +9,18 @@ class AboutPage extends StatelessWidget {
   final String? channelBio;
   final List<SocialNetworkModel>? socialNetworks;
   final List<FollowingChannelModel>? followingChannels;
+  final Function(int)? onTapFollowingChannel;
+  final Function(String)? onTapSocialNetwork;
 
-  const AboutPage(
-      {super.key,
-      this.channelName,
-      this.channelBio,
-      this.socialNetworks,
-      this.followingChannels});
+  const AboutPage({
+    super.key,
+    this.channelName,
+    this.channelBio,
+    this.socialNetworks,
+    this.followingChannels,
+    this.onTapFollowingChannel,
+    this.onTapSocialNetwork,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +29,8 @@ class AboutPage extends StatelessWidget {
       channelBio: channelBio,
       socialNetworks: socialNetworks,
       followingChannels: followingChannels,
+      onTapFollowingChannel: onTapFollowingChannel,
+      onTapSocialNetwork: onTapSocialNetwork,
     );
   }
 }

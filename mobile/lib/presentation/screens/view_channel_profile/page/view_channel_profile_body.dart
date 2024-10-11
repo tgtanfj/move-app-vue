@@ -9,9 +9,11 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_tab_bar.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_bloc.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
 
 import '../../../../config/theme/app_colors.dart';
+import '../../../../data/services/launch_service.dart';
 import '../presentation/about/page/about_page.dart';
 
 class ViewChannelProfileBody extends StatefulWidget {
@@ -127,6 +129,14 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     channelBio: state.channel?.bio,
                     socialNetworks: state.channel?.socialLinks,
                     followingChannels: state.channel?.followingChannels,
+                    onTapFollowingChannel: (id) {
+                      context
+                          .read<ViewChannelProfileBloc>()
+                          .add(ViewChannelProfileFollowingItemSelectEvent(id));
+                    },
+                    onTapSocialNetwork: (url) {
+                      openExternalApplication(url);
+                    },
                   ),
                 },
               ),

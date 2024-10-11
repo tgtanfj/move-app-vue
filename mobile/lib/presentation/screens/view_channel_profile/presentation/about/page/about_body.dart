@@ -13,6 +13,8 @@ class AboutBody extends StatelessWidget {
   final String? channelBio;
   final List<SocialNetworkModel>? socialNetworks;
   final List<FollowingChannelModel>? followingChannels;
+  final Function(int)? onTapFollowingChannel;
+  final Function(String)? onTapSocialNetwork;
 
   const AboutBody({
     super.key,
@@ -20,6 +22,8 @@ class AboutBody extends StatelessWidget {
     this.channelBio,
     this.socialNetworks,
     this.followingChannels,
+    this.onTapFollowingChannel,
+    this.onTapSocialNetwork,
   });
 
   @override
@@ -67,7 +71,10 @@ class AboutBody extends StatelessWidget {
                       style: AppTextStyles.montserratStyle.regular16Black
                           .copyWith(fontStyle: FontStyle.italic),
                     )
-                  : SocialNetworkWidget(socialNetworks: socialNetworks ?? []),
+                  : SocialNetworkWidget(
+                      socialNetworks: socialNetworks ?? [],
+                      onTapSocialNetwork: onTapSocialNetwork,
+                    ),
               const SizedBox(height: 32),
               followingChannels?.isEmpty ?? true
                   ? const SizedBox()
@@ -75,7 +82,10 @@ class AboutBody extends StatelessWidget {
                       '$channelName ${Constants.isFollowing}',
                       style: AppTextStyles.montserratStyle.bold18black,
                     ),
-              FollowingWidget(followingChannels: followingChannels ?? []),
+              FollowingWidget(
+                followingChannels: followingChannels ?? [],
+                onTapFollowingChannel: onTapFollowingChannel,
+              ),
             ],
           )),
     );
