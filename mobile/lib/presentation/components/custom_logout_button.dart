@@ -19,6 +19,7 @@ class CustomLogoutButton extends StatelessWidget {
   final int? maxLines;
   final TextOverflow? textOverflow;
   final bool? softWrap;
+  final double? sizeBoxWidth;
 
   const CustomLogoutButton({
     super.key,
@@ -37,6 +38,7 @@ class CustomLogoutButton extends StatelessWidget {
     this.maxLines,
     this.textOverflow,
     this.softWrap,
+    this.sizeBoxWidth,
   });
 
   @override
@@ -47,7 +49,7 @@ class CustomLogoutButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
         padding:
-        padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+            padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
             color: isEnabled ? backgroundColor : AppColors.spanishGray,
             borderRadius: BorderRadius.circular(borderRadius),
@@ -55,21 +57,24 @@ class CustomLogoutButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (prefix != null) prefix!,
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: (title).isNotEmpty ? 12 : 0),
-              child: Text(
-                title,
-                style: titleStyle ??
-                    AppTextStyles.montserratStyle.regular14Black,
-              ),
+            if (prefix != null) ...[
+              prefix!,
+              SizedBox(
+                width: sizeBoxWidth ?? 12,
+              )
+            ],
+            Text(
+              title ?? '',
+              style: titleStyle ?? AppTextStyles.montserratStyle.regular14Black,
+              textAlign: TextAlign.center,
             ),
-            if (suffix != null) suffix!,
+            if (suffix != null) ...[
+              SizedBox(width: sizeBoxWidth ?? 12),
+              suffix!
+            ]
           ],
         ),
       ),
     );
   }
 }
-

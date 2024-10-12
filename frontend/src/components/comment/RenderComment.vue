@@ -10,7 +10,9 @@ import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import defaultAvatar from '../../assets/icons/default-avatar.png'
+import { commentServices } from '@services/comment.services'
 
 const props = defineProps({
   comments: {
@@ -19,30 +21,22 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['update-comments'])
+
 const showRepliesIds = ref([])
 const showFullContentIds = ref([])
 const showFullReplyIds = ref([])
 const repliesPerPage = 10
 const repliesToShow = ref({})
 
-const toggleReplies = (commentId) => {
-  const index = showRepliesIds.value.indexOf(commentId)
-  if (index > -1) {
-    showRepliesIds.value.splice(index, 1)
-  } else {
-    showRepliesIds.value.push(commentId)
-    repliesToShow.value[commentId] = repliesPerPage
-  }
-}
+const localComments = ref([...props.comments])
 
-const showMoreReplies = (commentId) => {
-  if (
-    repliesToShow.value[commentId] <
-    props.comments.find((comment) => comment.id === commentId).replies.length
-  ) {
-    repliesToShow.value[commentId] += repliesPerPage
+watch(
+  () => props.comments,
+  (newComments) => {
+    localComments.value = [...newComments]
   }
-}
+)
 
 const toggleCommentContent = (commentId) => {
   const index = showFullContentIds.value.indexOf(commentId)
@@ -53,32 +47,118 @@ const toggleCommentContent = (commentId) => {
   }
 }
 
-const toggleReplyContent = (replyId) => {
-  const index = showFullReplyIds.value.indexOf(replyId)
-  if (index > -1) {
-    showFullReplyIds.value.splice(index, 1)
-  } else {
-    showFullReplyIds.value.push(replyId)
+const handleLike = async (item) => {
+  try {
+    if (!item.hasOwnProperty('isLike')) {
+      const res = await commentServices.createCommentReaction(item?.id, true)
+      if (res.message === 'success') {
+        item.isLike = true
+        item.numberOfLike += 1
+      }
+    } else if (item.isLike === false) {
+      const res = await commentServices.updateCommentReaction(item?.id, true)
+      if (res.message === 'success') {
+        item.isLike = true
+        item.numberOfLike += 1
+      }
+    }
+    emit('update-comments', toRaw(localComments.value))
+  } catch (error) {
+    console.error('Error liking:', error)
   }
 }
+
+const handleUnLike = async (item) => {
+  try {
+    const res = await commentServices.deleteCommentReaction(item.id, false)
+    if (res.message === 'success') {
+      delete item.isLike
+      item.numberOfLike -= 1
+    }
+    emit('update-comments', toRaw(localComments.value))
+  } catch (error) {
+    console.error('Error unliking:', error)
+  }
+}
+
+const handleDislike = async (item) => {
+  try {
+    if (!item.hasOwnProperty('isLike')) {
+      const res = await commentServices.createCommentReaction(item?.id, false)
+      if (res.message === 'success') item.isLike = false
+    } else if (item.isLike === true) {
+      const res = await commentServices.updateCommentReaction(item?.id, false)
+      if (res.message === 'success') {
+        item.isLike = false
+        item.numberOfLike -= 1
+      }
+    }
+    emit('update-comments', toRaw(localComments.value))
+  } catch (error) {
+    console.error('Error disliking:', error)
+  }
+}
+
+const handleUnDislike = async (item) => {
+  try {
+    const res = await commentServices.deleteCommentReaction(item.id)
+    if (res.message === 'success') delete item.isLike
+    emit('update-comments', toRaw(localComments.value))
+  } catch (error) {
+    console.error('Error undisliking:', error)
+  }
+}
+
+// const toggleReplies = (commentId) => {
+//   const index = showRepliesIds.value.indexOf(commentId)
+//   if (index > -1) {
+//     showRepliesIds.value.splice(index, 1)
+//   } else {
+//     showRepliesIds.value.push(commentId)
+//     repliesToShow.value[commentId] = repliesPerPage
+//   }
+// }
+
+// const showMoreReplies = (commentId) => {
+//   if (
+//     repliesToShow.value[commentId] <
+//     props.comments.find((comment) => comment.id === commentId).replies.length
+//   ) {
+//     repliesToShow.value[commentId] += repliesPerPage
+//   }
+// }
+
+// const toggleReplyContent = (replyId) => {
+//   const index = showFullReplyIds.value.indexOf(replyId)
+//   if (index > -1) {
+//     showFullReplyIds.value.splice(index, 1)
+//   } else {
+//     showFullReplyIds.value.push(replyId)
+//   }
+// }
 </script>
 
 <template>
   <div class="w-full flex flex-col items-start gap-8">
-    <div v-for="(item, index) in comments" :key="index">
+    <div v-for="(item, index) in comments" :key="item.id">
       <div class="flex items-start gap-4">
-        <img :src="item.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
+        <img
+          :src="item.user.avatar ? item.user.avatar : defaultAvatar"
+          class="object-cover w-[40px] h-[40px] rounded-full"
+        />
         <div class="flex flex-col gap-1">
-          <RepsSenderIcon class="mb-1" />
+          <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
-            <p class="text-[13px] font-bold">{{ item.name }}</p>
-            <CheckVerifyIcon />
-            <div class="flex items-end gap-2">
+            <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
+            <CheckVerifyIcon v-if="item.user.isActive" />
+            <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
               <YellowRepsIcon />
-              <p class="text-[#FFB564] text-[12px] -mb-[1px]">Gifted 25000 REPs</p>
+              <p class="text-[#FFB564] text-[12px] -mb-[1px]">
+                Gifted {{ item.totalDonation }} REPs
+              </p>
             </div>
             <p class="text-[12px] text-[#666666] -mb-[2px]">
-              {{ item.timestamp ? convertTimeComment(item.timestamp) : '1 second ago' }}
+              {{ item.createdAt ? convertTimeComment(item.createdAt) : '1 second ago' }}
             </p>
           </div>
           <div>
@@ -88,7 +168,7 @@ const toggleReplyContent = (replyId) => {
             >
               {{ item.content.slice(0, 300) }}...
               <button @click="toggleCommentContent(item.id)" class="text-[#666666]">
-                {{$t('comment.read_more')}}
+                {{ $t('comment.read_more') }}
               </button>
             </div>
             <div class="flex flex-col items-start" v-else>
@@ -98,29 +178,50 @@ const toggleReplyContent = (replyId) => {
                 @click="toggleCommentContent(item.id)"
                 class="text-[#666666]"
               >
-              {{$t('comment.show_less')}}
+                {{ $t('comment.show_less') }}
               </button>
             </div>
           </div>
           <div class="flex items-center gap-8 mt-1">
             <div class="flex items-center gap-3 justify-start">
               <div class="-mt-1">
-                <LikeOffIcon class="cursor-pointer" v-if="!item.like" />
-                <LikeOnIcon class="cursor-pointer" v-if="item.like" />
+                <LikeOnIcon
+                  @click="handleUnLike(item)"
+                  class="cursor-pointer"
+                  v-if="item.isLike === true"
+                />
+                <LikeOffIcon
+                  @click="handleLike(item)"
+                  class="cursor-pointer"
+                  v-if="!item.isLike === true"
+                />
               </div>
               <p class="text-primary text-[13px]">
-                {{ item.likes ? formatViews(item.likes) : '0' }}
+                {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
               </p>
             </div>
             <div class="flex items-center gap-4 justify-start">
               <div class="-mb-[9px]">
-                <DislikeOffIcon class="cursor-pointer" v-if="!item.dislike" />
-                <DislikeOnIcon class="cursor-pointer" v-if="item.dislike" />
+                <DislikeOnIcon
+                  @click="handleUnDislike(item)"
+                  class="cursor-pointer"
+                  v-if="item.isLike === false"
+                />
+                <DislikeOffIcon
+                  @click="handleDislike(item)"
+                  class="cursor-pointer"
+                  v-if="!item.isLike === false"
+                />
+                <DislikeOffIcon
+                  @click="handleDislike(item)"
+                  class="cursor-pointer"
+                  v-if="!item.hasOwnProperty('isLike')"
+                />
               </div>
-              <p class="text-primary text-[13px] cursor-pointer">{{$t('comment.reply')}}</p>
+              <p class="text-primary text-[13px] cursor-pointer">{{ $t('comment.reply') }}</p>
             </div>
           </div>
-          <div
+          <!-- <div
             v-if="item.replies.length > 0"
             class="flex items-center gap-1 justify-start mt-1 cursor-pointer transition-all"
             @click="toggleReplies(item.id)"
@@ -215,7 +316,7 @@ const toggleReplyContent = (replyId) => {
                 <div class="text-primary text-[13px] font-semibold">{{$t('comment.show_more_replies')}}</div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

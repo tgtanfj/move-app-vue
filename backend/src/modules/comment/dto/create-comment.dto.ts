@@ -13,9 +13,9 @@ export class CreateCommentDto {
   @ApiProperty({
     description: 'id video',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  videoId: number;
+  videoId?: number;
 
   @ApiProperty({
     description: 'id comment parent',

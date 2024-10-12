@@ -10,7 +10,7 @@ export class CreateCommentReactionDto {
   isLike: boolean;
 
   @ApiProperty({
-    description: 'id comment ',
+    description: 'id comment',
   })
   @IsNotEmpty()
   @IsNumber()

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { Cashout } from './cashout.entity';
 import { Follow } from './follow.entity';
@@ -7,6 +7,7 @@ import { Video } from './video.entity';
 
 @Entity('channels')
 export class Channel extends BaseEntity {
+  @Index()
   @Column({
     type: 'varchar',
   })
@@ -52,6 +53,12 @@ export class Channel extends BaseEntity {
     nullable: true,
   })
   youtubeLink: string;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfFollowers: number;
 
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })

@@ -62,6 +62,14 @@ const resetFormOnClose = () => {
   resetForm()
   oldPassword.value = ''
 }
+
+const handlePasswordInput = (event) => {
+  const char = event.key
+  if (char === ' ') {
+    event.preventDefault();
+  }
+}
+
 </script>
 
 <template>
@@ -78,7 +86,7 @@ const resetFormOnClose = () => {
       <div class="flex flex-col space-y-1.5 mb-4">
         <label>{{ $t('change_password.old_password') }}</label>
         <div class="relative pb-2">
-          <Input :type="showPassword ? 'text' : 'password'" v-model="oldPassword" maxlength="32" />
+          <Input :type="showPassword ? 'text' : 'password'" v-model="oldPassword" maxlength="32" @keydown="handlePasswordInput" />
           <span
             @click="togglePasswordVisibility"
             class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"

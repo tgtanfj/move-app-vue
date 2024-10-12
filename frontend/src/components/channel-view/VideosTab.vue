@@ -1,126 +1,124 @@
 <script setup>
-import VideoActions from './VideoActions.vue'
+import { onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { LEVEL, SORT_BY } from '../../constants/view-channel.constant'
+import { useCategory } from '../../services/category.services'
+import { useChannelVideos } from '../../services/channel_about.services'
+import { useChannelStore } from '../../stores/view-channel'
 import Video from '../home/Video.vue'
-import { ref } from 'vue'
+import Loading from '../Loading.vue'
+import CustomSelection from './CustomSelection.vue'
 
-const channels = ref([
-  {
-    thumbnail:
-      'https://i0.wp.com/spartansboxing.com/wp-content/uploads/2023/08/Mike-Tyson.png?fit=1920%2C1080&ssl=1',
-    title: 'Fitness World',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 5 days ago',
-    stars: 4.9,
-    duration: 'less than 1 hour',
-    workoutLevel: 'beginner',
-    category: 'Strength',
-    isAuth: true,
-    about: 'This channel focuses on beginner-friendly workouts and fitness tips.',
-    views: 141033123,
-    postedTime: 1726563232.894597,
-    videoTime: '12:33'
-  },
-  {
-    thumbnail:
-      'https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2018/12/1109-Larry-Wheels-Deadlift.jpg?quality=86&strip=all',
-    title: 'Yoga with Jane',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 2 days ago',
-    stars: 4.7,
-    duration: '30 minutes',
-    workoutLevel: 'intermediate',
-    category: 'Strength',
-    isAuth: true,
-    about: 'Join Jane for relaxing yoga sessions tailored to all skill levels.',
-    views: 3200,
-    postedTime: 1727799464.894606,
-    videoTime: '1:41:21'
-  },
-  {
-    thumbnail:
-      'https://www.si.com/.image/ar_16:9%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MjA1MTgxNjYwNjkyNDg5ODYw/conor-mcgregor-ufc-octagon-spotlight.jpg',
-    title: 'Powerlifting Pro',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 1 week ago',
-    stars: 4.8,
-    duration: '1 hour',
-    workoutLevel: 'advanced',
-    category: 'Strength',
-    isAuth: false,
-    about: 'Learn the secrets of powerlifting and strength training from the pros.',
-    views: 2250,
-    postedTime: 1726372382.894611,
-    videoTime: '59:33'
-  },
-  {
-    thumbnail:
-      'https://boxraw.com/cdn/shop/articles/Saul-Canelo-Alvarez-Dmitry-Bivol6-Photo-by-Ed-Mulholland-Matchroom.jpg?v=1652185062',
-    title: 'Cardio Burn',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 3 days ago',
-    stars: 4.5,
-    duration: '45 minutes',
-    workoutLevel: 'beginner',
-    category: 'Strength',
-    isAuth: true,
-    about: 'High-energy cardio workouts designed to get your heart pumping.',
-    views: 1720,
-    postedTime: 1725999713.89455,
-    videoTime: '10:33:31'
-  },
-  {
-    thumbnail:
-      'https://media-cdn-v2.laodong.vn/storage/newsportal/2020/9/3/832994/The-Rock-Tai-Tu-The-.jpg',
-    title: 'HIIT with Alex',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 6 hours ago',
-    stars: 4.6,
-    duration: '20 minutes',
-    workoutLevel: 'intermediate',
-    about: 'Alex offers quick and intense HIIT sessions that fit into your busy day.',
-    category: 'Strength',
-    views: 2900,
-    isAuth: false,
-    postedTime: 1724372382.894611,
-    videoTime: '3:33:33'
-  },
-  {
-    thumbnail:
-      'https://media-cdn-v2.laodong.vn/storage/newsportal/2020/9/3/832994/The-Rock-Tai-Tu-The-.jpg',
-    title: 'HIIT with Alex',
-    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
-    notification: 'posted 6 hours ago',
-    stars: 4.6,
-    duration: '40 minutes',
-    workoutLevel: 'intermediate',
-    about: 'Alex offers quick and intense HIIT sessions that fit into your busy day.',
-    category: 'Strength',
-    views: 2900,
-    isAuth: false,
-    postedTime: 1724372382.894611,
-    videoTime: '3:33:33'
+const route = useRoute()
+const id = route.params.id
+
+const categoryItems = ref([])
+const videos = ref([])
+const page = ref(1)
+const hasVideos = ref(false)
+const hasMoreVideos = ref(true)
+const isLoadingNextPage = ref(false)
+
+const channelStore = useChannelStore()
+const { name } = channelStore.channelInfo
+const { data, isLoading: isLoadingCategory } = useCategory()
+const { data: videosData, isFetching: isLoadingVideos, refetch } = useChannelVideos(id, page)
+
+watchEffect(() => {
+  if (!isLoadingCategory.value && data.value) {
+    categoryItems.value = data.value.data
   }
-])
+})
+watchEffect(() => {
+  if (!isLoadingVideos.value && videosData.value) {
+    const newVideos = videosData.value.data
+    if (newVideos.length < 6) {
+      hasMoreVideos.value = false
+    }
+
+    if (newVideos.length > 0) {
+      hasVideos.value = true
+      videos.value.push(...newVideos)
+    }
+
+    isLoadingNextPage.value = false
+  }
+})
+
+watch(
+  [
+    () => channelStore.selectedLevel,
+    () => channelStore.selectedCategory,
+    () => channelStore.selectedSortBy
+  ],
+  () => {
+    videos.value = []
+    page.value = 1
+    hasMoreVideos.value = true
+    refetch()
+  }
+)
+const handleSelectLevel = (value) => {
+  channelStore.setSelectedLevel(value)
+}
+const handleSelectCategory = (value) => {
+  channelStore.setSelectedCategory(value)
+}
+const handleSelectSortBy = (value) => {
+  channelStore.setSelectedSortBy(value)
+}
+
+// Scroll event to load more videos
+const handleScroll = () => {
+  if (
+    window.innerHeight + window.scrollY >= document.body.offsetHeight - 50 &&
+    hasMoreVideos.value &&
+    !isLoadingVideos.value
+  ) {
+    page.value += 1
+    refetch()
+    isLoadingNextPage.value = true
+  }
+}
+
+// Add event listener when the component is mounted
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+// Clean up the event listener when the component is unmounted
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 <template>
-  <div class="flex items-center justify-between">
-    <h1 class="text-title-size font-bold">All videos</h1>
+  <div class="flex items-center justify-between" v-if="!isLoadingCategory && hasVideos">
+    <h1 class="text-title-size font-bold">{{ $t('view_channel.all_videos') }}</h1>
 
     <!-- SORT -->
     <div class="flex gap-5">
-      <VideoActions />
+      <CustomSelection label="level" :listItems="LEVEL" @update:value="handleSelectLevel" />
+      <CustomSelection
+        label="category"
+        :listItems="categoryItems"
+        @update:value="handleSelectCategory"
+      />
+      <CustomSelection label="sort by" :listItems="SORT_BY" @update:value="handleSelectSortBy" />
     </div>
   </div>
-
-  <div>
-    <div class="grid grid-cols-3 gap-8 mt-4" v-if="channels.length > 0">
-      <div v-for="(item, index) in channels" :key="index">
+  <Loading v-if="isLoadingVideos && page === 1" class="mt-20" />
+  <div v-else class="@container">
+    <div v-if="videos.length > 0" class="grid grid-cols-3 gap-6 mt-4 @[1100px]:grid-cols-4">
+      <div v-for="item in videos" :key="item">
         <Video :video="item" />
       </div>
     </div>
-
-    <div v-if="channels.length === 0" class="italic text-center mt-[15%]">
-      DianeTV has not uploaded any videos yet.
+    <div v-else-if="!hasVideos" class="italic text-center mt-[20%]">
+      {{ $t('view_channel.not_upload_video', { name }) }}
+    </div>
+    <div v-else class="italic text-center mt-[15%]">
+      {{ $t('common.no_data') }}
     </div>
   </div>
+  <Loading v-if="isLoadingNextPage" class="mt-20" />
 </template>

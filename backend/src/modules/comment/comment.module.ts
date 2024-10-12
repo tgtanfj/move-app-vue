@@ -7,9 +7,16 @@ import { Comment } from '@/entities/comment.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { VideoModule } from '../video/video.module';
+import { CommentReaction } from '@/entities/comment-reaction.entity';
+import { Donation } from '@/entities/donation.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment]), JwtModule, UserModule, VideoModule],
+  imports: [
+    TypeOrmModule.forFeature([Comment, CommentReaction, Donation]),
+    JwtModule,
+    UserModule,
+    VideoModule,
+  ],
   controllers: [CommentController],
   providers: [CommentService, CommentRepository],
   exports: [CommentService, CommentRepository],

@@ -44,6 +44,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="myapp" android:host="reset-password"/>
             </intent-filter>
+
         </activity>
         <activity
             android:name="com.facebook.CustomTabActivity"
@@ -66,5 +67,12 @@
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" /> <!-- allows app to access Facebook app features -->
         <provider android:authorities="com.facebook.orca.provider.PlatformProvider" /> <!-- allows sharing to Messenger app -->
     </queries>
-    
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 </manifest>

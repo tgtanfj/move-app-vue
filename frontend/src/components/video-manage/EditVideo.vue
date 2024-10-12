@@ -59,6 +59,7 @@ const workoutLevelErr = ref('')
 const durationErr = ref('')
 const isCommentableErr = ref('')
 const thumbnailTypeValidationErr = ref('')
+const isEditSuccess = ref(false)
 
 const nullFirstTab = ref(false)
 const nullSecondTab = ref(false)
@@ -82,7 +83,23 @@ const categories = ref([
   {
     id: 2,
     title: 'MMA'
-  }
+  },
+  {
+    id: 3,
+    title: 'Weight Loss'
+  },
+  {
+    id: 4,
+    title: 'Muscle Gain'
+  },
+  {
+    id: 7,
+    title: 'Low Impact'
+  },
+  {
+    id: 10,
+    title: 'Upper Body'
+  },
 ])
 
 watch(
@@ -111,7 +128,6 @@ watch(isCommentable, (newValue) => {
 const handleEditVideo = () => {
   videoDataEdit.value = { ...props.videoInfoSelected }
   videoStore.videoId = props.videoInfoSelected.id
-  console.log(videoDataEdit.value)
 }
 
 const capitalizeFirstLetter = (string) => {
@@ -138,7 +154,7 @@ const resetField = () => {
   category.value = ''
   isCommentable.value = videoDataEdit.value.isCommentable
   tabChange.value = 'details'
-  images.value = [videoDataEdit.value.thumbnail_url]
+  images.value = []
   imagesSelected.value = []
   validateSizeTypeErr.value = ''
   titleErr.value = ''
@@ -152,6 +168,7 @@ const resetField = () => {
   nullFirstTab.value = false
   nullSecondTab.value = false
   thumbnailTypeValidationErr.value = ''
+  isEditSuccess.value = false
 }
 
 const onDialogClose = (isOpen) => {
@@ -305,7 +322,7 @@ const thirdButton = async (tab) => {
               : 'unknown'
 
       const formData = new FormData()
-      formData.append('thumbnail', imageSelectedFile.value)
+      // formData.append('thumbnail', imageSelectedFile.value)
       formData.append('title', title.value)
       formData.append('categoryId', category.value)
       formData.append('workoutLevel', workoutLevelText)
@@ -316,7 +333,8 @@ const thirdButton = async (tab) => {
       const response = await videoStore.updateDetailVideo(formData)
 
       if (response && response.statusCode === 200) {
-        isOpenUploadVideoDetails.value = false
+        // isOpenUploadVideoDetails.value = false
+        isEditSuccess.value = true
       }
     }
   }
@@ -331,7 +349,7 @@ const thirdButton = async (tab) => {
     <DialogContent
       class="m-0 p-0 w-[840px] h-[520px] flex flex-col justify-between overflow-hidden"
     >
-      <div class="my-6 mx-6">
+      <div class="m-6 mx-6 relative h-[80%]">
         <p class="text-[24px] font-bold mb-6">{{ $t('upload_video.video_details') }}</p>
         <div class="w-full">
           <Tabs default-value="details" class="flex" orientation="vertical">
@@ -605,7 +623,9 @@ const thirdButton = async (tab) => {
             </div>
           </Tabs>
         </div>
+        <p v-if="isEditSuccess" class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1">Edit successfully</p>
       </div>
+      
       <DialogFooter
         class="border-2 h-[70px] border-t-[#CCCCCC] !flex !items-center !justify-between w-full"
       >

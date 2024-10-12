@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,6 +14,7 @@ import 'package:move_app/presentation/screens/forgot_password/page/forgot_passwo
 import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
+import '../../../home/page/home_page.dart';
 import '../../widgets/divider_authentication.dart';
 import '../bloc/login_event.dart';
 
@@ -25,6 +27,33 @@ class LoginBody extends StatefulWidget {
 
 class _LoginBodyState extends State<LoginBody>
     with AutomaticKeepAliveClientMixin {
+  final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        controller.text = controller.text.trim();
+      });
+      context.read<LoginBloc>().add(LoginChangeEmailPasswordEvent(
+          email: controller.text.trim(), password: ''));
+    }
+  }
+
+  @override
+  void dispose() {
+    focusNode.removeListener(_onFocusChange);
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   bool get wantKeepAlive => true;
 
@@ -36,8 +65,8 @@ class _LoginBodyState extends State<LoginBody>
           Fluttertoast.showToast(msg: Constants.loginSuccessful);
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeBody()),
-                (Route<dynamic> route) => false,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (Route<dynamic> route) => false,
           );
         }
       },
@@ -81,6 +110,8 @@ class _LoginBodyState extends State<LoginBody>
                           children: [
                             CustomEditText(
                               title: Constants.email,
+                              focusNode: focusNode,
+                              controller: controller,
                               maxLength: 255,
                               onChanged: (email) {
                                 context.read<LoginBloc>().add(
@@ -115,6 +146,9 @@ class _LoginBodyState extends State<LoginBody>
                                       ),
                                     );
                               },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                              ],
                               isShowMessage: state.isShowPasswordMessage,
                               textStyle: state.isShowPasswordMessage
                                   ? AppTextStyles

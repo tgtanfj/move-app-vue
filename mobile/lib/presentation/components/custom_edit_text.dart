@@ -71,13 +71,14 @@ class _CustomEditTextState extends State<CustomEditText> {
   void initState() {
     super.initState();
     isTextVisible = !widget.isPasswordInput;
-    _controller = TextEditingController(text: widget.initialValue);
+    _controller =
+        widget.controller ?? TextEditingController(text: widget.initialValue);
   }
 
   @override
   void dispose() {
-    if (widget.controller != null) {
-      widget.controller?.dispose();
+    if (widget.controller == null) {
+      _controller.dispose();
     }
     super.dispose();
   }

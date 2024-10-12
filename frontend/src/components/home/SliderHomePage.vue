@@ -12,6 +12,8 @@ import CheckVerifyIcon from '@assets/icons/CheckVerifyIcon.vue'
 import Star from '@assets/icons/Star.vue'
 import { formatViews } from '@utils/formatViews.util'
 import EyeIcon from '@assets/icons/EyeIcon.vue'
+import { homepageService } from '@services/homepage.services'
+import { onMounted, ref } from 'vue'
 
 const channels = [
   {
@@ -90,6 +92,13 @@ const plugin = Autoplay({
   delay: 3000,
   stopOnMouseEnter: true,
   stopOnInteraction: false
+})
+
+const videos = ref(null)
+
+onMounted(async () => {
+  const response = await homepageService.getHotTrendVideos()
+  videos.value = response.data
 })
 </script>
 

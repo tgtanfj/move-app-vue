@@ -404,7 +404,7 @@ const thirdButton = async (tab) => {
 <template>
   <Dialog v-model:open="isOpenUploadVideoModal">
     <DialogTrigger as-child>
-      <Button variant="default" class="flex items-center gap-2 mt-3">
+      <Button variant="default" class="flex items-center gap-2 ">
         <FileVideo2 class="text-xl" />
         <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
       </Button>

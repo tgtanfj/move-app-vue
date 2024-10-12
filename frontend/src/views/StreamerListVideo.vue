@@ -62,14 +62,6 @@
       </div>
       <div class="mt-4 ml-7" v-else>
         <p class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</p>
-        <Button
-          variant="default"
-          class="flex items-center gap-2 mt-3"
-          @click="handleUploadNewVideo"
-        >
-          <FileVideo2 class="text-xl" />
-          <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
-        </Button>
       </div>
     </template>
   </div>

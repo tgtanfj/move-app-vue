@@ -13,6 +13,8 @@ class AppRoutes {
   static const String routeviewFAQs = '/view-FAQs';
   static const String routeForgotPassword = '/forgot-password';
   static const String routeCreateNewPassword = '/create-new-password';
+  static const String home = '/home';
+
   static getInitialRoute() {
     return '/';
   }
@@ -21,6 +23,7 @@ class AppRoutes {
     return {
       routeProfile: (BuildContext context) => const SettingPage(),
       '/': (BuildContext context) => const HomePage(),
+      home: (BuildContext context) => const HomePage(),
       routeMenu: (BuildContext context) => const MenuPage(),
       routeviewFAQs: (BuildContext context) => const ViewFAQsPage(),
       routeForgotPassword: (BuildContext context) => const ForgotPasswordPage(),

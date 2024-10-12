@@ -51,14 +51,14 @@ const firstSubmittion = ref(true)
 const gender = ref('')
 
 const { toast } = useToast()
-const { handleSubmit, values, setValues, errors, meta } = useForm({
+const { values, setValues, errors } = useForm({
   initialValues: {
     avatar: null,
     username: '',
     email: '',
     fullName: '',
     gender: '',
-    birthday: '',
+    dateOfBirth: '',
     country: '',
     state: '',
     city: ''
@@ -78,7 +78,21 @@ onMounted(async () => {
     }
     const response = await axios.get(`${ADMIN_BASE}/user/profile`, config)
     if (response.status === 200 && response.data) {
-      userData.value = response.data.data
+      userData.value = { ...response.data.data }
+      setValues({
+        ...response.data.data,
+        gender: denormalizeGender(response.data.data.gender),
+        state: response.data.data.state?.name || ''
+      })
+      const [year, month, day] = response.data.data.dateOfBirth.split('-')
+      selectedDay.value = day || null
+      selectedMonth.value = month || null
+      selectedYear.value = year || null
+
+      gender.value = denormalizeGender(response.data.data.gender)
+      selectedCountry.value = response.data.data.country?.name || ''
+      selectedState.value = response.data.data.state?.name || ''
+      selectedCity.value = response.data.data.city || ''
     } else throw new Error(response.error)
   } catch (err) {
     console.log(err)
@@ -98,69 +112,60 @@ onMounted(async () => {
   }
 })
 
-watch(userData, (newValue) => {
-  if (newValue) {
-    selectedCountry.value = newValue.country?.name || ''
-    selectedState.value = newValue.state?.name || ''
-    selectedCity.value = newValue.city || ''
-    gender.value = denormalizeGender(newValue.gender)
-    if (newValue.dateOfBirth) {
-      const [year, month, day] = newValue.dateOfBirth.split('-')
-      selectedDay.value = day || null
-      selectedMonth.value = month || null
-      selectedYear.value = year || null
-    }
-    setValues({
-      avatar: newValue.avatar || '',
-      username: newValue.username || '',
-      email: newValue.email || '',
-      fullName: newValue.fullName || '',
-      country: newValue.country?.name || '',
-      state: newValue.state?.name || '',
-      city: newValue.city || '',
-      gender: denormalizeGender(newValue.gender)
-    })
-  }
+watch(gender, (newValue) => {
+  setValues({
+    ...values,
+    gender: newValue
+  })
 })
 
 watch(selectedCountry, async (newValue) => {
-  const temp = countries.value.filter((item) => item.name === newValue)
-
-  try {
-    const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
-    if (res.status === 200) {
-      states.value = res.data.data
-    } else throw new Error(res.error)
-  } catch (error) {
-    console.log(error.message)
+  if (countries.value.length > 0) {
+    const temp = countries?.value.filter((item) => item.name === newValue)
+    if (temp[0].name) setValues({ ...values, country: temp[0].name })
+    try {
+      const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
+      if (res.status === 200) {
+        states.value = res.data.data
+      } else throw new Error(res.error)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 })
 
 watch(selectedState, async (newValue) => {
-  try {
-    const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
-      params: {
-        country: selectedCountry.value,
-        state: newValue
-      }
-    })
-    if (res.status === 200) {
-      cities.value = res.data.data
-    } else throw new Error(res.error)
-  } catch (error) {
-    console.log(error.message)
+  if (states.value.length > 0) {
+    const temp = states?.value.filter((item) => item.name === newValue)
+
+    if (temp[0].name) setValues({ ...values, state: temp[0].name })
+
+    if (temp.length > 0) userData.value = { ...userData.value, citi: temp[0] }
+    try {
+      const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
+        params: {
+          country: selectedCountry.value,
+          state: newValue
+        }
+      })
+      if (res.status === 200) {
+        cities.value = res.data.data
+      } else throw new Error(res.error)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
+})
+watch(selectedCity, (newValue) => {
+  setValues({ ...values, city: newValue })
 })
 
 watch([selectedDay, selectedMonth, selectedYear], () => {
   if (selectedDay.value && selectedMonth.value && selectedYear.value) {
-    setValues(
-      {
-        ...values,
-        birthday: `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
-      },
-      { shouldValidate: false }
-    )
+    setValues({
+      ...values,
+      dateOfBirth: `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
+    })
   }
 })
 
@@ -185,7 +190,25 @@ const isFormDataEmpty = (formData) => {
   return formData.entries().next().done
 }
 
+function hasEmptyProperty(obj) {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (key === 'city') {
+        continue
+      }
+
+      const value = obj[key]
+      if (value === undefined || value === null || value === '') {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 const onSubmit = async () => {
+  console.log(values, userData.value)
+
   if (Object.keys(errors.value).length > 0) {
     showError.value = true
   } else {
@@ -202,21 +225,27 @@ const onSubmit = async () => {
     if (userData.value.username !== values.username) formData.append('username', values.username)
     if (fileInfo.value) formData.append('avatar', fileInfo.value)
     if (values.fullName !== userData.value.fullName) formData.append('fullName', values.fullName)
-    if (values.birthday !== userData.value.dateOfBirth)
-      formData.append('dateOfBirth', values.birthday)
+    if (values.dateOfBirth !== userData.value.dateOfBirth)
+      formData.append('dateOfBirth', values.dateOfBirth)
     if (normalizeGender(values.gender) !== userData.value.gender)
       formData.append('gender', normalizeGender(values.gender))
-    if (values.country !== userData.value.country.name) {
+    if (
+      (values.country && !userData.value.country) ||
+      values.country !== userData.value.country?.name
+    ) {
       const countryId = countries.value.filter((item) => item.name === values.country)[0].id
       formData.append('countryId', countryId)
     }
-    if (values.state !== userData.value.state.name) {
+    if ((values.state && !userData.value.state) || values.state !== userData.value.state?.name) {
       const stateId = states.value.filter((item) => item.name === values.state)[0].id
       formData.append('stateId', stateId)
     }
     if (values.city !== userData.value.city) formData.append('city', values.city || '')
 
     if (isFormDataEmpty(formData)) {
+      console.log('empty')
+
+      isSubmitting.value = false
       return
     } else {
       try {
@@ -236,7 +265,7 @@ const onSubmit = async () => {
             city: values.city,
             gender: normalizeGender(values.gender)
           }
-          toast({ description: 'Updated Profile Successfully', variant: 'successfully' })
+          toast({ description: 'Editted Profile Successfully', variant: 'successfully' })
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })
@@ -267,7 +296,9 @@ const onErrorMessage = (msg) => {
 
 <template>
   <div>
-    <Loading v-if="isLoading" />
+    <div v-if="isLoading" class="mt-56 flex justify-center items-center">
+      <Loading />
+    </div>
     <form class="" @submit.prevent="onSubmit" v-else>
       <div class="flex flex-col gap-3">
         <FormField v-slot="componentField" name="avatar">
@@ -279,7 +310,7 @@ const onErrorMessage = (msg) => {
               v-bind="componentField"
               alt=""
             />
-            <p class="text-red text-sm" v-if="message">{{ message }}</p>
+            <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>
             <UploadAvatarFile
               :buttonText="$t('user_profile.update_profile_pic')"
               @file-selected="onFileSelected"
@@ -404,7 +435,7 @@ const onErrorMessage = (msg) => {
         </div>
         <div class="flex flex-col gap-1">
           <label>Date of birth</label>
-          <FormField v-slot="{ componentField }" name="birthday">
+          <FormField v-slot="{ componentField }" name="dateOfBirth">
             <FormItem class="flex items-center justify-start gap-2">
               <Select v-model="selectedDay">
                 <SelectTrigger class="w-[74px] h-[40px] mt-2 rounded-lg border-[#cccccc]">
@@ -525,7 +556,7 @@ const onErrorMessage = (msg) => {
           </div>
           <div class="flex flex-col gap-1 w-full"></div>
         </div>
-        <Button type="submit" class="w-[230px] mt-6">
+        <Button type="submit" class="w-[230px] mt-6" :disabled="hasEmptyProperty(values)">
           <template v-if="isSubmitting">
             <Loading />
           </template>

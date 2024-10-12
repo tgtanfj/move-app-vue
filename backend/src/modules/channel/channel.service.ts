@@ -13,13 +13,13 @@ import { VideoItemDto } from '../video/dto/response/video-item.dto';
 import { SocialLink } from './dto/response/channel-profile.dto';
 import { ChannelVideosDto } from './dto/response/channel-videos.dto';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 
 @Injectable()
 export class ChannelService {
   constructor(
     private readonly channelRepository: ChannelRepository,
     private readonly followService: FollowService,
-    @Inject(forwardRef(() => VideoService))
     private readonly videoService: VideoService,
   ) {}
 
@@ -29,7 +29,7 @@ export class ChannelService {
     });
   }
 
-  async findOne(channelId: number) {
+  async findOne(channelId: number): Promise<Channel> {
     return await this.channelRepository.findOne(channelId).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
@@ -73,8 +73,7 @@ export class ChannelService {
     let isFollowed = null;
     if (userId) isFollowed = await this.followService.isFollowed(userId, channelId);
 
-    const [numberOfFollowers, followingChannels, socialLinks] = await Promise.all([
-      this.followService.getNumberOfFollowers(channelId),
+    const [followingChannels, socialLinks] = await Promise.all([
       this.followService
         .getFollowingChannels(channel.user.id, 4, { channel: true })
         .then(async (followings) => {
@@ -84,7 +83,7 @@ export class ChannelService {
                 excludeExtraneousValues: true,
               });
 
-              channelItem.numberOfFollowers = await this.followService.getNumberOfFollowers(channelId);
+              channelItem.numberOfFollowers = fixIntNumberResponse(channelItem.numberOfFollowers);
 
               return channelItem;
             }),
@@ -94,7 +93,7 @@ export class ChannelService {
     ]);
 
     channelProfileDto.isFollowed = isFollowed;
-    channelProfileDto.numberOfFollowers = numberOfFollowers;
+    channelProfileDto.numberOfFollowers = fixIntNumberResponse(channelProfileDto.numberOfFollowers);
     channelProfileDto.followingChannels = followingChannels;
     channelProfileDto.socialLinks = socialLinks;
 

@@ -1,13 +1,32 @@
 <script setup>
-import Sidebar from '@components/Sidebar.vue'
 import ChannelInfo from '@components/channel-view/ChannelInfo.vue'
 import ChannelTabs from '@components/channel-view/ChannelTabs.vue'
+import { computed, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import Loading from '../components/Loading.vue'
+import { useChannelAbout } from '../services/channel_about.services'
+import { useChannelStore } from '../stores/view-channel'
+
+const route = useRoute()
+const id = computed(() => route.params.id)
+const channelStore = useChannelStore()
+
+const { data, isLoading } = useChannelAbout(id)
+
+watchEffect(() => {
+  if (!isLoading.value && data.value) {
+    channelStore.setChannelInfo(data.value.data)
+  }
+})
 </script>
 <template>
   <div class="flex">
-    <div class="ml-6 mr-32 mb-6 pt-5 grow">
-      <ChannelInfo class="mb-5" />
-      <ChannelTabs />
+    <div class="ml-6 mr-20 mb-6 pt-5 grow">
+      <div v-if="isLoading"><Loading class="mt-40" /></div>
+      <div v-else>
+        <ChannelInfo class="mb-5" />
+        <ChannelTabs />
+      </div>
     </div>
   </div>
 </template>

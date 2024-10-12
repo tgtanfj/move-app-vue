@@ -1,6 +1,7 @@
 {
   "common": {
-    "hello_world": "Hello World!"
+    "hello_world": "Hello World!",
+    "no_data": "No data available"
   },
   "streamer": {
     "home": "Home",
@@ -20,7 +21,7 @@
     "fb": "Facebook",
     "twitter": "Twitter",
     "copy_link": "Copy Link",
-    "link_copied": "Link Copied",
+    "link_copied": "Link copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
@@ -70,7 +71,7 @@
     "send_link": "Send password reset link",
     "create_password": "Create new password",
     "create_password_desc": "Please enter your new password and make sure your password is alphanumeric with at least 8 characters.",
-    "reset_success_title": "Reset password success",
+    "reset_success_title": "Password reset successful",
     "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
     "reset_fail_title": "Verification failed",
     "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
@@ -95,7 +96,9 @@
     "confirm_password": "Confirm password",
     "email": "Email",
     "verify_code": "Verification Code",
-    "referral_code": "Referral code (Optional)"
+    "referral_code": "Referral code (Optional)",
+    "new_password": "New password",
+    "confirm_new_password": "Confirm new password"
   },
   "user_profile": {
     "title": "Settings",
@@ -138,6 +141,7 @@
   "error_message": {
     "required": "This field is required",
     "invalid_email": "Invalid email",
+    "invalid_password": "You have entered an invalid password",
     "required_email": "Please enter your email",
     "password_length": "Password must be between 8 and 32 characters",
     "strong_password": "Please choose a stronger password. Try a combination of letters, numbers, and special character",
@@ -210,8 +214,8 @@
     "address_problem": "here and we will address your problem as soon as posible."
   },
   "comment": {
-    "cancel" : "Cancel",
-    "cancel_reservation":"Cancel Reservation?",
+    "cancel": "Cancel",
+    "cancel_reservation": "Cancel Reservation?",
     "are_you_sure": "Are you sure you want to cancel this reservation?",
     "no": "No",
     "yes": "Yes",
@@ -223,5 +227,31 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "video_detail": {
+    "share_via": "Share via",
+    "share": "SHARE",
+    "rate": "RATE VIDEO",
+    "follow": "FOLLOW",
+    "watch_also": "WATCH ALSO",
+    "views": "views",
+    "follower": "followers"
+  },
+  "login": {
+    "google": "Log In with Google",
+    "facebook": "Log In with Facebook",
+    "email": "LOG IN WITH EMAIL",
+    "forgot_password": "Forgot password?"
+  },
+  "view_channel": {
+    "about": "About",
+    "videos": "Videos",
+    "no_bio": "No information found.",
+    "no_social_network": "No social network found.",
+    "following": "{name} is following",
+    "follow": "follow",
+    "share": "share",
+    "not_upload_video": "{name} has not uploaded any videos yet.",
+    "all_videos": "All videos"
   }
 }
