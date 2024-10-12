@@ -11,7 +11,6 @@ import {
   DialogTrigger
 } from '@common/ui/dialog'
 import { commentServices } from '@services/comment.services'
-import { ref } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 import { useAuthStore } from '../../stores/auth'
 import LogoBlack from '@assets/icons/LogoBlack.vue'
