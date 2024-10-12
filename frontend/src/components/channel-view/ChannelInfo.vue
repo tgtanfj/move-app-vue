@@ -12,7 +12,7 @@ const { image, numberOfFollowers, name, isBlueBadge, isPinkBadge } = channelStor
 <template>
   <div class="flex items-center justify-between">
     <div class="flex items-center">
-      <img :src="image || defaultAvatar" class="w-[56px] h-[56px] mr-5" />
+      <img :src="image || defaultAvatar" class="w-[56px] h-[56px] mr-5 rounded-full" />
       <div>
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>

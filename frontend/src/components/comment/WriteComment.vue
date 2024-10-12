@@ -1,12 +1,16 @@
 <script setup>
 import { Button } from '@common/ui/button'
-import { Input } from '@common/ui/input'
-import { ref } from 'vue'
 import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
+import { Input } from '@common/ui/input'
 import { commentServices } from '@services/comment.services'
+import { ref } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 
 const props = defineProps({
+  videoId: {
+    type: String,
+    required: true
+  },
   me: {
     type: Object,
     required: true
@@ -42,7 +46,7 @@ const handleCloseEsc = (event) => {
 
 const postCommentVideo = async () => {
   if (!comment.value) return
-  const data = await commentServices.postComment(comment.value)
+  const data = await commentServices.postComment(comment.value, props.videoId)
   if (data.message === 'success') {
     emit('update', data?.data)
     comment.value = ''

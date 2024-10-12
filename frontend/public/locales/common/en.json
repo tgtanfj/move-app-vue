@@ -1,6 +1,7 @@
 {
   "common": {
-    "hello_world": "Hello World!"
+    "hello_world": "Hello World!",
+    "no_data": "No data available"
   },
   "streamer": {
     "home": "Home",
