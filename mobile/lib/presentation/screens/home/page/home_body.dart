@@ -90,7 +90,7 @@ class _HomeBodyState extends State<HomeBody> {
                     },
                   )
                 : AppBarWidget(
-                    onSearchButtonTap: () {
+                    suffixButton: () {
                       context.read<HomeBloc>().add(HomeSearchVideoEvent());
                     },
                     prefixButton: () =>
@@ -150,6 +150,10 @@ class _HomeBodyState extends State<HomeBody> {
                               style: AppTextStyles.montserratStyle.bold20black,
                             ),
                             GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.routeCategory,
+                              ),
                               child: Text(Constants.viewAll,
                                   style: AppTextStyles
                                       .montserratStyle.regular18tiffanyBlue),
