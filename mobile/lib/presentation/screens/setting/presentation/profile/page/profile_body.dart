@@ -102,14 +102,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                       ),
                     ),
                     CustomEditText(
-                      controller: TextEditingController.fromValue(
-                        TextEditingValue(
-                          text: state.user?.username ?? '',
-                          selection: TextSelection(
-                              baseOffset: state.user?.username?.length ?? 0,
-                              extentOffset: state.user?.username?.length ?? 0),
-                        ),
-                      ),
+                      initialValue: state.user?.username,
                       isShowMessage: state.isShowUsernameMessage,
                       title: Constants.username,
                       textStyle: state.isShowUsernameMessage
@@ -129,28 +122,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      controller: TextEditingController.fromValue(
-                        TextEditingValue(
-                          text: state.user?.email ?? '',
-                          selection: TextSelection(
-                              baseOffset: state.user?.email?.length ?? 0,
-                              extentOffset: state.user?.email?.length ?? 0),
-                        ),
-                      ),
+                      initialValue: state.user?.email,
                       title: Constants.email,
                       textStyle: AppTextStyles.montserratStyle.regular16Black,
                       enable: false,
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      controller: TextEditingController.fromValue(
-                        TextEditingValue(
-                          text: state.user?.fullName ?? '',
-                          selection: TextSelection(
-                              baseOffset: state.user?.fullName?.length ?? 0,
-                              extentOffset: state.user?.fullName?.length ?? 0),
-                        ),
-                      ),
+                      initialValue:state.user?.fullName  ,
                       isShowMessage: state.isShowFullNameMessage,
                       title: Constants.fullName,
                       textStyle: state.isShowFullNameMessage
@@ -239,14 +218,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      controller: TextEditingController.fromValue(
-                        TextEditingValue(
-                          text: state.user?.city ?? '',
-                          selection: TextSelection(
-                              baseOffset: state.user?.city?.length ?? 0,
-                              extentOffset: state.user?.city?.length ?? 0),
-                        ),
-                      ),
+                      initialValue: state.user?.city,
                       title: Constants.city,
                       isShowMessage: state.isShowCityMessage,
                       textStyle: state.isShowCityMessage

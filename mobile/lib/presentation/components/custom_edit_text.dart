@@ -28,6 +28,7 @@ class CustomEditText extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
+  final String? initialValue;
 
   const CustomEditText({
     super.key,
@@ -55,6 +56,7 @@ class CustomEditText extends StatefulWidget {
     this.widthMessage,
     this.onSubmitted,
     this.focusNode,
+    this.initialValue,
   });
 
   @override
@@ -102,7 +104,16 @@ class _CustomEditTextState extends State<CustomEditText> {
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
-            controller: widget.controller,
+            controller: widget.initialValue != null
+                ? TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: widget.initialValue ?? '',
+                      selection: TextSelection(
+                          baseOffset: widget.initialValue?.length ?? 0,
+                          extentOffset: widget.initialValue?.length ?? 0),
+                    ),
+                  )
+                : widget.controller,
             focusNode: widget.focusNode,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,

@@ -130,7 +130,7 @@ final class ProfileState extends Equatable {
           isShowDateOfBirthMessage ?? this.isShowDateOfBirthMessage,
       isShowCountryMessage: isShowCountryMessage ?? this.isShowCountryMessage,
       isShowStateMessage: isShowStateMessage ?? this.isShowStateMessage,
-      isShowAvatarMessage: isShowUpdateMessage ?? isShowAvatarMessage,
+      isShowAvatarMessage: isShowUpdateMessage ?? this.isShowAvatarMessage,
     );
   }
 
