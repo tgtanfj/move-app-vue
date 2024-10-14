@@ -69,6 +69,4 @@ export enum ERRORS_DICTIONARY {
   START_DATE_AFTER_END_DATE = 'Start Date is after to End Date',
   START_DATE_AFTER_CURRENT_DATE = 'Start Date is after to Current Date',
   END_DATE_AFTER_CURRENT_DATE = 'End Date is after to Current Date',
-
-
 }

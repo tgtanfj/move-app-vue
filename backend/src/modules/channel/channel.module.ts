@@ -12,12 +12,7 @@ import { VideoModule } from '../video/video.module';
 import { FollowService } from '../follow/follow.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Channel]),
-    FollowModule,
-    forwardRef(() => UserModule),
-    VideoModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Channel]), FollowModule, forwardRef(() => UserModule), VideoModule],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelRepository, JwtService],
   exports: [ChannelService, ChannelRepository],

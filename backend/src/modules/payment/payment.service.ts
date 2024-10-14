@@ -71,12 +71,7 @@ export class PaymentService {
 
       return objectResponse(
         data,
-        new PaginationMetadata(
-          +total,
-          queryPaymentHistoryDto.page,
-          queryPaymentHistoryDto.take,
-          totalPages,
-        ),
+        new PaginationMetadata(+total, queryPaymentHistoryDto.page, queryPaymentHistoryDto.take, totalPages),
       );
     } catch (err) {
       console.error(err);

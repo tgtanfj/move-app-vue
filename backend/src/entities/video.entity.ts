@@ -115,4 +115,10 @@ export class Video extends BaseEntity {
   viewHistories: VideoViewHistorys[];
 
   viewGrowthRate?: number;
+
+  @Column({
+    type: 'float',
+    default: 0,
+  })
+  durationsVideo: number;
 }
