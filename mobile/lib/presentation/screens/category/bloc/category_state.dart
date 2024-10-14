@@ -12,18 +12,14 @@ final class CategoryState extends Equatable {
 
   const CategoryState({
     this.status,
-   
   });
 
   static CategoryState initial() => const CategoryState(
         status: CategoryStatus.initial,
-        
       );
 
   CategoryState copyWith({
     CategoryStatus? status,
-    bool? isVisible,
-    List<String>? searchHistory,
   }) {
     return CategoryState(
       status: status ?? this.status,
@@ -31,7 +27,5 @@ final class CategoryState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-       
-      ];
+  List<Object?> get props => [status];
 }

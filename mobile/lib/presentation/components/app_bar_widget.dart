@@ -10,7 +10,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String? prefixIconPath;
   final String? suffixIconPath;
   final bool isEnableIcon;
- 
 
   const AppBarWidget({
     super.key,
@@ -58,7 +57,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap:  widget.suffixButton ,
+                onTap: widget.suffixButton,
                 child: SvgPicture.asset(
                   widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
                   width: 24.0,

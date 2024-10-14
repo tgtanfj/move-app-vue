@@ -5,9 +5,9 @@ import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/constants/key_screen.dart';
+import 'package:move_app/data/data_sources/dummy_data.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/category_item.dart';
-import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/category/bloc/category_bloc.dart';
 import 'package:move_app/presentation/screens/category/bloc/category_state.dart';
 
@@ -65,10 +65,12 @@ class _CategoryBodyState extends State<CategoryBody> {
                       childAspectRatio: 0.68,
                     ),
                     padding: const EdgeInsets.all(10),
-                    itemCount: 25,
+                    itemCount: dummyCategories.length,
                     itemBuilder: (context, index) {
-                      return const Center(
-                        child: CategoryItem(),
+                      return Center(
+                        child: CategoryItem(
+                          categoryModel: dummyCategories[index],
+                        ),
                       );
                     },
                   ),

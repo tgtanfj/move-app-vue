@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
+import 'package:move_app/data/models/category_model.dart';
+import 'package:move_app/utils/util_compact_view_count.dart';
 
 class CategoryItem extends StatefulWidget {
-  const CategoryItem({super.key});
+  final CategoryModel categoryModel;
+  const CategoryItem({super.key, required this.categoryModel});
 
   @override
   State<CategoryItem> createState() => _CategoryItemState();
@@ -19,18 +22,18 @@ class _CategoryItemState extends State<CategoryItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              'https://tse3.mm.bing.net/th?id=OIP.AJsCJ50a7hBVrQjYpdhKOAHaLH&pid=Api&P=0&h=180',
+              widget.categoryModel.image ?? '',
               height: MediaQuery.of(context).size.width * 0.33 * 1.45,
               fit: BoxFit.fill,
             ),
             const SizedBox(height: 8.0),
             Text(
-              'MMA',
+              widget.categoryModel.title ?? '',
               style: AppTextStyles.montserratStyle.bold18black,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            Text('12k views',
+            Text('${widget.categoryModel.numberOfViews?.toCompactViewCount()} views',
                 style: AppTextStyles.montserratStyle.regular14graniteGray),
           ],
         ),
