@@ -406,7 +406,6 @@ export class HomeService {
     });
 
     const mergedVideos = Array.from(videoMap.values());
-    console.log(mergedVideos);
 
     const videosWithValue2 = [];
     const videosWithValue1 = [];
@@ -424,7 +423,6 @@ export class HomeService {
       this.getVideoByIds(videosWithValue1, selected),
       this.getVideoByIds(recentWatchedVideoIds, selected),
     ]);
-    console.log(recentVideoByUser);
     let result = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
 
     if (result.length >= 32) {
