@@ -7,7 +7,7 @@ import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useResetPassword } from '../services/forgotpassword.services'
-import { useResetPasswordStore } from '../stores/resetPassword'
+import { useOpenLoginStore } from '../stores/openLogin'
 
 const showError = ref(false)
 const route = useRoute()
@@ -15,7 +15,7 @@ const token = route.params.token
 const mutationResetPassword = useResetPassword()
 const { isPending, isSuccess, isError } = mutationResetPassword
 
-const resetPasswordStore = useResetPasswordStore()
+const openLoginStore = useOpenLoginStore()
 
 const isFillAllFields = computed(() => {
   return values.password && values.confirmPassword
@@ -40,7 +40,7 @@ const submit = async () => {
 }
 
 const handleChangeTab = () => {
-  resetPasswordStore.toggleResetPasswordVariant()
+  openLoginStore.toggleOpenLogin()
 }
 </script>
 
