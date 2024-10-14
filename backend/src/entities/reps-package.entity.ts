@@ -15,11 +15,6 @@ export class RepsPackage extends BaseEntity {
   })
   price: number;
 
-  @Column({
-    type: 'float',
-  })
-  discount: number;
-
   @OneToMany(() => Payment, (payment) => payment.repsPackage)
   payments: Payment[];
 }
