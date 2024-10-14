@@ -198,4 +198,6 @@ class Constants {
   static const String seeLess = "See Less";
   static const String cancelComment = "Cancel Comment?";
   static const String areUSure = "Are you sure to cancel this comment?";
+  static const String getRep$ = 'Get REP\$';
+  static const String userName = 'User Name';
 }
