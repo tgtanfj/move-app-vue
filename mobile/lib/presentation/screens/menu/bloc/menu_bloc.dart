@@ -15,19 +15,18 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   }
   final userRepository = UserRepository();
 
-  void _onMenuInitialEvent(MenuInitialEvent event, Emitter<MenuState> emit)  async{
+  void _onMenuInitialEvent(
+      MenuInitialEvent event, Emitter<MenuState> emit) async {
     String token = SharedPrefer.sharedPrefer.getUserToken();
     if (token.isNotEmpty) {
-      final result = await Future.wait([
-      userRepository.getUserProfile(), 
-    ]);
-      (result[0]).fold((l) {
-      emit(state.copyWith(status: MenuStatus.failure));
-    }, (r) {
-      emit(state.copyWith(
-        user: r,
-      ));
-    });
+      final result = await userRepository.getUserProfile();
+      result.fold((l) {
+        emit(state.copyWith(status: MenuStatus.failure));
+      }, (r) {
+        emit(state.copyWith(
+          user: r,
+        ));
+      });
       emit(state.copyWith(status: MenuStatus.hadlogin));
     } else {
       emit(state.copyWith(status: MenuStatus.notlogin));
@@ -39,9 +38,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     emit(state.copyWith(isEnableMore: event.isMoreEnable));
   }
 
-  void _onMenuLogoutSuccessEvent (
-      MenuLogoutSuccessEvent event, Emitter<MenuState>  emit
-      ){
+  void _onMenuLogoutSuccessEvent(
+      MenuLogoutSuccessEvent event, Emitter<MenuState> emit) {
     emit(state.copyWith(status: MenuStatus.notlogin));
   }
 }
