@@ -39,6 +39,7 @@ enum AppIcons {
   youtubeLogo,
   twitterLogo,
   blueCheckCircle,
+  instagram,
   closeCircle,
   back,
   arrowRight,

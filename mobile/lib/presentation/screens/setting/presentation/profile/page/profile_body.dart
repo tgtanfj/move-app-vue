@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import 'package:move_app/utils/string_extentions.dart';
@@ -31,6 +32,9 @@ class _ProfileBodyState extends State<ProfileBody> {
         if (state.status == ProfileStatus.success) {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const HomePage()));
+          state.status == ProfileStatus.processing
+              ? EasyLoading.show()
+              : EasyLoading.dismiss();
         }
       },
       child: BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {

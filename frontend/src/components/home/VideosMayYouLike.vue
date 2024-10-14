@@ -97,6 +97,38 @@ const channels = [
     isAuth: false,
     postedTime: 1724372382.894611,
     videoTime: '3:33:33'
+  },
+  {
+    thumbnail:
+      'https://i0.wp.com/www.muscleandfitness.com/wp-content/uploads/2018/12/1109-Larry-Wheels-Deadlift.jpg?quality=86&strip=all',
+    title: 'Yoga with Jane',
+    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
+    notification: 'posted 2 days ago',
+    stars: 4.7,
+    duration: '30 minutes',
+    workoutLevel: 'intermediate',
+    category: 'Strength',
+    isAuth: true,
+    about: 'Join Jane for relaxing yoga sessions tailored to all skill levels.',
+    views: 3200,
+    postedTime: 1727799464.894606,
+    videoTime: '1:41:21'
+  },
+  {
+    thumbnail:
+      'https://boxraw.com/cdn/shop/articles/Saul-Canelo-Alvarez-Dmitry-Bivol6-Photo-by-Ed-Mulholland-Matchroom.jpg?v=1652185062',
+    title: 'Cardio Burn',
+    avatar: 'https://wsbufm.com/wp-content/uploads/2023/03/mike-tyson.jpg?w=640',
+    notification: 'posted 3 days ago',
+    stars: 4.5,
+    duration: '45 minutes',
+    workoutLevel: 'beginner',
+    category: 'Strength',
+    isAuth: true,
+    about: 'High-energy cardio workouts designed to get your heart pumping.',
+    views: 1720,
+    postedTime: 1725999713.89455,
+    videoTime: '10:33:31'
   }
 ]
 </script>
@@ -104,9 +136,9 @@ const channels = [
 <template>
   <div class="w-full mt-6 flex flex-col">
     <div class="flex items-center justify-between">
-      <p class="font-bold text-[24px]">{{$t('homepage.video_may_you_like')}}</p>
+      <p class="font-bold text-[24px]">{{ $t('homepage.video_may_you_like') }}</p>
     </div>
-    <div class="grid grid-cols-3 gap-8 mt-4">
+    <div class="grid grid-cols-4 gap-8 mt-4">
       <div v-for="(item, index) in channels" :key="index">
         <Video :video="item" />
       </div>

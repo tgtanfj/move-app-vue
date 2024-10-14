@@ -7,6 +7,8 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const categoryTitle = ref(formatUrlToCategoryTitle(route.params.title))
+const categoryId = ref(route.params.id)
+
 </script>
 
 <template>

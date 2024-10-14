@@ -1,6 +1,7 @@
 {
   "common": {
-    "hello_world": "Hello World!"
+    "hello_world": "Hello World!",
+    "no_data": "No data available"
   },
   "streamer": {
     "home": "Home",
@@ -70,7 +71,7 @@
     "send_link": "Send password reset link",
     "create_password": "Create new password",
     "create_password_desc": "Please enter your new password and make sure your password is alphanumeric with at least 8 characters.",
-    "reset_success_title": "Reset password success",
+    "reset_success_title": "Password reset successful",
     "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
     "reset_fail_title": "Verification failed",
     "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
