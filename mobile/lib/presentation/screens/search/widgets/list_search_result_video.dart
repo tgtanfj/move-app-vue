@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:move_app/presentation/components/video_poster.dart';
-import 'package:move_app/presentation/screens/home/widgets/video_may_u_like_description.dart';
 import 'package:move_app/presentation/screens/search/widgets/search_result_video.dart';
 
-import '../../home/widgets/video_feature_description.dart';
 
 class ListSearchResultVideo extends StatefulWidget {
   const ListSearchResultVideo({super.key});

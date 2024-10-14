@@ -2,9 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/auth_repository.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
-import 'package:move_app/utils/input_validation_helper.dart';
-
-import '../../../../../constants/constants.dart';
 import 'login_event.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {

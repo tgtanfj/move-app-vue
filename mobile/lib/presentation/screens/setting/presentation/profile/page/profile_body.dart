@@ -133,7 +133,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
-                      initialValue: state.user?.fullName,
+                      initialValue:state.user?.fullName  ,
                       isShowMessage: state.isShowFullNameMessage,
                       title: Constants.fullName,
                       textStyle: state.isShowFullNameMessage

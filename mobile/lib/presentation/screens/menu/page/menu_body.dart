@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
@@ -31,8 +32,12 @@ class _MenuBodyState extends State<MenuBody> {
         builder: (context, state) {
           if (state.status == MenuStatus.hadlogin) {
             return MenuHadLogin(
+              avatarPath: state.user?.avatar ?? '' ,
+              userName: state.user?.username ?? Constants.userName,
+              isBlueBadge: state.user?.isBlueBadge ?? false,
+              isPinkBadge: state.user?.isPinkBadge ?? false,
               logoutSuccessEvent: () =>
-                  context.read<MenuBloc>().add(MenuLogoutSuccessEvent()),
+                  context.read<MenuBloc>().add(const MenuLogoutSuccessEvent()),
               isMoreEnable: state.isEnableMore,
               moreButton: () => context
                   .read<MenuBloc>()

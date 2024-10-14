@@ -38,4 +38,10 @@ export class WatchingVideoHistoryRepository {
     existingWatchingVideoHistory.rate = dto.rate;
     return await this.watchingVideoHistoryRepository.save(existingWatchingVideoHistory);
   }
+
+  async getMyRate(userId: number, videoId: number) {
+    return await this.watchingVideoHistoryRepository.findOne({
+      where: { user: { id: userId }, video: { id: videoId } },
+    });
+  }
 }
