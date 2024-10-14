@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Account } from './account.entity';
 import { BaseEntity } from './base/base.entity';
 import { Channel } from './channel.entity';
+import { CommentReaction } from './comment-reaction.entity';
 import { Comment } from './comment.entity';
 import { Country } from './country.entity';
 import { Donation } from './donation.entity';
@@ -13,7 +14,6 @@ import { RefreshToken } from './refresh-token.entity';
 import { SearchHistory } from './search-history.entity';
 import { State } from './state.entity';
 import { WatchingVideoHistory } from './watching-video-history.entity';
-import { CommentReaction } from './comment-reaction.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -80,6 +80,12 @@ export class User extends BaseEntity {
     nullable: true,
   })
   avatar: string;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfREPs: number;
 
   @OneToOne(() => Account, (account) => account.user)
   account: Account;

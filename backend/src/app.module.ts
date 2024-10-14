@@ -16,6 +16,7 @@ import { DeeplinkModule } from './modules/deep-link/deep-link.module';
 import { MailModule } from './modules/email/email.module';
 import { FaqsModule } from './modules/faqs/faqs.module';
 import { HomeModule } from './modules/home/home.module';
+import { PaymentModule } from './modules/payment/payment.module';
 import { SearchModule } from './modules/search/search.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
@@ -68,6 +69,7 @@ import { WatchingVideoHistoryModule } from './modules/watching-video-history/wat
     ScheduleModule.forRoot(),
     VideoTrendModule,
     WatchingVideoHistoryModule,
+    PaymentModule,
   ],
   providers: [
     {

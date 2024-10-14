@@ -1,22 +1,21 @@
 import { Account } from '@/entities/account.entity';
+import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { IFile } from '@/shared/interfaces/file.interface';
+import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
-import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
+import { CountryService } from '../country/country.service';
 import { UserProfile } from './dto/response/user-profile.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { AccountRepository } from './repositories/account.repository';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { UserRepository } from './repositories/user.repository';
-import { AwsS3Service } from '@/shared/services/aws-s3.service';
-import { IFile } from '@/shared/interfaces/file.interface';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CountryService } from '../country/country.service';
-import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class UserService {
@@ -182,5 +181,9 @@ export class UserService {
 
   async updateAccount(accountId: number, data: Partial<Account>): Promise<UpdateResult> {
     return await this.accountRepository.updateAccount(accountId, data);
+  }
+
+  async updateREPs(userId: number, numberOfREPs: number) {
+    return this.userRepository.updateREPs(userId, numberOfREPs);
   }
 }

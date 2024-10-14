@@ -21,7 +21,7 @@ export class FollowController {
   async unFollow(@User() user, @Body() dto: CreateFollowDto) {
     return await this.followService.unfollow(user.id, dto.channelId);
   }
-  
+
   @Get()
   async getIntructors(@User() user) {}
 }
