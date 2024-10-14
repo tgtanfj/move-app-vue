@@ -31,7 +31,10 @@ export class CommentRepository {
   }
 
   async getOneWithVideo(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { video: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: { video: true, parent: true },
+    });
   }
 
   async getOneWithUser(id: number): Promise<Comment> {
@@ -125,9 +128,9 @@ export class CommentRepository {
     if (commentId) {
       const parentComment = await this.commentRepository.findOne({
         where: { id: commentId },
-        relations: ['parent'],
+        relations: ['parent', 'video'],
       });
-
+      data['video'] = parentComment.video.id;
       if (parentComment?.parent) {
         throw new BadRequestException('You can only reply one level deep.');
       }
