@@ -4,6 +4,8 @@ import 'package:move_app/presentation/screens/setting/presentation/profile/widge
 
 class UserModel {
   final int? id;
+  final bool isBlueBadge;
+  final bool isPinkBadge;
   final String? avatar;
   final String? email;
   final String? username;
@@ -42,8 +44,11 @@ class UserModel {
     this.stripeId,
   });
 
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      isBlueBadge: json['isBlueBadge'] is bool? ? json['isBlueBadge'] : false,
+      isPinkBadge: json['isPinkBadge'] is bool? ? json['isPinkBadge'] : false,
       id: json['id'] as int?,
       avatar: json['avatar'] is String? ? json['avatar'] : '',
       email: json['email'] is String? ? json['email'] : '',
@@ -91,6 +96,8 @@ class UserModel {
     StateModel? state,
     String? city,
     String? referralCode,
+    bool? isBlueBadge,
+    bool? isPinkBadge,
     DateTime? updatedAt,
     DateTime? createdAt,
     DateTime? deletedAt,
@@ -99,6 +106,8 @@ class UserModel {
     String? stripeId,
   }) {
     return UserModel(
+      isBlueBadge: isBlueBadge ?? this.isBlueBadge,
+      isPinkBadge: isPinkBadge ?? this.isPinkBadge,
       id: id ?? this.id,
       avatar: avatar ?? this.avatar,
       email: email ?? this.email,

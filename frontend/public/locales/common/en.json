@@ -1,6 +1,7 @@
 {
   "common": {
-    "hello_world": "Hello World!"
+    "hello_world": "Hello World!",
+    "no_data": "No data available"
   },
   "streamer": {
     "home": "Home",
@@ -20,7 +21,7 @@
     "fb": "Facebook",
     "twitter": "Twitter",
     "copy_link": "Copy Link",
-    "link_copied": "Link Copied",
+    "link_copied": "Link copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
@@ -70,7 +71,7 @@
     "send_link": "Send password reset link",
     "create_password": "Create new password",
     "create_password_desc": "Please enter your new password and make sure your password is alphanumeric with at least 8 characters.",
-    "reset_success_title": "Reset password success",
+    "reset_success_title": "Password reset successful",
     "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
     "reset_fail_title": "Verification failed",
     "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
@@ -226,6 +227,21 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "video_detail": {
+    "share_via": "Share via",
+    "share": "SHARE",
+    "rate": "RATE VIDEO",
+    "follow": "FOLLOW",
+    "watch_also": "WATCH ALSO",
+    "views": "views",
+    "follower": "followers"
+  },
+  "login": {
+    "google": "Log In with Google",
+    "facebook": "Log In with Facebook",
+    "email": "LOG IN WITH EMAIL",
+    "forgot_password": "Forgot password?"
   },
   "view_channel": {
     "about": "About",

@@ -108,7 +108,7 @@ class Constants {
   static const String faq = 'FAQ';
   static const String faqsNotFound = 'FAQs not found!';
   static const String logout = 'Logout';
-  static const String logout_question = 'Logout ?';
+  static const String logoutQuestion = 'Logout ?';
   static const String loginMenu = "Login";
   static const String signUpSuccessful = "Sign Up Successful";
   static const String theEmail = 'The email ';
@@ -170,6 +170,9 @@ class Constants {
   static const String twitter = 'twitter';
   static const String youtube = 'youtube';
   static const String followers = 'followers';
+  static const String channelNotFound = 'Channel not found';
+  static const String noSocialNetworkFound = 'No social network found.';
+  static const String noInformationFound = 'No information found.';
   static const String categories = "Categories";
   static const String channels = "Channels";
   static const String searchResults = "Search Result";
@@ -189,11 +192,14 @@ class Constants {
   static const String repSender = "REPs Sender";
   static const String send = "Send";
   static const String cancel = "Cancel";
-  static const String lorem ="Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
+  static const String lorem =
+      "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String seeMore = "See More";
   static const String seeLess = "See Less";
-  static const String cancelComment ="Cancel Comment?";
-  static const String areUSure ="Are you sure to cancel this comment?";
+  static const String cancelComment = "Cancel Comment?";
+  static const String areUSure = "Are you sure to cancel this comment?";
+  static const String getRep$ = 'Get REP\$';
+  static const String userName = 'User Name';
   static const String writeReply = "Write a reply";
   static const String justNow = "Just now";
   static const String secondsAgo = "seconds ago";

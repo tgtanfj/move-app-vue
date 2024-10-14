@@ -59,7 +59,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
                 style: AppTextStyles.montserratStyle.regular14graniteGray,
               ),
             ),
-            const Badges(),
+            const Badges(isBlueBadge: false, isPinkBadge: false,), //TODO add Badge
           ],
         ),
         Row(

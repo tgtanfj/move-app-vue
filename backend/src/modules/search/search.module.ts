@@ -1,13 +1,17 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
-import { CategoryModule } from '../category/category.module';
-import { ChannelModule } from '../channel/channel.module';
-import { VideoModule } from '../video/video.module';
+import { Video } from '@/entities/video.entity';
+import { Channel } from '@/entities/channel.entity';
+import { Category } from '@/entities/category.entity';
+import { SearchHistory } from '@/entities/search-history.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [CategoryModule, ChannelModule, VideoModule],
-  controllers: [SearchController],
+  imports: [TypeOrmModule.forFeature([Category, Channel, Video, SearchHistory]), JwtModule, UserModule],
   providers: [SearchService],
+  controllers: [SearchController],
 })
 export class SearchModule {}

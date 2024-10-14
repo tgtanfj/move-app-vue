@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/avatar.dart';
@@ -10,7 +11,6 @@ import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
-import 'package:move_app/presentation/screens/video_detail/widgets/dialog_cancel_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/item_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
 
@@ -20,8 +20,21 @@ class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
-  const MenuHadLogin(
-      {super.key,required this.logoutSuccessEvent, required this.moreButton, required this.isMoreEnable});
+
+  final String avatarPath;
+  final String userName;
+  final bool isBlueBadge;
+  final bool isPinkBadge;
+  const MenuHadLogin({
+    super.key,
+    required this.logoutSuccessEvent,
+    required this.moreButton,
+    required this.isMoreEnable,
+    required this.avatarPath,
+    required this.userName,
+    required this.isBlueBadge,
+    required this.isPinkBadge,
+  });
 
   @override
   State<MenuHadLogin> createState() => _MenuHadLoginState();
@@ -36,20 +49,29 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
         children: [
           Row(
             children: [
-              const Avatar(
-                  heightAvatar: 40.0,
-                  widthAvatar: 40.0,
-                  radiusAvatar: 32.0,
-                  imageUrl:
-                      'https://www.1zoom.me/big2/946/289597-frederika.jpg'),
+              widget.avatarPath.isNotEmpty
+                  ? Avatar(
+                      heightAvatar: 40.0,
+                      widthAvatar: 40.0,
+                      radiusAvatar: 32.0,
+                      imageUrl: widget.avatarPath)
+                  : Image.asset(
+                      AppImages.defaultAvatar.webpAssetPath,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    ),
               const SizedBox(
                 width: 8.0,
               ),
               Text(
-                'Philip2020',
+                widget.userName,
                 style: AppTextStyles.montserratStyle.bold17White,
               ),
-              const Badges(),
+              Badges(
+                isBlueBadge: widget.isBlueBadge,
+                isPinkBadge: widget.isPinkBadge,
+              ),
             ],
           ),
           const SizedBox(
@@ -71,7 +93,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                       width: 5.0,
                     ),
                     Text(
-                      'Get REP\$',
+                      Constants.getRep$,
                       style: AppTextStyles.montserratStyle.bold16White,
                     )
                   ],
@@ -91,9 +113,16 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             height: 20.0,
           ),
           ContentMenu(
-            followingButton: () {Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Column(children: [ItemComment(), WriteComment(),],)));
+            followingButton: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Column(
+                            children: [
+                              ItemComment(),
+                              WriteComment(),
+                            ],
+                          )));
             },
             browseButton: () {},
             walletButton: () {},
@@ -135,8 +164,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                      return LogoutDialog(yesButton: widget.logoutSuccessEvent);
-
+                  return LogoutDialog(yesButton: widget.logoutSuccessEvent);
                 },
               );
             },

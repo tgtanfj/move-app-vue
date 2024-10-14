@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/services/api_service.dart';
 
@@ -26,7 +27,9 @@ class ForgotPasswordRepository {
 
       return false;
     } catch (e) {
+      if (kDebugMode) {
       print('Error checking email: $e');
+      }
       return false;
     }
   }

@@ -5,19 +5,15 @@ import { Payment } from './payment.entity';
 @Entity('reps-packages')
 export class RepsPackage extends BaseEntity {
   @Column({
-    type: 'varchar',
+    type: 'int',
+    nullable: false,
   })
-  numberOfREPs: string;
+  numberOfREPs: number;
 
   @Column({
     type: 'float',
   })
   price: number;
-
-  @Column({
-    type: 'float',
-  })
-  discount: number;
 
   @OneToMany(() => Payment, (payment) => payment.repsPackage)
   payments: Payment[];

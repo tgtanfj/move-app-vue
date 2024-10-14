@@ -31,7 +31,10 @@ export class CommentRepository {
   }
 
   async getOneWithVideo(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { video: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: { video: true, parent: true },
+    });
   }
 
   async getOneWithUser(id: number): Promise<Comment> {
@@ -42,20 +45,21 @@ export class CommentRepository {
     return await this.commentRepository.find();
   }
 
-  async getComments(condition: any, videoId: number, userId: number, limit: number) {
+  async getComments(condition: any, videoId: number, limit: number, userId?: number) {
     const comments = await this.commentRepository.find({
       where: condition,
       relations: ['user'],
       order: { createdAt: 'DESC' },
       take: limit,
     });
+    let checkLike: CommentReaction;
     const listComments = Promise.all(
       comments.map(async (comment) => {
         const [reactions, donation] = await Promise.all([
           this.getReactionsInComment(comment.id),
           this.getTotalDonations(comment.user.id, videoId),
         ]);
-        const checkLike = reactions.find((reaction) => reaction.user.id === userId);
+        userId && (checkLike = reactions.find((reaction) => reaction.user.id === userId));
         return {
           ...comment,
           isLike: checkLike?.isLike,
@@ -67,26 +71,26 @@ export class CommentRepository {
     return listComments;
   }
 
-  async getCommentsOfVideo(userId: number, videoId: number, limit: number, cursor?: number) {
+  async getCommentsOfVideo(videoId: number, limit: number, cursor?: number, userId?: number) {
     const whereCondition: any = { video: { id: videoId }, parent: null };
 
     if (cursor) {
       whereCondition.id = cursor ? LessThan(cursor) : undefined;
     }
 
-    const data = await this.getComments(whereCondition, videoId, userId, limit);
+    const data = await this.getComments(whereCondition, videoId, limit, userId);
 
     return data;
   }
 
-  async getReplyComments(userId: number, id: number, limit: number, cursor?: number) {
+  async getReplyComments(id: number, limit: number, cursor?: number, userId?: number) {
     const whereCondition: any = { parent: { id: id } };
 
     if (cursor) {
       whereCondition.id = cursor ? LessThan(cursor) : undefined;
     }
     const videoId = (await this.getOneWithVideo(id)).video.id;
-    const data = await this.getComments(whereCondition, videoId, userId, limit);
+    const data = await this.getComments(whereCondition, videoId, limit, userId);
 
     return data;
   }

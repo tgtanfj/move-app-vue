@@ -42,11 +42,17 @@ const handleSendMail = async () => {
     showError.value = true
   } else {
     email.value = values.email
-    mutation.mutate({ email: values.email })
-    isBanned.value = true
-    banned = setTimeout(() => {
-      isBanned.value = false
-    }, 60000)
+    mutation.mutate(
+      { email: values.email },
+      {
+        onSuccess: () => {
+          isBanned.value = true
+          banned = setTimeout(() => {
+            isBanned.value = false
+          }, 60000)
+        }
+      }
+    )
   }
 }
 
@@ -106,12 +112,13 @@ const clearErrorAPI = () => {
           type="submit"
           :disabled="!isFormValid || isPending || isBanned"
           :variant="isFormValid ? 'default' : 'disabled'"
+          :isLoading="isPending"
           >{{
-            isPending
-              ? 'Sending mail...'
-              : isIdle
-                ? $t('forgot_password.send_link')
-                : $t('forgot_password.resend_link')
+            isIdle
+              ? $t('forgot_password.send_link')
+              : isSuccess
+                ? $t('forgot_password.resend_link')
+                : $t('forgot_password.send_link')
           }}</Button
         >
       </div>

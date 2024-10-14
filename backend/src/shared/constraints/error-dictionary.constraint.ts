@@ -63,4 +63,10 @@ export enum ERRORS_DICTIONARY {
 
   //Payment
   ADD_PAYMENT_METHOD_FAIL = 'Add payment method fail',
+  DETACH_PAYMENT_METHOD_FAIL = 'Delete payment method fail',
+
+  //Date
+  START_DATE_AFTER_END_DATE = 'Start Date is after to End Date',
+  START_DATE_AFTER_CURRENT_DATE = 'Start Date is after to Current Date',
+  END_DATE_AFTER_CURRENT_DATE = 'End Date is after to Current Date',
 }

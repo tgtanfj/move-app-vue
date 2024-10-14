@@ -54,7 +54,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                           style: AppTextStyles.montserratStyle.regular20Black,
                         ),
                       ),
-                      const Badges(),
+                      const Badges(isBlueBadge: false, isPinkBadge: false,), // TODO : add badge
                     ],
                   ),
                   Row(

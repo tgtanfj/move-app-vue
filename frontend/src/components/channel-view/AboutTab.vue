@@ -34,6 +34,7 @@ const { bio, name, socialLinks, followingChannels } = channelStore.channelInfo
       <FollowingUser
         v-for="u in followingChannels"
         :key="u"
+        :id="u.id"
         :name="u.name"
         :follower="u.numberOfFollowers"
         :avatar="u.image"

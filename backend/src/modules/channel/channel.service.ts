@@ -20,7 +20,6 @@ export class ChannelService {
   constructor(
     private readonly channelRepository: ChannelRepository,
     private readonly followService: FollowService,
-    @Inject(forwardRef(() => VideoService))
     private readonly videoService: VideoService,
   ) {}
 
@@ -30,7 +29,7 @@ export class ChannelService {
     });
   }
 
-  async findOne(channelId: number) {
+  async findOne(channelId: number): Promise<Channel> {
     return await this.channelRepository.findOne(channelId).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });

@@ -42,13 +42,13 @@ export const registerSchema = object({
 
 export const signinSchema = object({
   email: string()
-    .required(t('error_message.required_email'))
-    .matches(REGEX_EMAIL, t('error_message.invalid_email')),
+    .required(t('error_message.required_email')),
+    // .matches(REGEX_EMAIL, t('error_message.invalid_email')),
   password: string()
     .required(t('error_message.required'))
-    .min(8, t('error_message.invalid_password'))
-    .max(32, t('error_message.invalid_password'))
-    .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password'))
+    // .min(8, t('error_message.invalid_password'))
+    // .max(32, t('error_message.invalid_password'))
+    // .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password')),
 })
 
 export const userProfileSchema = yup.object().shape({
@@ -61,14 +61,14 @@ export const userProfileSchema = yup.object().shape({
   fullName: yup
     .string()
     .matches(/^.{8,255}$/, t('user_profile.fullname_8_255_long'))
-    .matches(/^[A-Za-z0-9\s]*$/, t('user_profile.fullname_no_special_characters')),
+    .matches(/^[A-Za-z\s]*$/, t('user_profile.fullname_no_special_characters')),
   country: yup.string().required(t('user_profile.field_required')),
   state: yup.string().required(t('user_profile.field_required')),
   gender: yup
     .string()
     .required(t('user_profile.field_required'))
     .oneOf(['male', 'female', 'rather not say']),
-  birthday: yup
+  dateOfBirth: yup
     .string()
     .required(t('user_profile.field_required'))
     .test('is-valid-date', 'Invalid date format', (value) => {
