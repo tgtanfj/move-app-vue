@@ -32,7 +32,7 @@ class _MenuBodyState extends State<MenuBody> {
           if (state.status == MenuStatus.hadlogin) {
             return MenuHadLogin(
               logoutSuccessEvent: () =>
-                  context.read<MenuBloc>().add(MenuLogoutSuccessEvent()),
+                  context.read<MenuBloc>().add(const MenuLogoutSuccessEvent()),
               isMoreEnable: state.isEnableMore,
               moreButton: () => context
                   .read<MenuBloc>()
