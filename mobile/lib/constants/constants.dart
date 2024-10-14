@@ -198,4 +198,11 @@ class Constants {
   static const String seeLess = "See Less";
   static const String cancelComment = "Cancel Comment?";
   static const String areUSure = "Are you sure to cancel this comment?";
+  static const String rateTheVideo = "Rate the video";
+  static const String rateQuestion =
+      "Tell us what do you think about this session.";
+  static const String rateThanksTitle = "Thank you for your ratings!";
+  static const String rateThanksContent =
+      "The ratings you provided will definitely be helpful for the instructor.";
+  static const String rateNotFound = 'Rate not found.';
 }

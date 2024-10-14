@@ -12,4 +12,5 @@ class ApiUrls {
   static const String loginGoogle = 'auth/login/google';
   static const String loginFacebook = 'auth/login/facebook';
   static const String faqsEndPoint = 'faqs';
+  static const String rateVideo = 'watching-video-history/rate';
 }

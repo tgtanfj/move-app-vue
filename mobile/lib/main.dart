@@ -4,8 +4,8 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 
 import 'config/app_config.dart';
 
@@ -92,9 +92,8 @@ class _MyAppState extends State<MyApp> {
           ),
         );
       },
-      // initialRoute: AppRoutes.getInitialRoute(),
-      // routes: AppRoutes.getRoutes(),
-      home: ViewChannelProfilePage(),
+      initialRoute: AppRoutes.getInitialRoute(),
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

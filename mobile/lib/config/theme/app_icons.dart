@@ -48,6 +48,8 @@ enum AppIcons {
   heartTiffany,
   filter,
   arrowWhiteLeft,
+  rateStar,
+  rateStarFill,
 }
 
 extension AppIconsExtension on AppIcons {
