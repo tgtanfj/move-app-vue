@@ -25,6 +25,8 @@ class UserModel {
   final String? stripeId;
   UserModel({
     this.id,
+    this.isBlueBadge = false,
+    this.isPinkBadge = false,
     this.avatar,
     this.email,
     this.username,
@@ -47,9 +49,9 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      id: json['id'] as int?,
       isBlueBadge: json['isBlueBadge'] is bool? ? json['isBlueBadge'] : false,
       isPinkBadge: json['isPinkBadge'] is bool? ? json['isPinkBadge'] : false,
-      id: json['id'] as int?,
       avatar: json['avatar'] is String? ? json['avatar'] : '',
       email: json['email'] is String? ? json['email'] : '',
       username: json['username'] is String? ? json['username'] : '',
@@ -106,9 +108,9 @@ class UserModel {
     String? stripeId,
   }) {
     return UserModel(
+      id: id ?? this.id,
       isBlueBadge: isBlueBadge ?? this.isBlueBadge,
       isPinkBadge: isPinkBadge ?? this.isPinkBadge,
-      id: id ?? this.id,
       avatar: avatar ?? this.avatar,
       email: email ?? this.email,
       username: username ?? this.username,
