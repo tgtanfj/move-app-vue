@@ -55,7 +55,6 @@ export class PaymentService {
         )
         .then(([payments, total]) => {
           const data = payments.map((payment) => {
-            console.log(payment);
             const paymentDto = plainToInstance(PaymentDto, payment, { excludeExtraneousValues: true });
             paymentDto.repsPackage = plainToInstance(RepsPackageDto, payment.repsPackage, {
               excludeExtraneousValues: true,

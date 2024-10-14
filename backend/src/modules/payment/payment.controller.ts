@@ -40,8 +40,6 @@ export class PaymentController {
   @HttpCode(HttpStatus.OK)
   async getPaymentHistory(@User() user, @Query() queryPaymentHistoryDto: QueryPaymentHistoryDto) {
     try {
-      console.log(queryPaymentHistoryDto);
-
       validateDate(queryPaymentHistoryDto.startDate, queryPaymentHistoryDto.endDate);
 
       return await this.paymentService.getPaymentHistory(user.id, queryPaymentHistoryDto);

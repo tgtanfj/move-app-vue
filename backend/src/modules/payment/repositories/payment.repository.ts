@@ -33,27 +33,6 @@ export class PaymentRepository {
     take: number = 10,
     page: number = 1,
   ): Promise<[Payment[], number]> {
-    console.log({
-      where: {
-        user: { id: userId },
-        createdAt:
-          startDate && endDate
-            ? Between(startDate, endDate)
-            : startDate
-              ? MoreThanOrEqual(startDate)
-              : endDate
-                ? LessThanOrEqual(endDate)
-                : undefined,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      relations: {
-        repsPackage: true,
-      },
-      take: take,
-      skip: (page - 1) * take,
-    });
     return await this.paymentRepository.findAndCount({
       where: {
         user: { id: userId },
