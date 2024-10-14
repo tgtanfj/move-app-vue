@@ -2,7 +2,7 @@ import { Payment } from '@/entities/payment.entity';
 import { RepsPackage } from '@/entities/reps-package.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
 @Injectable()
 export class PaymentRepository {
@@ -13,9 +13,8 @@ export class PaymentRepository {
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async createPaymentHistory(totalCost: number, userId: number, repPackageId: number) {
+  async createPaymentHistory(userId: number, repPackageId: number) {
     const paymentHistoryCreated = await this.paymentRepository.create({
-      totalCost,
       user: {
         id: userId,
       },
@@ -25,5 +24,35 @@ export class PaymentRepository {
     });
 
     return this.paymentRepository.save(paymentHistoryCreated);
+  }
+
+  async findPaymentHistory(
+    userId: number,
+    startDate?: Date | null,
+    endDate?: Date | null,
+    take: number = 10,
+    page: number = 1,
+  ): Promise<[Payment[], number]> {
+    return await this.paymentRepository.findAndCount({
+      where: {
+        user: { id: userId },
+        createdAt:
+          startDate && endDate
+            ? Between(startDate, endDate)
+            : startDate
+              ? MoreThanOrEqual(startDate)
+              : endDate
+                ? LessThanOrEqual(endDate)
+                : undefined,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: {
+        repsPackage: true,
+      },
+      take: take,
+      skip: (page - 1) * take,
+    });
   }
 }

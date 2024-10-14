@@ -24,7 +24,7 @@ export class HomeService {
   ) {}
 
   // @Cron('* 1 0 * *')
-  @Cron('* 30 * * * *')
+  // @Cron('* 30 * * * *')
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
