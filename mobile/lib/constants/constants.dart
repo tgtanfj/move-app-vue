@@ -194,8 +194,8 @@ class Constants {
   static const String cancel = "Cancel";
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
-  static const String seeMore = "See More";
-  static const String seeLess = "See Less";
+  static const String readMore = "...Read More";
+  static const String readLess = "Read Less";
   static const String cancelComment = "Cancel Comment?";
   static const String areUSure = "Are you sure to cancel this comment?";
   static const String getRep$ = 'Get REP\$';
@@ -209,9 +209,16 @@ class Constants {
   static const String weeksAgo = "weeks ago";
   static const String monthsAgo = "months ago";
   static const String yeasAgo = "years ago";
+  static const String secondAgo = "second ago";
+  static const String minuteAgo = "minute ago";
+  static const String hourAgo = "hour ago";
+  static const String dayAgo = "day ago";
+  static const String weekAgo = "week ago";
+  static const String monthAgo = "month ago";
+  static const String yeaAgo = "year ago";
   static const String notFound = "Not Found";
-
-
-
+  static const String anonymous = "Anonymous";
+  static const String showMoreReplies = "Show more replies";
+  static const String emptyComments = "No comments to  display";
 
 }

@@ -2,18 +2,14 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/models/comment_model.dart';
-
-import 'package:move_app/data/models/comment_model.dart';
-
 import '../../constants/constants.dart';
 import '../services/api_service.dart';
-import 'auth_repository.dart';
 
 class CommentRepository {
   final ApiService apiService = ApiService();
 
   Future<Either<String, List<CommentModel>>> getListCommentVideo(int videoId,
-      {int limit = 3, int? cursor}) async {
+      {int? limit, int? cursor}) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
@@ -37,18 +33,21 @@ class CommentRepository {
     }
   }
 
-  Future<Either<String, List<CommentModel>>> getListReplyComment(
-      int commentId) async {
+  Future<Either<String, List<CommentModel>>> getListRepliesComment(int commentId,
+      {int? limit, int? cursor}) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
         'comment/$commentId/reply',
+        queryParameters: {
+          if (limit != null) 'limit': limit,
+          if (cursor != null && cursor !=0) 'cursor': cursor,
+        },
       );
-
       if (response.data != null) {
         List<dynamic> replyJson = response.data['data'] as List<dynamic>;
         var reply =
-            replyJson.map((json) => CommentModel.fromJson(json)).toList();
+        replyJson.map((json) => CommentModel.fromJson(json)).toList();
         return Right(reply);
       } else {
         return const Left(Constants.notFound);
@@ -57,7 +56,6 @@ class CommentRepository {
       return Left(e.toString());
     }
   }
-
   Future<Either<String, Response>> postComment(
       CommentModel commentModel) async {
     try {
@@ -82,6 +80,7 @@ class CommentRepository {
         final errorData = e.response?.data;
         final errorMessage = errorData['message'] ?? 'Unknown error occurred';
         return Left(errorMessage);
+
       }
       return Left(e.toString());
     }

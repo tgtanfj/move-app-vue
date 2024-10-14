@@ -16,9 +16,14 @@ final class VideoDetailState extends Equatable {
   final String? inputComment;
   final List<CommentModel>? listComments;
   final Map<int, List<CommentModel>>? replies;
-  final List<CommentModel>? listReplies;
   final int? lastCommentId;
   final CommentModel? commentModel;
+  final int? lastIdReply;
+  final Map<int, bool>? isHiddenListReply;
+  final String? inputReply;
+  final Map<int, bool>? isHiddenInputReply;
+  final Map<int?, int?>? originalNumOfReply;
+  final bool isShowTemporaryListReply;
 
   const VideoDetailState({
     this.videoUrls,
@@ -27,26 +32,35 @@ final class VideoDetailState extends Equatable {
     this.inputComment,
     this.listComments,
     this.replies,
-    this.listReplies,
     this.lastCommentId,
     this.commentModel,
+    this.lastIdReply,
+    this.isHiddenListReply,
+    this.inputReply,
+    this.isHiddenInputReply,
+    this.originalNumOfReply,
+    this.isShowTemporaryListReply = false,
   });
 
   static VideoDetailState initial() => const VideoDetailState(
         status: VideoDetailStatus.initial,
       );
 
-  VideoDetailState copyWith({
-    VideoDetailStatus? status,
-    String? selectedQuality,
-    Map<String, String>? videoUrls,
-    String? inputComment,
-    List<CommentModel>? listComments,
-    Map<int, List<CommentModel>>? replies,
-    List<CommentModel>? listReplies,
-    int? lastCommentId,
-    CommentModel? commentModel,
-  }) {
+  VideoDetailState copyWith(
+      {VideoDetailStatus? status,
+      String? selectedQuality,
+      Map<String, String>? videoUrls,
+      String? inputComment,
+      List<CommentModel>? listComments,
+      Map<int, List<CommentModel>>? replies,
+      int? lastCommentId,
+      CommentModel? commentModel,
+      int? lastIdReply,
+      Map<int, bool>? isHiddenListReply,
+      String? inputReply,
+      Map<int, bool>? isHiddenInputReply,
+      Map<int?, int?>? originalNumOfReply,
+      bool? isShowTemporaryListReply}) {
     return VideoDetailState(
         selectedQuality: selectedQuality ?? this.selectedQuality,
         status: status ?? this.status,
@@ -54,9 +68,15 @@ final class VideoDetailState extends Equatable {
         inputComment: inputComment ?? this.inputComment,
         listComments: listComments ?? this.listComments,
         replies: replies ?? this.replies,
-        listReplies: listReplies ?? this.listReplies,
         lastCommentId: lastCommentId ?? this.lastCommentId,
-        commentModel: commentModel ?? this.commentModel);
+        commentModel: commentModel ?? this.commentModel,
+        lastIdReply: lastIdReply ?? this.lastIdReply,
+        isHiddenListReply: isHiddenListReply ?? this.isHiddenListReply,
+        inputReply: inputReply ?? this.inputReply,
+        isHiddenInputReply: isHiddenInputReply ?? this.isHiddenInputReply,
+        originalNumOfReply: originalNumOfReply ?? this.originalNumOfReply,
+        isShowTemporaryListReply:
+            isShowTemporaryListReply ?? this.isShowTemporaryListReply);
   }
 
   @override
@@ -66,8 +86,13 @@ final class VideoDetailState extends Equatable {
         inputComment,
         listComments,
         replies,
-        listReplies,
         lastCommentId,
-        commentModel
+        commentModel,
+        lastIdReply,
+        isHiddenListReply,
+        inputReply,
+        isHiddenInputReply,
+        originalNumOfReply,
+        isShowTemporaryListReply
       ];
 }

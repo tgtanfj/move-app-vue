@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
-import 'package:move_app/data/models/user_model.dart';
 import 'package:move_app/data/repositories/user_repository.dart';
 
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:move_app/constants/api_urls.dart';
+import 'package:move_app/data/repositories/user_repository.dart';
 
 import '../data_sources/local/shared_preferences.dart';
 import '../models/login_request_social.dart';
@@ -105,6 +106,7 @@ class AuthRepository {
         idToken: firebaseIdToken,
       );
       await sendIdTokenGoogle(loginRequestGoogle);
+      await UserRepository().getUserProfile();
       return Right(user);
     } catch (e) {
       if (e is DioException) {
@@ -161,6 +163,7 @@ class AuthRepository {
         LoginRequestSocial loginRequestFacebook =
             LoginRequestSocial(email: email, idToken: token);
         await sendIdTokenFacebook(loginRequestFacebook);
+        await UserRepository().getUserProfile();
         return Right(userCredential);
       } else {
         throw FirebaseAuthException(
@@ -221,6 +224,7 @@ class AuthRepository {
         ),
       );
       if (response.data['data']['accessToken'] != null) {
+        await UserRepository().getUserProfile();
         await SharedPrefer.sharedPrefer
             .setUserToken(response.data['data']['accessToken']);
         await SharedPrefer.sharedPrefer
@@ -258,6 +262,7 @@ class AuthRepository {
         ),
       );
       await SharedPrefer.sharedPrefer.setUserToken('');
+      await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
       final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.signOut();
       await FacebookAuth.instance.logOut();

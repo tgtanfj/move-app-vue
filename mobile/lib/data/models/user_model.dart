@@ -23,6 +23,7 @@ class UserModel {
   final String? role;
   final bool? isActive;
   final String? stripeId;
+
   UserModel({
     this.id,
     this.isBlueBadge = false,
@@ -46,12 +47,15 @@ class UserModel {
     this.stripeId,
   });
 
-
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as int?,
-      isBlueBadge: json['isBlueBadge'] is bool? ? json['isBlueBadge'] : false,
-      isPinkBadge: json['isPinkBadge'] is bool? ? json['isPinkBadge'] : false,
+      isBlueBadge: (json['isBlueBadge'] != null && json['isBlueBadge'] is bool)
+          ? json['isBlueBadge'] as bool
+          : false,
+      isPinkBadge: (json['isPinkBadge'] != null && json['isPinkBadge'] is bool)
+          ? json['isPinkBadge'] as bool
+          : false,
       avatar: json['avatar'] is String? ? json['avatar'] : '',
       email: json['email'] is String? ? json['email'] : '',
       username: json['username'] is String? ? json['username'] : '',
@@ -69,19 +73,15 @@ class UserModel {
           : StateModel(id: 0, name: ''),
       city: json['city'] is String? ? json['city'] : '',
       referralCode: json['referralCode'] is String? ? json['referralCode'] : '',
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
-      deletedAt: json['deletedAt'] != null
-          ? DateTime.parse(json['deletedAt'])
-          : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      deletedAt:
+          json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
       role: json['role'] is String ? json['role'] : '',
       isActive: json['isActive'] as bool?,
       stripeId: json['stripeId'] is String ? json['stripeId'] : '',
-
     );
   }
 
