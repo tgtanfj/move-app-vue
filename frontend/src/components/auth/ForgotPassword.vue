@@ -112,12 +112,13 @@ const clearErrorAPI = () => {
           type="submit"
           :disabled="!isFormValid || isPending || isBanned"
           :variant="isFormValid ? 'default' : 'disabled'"
+          :isLoading="isPending"
           >{{
-            isPending
-              ? 'Sending mail...'
-              : isIdle
-                ? $t('forgot_password.send_link')
-                : $t('forgot_password.resend_link')
+            isIdle
+              ? $t('forgot_password.send_link')
+              : isSuccess
+                ? $t('forgot_password.resend_link')
+                : $t('forgot_password.send_link')
           }}</Button
         >
       </div>

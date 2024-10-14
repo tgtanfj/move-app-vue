@@ -23,6 +23,7 @@ const emit = defineEmits(['file-selected', 'error-message'])
 const fileInput = ref(null)
 
 const handleFileChange = (event) => {
+  emit('error-message', '')
   const file = event.target.files[0]
   if (!file) return
 
@@ -40,14 +41,6 @@ const handleFileChange = (event) => {
   reader.onload = (e) => {
     img.src = e.target.result
     img.onload = () => {
-      // Check image dimensions
-      if (img.width < 100 || img.height < 100 || img.width > 2000 || img.height > 2000) {
-        emit(
-          'error-message',
-          'Image Dimensions: Minimum dimensions are 100x100 pixels, and maximum are 2000x2000 pixels.'
-        )
-        return
-      }
       emit('file-selected', file, e.target.result)
     }
   }
@@ -62,9 +55,9 @@ const triggerFileInput = () => {
 
 <template>
   <div>
-    <p @click="triggerFileInput" id="updateProfilePic" class="text-primary cursor-pointer">
+    <span @click="triggerFileInput" id="updateProfilePic" class="text-primary cursor-pointer">
       {{ buttonText }}
-    </p>
+    </span>
     <input
       type="file"
       :accept="accept"

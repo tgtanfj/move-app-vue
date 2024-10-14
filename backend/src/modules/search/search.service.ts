@@ -16,36 +16,51 @@ export class SearchService {
     @InjectRepository(SearchHistory) private readonly searchHistoryRepository: Repository<SearchHistory>,
   ) {}
 
-  async searchCategories(params: { query: string; page: number; limit: number }): Promise<Category[]> {
+  async searchCategories(params: {
+    query: string;
+    page: number;
+    limit: number;
+  }): Promise<{ categories: Category[]; totalCount: number }> {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
 
-    return await this.categoryRepository
+    const [categories, totalCount] = await this.categoryRepository
       .createQueryBuilder('category')
       .where('category.title ILIKE :keyword', { keyword })
-      .orderBy('category.numberOfViews', 'DESC') // Sort by views in descending order
       .skip(offset)
       .take(limit)
-      .getMany();
+      .getManyAndCount();
+
+    return { categories, totalCount };
   }
 
-  async searchChannels(params: { query: string; page: number; limit: number }): Promise<Channel[]> {
+  async searchChannels(params: {
+    query: string;
+    page: number;
+    limit: number;
+  }): Promise<{ channels: Channel[]; totalCount: number }> {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
 
-    return await this.channelRepository
+    const [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
-      .orderBy('channel.isBlueBadge', 'DESC')
-      .addOrderBy('channel.isPinkBadge', 'DESC')
       .skip(offset)
       .take(limit)
-      .getMany();
+      .getManyAndCount();
+
+    return { channels, totalCount };
   }
 
-  async searchVideos(params: { query: string; page: number; limit: number }): Promise<Video[]> {
+  async searchVideos(params: { query: string; page: number; limit: number }): Promise<{
+    videos: Video[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
@@ -56,14 +71,14 @@ export class SearchService {
       limit,
     );
 
-    const searchedVideos = await this.videoRepository
+    const [searchedVideos, totalCount] = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.category', 'category')
       .leftJoinAndSelect('video.channel', 'channel')
       .where('video.title ILIKE :keyword', { keyword })
       .skip(offset)
       .take(limit)
-      .getMany();
+      .getManyAndCount();
 
     const combinedVideos = [...videosWithHighestViewsYesterday, ...searchedVideos];
 
@@ -72,7 +87,11 @@ export class SearchService {
     );
 
     const limitedVideos = uniqueVideos.slice(0, limit);
-    return limitedVideos;
+    const totalPages = Math.ceil(totalCount / limit);
+    const itemFrom = offset + 1;
+    const itemTo = Math.min(offset + limit, totalCount);
+
+    return { videos: limitedVideos, totalItemCount: totalCount, totalPages, itemFrom, itemTo };
   }
 
   private async getVideosWithHighestViewsYesterday(
@@ -154,16 +173,19 @@ export class SearchService {
     return await this.searchHistoryRepository.save(searchHistory);
   }
 
-  async getSearchHistory(page: number, limit: number, userId: number): Promise<SearchHistory[]> {
+  async getSearchHistory(
+    page: number,
+    limit: number,
+    userId: number,
+  ): Promise<{ histories: SearchHistory[]; totalItemCount: number }> {
     const offset = (page - 1) * limit;
-    console.log('Service', userId);
-
-    return await this.searchHistoryRepository.find({
+    const [histories, totalItemCount] = await this.searchHistoryRepository.findAndCount({
       where: { user: { id: userId } },
       order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,
     });
+    return { histories, totalItemCount };
   }
 
   async deleteSearchHistory(userId: number, content: string): Promise<void> {

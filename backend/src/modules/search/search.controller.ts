@@ -29,8 +29,20 @@ export class SearchController {
   async searchCategories(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
     try {
       const searchParams = { query, page, limit };
-      const categories = await this.searchService.searchCategories(searchParams);
-      return { type: 'categories', data: categories };
+      const { categories, totalCount } = await this.searchService.searchCategories(searchParams);
+      const totalPages = Math.ceil(totalCount / limit);
+      const itemFrom = (page - 1) * limit + 1;
+      const itemTo = Math.min(page * limit, totalCount);
+
+      return {
+        data: categories,
+        meta: {
+          totalItemCount: totalCount,
+          totalPages,
+          itemFrom,
+          itemTo,
+        },
+      };
     } catch (error) {
       throw new HttpException('Failed to search categories', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -43,8 +55,21 @@ export class SearchController {
   async searchChannels(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
     try {
       const searchParams = { query, page, limit };
-      const channels = await this.searchService.searchChannels(searchParams);
-      return { type: 'channels', data: channels };
+      const { channels, totalCount } = await this.searchService.searchChannels(searchParams);
+      const totalPages = Math.ceil(totalCount / limit);
+      const itemFrom = (page - 1) * limit + 1;
+      const itemTo = Math.min(page * limit, totalCount);
+
+      return {
+        type: 'channels',
+        data: channels,
+        meta: {
+          totalItemCount: totalCount,
+          totalPages,
+          itemFrom,
+          itemTo,
+        },
+      };
     } catch (error) {
       throw new HttpException('Failed to search channels', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -57,8 +82,18 @@ export class SearchController {
   async searchVideos(@Query('q') query: string, @Query('page') page = 1, @Query('limit') limit = 10) {
     try {
       const searchParams = { query, page, limit };
-      const videos = await this.searchService.searchVideos(searchParams);
-      return { type: 'videos', data: videos };
+      const { videos, totalItemCount, totalPages, itemFrom, itemTo } =
+        await this.searchService.searchVideos(searchParams);
+      return {
+        type: 'videos',
+        data: videos,
+        meta: {
+          totalItemCount,
+          totalPages,
+          itemFrom,
+          itemTo,
+        },
+      };
     } catch (error) {
       throw new HttpException('Failed to search videos', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -95,11 +130,26 @@ export class SearchController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @User() user,
-  ): Promise<SearchHistory[]> {
+  ): Promise<{
+    histories: SearchHistory[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
     try {
       const userId = user.id;
-      const result = await this.searchService.getSearchHistory(page, limit, userId);
-      return result;
+      const { histories, totalItemCount } = await this.searchService.getSearchHistory(page, limit, userId);
+      const totalPages = Math.ceil(totalItemCount / limit);
+      const itemFrom = (page - 1) * limit + 1;
+      const itemTo = Math.min(page * limit, totalItemCount);
+      return {
+        histories,
+        totalItemCount,
+        totalPages,
+        itemFrom,
+        itemTo,
+      };
     } catch (error) {
       throw new HttpException('Failed to get search history', HttpStatus.INTERNAL_SERVER_ERROR);
     }

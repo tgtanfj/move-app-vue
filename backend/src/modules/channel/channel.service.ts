@@ -20,7 +20,6 @@ export class ChannelService {
   constructor(
     private readonly channelRepository: ChannelRepository,
     private readonly followService: FollowService,
-    @Inject(forwardRef(() => VideoService))
     private readonly videoService: VideoService,
   ) {}
 

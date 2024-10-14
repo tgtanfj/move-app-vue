@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ThumbnailService } from './thumbnail.service';
 import { ThumbnailController } from './thumbnail.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { ThumbnailRepository } from './thumbnail.repository';
 import { GeneratorService } from '@/shared/services/generator.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Thumbnail]), UserModule],
+  imports: [TypeOrmModule.forFeature([Thumbnail]), forwardRef(() => UserModule)],
   controllers: [ThumbnailController],
   providers: [ThumbnailService, AwsS3Service, JwtService, ThumbnailRepository, GeneratorService],
   exports: [ThumbnailService, ThumbnailRepository],

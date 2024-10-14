@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center gap-6 h-full">
-    <p class="font-bold text-center text-[16px] text-nowrap">Get REP$</p>
+    <p v-if="!isInStreamerPage" class="font-bold text-center text-[16px] text-nowrap">Get REP$</p>
     <BellIcon />
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -101,6 +101,13 @@ import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
+
+const props = defineProps({
+  isInStreamerPage: {
+    type: Boolean,
+    required: false
+  },
+})
 
 const authStore = useAuthStore()
 const router = useRouter()

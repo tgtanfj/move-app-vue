@@ -16,7 +16,7 @@ const categoryTitle = formatCategoryTitleToUrl(props.category.title)
 </script>
 
 <template>
-  <div @click="router.push(`/categories/${categoryTitle}`)">
+  <div @click="router.push(`/categories/${categoryTitle}/${category.id}`)">
     <div>
       <img :src="props.category.img" class="h-[220px] w-full object-cover aspect-w-1 aspect-h-1" />
     </div>
