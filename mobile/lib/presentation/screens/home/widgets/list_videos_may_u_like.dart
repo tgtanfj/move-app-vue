@@ -23,7 +23,12 @@ class _ListVideosMayULikeState extends State<ListVideosMayULike> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: GestureDetector(
                     onTap: () {},
-                    child: const VideoPoster(),
+                    child: const VideoPoster(
+                      videoId: 3,
+                      posterUrl: '',
+                      viewCount: '',
+                      duration: '',
+                    ),
                   ),
                 ),
                 const SizedBox(

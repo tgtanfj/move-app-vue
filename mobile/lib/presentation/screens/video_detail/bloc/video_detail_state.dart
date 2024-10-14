@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/video_model.dart';
+
 enum VideoDetailStatus {
   initial,
   processing,
@@ -8,13 +10,13 @@ enum VideoDetailStatus {
 
 final class VideoDetailState extends Equatable {
   final VideoDetailStatus? status;
-  final String? selectedQuality;
-  final Map<String, String>? videoUrls;
+  final bool isShowVideo;
+  final VideoModel? video;
 
   const VideoDetailState({
-    this.videoUrls,
+    this.video,
     this.status,
-    this.selectedQuality,
+    this.isShowVideo = false,
   });
   static VideoDetailState initial() => const VideoDetailState(
         status: VideoDetailStatus.initial,
@@ -22,16 +24,16 @@ final class VideoDetailState extends Equatable {
 
   VideoDetailState copyWith({
     VideoDetailStatus? status,
-    String? selectedQuality,
-    Map<String, String>? videoUrls,
+    VideoModel? video,
+    bool? isShowVideo,
   }) {
     return VideoDetailState(
-      selectedQuality: selectedQuality ?? this.selectedQuality,
+      video: video ?? this.video,
       status: status ?? this.status,
-      videoUrls: videoUrls ?? this.videoUrls,
+      isShowVideo: isShowVideo ?? this.isShowVideo,
     );
   }
 
   @override
-  List<Object?> get props => [status, selectedQuality];
+  List<Object?> get props => [status, video, isShowVideo];
 }

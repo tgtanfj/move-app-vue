@@ -30,7 +30,7 @@ class Avatar extends StatelessWidget {
       ),
       child: CircleAvatar(
         radius: radiusAvatar,
-        backgroundImage: NetworkImage(imageUrl),
+        backgroundImage: NetworkImage(imageUrl ),
       ),
     );
   }

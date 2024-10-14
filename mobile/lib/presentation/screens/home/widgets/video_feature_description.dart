@@ -39,6 +39,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
               ),
             ),
             StarAndText(
+              ratings: 4.5,
               textStyle: AppTextStyles.montserratStyle.bold16black,
             ),
             const SizedBox(

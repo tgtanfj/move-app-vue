@@ -4,7 +4,6 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
 
-
 class SlideShowVideosFeature extends StatefulWidget {
   final List<String> listVideo;
 
@@ -35,6 +34,10 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
               VideoPoster(
                 height: height * 0.21,
                 isLargePoster: true,
+                videoId: 3,
+                posterUrl: 'https://www.1zoom.me/big2/946/289597-frederika.jpg',
+                viewCount: '',
+                duration: '',
               ),
               const SizedBox(
                 height: 4.0,

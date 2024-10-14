@@ -5,14 +5,8 @@ sealed class VideoDetailEvent extends Equatable {
 }
 
 final class VideoDetailInitialEvent extends VideoDetailEvent {
+  final int videoId;
+  const VideoDetailInitialEvent({required this.videoId});
   @override
-  List<Object?> get props => [];
-}
-
-final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
-  final String selectedQuality;
-
-  const VideoDetailSelectQualityEvent(this.selectedQuality);
-  @override
-  List<Object?> get props => [];
+  List<Object?> get props => [videoId];
 }

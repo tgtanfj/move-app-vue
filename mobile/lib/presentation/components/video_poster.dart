@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -10,7 +9,19 @@ import 'package:move_app/presentation/screens/video_detail/page/video_detail_pag
 class VideoPoster extends StatefulWidget {
   final double? height;
   final bool isLargePoster;
-  const VideoPoster({super.key, this.isLargePoster = false, this.height});
+  final int videoId;
+  final String posterUrl;
+  final String viewCount;
+  final String duration;
+  const VideoPoster({
+    super.key,
+    this.isLargePoster = false,
+    this.height,
+    required this.videoId,
+    required this.posterUrl,
+    required this.viewCount,
+    required this.duration,
+  });
 
   @override
   State<VideoPoster> createState() => _VideoPosterState();
@@ -24,14 +35,16 @@ class _VideoPosterState extends State<VideoPoster> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const VideoDetailPage(),
+            builder: (context) => VideoDetailPage(
+              videoId: widget.videoId,
+            ),
           ),
         );
       },
       child: Stack(children: [
         Positioned(
           child: Image.network(
-            'https://tse3.mm.bing.net/th?id=OIP.OxebR72Xy-AhpHIRpwutBAHaE8&pid=Api&P=0&h=180',
+            widget.posterUrl,
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width - 40.0,
             height: widget.height,
@@ -60,7 +73,7 @@ class _VideoPosterState extends State<VideoPoster> {
               Row(
                 children: [
                   Text(
-                    '12k ',
+                    widget.viewCount,
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
                   widget.isLargePoster
@@ -77,24 +90,22 @@ class _VideoPosterState extends State<VideoPoster> {
             ]),
           ),
         ),
-        widget.isLargePoster
-            ? const SizedBox()
-            : Positioned(
-                right: 8.0,
-                bottom: 8.0,
-                child: Container(
-                  height: 16.0,
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4.0),
-                    color: AppColors.black,
-                  ),
-                  child: Text(
-                    '12:32',
-                    style: AppTextStyles.montserratStyle.bold12White,
-                  ),
-                ),
-              )
+        Positioned(
+          right: 8.0,
+          bottom: 8.0,
+          child: Container(
+            height: 16.0,
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4.0),
+              color: AppColors.black,
+            ),
+            child: Text(
+              widget.duration,
+              style: AppTextStyles.montserratStyle.bold12White,
+            ),
+          ),
+        )
       ]),
     );
   }

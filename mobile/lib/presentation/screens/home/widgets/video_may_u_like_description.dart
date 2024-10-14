@@ -55,6 +55,7 @@ class VideoMayULikeDescription extends StatelessWidget {
               width: 5.0,
             ),
             StarAndText(
+              ratings: 4.5,
               textStyle: AppTextStyles.montserratStyle.bold14Black,
             ),
           ],

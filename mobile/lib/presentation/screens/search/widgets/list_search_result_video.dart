@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/presentation/screens/search/widgets/search_result_video.dart';
 
-
 class ListSearchResultVideo extends StatefulWidget {
   const ListSearchResultVideo({super.key});
 
@@ -15,7 +14,15 @@ class _ListSearchResultVideoState extends State<ListSearchResultVideo> {
     return ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) => const SearchResultVideo(),
+        itemBuilder: (context, index) => const SearchResultVideo(
+              id: 2,
+              avatarUrl: '',
+              posterUrl: '',
+              viewCount: '',
+              duration: '',
+              isBlueBage: false,
+              isPinkBadge: true,
+            ),
         separatorBuilder: (context, index) => const SizedBox(
               height: 20.0,
             ),

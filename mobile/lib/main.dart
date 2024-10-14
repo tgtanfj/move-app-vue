@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 
 import 'config/app_config.dart';
 
@@ -98,8 +99,9 @@ class _MyAppState extends State<MyApp> {
           ),
         );
       },
-      initialRoute: AppRoutes.getInitialRoute(),
-      routes: AppRoutes.getRoutes(),
+      // initialRoute: AppRoutes.getInitialRoute(),
+      // routes: AppRoutes.getRoutes(),
+      home: VideoDetailPage(videoId: 22),
     );
   }
 }

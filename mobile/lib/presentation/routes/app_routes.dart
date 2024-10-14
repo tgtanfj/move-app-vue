@@ -29,7 +29,6 @@ class AppRoutes {
       routeForgotPassword: (BuildContext context) => const ForgotPasswordPage(),
       routeCreateNewPassword: (BuildContext context) =>
           const CreateNewPasswordPage(),
-      //logIn : (BuildContext context) => const (),
     };
   }
 }
