@@ -280,23 +280,6 @@ class _ItemCommentState extends State<ItemComment> {
                             });
                           },
                         )),
-                    //TODO: Use for show reply comment for next function
-                    // Flexible(child: widget.itemReply ?? const SizedBox()),
-                    // // if (widget.listReply != null &&
-                    // //     widget.listReply!.isNotEmpty)
-                    // //   Flexible(
-                    // //     child: ListView.separated(
-                    // //       shrinkWrap: true,
-                    // //       itemCount: widget.listReply?.length ?? 0,
-                    // //       itemBuilder: (BuildContext context, int index) {
-                    // //         final CommentModel? reply =
-                    // //             widget.listReply?[index];
-                    // //         return ItemComment(commentModel: reply);
-                    // //       },
-                    // //       separatorBuilder: (BuildContext context, int index) =>
-                    // //           const Divider(),
-                    // //     ),
-                    // //   ),
                     const SizedBox(
                       height: 16,
                     )

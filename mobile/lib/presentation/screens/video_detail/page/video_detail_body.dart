@@ -302,25 +302,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                                   VideoDetailDisLikeComment(
                                       comment: commentModel ?? CommentModel()));
                             },
-                            //TODO: Use to test when add list reply comment.
-                            // itemReply: repliesForComment.isNotEmpty
-                            //     ? ListView.separated(
-                            //         shrinkWrap: true,
-                            //         physics: const NeverScrollableScrollPhysics(),
-                            //         itemBuilder:
-                            //             (BuildContext context, int replyIndex) {
-                            //           final replyCommentModel =
-                            //               repliesForComment[replyIndex];
-                            //           return ItemComment(
-                            //             commentModel: replyCommentModel,
-                            //           );
-                            //         },
-                            //         separatorBuilder:
-                            //             (BuildContext context, int replyIndex) =>
-                            //                 const Divider(),
-                            //         itemCount: repliesForComment.length,
-                            //       )
-                            //     : const SizedBox.shrink(),
                           ),
                         ],
                       );

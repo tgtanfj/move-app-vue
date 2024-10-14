@@ -21,10 +21,10 @@ final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
 }
 
 final class VideoDetailCommentChangedEvent extends VideoDetailEvent {
-  final String? comment;
+  final String comment;
 
   const VideoDetailCommentChangedEvent({
-    this.comment,
+    required this.comment,
   });
 
   @override
@@ -46,18 +46,18 @@ final class VideoDetailPostCommentEvent extends VideoDetailEvent {
 }
 
 final class VideoDetailLikeComment extends VideoDetailEvent {
-  final CommentModel? comment;
+  final CommentModel comment;
 
-  const VideoDetailLikeComment({ this.comment});
+  const VideoDetailLikeComment({required this.comment});
 
   @override
   List<Object?> get props => [comment];
 }
 
 final class VideoDetailDisLikeComment extends VideoDetailEvent {
-  final CommentModel? comment;
+  final CommentModel comment;
 
-  const VideoDetailDisLikeComment({this.comment});
+  const VideoDetailDisLikeComment({required this.comment});
 
   @override
   List<Object?> get props => [comment];

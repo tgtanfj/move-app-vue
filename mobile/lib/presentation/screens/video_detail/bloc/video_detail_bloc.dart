@@ -21,6 +21,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailInitialEvent(
       VideoDetailInitialEvent event, Emitter<VideoDetailState> emit) async {
+    //TODO: replace id video after finish function video at home screen
     final result = await commentRepository.getListCommentVideo(1);
     result.fold((l) {
       emit(state.copyWith(status: VideoDetailStatus.failure));
@@ -133,61 +134,51 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     Emitter<VideoDetailState> emit,
   ) async {
     final comment = event.comment;
-    var result;
 
-    if (comment?.likeStatus == LikeStatus.unknown) {
-      final updatedComment = comment?.copyWith(
+    if (comment.likeStatus == LikeStatus.unknown) {
+      final updatedComment = comment.copyWith(
           likeStatus: LikeStatus.liked,
           isLike: true,
           numberOfLike: (comment.numberOfLike ?? 0) + 1);
-      result = await commentRepository
-          .postCommentReaction(updatedComment ?? CommentModel());
+      final result =
+          await commentRepository.postCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
           state.copyWith(
-            listComments: updateCommentList(
-                state.listComments, updatedComment ?? CommentModel()),
+            listComments: updateCommentList(state.listComments, updatedComment),
           ),
         );
       }
-    } else if (comment?.likeStatus == LikeStatus.liked) {
-      result = await commentRepository.deleteCommentReaction(comment?.id ?? 0);
+    } else if (comment.likeStatus == LikeStatus.liked) {
+      final result =
+          await commentRepository.deleteCommentReaction(comment.id ?? 0);
       if (result.isRight()) {
-        final updatedComment = comment?.copyWith(
+        final updatedComment = comment.copyWith(
             likeStatus: LikeStatus.unknown,
             numberOfLike: (comment.numberOfLike ?? 0) - 1);
         emit(
           state.copyWith(
-            listComments: updateCommentList(
-                state.listComments, updatedComment ?? CommentModel()),
+            listComments: updateCommentList(state.listComments, updatedComment),
           ),
         );
       }
-    } else if (comment?.likeStatus == LikeStatus.unliked) {
-      final updatedComment = comment?.copyWith(
+    } else if (comment.likeStatus == LikeStatus.unliked) {
+      final updatedComment = comment.copyWith(
           likeStatus: LikeStatus.liked,
           isLike: true,
           numberOfLike: (comment.numberOfLike ?? 0) + 1);
-      result = await commentRepository
-          .patchCommentReaction(updatedComment ?? CommentModel());
-      emit(
-        state.copyWith(
-          listComments: updateCommentList(
-              state.listComments, updatedComment ?? CommentModel()),
-        ),
-      );
-    }
+      final result =
+          await commentRepository.patchCommentReaction(updatedComment);
 
-    // this section is use to print the result when interact with button like and will be delete after finish reply function
-    result.fold(
-      (error) {
-        print("Error Like : ========== : $error");
-      },
-      (response) {
-        print("Success Like : ========== : $response");
-      },
-    );
+      if (result.isRight()) {
+        emit(
+          state.copyWith(
+            listComments: updateCommentList(state.listComments, updatedComment),
+          ),
+        );
+      }
+    }
   }
 
   void onVideoDetailDisLikeComment(
@@ -195,68 +186,55 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     Emitter<VideoDetailState> emit,
   ) async {
     final comment = event.comment;
-    var result;
 
-    if (comment?.likeStatus == LikeStatus.unknown) {
-      final updatedComment = comment?.copyWith(
+    if (comment.likeStatus == LikeStatus.unknown) {
+      final updatedComment = comment.copyWith(
         isLike: false,
         likeStatus: LikeStatus.unliked,
       );
-      result = await commentRepository
-          .postCommentReaction(updatedComment ?? CommentModel());
+      final result =
+          await commentRepository.postCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
           state.copyWith(
-            listComments: updateCommentList(
-                state.listComments, updatedComment ?? CommentModel()),
+            listComments: updateCommentList(state.listComments, updatedComment),
           ),
         );
       }
-    } else if (comment?.likeStatus == LikeStatus.unliked) {
-      result = await commentRepository.deleteCommentReaction(comment?.id ?? 0);
+    } else if (comment.likeStatus == LikeStatus.unliked) {
+      final result =
+          await commentRepository.deleteCommentReaction(comment.id ?? 0);
 
       if (result.isRight()) {
-        final updatedComment = comment?.copyWith(
+        final updatedComment = comment.copyWith(
           likeStatus: LikeStatus.unknown,
         );
         emit(
           state.copyWith(
-            listComments: updateCommentList(
-                state.listComments, updatedComment ?? CommentModel()),
+            listComments: updateCommentList(state.listComments, updatedComment),
           ),
         );
       }
-    } else if (comment?.likeStatus == LikeStatus.liked) {
-      final updatedComment = comment?.copyWith(
+    } else if (comment.likeStatus == LikeStatus.liked) {
+      final updatedComment = comment.copyWith(
         isLike: false,
         likeStatus: LikeStatus.unliked,
         numberOfLike: (comment.numberOfLike ?? 0) > 0
             ? (comment.numberOfLike ?? 0) - 1
             : 0,
       );
-      result = await commentRepository
-          .patchCommentReaction(updatedComment ?? CommentModel());
+      final result =
+          await commentRepository.patchCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
           state.copyWith(
-            listComments: updateCommentList(
-                state.listComments, updatedComment ?? CommentModel()),
+            listComments: updateCommentList(state.listComments, updatedComment),
           ),
         );
       }
     }
-
-    // this section is use to print the result when interact with button like and will be delete after finish reply function
-    result.fold(
-      (error) {
-        print("Error dislike : ========== : $error");
-      },
-      (response) {
-        print("Success dislike : ========== : $response");
-      },
-    );
   }
 
   String getTimeDifference(DateTime createdAt) {
