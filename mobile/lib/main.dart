@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         );
       } else {
         if (kDebugMode) {
-        print('Token is missing or empty.');
+          print('Token is missing or empty.');
         }
       }
     } else {

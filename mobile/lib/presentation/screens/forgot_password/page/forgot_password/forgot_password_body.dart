@@ -101,7 +101,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           mainMessage: state.isEmailSent
                               ? state.email
                               : state.isEmailValid
-                                  ? Constants.exampleEmail
+                                  ? state.email
                                   : "",
                           sufMessage: hasError
                               ? state.isEmailValid
@@ -131,7 +131,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                             isEnabled: state.email.isNotEmpty &&
                                 (state.isEmailSent
                                     ? state.remainingSeconds == 0
-                                    : !state.isEmailSent),
+                                    : true),
                             onTap: state.email.isNotEmpty &&
                                     (state.isEmailSent
                                         ? state.remainingSeconds == 0
