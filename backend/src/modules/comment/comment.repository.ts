@@ -128,9 +128,9 @@ export class CommentRepository {
     if (commentId) {
       const parentComment = await this.commentRepository.findOne({
         where: { id: commentId },
-        relations: ['parent', 'video'],
+        relations: ['parent'],
       });
-      data['video'] = parentComment.video.id;
+
       if (parentComment?.parent) {
         throw new BadRequestException('You can only reply one level deep.');
       }

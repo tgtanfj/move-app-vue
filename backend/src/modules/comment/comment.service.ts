@@ -76,10 +76,13 @@ export class CommentService {
         });
       }
 
-      const video = await this.videoRepository.findOne(comment.video.id);
+      if (comment?.video) {
+        const video = await this.videoRepository.findOne(comment.video.id);
+        video.numberOfComments--;
+        await this.videoRepository.save(video);
+      }
+
       await this.commentRepository.delete(id);
-      video.numberOfComments--;
-      await this.videoRepository.save(video);
     } catch (error) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT);
     }
