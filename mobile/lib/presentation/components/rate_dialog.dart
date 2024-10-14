@@ -63,27 +63,27 @@ class _RateDialogState extends State<RateDialog> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: List.generate(
-                5,
-                (index) => IconButton(
-                  icon: index < rating
-                      ? SvgPicture.asset(
-                          AppIcons.rateStarFill.svgAssetPath,
-                          width: 32,
-                          height: 32,
-                        )
-                      : SvgPicture.asset(
-                          AppIcons.rateStar.svgAssetPath,
-                          width: 32,
-                          height: 32,
-                        ),
-                  onPressed: () {
-                    setState(() {
-                      rating = index + 1;
-                    });
-                  },
-                ),
-              ),
+              children: [
+                for (int index = 0; index < 5; index++)
+                  IconButton(
+                    icon: index < rating
+                        ? SvgPicture.asset(
+                            AppIcons.rateStarFill.svgAssetPath,
+                            width: 32,
+                            height: 32,
+                          )
+                        : SvgPicture.asset(
+                            AppIcons.rateStar.svgAssetPath,
+                            width: 32,
+                            height: 32,
+                          ),
+                    onPressed: () {
+                      setState(() {
+                        rating = index + 1;
+                      });
+                    },
+                  ),
+              ],
             ),
             const SizedBox(height: 10),
             CustomButton(

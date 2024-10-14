@@ -36,8 +36,8 @@ class VideoDetailRepository {
           },
         ),
         data: {
-          'rate': rate,
-          'videoId': videoId,
+          Constants.rateValue: rate,
+          Constants.videoId: videoId,
         },
       );
       if (response.data != null) {

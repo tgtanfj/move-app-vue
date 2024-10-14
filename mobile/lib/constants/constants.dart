@@ -207,4 +207,6 @@ class Constants {
   static const String rateThanksContent =
       "The ratings you provided will definitely be helpful for the instructor.";
   static const String rateNotFound = 'Rate not found.';
+  static const String videoId = 'videoId';
+  static const String rateValue = 'rate';
 }
