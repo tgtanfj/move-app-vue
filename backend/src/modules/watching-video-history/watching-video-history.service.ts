@@ -28,4 +28,8 @@ export class WatchingVideoHistoryService {
 
     return videoHistory;
   }
+
+  async getMyRate(userId: number, videoId: number) {
+    return await this.watchingVideoHistoryRepository.getMyRate(userId, videoId);
+  }
 }
