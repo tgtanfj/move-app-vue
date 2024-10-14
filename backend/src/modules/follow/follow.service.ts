@@ -37,7 +37,7 @@ export class FollowService {
 
   async unfollow(userId: number, channelId: number) {
     const ins = await this.findOneOrThrow(userId, channelId);
-    const unFollow = await this.followRepository.delete(ins)
+    const unFollow = await this.followRepository.delete(ins);
     if (!unFollow) {
       throw new BadRequestException();
     }

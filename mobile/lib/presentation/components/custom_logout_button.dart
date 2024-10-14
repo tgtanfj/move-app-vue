@@ -64,7 +64,7 @@ class CustomLogoutButton extends StatelessWidget {
               )
             ],
             Text(
-              title ?? '',
+              title,
               style: titleStyle ?? AppTextStyles.montserratStyle.regular14Black,
               textAlign: TextAlign.center,
             ),

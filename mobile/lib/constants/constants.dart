@@ -108,7 +108,7 @@ class Constants {
   static const String faq = 'FAQ';
   static const String faqsNotFound = 'FAQs not found!';
   static const String logout = 'Logout';
-  static const String logout_question = 'Logout ?';
+  static const String logoutQuestion = 'Logout ?';
   static const String loginMenu = "Login";
   static const String signUpSuccessful = "Sign Up Successful";
   static const String theEmail = 'The email ';
@@ -198,4 +198,6 @@ class Constants {
   static const String seeLess = "See Less";
   static const String cancelComment = "Cancel Comment?";
   static const String areUSure = "Are you sure to cancel this comment?";
+  static const String getRep$ = 'Get REP\$';
+  static const String userName = 'User Name';
 }

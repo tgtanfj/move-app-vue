@@ -41,6 +41,7 @@ export class CommentService {
 
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
+        await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
         videoId = comment.video.id;
       }
 
@@ -68,6 +69,13 @@ export class CommentService {
   async delete(id: number): Promise<void> {
     try {
       const comment = await this.commentRepository.getOneWithVideo(id);
+
+      if (comment.parent) {
+        await this.commentRepository.update(comment.parent.id, {
+          numberOfReply: comment.parent.numberOfReply - 1,
+        });
+      }
+
       const video = await this.videoRepository.findOne(comment.video.id);
       await this.commentRepository.delete(id);
       video.numberOfComments--;
