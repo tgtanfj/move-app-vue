@@ -207,8 +207,6 @@ function hasEmptyProperty(obj) {
 }
 
 const onSubmit = async () => {
-  console.log(values, userData.value)
-
   if (Object.keys(errors.value).length > 0) {
     showError.value = true
   } else {
@@ -240,11 +238,9 @@ const onSubmit = async () => {
       const stateId = states.value.filter((item) => item.name === values.state)[0].id
       formData.append('stateId', stateId)
     }
-    if (values.city !== userData.value.city) formData.append('city', values.city || '')
+    if (values.city !== userData.value.city) formData.append('city', values.city)
 
     if (isFormDataEmpty(formData)) {
-      console.log('empty')
-
       isSubmitting.value = false
       return
     } else {
@@ -381,7 +377,10 @@ const onErrorMessage = (msg) => {
 
         <div class="flex flex-col gap-1">
           <label>{{ $t('user_profile.password') }}</label>
-          <p class="text-primary underline cursor-pointer" @click="openChangePasswordModal = true">
+          <p
+            class="text-primary underline w-fit cursor-pointer"
+            @click="openChangePasswordModal = true"
+          >
             {{ $t('change_password.title') }}
           </p>
         </div>
@@ -439,7 +438,7 @@ const onErrorMessage = (msg) => {
             <FormItem class="flex items-center justify-start gap-2">
               <Select v-model="selectedDay">
                 <SelectTrigger class="w-[74px] h-[40px] mt-2 rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Day" />
+                  <SelectValue placeholder="DD" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in DAYS" :key="item">
@@ -449,7 +448,7 @@ const onErrorMessage = (msg) => {
               </Select>
               <Select v-model="selectedMonth">
                 <SelectTrigger class="w-[74px] h-[40px] rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Month" />
+                  <SelectValue placeholder="MM" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in MONTHS" :key="item">
@@ -461,7 +460,7 @@ const onErrorMessage = (msg) => {
               </Select>
               <Select v-model="selectedYear">
                 <SelectTrigger class="w-[90px] h-[40px] rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Year" />
+                  <SelectValue placeholder="YYYY" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in YEARS" :key="item">
@@ -509,12 +508,14 @@ const onErrorMessage = (msg) => {
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
-                      <SelectValue placeholder="Select state" />
+                      <SelectValue
+                        :placeholder="states.length === 0 ? 'No states' : 'Select state'"
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectGroup v-if="!states">
-                      <SelectItem> Loading </SelectItem>
+                    <SelectGroup v-if="states.length === 0">
+                      <SelectItem> No States </SelectItem>
                     </SelectGroup>
                     <SelectGroup v-else>
                       <SelectItem v-for="(state, index) in states" :key="index" :value="state.name">
@@ -533,23 +534,15 @@ const onErrorMessage = (msg) => {
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
                 <FormLabel>City</FormLabel>
-                <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue :placeholder="selectedCity || 'Select city'" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup v-if="!cities">
-                      <SelectItem> Loading </SelectItem>
-                    </SelectGroup>
-                    <SelectGroup v-else>
-                      <SelectItem v-for="city in states" :key="city.id" :value="city.name">
-                        {{ city.name }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Input
+                    class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                    :class="{ 'border-red-500': showError && errors.city }"
+                    type="text"
+                    placeholder="City"
+                    v-bind="componentField"
+                  />
+                </FormControl>
                 <FormMessage :class="{ hidden: !showError }" />
               </FormItem>
             </FormField>

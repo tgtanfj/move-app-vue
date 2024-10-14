@@ -3,6 +3,8 @@ import 'package:move_app/data/models/state_model.dart';
 import 'package:move_app/presentation/screens/setting/presentation/profile/widgets/gender_radio_group.dart';
 
 class UserModel {
+  final bool isBlueBadge;
+  final bool isPinkBadge;
   final String? avatar;
   final String? email;
   final String? username;
@@ -15,21 +17,26 @@ class UserModel {
   final String? city;
   final String? referralCode;
 
-  UserModel(
-      {this.avatar,
-      this.email,
-      this.username,
-      this.password,
-      this.fullName,
-      this.gender,
-      this.dateOfBirth,
-      this.country,
-      this.state,
-      this.city,
-      this.referralCode});
+  UserModel({
+    this.isBlueBadge = false,
+    this.isPinkBadge = false,
+    this.avatar,
+    this.email,
+    this.username,
+    this.password,
+    this.fullName,
+    this.gender,
+    this.dateOfBirth,
+    this.country,
+    this.state,
+    this.city,
+    this.referralCode,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      isBlueBadge: json['isBlueBadge'] is bool? ? json['isBlueBadge'] : false,
+      isPinkBadge: json['isPinkBadge'] is bool? ? json['isPinkBadge'] : false,
       avatar: json['avatar'] is String? ? json['avatar'] : '',
       email: json['email'] is String? ? json['email'] : '',
       username: json['username'] is String? ? json['username'] : '',
@@ -62,8 +69,12 @@ class UserModel {
     StateModel? state,
     String? city,
     String? referralCode,
+    bool? isBlueBadge,
+    bool? isPinkBadge,
   }) {
     return UserModel(
+      isBlueBadge: isBlueBadge ?? this.isBlueBadge,
+      isPinkBadge: isPinkBadge ?? this.isPinkBadge,
       avatar: avatar ?? this.avatar,
       email: email ?? this.email,
       username: username ?? this.username,

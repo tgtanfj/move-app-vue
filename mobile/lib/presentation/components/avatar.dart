@@ -13,7 +13,7 @@ class Avatar extends StatelessWidget {
     this.isLive = false,
     required this.widthAvatar,
     required this.heightAvatar,
-    required this.radiusAvatar, 
+    required this.radiusAvatar,
   });
 
   @override

@@ -31,7 +31,10 @@ export class CommentRepository {
   }
 
   async getOneWithVideo(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { video: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: { video: true, parent: true },
+    });
   }
 
   async getOneWithUser(id: number): Promise<Comment> {

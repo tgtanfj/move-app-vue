@@ -128,6 +128,6 @@ export class VideoController {
 
   @Get()
   async test() {
-    return await this.videoService.sortVideoByPriority()
+    return await this.videoService.sortVideoByPriority();
   }
 }

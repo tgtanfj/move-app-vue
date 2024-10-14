@@ -45,7 +45,7 @@ class ForgotPasswordBloc
         add(ForgotPasswordStartTimerEvent());
       } else {
         emit(state.copyWith(
-            isEmailSent: true,
+            isEmailSent: false,
             errorMessage: 'Email does not found',
             isShowEmailMessage: true));
       }

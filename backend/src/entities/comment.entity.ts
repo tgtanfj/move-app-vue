@@ -18,6 +18,12 @@ export class Comment extends BaseEntity {
   })
   numberOfLike: number;
 
+  @Column({
+    type: 'int',
+    default: 0,
+  })
+  numberOfReply: number;
+
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
 

@@ -61,4 +61,15 @@ export class StripeService {
       throw new BadRequestException(ERRORS_DICTIONARY.DETACH_PAYMENT_METHOD_FAIL);
     });
   }
+
+  async charge(amount: number, paymentMethodId: string, customerId: string) {
+    return this.stripe.paymentIntents.create({
+      amount: amount * 100,
+      customer: customerId,
+      payment_method: paymentMethodId,
+      currency: this.configService.get('STRIPE_CURRENCY'),
+      off_session: true,
+      confirm: true,
+    });
+  }
 }

@@ -103,6 +103,7 @@ final class ProfileState extends Equatable {
     bool? isShowCountryMessage,
     bool? isShowStateMessage,
     bool? isShowUpdateMessage,
+
   }) {
     return ProfileState(
       status: status ?? this.status,
