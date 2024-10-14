@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { WatchingVideoHistoryService } from './watching-video-history.service';
 import { JwtAuthGuard } from '@/shared/guards';
 import { User } from '@/shared/decorators/user.decorator';
@@ -16,5 +16,12 @@ export class WatchingVideoHistoryController {
   async rateVideoHistory(@User() user, @Body() dto: RateDto) {
     const userId = user.id;
     return await this.watchingVideoHistoryService.rate(userId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':videoId/rate')
+  async getMyRate(@User() user, @Param('videoId') videoId: number) {
+    const userId = user.id;
+    return await this.watchingVideoHistoryService.getMyRate(userId, videoId);
   }
 }
