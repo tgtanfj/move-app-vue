@@ -13,6 +13,9 @@ import { ChannelRepository } from './channel.repository';
 import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { ChannelItemDto } from './dto/response/channel-item.dto';
 import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
+import { MailDTO } from '@/shared/interfaces/mail.dto';
+import { getTemplateBlueBadge } from '../email/templates/template-blue-badge';
+import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 
 @Injectable()
 export class ChannelService {
@@ -84,7 +87,7 @@ export class ChannelService {
                 excludeExtraneousValues: true,
               });
 
-              channelItem.numberOfFollowers = fixIntNumberResponse(channelItem.numberOfFollowers);
+              channelItem.numberOfFollowers = +channelItem.numberOfFollowers;
 
               return channelItem;
             }),
@@ -94,7 +97,7 @@ export class ChannelService {
     ]);
 
     channelProfileDto.isFollowed = isFollowed;
-    channelProfileDto.numberOfFollowers = fixIntNumberResponse(channelProfileDto.numberOfFollowers);
+    channelProfileDto.numberOfFollowers = +channelProfileDto.numberOfFollowers;
     channelProfileDto.followingChannels = followingChannels;
     channelProfileDto.socialLinks = socialLinks;
 
@@ -148,5 +151,18 @@ export class ChannelService {
   async getUserByChannel(channelId: number) {}
   async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
     return this.channelRepository.updateREPs(channelId, numberOfREPs);
+  }
+
+  async getChannelSetting(userId: number) {
+    const channel = await this.getChannelByUserId(userId);
+
+    const channelSettingDto = plainToInstance(ChannelSettingDto, channel, { excludeExtraneousValues: true });
+    channelSettingDto.socialLinks = await this.getSocialLinks(
+      channel.facebookLink,
+      channel.youtubeLink,
+      channel.instagramLink,
+    );
+
+    return channelSettingDto;
   }
 }

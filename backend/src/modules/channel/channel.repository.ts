@@ -8,7 +8,7 @@ export class ChannelRepository {
   constructor(@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
-    return await this.channelRepository.findOne({
+    return await this.channelRepository.findOneOrFail({
       where: {
         user: { id: userId },
       },
