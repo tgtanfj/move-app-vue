@@ -179,11 +179,11 @@ export class VideoRepository {
 
     const { thumbnails, ...dataVideoDetails } = videoDetails;
 
-    const thumbnail = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0].image;
+    const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0].image;
 
     return {
       ...dataVideoDetails,
-      thumbnail: thumbnail,
+      thumbnailURL,
       watchAlso,
     };
   }
@@ -204,7 +204,7 @@ export class VideoRepository {
 
     options = {
       categoryId: category.id,
-      channelId: userId ? [channel.id] : channelFollow,
+      channelId: userId ? channelFollow : [channel.id],
       workoutLevel: workoutLevel,
     };
     let initialVideos = await this.findVideoByOptions([videoId], relations, selectFields, limit, options);
@@ -215,7 +215,7 @@ export class VideoRepository {
     const limitVideoCategoryChannelDuration = 2 * limit - results.length;
     options = {
       categoryId: category.id,
-      channelId: userId ? [channel.id] : channelFollow,
+      channelId: userId ? channelFollow : [channel.id],
       duration: duration,
     };
     const moreCategoryChannelDuration = await this.findVideoByOptions(
@@ -229,7 +229,7 @@ export class VideoRepository {
 
     ignoreIds = [...results.map((video) => video.id), videoId];
     const limitVideoCategoryChannel = 3 * limit - results.length;
-    options = { categoryId: category.id, channelId: userId ? [channel.id] : channelFollow };
+    options = { categoryId: category.id, channelId: userId ? channelFollow : [channel.id] };
     const moreCategoryChannel = await this.findVideoByOptions(
       ignoreIds,
       relations,
@@ -253,7 +253,7 @@ export class VideoRepository {
     results = results.concat(moreCategoryVideos);
 
     ignoreIds = [...results.map((video) => video.id), videoId];
-    options = { channelId: userId ? [channel.id] : channelFollow };
+    options = { channelId: userId ? channelFollow : [channel.id] };
     const limitVideoChannel = 5 * limit - results.length;
     const moreChannelVideos = await this.findVideoByOptions(
       ignoreIds,
@@ -269,7 +269,10 @@ export class VideoRepository {
 
     const limitVideoOther = totalVideo - results.length;
     if (limitVideoOther > 0) {
-      return await this.videoTrendRepository.find({ take: limitVideoOther });
+      return await this.videoTrendRepository.find({
+        take: limitVideoOther,
+        where: { id: Not(In(ignoreIds)) },
+      });
     }
 
     return results;
@@ -297,10 +300,10 @@ export class VideoRepository {
 
     const videoResponse = videos.map((video) => {
       const { thumbnails, ...dataVideoDetails } = video;
-      const thumbnail = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
+      const thumbnailURL = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
       return {
         ...dataVideoDetails,
-        thumbnail: thumbnail,
+        thumbnailURL,
       };
     });
 
@@ -313,6 +316,6 @@ export class VideoRepository {
       relations: ['channel'],
     });
 
-    return follows.map((follow) => follow.channel.id);
+    return follows.map((follow) => follow.channel?.id);
   }
 }
