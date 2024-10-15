@@ -348,6 +348,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Username"
                   v-bind="componentField"
+                  v-model.trim="values.username"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -384,6 +385,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Full name"
                   v-bind="componentField"
+                  v-model.trim="values.fullName"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
