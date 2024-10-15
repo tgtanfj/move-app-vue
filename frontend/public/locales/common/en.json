@@ -89,7 +89,8 @@
     "upload_video": "Upload a video",
     "cancel": "Cancel",
     "submit": "Submit",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "rate": "Rate"
   },
   "label": {
     "password": "Password",
@@ -227,6 +228,11 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "video": {
+    "rate": "Rate Video",
+    "rate_video": "Rate this video",
+    "rate_description": "Tell us what you think about this video."
   },
   "video_detail": {
     "share_via": "Share via",

@@ -51,8 +51,6 @@ const signupInfo = ref('')
 let timer = null
 const countdown = ref(60)
 const isCounting = ref(false)
-const isLoginAttempted = ref(false)
-const isModalOpen = ref(false)
 const inputRef = ref(null)
 
 const handleBlur = () => {
@@ -73,11 +71,11 @@ const handleCloseEsc = (event) => {
 }
 
 const postCommentVideo = async () => {
-  if (Object.keys(authStore.user).length === 0) {
+  if (!authStore.accessToken) {
     isOpen.value = true
   } else {
     if (!comment.value) return
-    const data = await commentServices.postComment(comment.value)
+    const data = await commentServices.postComment(comment.value, props.videoId)
     if (data.message === 'success') {
       emit('update', data?.data)
       comment.value = ''
@@ -147,7 +145,7 @@ const onDialogClose = () => {
 }
 
 const handleClickInput = () => {
-  if (Object.keys(authStore.user).length === 0) {
+  if (!authStore.accessToken) {
     isOpen.value = true
     isFocused.value = false
     handleBlur()
