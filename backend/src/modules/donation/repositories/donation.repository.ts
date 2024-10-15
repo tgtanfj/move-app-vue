@@ -11,7 +11,7 @@ export class DonationRepository {
   ) {}
 
   async donation(userId: number, videoId: number, giftPackageId: number): Promise<Donation> {
-    const donationCreated = this.donationRepository.create({
+    const donationCreated = await this.donationRepository.create({
       video: {
         id: videoId,
       },
@@ -23,6 +23,6 @@ export class DonationRepository {
       },
     });
 
-    return this.donationRepository.save(donationCreated);
+    return await this.donationRepository.save(donationCreated);
   }
 }

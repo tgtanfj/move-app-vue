@@ -51,7 +51,7 @@ export class ChannelRepository {
   }
 
   async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
-    return this.channelRepository.update(channelId, {
+    return await this.channelRepository.update(channelId, {
       numberOfREPs,
     });
   }
