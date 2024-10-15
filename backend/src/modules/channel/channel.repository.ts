@@ -1,8 +1,7 @@
 import { Channel } from '@/entities/channel.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class ChannelRepository {
@@ -48,8 +47,12 @@ export class ChannelRepository {
       .where('ch.id = :channelId', { channelId })
       .select(['u.id', 'u.username', 'u.email', 'u.fullName', 'u.city', 'u.avatar'])
       .getOne();
-    console.log(user); // Check if user is null
-    console.log(await this.channelRepository.createQueryBuilder('ch').getSql()); // Log the raw SQL query
     return user;
+  }
+
+  async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
+    return await this.channelRepository.update(channelId, {
+      numberOfREPs,
+    });
   }
 }

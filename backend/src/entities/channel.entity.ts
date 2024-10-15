@@ -60,6 +60,12 @@ export class Channel extends BaseEntity {
   })
   numberOfFollowers: number;
 
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfREPs: number;
+
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })
   user: User;

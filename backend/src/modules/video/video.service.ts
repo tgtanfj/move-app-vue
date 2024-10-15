@@ -1,37 +1,36 @@
-import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ApiConfigService } from '../../shared/services/api-config.service';
-import { UploadVideoDTO } from './dto/upload-video.dto';
-import { VideoRepository } from './video.repository';
+import { Video } from '@/entities/video.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
-import { CategoryService } from '../category/category.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
-import { ChannelService } from '../channel/channel.service';
-import { PaginationDto } from './dto/request/pagination.dto';
-import { plainToInstance } from 'class-transformer';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
+import { stringToBoolean } from '@/shared/utils/stringToBool.util';
+import { InjectQueue } from '@nestjs/bullmq';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { plainToInstance } from 'class-transformer';
+import * as fs from 'fs';
+import { parseInt } from 'lodash';
+import * as path from 'path';
+import { FindOptionsOrder } from 'typeorm';
+import { ApiConfigService } from '../../shared/services/api-config.service';
+import { CategoryRepository } from '../category/category.repository';
+import { CategoryService } from '../category/category.service';
+import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
+import { ChannelService } from '../channel/channel.service';
+import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
+import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import { EditVideoDTO } from './dto/edit-video.dto';
+import { OptionSharingDTO } from './dto/option-sharing.dto';
+import { PaginationDto } from './dto/request/pagination.dto';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
-import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
-import { EditVideoDTO } from './dto/edit-video.dto';
-import { CategoryRepository } from '../category/category.repository';
-import { Video } from '@/entities/video.entity';
-import { ThumbnailService } from '../thumbnail/thumbnail.service';
-import { parseInt } from 'lodash';
-import { stringToBoolean } from '@/shared/utils/stringToBool.util';
-import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
-import { OptionSharingDTO } from './dto/option-sharing.dto';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import * as fs from 'fs';
-import * as path from 'path';
-import { getKeyS3 } from '@/shared/utils/get-key-s3.util';
-import { Between, FindOptionsOrder } from 'typeorm';
 import { VideoItemDto } from './dto/response/video-item.dto';
-import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
-import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
+import { UploadVideoDTO } from './dto/upload-video.dto';
+import { VideoRepository } from './video.repository';
 
 @Injectable()
 export class VideoService {
@@ -449,5 +448,9 @@ export class VideoService {
       await this.watchingVideoHistoryService.createOrUpdate(userId, videoId);
     }
     return await this.videoRepository.findVideoById(videoId);
+  }
+
+  async findChannel(videoId: number): Promise<Video> {
+    return this.videoRepository.findOne(videoId, { channel: true });
   }
 }
