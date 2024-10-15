@@ -7,7 +7,7 @@ import { signupService } from '@services/signup.services'
 import { ref } from 'vue'
 
 const props = defineProps(['signupInfo', 'countdown', 'isCounting'])
-const emit = defineEmits(['verifySuccess', 'start', 'reset'])
+const emit = defineEmits(['verifySuccess', 'reset'])
 
 const code = ref('')
 const errorMessage = ref('')
