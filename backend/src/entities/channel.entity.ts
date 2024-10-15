@@ -72,4 +72,14 @@ export class Channel extends BaseEntity {
 
   @OneToMany(() => Follow, (follow) => follow.channel)
   follows: Follow[];
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
+  })
+  numberOfVideos:number
 }

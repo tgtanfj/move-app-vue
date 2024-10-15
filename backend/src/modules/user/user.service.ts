@@ -186,4 +186,5 @@ export class UserService {
   async updateREPs(userId: number, numberOfREPs: number) {
     return this.userRepository.updateREPs(userId, numberOfREPs);
   }
+
 }

@@ -120,7 +120,7 @@ export class HomeService {
   async getCategories(limit?: number) {
     const result = await this.cateRepository
       .createQueryBuilder('categories')
-      .select(['categories.numberOfViews', 'categories.image', 'categories.title'])
+      .select(['categories.id', 'categories.numberOfViews', 'categories.image', 'categories.title'])
       .limit(limit)
       .orderBy('categories.numberOfViews', 'DESC')
       .getMany();
