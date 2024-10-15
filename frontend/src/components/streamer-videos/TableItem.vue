@@ -27,40 +27,36 @@
     <TableCell>
       <div class="flex invisible gap-3 group-hover:visible">
         <!-- Share video -->
-        <TooltipProvider>
-          <Tooltip :delayDuration="50">
-            <TooltipTrigger as-child>
-              <Upload size="20" color="#12BDA3" />
-            </TooltipTrigger>
-            <ShareVideo :videoIdSelected="props.item.id" />
-          </Tooltip>
-        </TooltipProvider>
+        <Popover>
+          <PopoverTrigger>
+            <Upload size="20" color="#12BDA3" />
+          </PopoverTrigger>
+          <ShareVideo :videoIdSelected="props.item.id" />
+        </Popover>
         <!-- Edit video -->
         <EditVideo :videoInfoSelected="props.item" />
         <!-- More -->
-        <TooltipProvider>
-          <Tooltip delayDuration="50">
-            <TooltipTrigger as-child>
-              <EllipsisVertical size="20" color="#12BDA3" />
-            </TooltipTrigger>
-            <TooltipContent side="bottom" class="border-primary text-primary">
-              <div class="flex flex-col gap-3 cursor-pointer">
-                <!-- Nhấn để hiện modal xóa -->
-                <div class="flex gap-2 items-center" @click="showModalDelete">
-                  <Trash size="16" color="#12BDA3" />
-                  <span class="text-sm">{{ $t('streamer.delete_video') }}</span>
-                </div>
-                <div
-                  class="flex gap-2 items-center text-sm cursor-pointer"
-                  @click="handleDownloadVideo"
-                >
-                  <ArrowDownToLine size="16" color="#12BDA3" />
-                  <span class="text-sm">{{ $t('streamer.download_video') }}</span>
-                </div>
+        <Popover>
+          <PopoverTrigger>
+            <EllipsisVertical size="20" color="#12BDA3" />
+          </PopoverTrigger>
+          <PopoverContent class="border-primary text-primary w-48">
+            <div class="flex flex-col gap-3 cursor-pointer">
+              <!-- Nhấn để hiện modal xóa -->
+              <div class="flex gap-2 items-center" @click="showModalDelete">
+                <Trash size="16" color="#12BDA3" />
+                <span class="text-sm">{{ $t('streamer.delete_video') }}</span>
               </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              <div
+                class="flex gap-2 items-center text-sm cursor-pointer"
+                @click="handleDownloadVideo"
+              >
+                <ArrowDownToLine size="16" color="#12BDA3" />
+                <span class="text-sm">{{ $t('streamer.download_video') }}</span>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </TableCell>
   </TableRow>
@@ -98,6 +94,7 @@ import { computed, ref } from 'vue'
 import BaseDialog from '../BaseDialog.vue'
 import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 
 const props = defineProps({
   item: {
