@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/data_sources/dummy_data.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/list_categories.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
@@ -54,7 +54,11 @@ class _HomeBodyState extends State<HomeBody> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return BlocListener<HomeBloc, HomeState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        state.status == HomeStatus.processing
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
+      },
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return Scaffold(
@@ -129,11 +133,14 @@ class _HomeBodyState extends State<HomeBody> {
                       const SizedBox(
                         height: 12.0,
                       ),
-                      const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: SlideShowVideosFeature(
-                            listVideo: [],
-                          )),
+                      state.isShowListVideoTrend
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: SlideShowVideosFeature(
+                                listVideo: state.listTrendVideo,
+                              ))
+                          : const SizedBox.shrink(),
                       const SizedBox(
                         height: 10.0,
                       ),
@@ -168,7 +175,8 @@ class _HomeBodyState extends State<HomeBody> {
                       Container(
                         height: MediaQuery.of(context).size.height * 0.4,
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: ListCategories(listCategories: dummyCategories),
+                        child: ListCategories(
+                            listCategories: state.listTopCategory),
                       ),
                       const SizedBox(
                         height: 12.0,
@@ -185,7 +193,9 @@ class _HomeBodyState extends State<HomeBody> {
                       const SizedBox(
                         height: 21.0,
                       ),
-                      const ListVideosMayULike(),
+                      ListVideosMayULike(
+                        listMayULikeVideo: state.listMayULikeVideo,
+                      ),
                     ],
                   ),
                 ),

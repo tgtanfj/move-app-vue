@@ -5,7 +5,8 @@ import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_eve
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_body.dart';
 
 class VideoDetailPage extends StatelessWidget {
-  const VideoDetailPage({super.key});
+  final int videoId;
+  const VideoDetailPage({super.key, required this.videoId});
 
   @override
   Widget build(BuildContext context) {

@@ -14,15 +14,19 @@ class SearchResultVideo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-              onTap: () {},
-              child: VideoPoster(
-                height:  MediaQuery.of(context).size.height * 0.21,
-                isLargePoster: true,
-              )),
+            onTap: () {},
+            child: VideoPoster(
+              height: MediaQuery.of(context).size.height * 0.21,
+              isLargePoster: true,
+              videoId: 0,
+              posterUrl: '',
+              viewCount: '',
+              duration: '',
+            ),
+          ),
           const SizedBox(
             height: 4.0,
           ),
-          const VideoFeatureDescription(),
         ],
       ),
     );
