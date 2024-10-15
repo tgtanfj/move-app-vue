@@ -5,6 +5,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/data_sources/dummy_data.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/list_categories.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
@@ -90,7 +91,7 @@ class _HomeBodyState extends State<HomeBody> {
                     },
                   )
                 : AppBarWidget(
-                    onSearchButtonTap: () {
+                    suffixButton: () {
                       context.read<HomeBloc>().add(HomeSearchVideoEvent());
                     },
                     prefixButton: () =>
@@ -150,6 +151,10 @@ class _HomeBodyState extends State<HomeBody> {
                               style: AppTextStyles.montserratStyle.bold20black,
                             ),
                             GestureDetector(
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.routeCategory,
+                              ),
                               child: Text(Constants.viewAll,
                                   style: AppTextStyles
                                       .montserratStyle.regular18tiffanyBlue),
@@ -163,7 +168,7 @@ class _HomeBodyState extends State<HomeBody> {
                       Container(
                         height: MediaQuery.of(context).size.height * 0.4,
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: const ListCategories(),
+                        child: ListCategories(listCategories: dummyCategories),
                       ),
                       const SizedBox(
                         height: 12.0,
