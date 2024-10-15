@@ -14,12 +14,12 @@ export class DonationController {
 
   @Get('list-gift-packages')
   async getGiftPackage() {
-    return this.donationService.getGiftPackages();
+    return await this.donationService.getGiftPackages();
   }
 
   @Post()
   @HttpCode(HttpStatus.OK)
   async donation(@User() user, @Body() donationDto: DonationDto) {
-    return this.donationService.donation(user.id, donationDto);
+    return await this.donationService.donation(user.id, donationDto);
   }
 }
