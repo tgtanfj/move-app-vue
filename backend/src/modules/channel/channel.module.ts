@@ -14,7 +14,7 @@ import { EmailService } from '../email/email.service';
 import { User } from '@/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, User]), FollowModule, forwardRef(() => UserModule), VideoModule],
+  imports: [TypeOrmModule.forFeature([Channel]), FollowModule, forwardRef(() => UserModule), VideoModule],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelRepository, JwtService, EmailService],
   exports: [ChannelService, ChannelRepository],

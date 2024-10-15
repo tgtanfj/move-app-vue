@@ -26,7 +26,7 @@ export class ChannelService {
     private readonly followService: FollowService,
     private readonly videoService: VideoService,
     private readonly emailService: EmailService,
-    private readonly apiConfig:ApiConfigService
+    private readonly apiConfig: ApiConfigService,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
@@ -118,14 +118,13 @@ export class ChannelService {
     return socialLinks;
   }
 
-
   async increaseFollow(channelId: number) {
     const channel = await this.findOne(channelId);
     channel.numberOfFollowers = channel.numberOfFollowers + 1;
     if (channel.numberOfFollowers > 10000) {
-      channel.isBlueBadge = true
+      channel.isBlueBadge = true;
       // const foundUser = await this.channelRepository.getUserByChannel(channelId)
-      
+
       // if (!foundUser) {
       //   throw new BadRequestException('1')
       // }
@@ -151,9 +150,5 @@ export class ChannelService {
     return await this.channelRepository.updateChannel(channel);
   }
 
-  async getUserByChannel(channelId: number) {
-    
-  }
-
-
+  async getUserByChannel(channelId: number) {}
 }

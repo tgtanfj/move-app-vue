@@ -1,5 +1,5 @@
 export function getTemplateBlueBadge(channelName: string, linkProfile: string) {
-    return `
+  return `
     <!DOCTYPE html>
 <html lang="vi">
 

@@ -81,5 +81,5 @@ export class Channel extends BaseEntity {
       from: (value: string) => parseInt(value, 10),
     },
   })
-  numberOfVideos:number
+  numberOfVideos: number;
 }

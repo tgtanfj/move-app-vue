@@ -38,7 +38,7 @@ export class FollowService {
     if (!result) {
       throw new BadRequestException();
     }
-    
+
     await this.channelService.increaseFollow(channelId);
     return result;
   }
