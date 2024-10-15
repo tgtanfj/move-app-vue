@@ -343,12 +343,9 @@ export class VideoService {
       videos.map(async (video) => {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
-        const [thumbnail, videoLength] = await Promise.all([
-          this.thumbnailService.getSelectedThumbnail(video.id),
-          this.vimeoService.getVideoLength(video.url),
-        ]);
+        const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
         videoItemDto.thumbnailURL = thumbnail.image;
-        videoItemDto.videoLength = videoLength;
+        videoItemDto.videoLength = video.durationsVideo;
 
         videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
           excludeExtraneousValues: true,
