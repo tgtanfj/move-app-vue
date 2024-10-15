@@ -9,6 +9,7 @@ import InstaIcon from '@assets/icons/InstaIcon.vue'
 import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
 import FBIcon from '@assets/icons/FBIcon.vue'
 import Comment from '@components/comment/Comment.vue'
+import Rating from './Rating.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
 
@@ -49,10 +50,7 @@ const props = defineProps({
           <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
             <Heart width="20px" class="text-primary" /> {{ $t('video_detail.follow') }}
           </div>
-          <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
-            <Star width="20px" class="text-primary" /> {{ $t('video_detail.rate') }}
-          </div>
-
+          <Rating :videoDetail="videoDetail" />
           <ShareLinkVideo />
         </div>
       </div>

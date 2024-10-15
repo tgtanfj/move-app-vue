@@ -22,7 +22,7 @@ enum AppIcons {
   closeWhite,
   faqs,
   like,
-  likeFilled,
+  likeFiled,
   dislike,
   dislikeFilled,
   moveReps,

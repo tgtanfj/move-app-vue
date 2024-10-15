@@ -1,23 +1,10 @@
 <script setup>
 import { Button } from '@common/ui/button'
 import { useAuthStore } from '../../stores/auth'
+import { useOpenLoginStore } from '../../stores/openLogin'
 import { ArrowRightFromLine } from 'lucide-vue-next'
 import { ArrowLeft } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@common/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
-import SignInModal from '@components/auth/SignInModal.vue'
-import SignUpModal from '@components/auth/SignUpModal.vue'
-import LogoBlack from '@assets/icons/LogoBlack.vue'
-import ForgotPassword from '@components/auth/ForgotPassword.vue'
-import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   sidebarOpen: {
@@ -28,17 +15,8 @@ const props = defineProps({
 
 const emit = defineEmits(['toggleSidebar'])
 
-const isOpen = ref(false)
-const openForgotPassword = ref(false)
-const openOTPModal = ref(false)
-const signupInfo = ref('')
-let timer = null
-const countdown = ref(60)
-const isCounting = ref(false)
-
+const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
-
-const isUserLoggedIn = computed(() => !!authStore.accessToken)
 
 const channels = [
   {
@@ -58,58 +36,6 @@ const channels = [
 const toggleSidebar = () => {
   emit('toggleSidebar')
 }
-
-const closeModal = () => {
-  isOpen.value = false
-}
-
-const onOpenForgotPassword = () => {
-  openForgotPassword.value = true
-  closeModal()
-}
-
-const startCountdown = () => {
-  isCounting.value = true
-  timer = setInterval(() => {
-    if (countdown.value > 0) {
-      countdown.value--
-    } else {
-      clearInterval(timer)
-      isCounting.value = false
-    }
-  }, 1000)
-}
-
-const handleOpenOTPVerification = (values) => {
-  openOTPModal.value = true
-  signupInfo.value = values
-
-  countdown.value = 60
-  clearInterval(timer)
-  startCountdown()
-}
-
-const openLoginModal = () => {
-  isOpen.value = true
-  openForgotPassword.value = false
-}
-
-const handleVerifySuccess = async (values) => {
-  openOTPModal.value = false
-  clearInterval(timer)
-  isCounting.value = false
-  await authStore.loginWithEmail(values)
-}
-
-const resetCountdown = () => {
-  countdown.value = 60
-  startCountdown()
-}
-
-const onDialogClose = () => {
-  isOpen.value = false
-}
-
 </script>
 
 <template>
@@ -132,7 +58,7 @@ const onDialogClose = () => {
 
       <div class="flex flex-col mt-4 gap-4">
         <div
-          v-if="Object.keys(authStore.user).length !== 0"
+          v-if="authStore.accessToken"
           v-for="channel in channels"
           :key="channel.id"
           class="flex items-center gap-1"
@@ -140,14 +66,11 @@ const onDialogClose = () => {
           <img :src="channel.avatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
           <span v-if="sidebarOpen" class="ml-4 text-sm text-nowrap">{{ channel.name }}</span>
         </div>
-        <p
-          v-if="sidebarOpen && Object.keys(authStore.user).length !== 0"
-          class="text-[16px] text-[#666666]"
-        >
+        <p v-if="sidebarOpen && authStore.accessToken" class="text-[16px] text-[#666666]">
           {{ $t('sidebar.not_login') }}
         </p>
         <div
-          v-if="sidebarOpen && Object.keys(authStore.user).length === 0"
+          v-if="sidebarOpen && !authStore.accessToken"
           :class="sidebarOpen ? 'opacity-100 delay-500' : 'opacity-0'"
           class="w-full h-[220px] bg-primary rounded-lg shadow-lg flex flex-col p-4 items-start justify-between transition-opacity opacity-0 duration-500 ease-in-out"
         >
@@ -157,65 +80,13 @@ const onDialogClose = () => {
               {{ $t('sidebar.sign_up_title') }}
             </p>
           </div>
-          <Button @click="isOpen = true" variant="outline">{{ $t('sidebar.sign_up') }}</Button>
+          <Button @click="openLoginStore.toggleOpenLogin()" variant="outline">{{
+            $t('sidebar.sign_up')
+          }}</Button>
         </div>
       </div>
     </div>
   </div>
-
-  <Dialog v-model:open="isOpen" @update:open="onDialogClose">
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle class="w-24 m-auto">
-          <LogoBlack />
-        </DialogTitle>
-      </DialogHeader>
-      <DialogDescription></DialogDescription>
-      <Tabs default-value="login" class="w-full">
-        <TabsList
-          class="w-full m-auto border-b-[1px] border-[#999999] pb-0 rounded-none mb-3 bg-white"
-        >
-          <TabsTrigger
-            value="login"
-            class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-3 border-white rounded-none data-[state=active]:border-[#13D0B4] data-[state=active]:text-[#13D0B4]"
-          >
-            <span class="font-bold">Log In</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="signup"
-            class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-3 border-white rounded-none data-[state=active]:border-[#13D0B4] data-[state=active]:text-[#13D0B4]"
-          >
-            <span class="font-bold">Sign up</span>
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <SignInModal :closeModal="closeModal" @openForgotPassword="onOpenForgotPassword" />
-        </TabsContent>
-        <TabsContent value="signup">
-          <SignUpModal
-            :closeModal="closeModal"
-            @open-otp-verification="handleOpenOTPVerification"
-          />
-        </TabsContent>
-      </Tabs>
-    </DialogContent>
-  </Dialog>
-
-  <ForgotPassword
-      v-if="!isUserLoggedIn"
-      v-model:open="openForgotPassword"
-      @open-login="openLoginModal"
-    />
-    <OTPVerificationModal
-      v-if="!isUserLoggedIn"
-      v-model:open="openOTPModal"
-      :signupInfo="signupInfo"
-      :countdown="countdown"
-      :isCounting="isCounting"
-      @verify-success="handleVerifySuccess"
-      @start="startCountdown"
-      @reset="resetCountdown"
-    />
 </template>
 
 <style scoped>

@@ -1,11 +1,11 @@
-import { Comment } from './../../entities/comment.entity';
+import { CommentReaction } from '@/entities/comment-reaction.entity';
+import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CommentReaction } from '@/entities/comment-reaction.entity';
-import { Donation } from '@/entities/donation.entity';
 
 @Injectable()
 export class CommentRepository {
@@ -111,11 +111,13 @@ export class CommentRepository {
         user: { id: userId },
         video: { id: videoId },
       },
-      select: ['numberOfREPs'],
+      relations: {
+        giftPackage: true,
+      },
     });
 
     const totalDonations = donations.reduce((total, donation) => {
-      return total + parseFloat(donation.numberOfREPs);
+      return total + donation.giftPackage.numberOfREPs;
     }, 0);
 
     return totalDonations;
