@@ -154,10 +154,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         ? false
         : state.isShowFullNameMessage;
     emit(state.copyWith(
-      user: updateUser,
-      isEnableSaveSettings: isEnableSaveSettings,
-      isShowFullNameMessage: isShowFullNameMessage,
-    ));
+        user: updateUser,
+        isEnableSaveSettings: isEnableSaveSettings,
+        isShowFullNameMessage: isShowFullNameMessage));
   }
 
   void _onProfileCityChangEvent(
@@ -166,11 +165,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) {
     emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(city: event.city);
-    final isShowCityMessage =
-        state.user?.username != event.city ? false : state.isShowCityMessage;
     emit(state.copyWith(
       user: updateUser,
-      isShowCityMessage: isShowCityMessage,
     ));
   }
 
@@ -182,8 +178,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         InputValidationHelper.validateUsername(state.user?.username ?? '');
     final validFullName =
         InputValidationHelper.validateFullName(state.user?.fullName ?? '');
-    final validCity =
-        InputValidationHelper.validateStringValue(state.user?.city ?? '');
     final validDateOfBirth =
         InputValidationHelper.validateDateOfBirth(state.user?.dateOfBirth);
     final validCountry = InputValidationHelper.validateStringValue(
@@ -195,10 +189,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     emit(state.copyWith(
       isShowUsernameMessage: validUsername != null,
       isShowFullNameMessage: validFullName != null,
-      isShowCityMessage: validCity != null,
       messageInputUsername: validUsername,
       messageInputFullName: validFullName,
-      messageInputCity: validCity,
       isShowDateOfBirthMessage: validDateOfBirth != null,
       isShowCountryMessage: validCountry != null,
       isShowStateMessage: validState != null,
@@ -210,7 +202,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ));
     if (validUsername == null &&
         validFullName == null &&
-        validCity == null &&
         validDateOfBirth == null &&
         validCountry == null &&
         validState == null) {
@@ -238,6 +229,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           status: ProfileStatus.success,
         ));
       });
+      if (state.status == ProfileStatus.success) {
+        final editedUser = await userRepository.getUserProfile();
+        editedUser.fold((l) {
+          emit(state.copyWith(status: ProfileStatus.failure));
+        }, (r) {
+          emit(state.copyWith(
+            user: r,
+          ));
+        });
+      }
     }
   }
 

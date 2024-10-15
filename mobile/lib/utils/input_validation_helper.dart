@@ -122,8 +122,17 @@ class InputValidationHelper {
       return Constants.invalidDateOfBirth;
     }
     final today = DateTime.now();
-    final age = today.year - dateOfBirth.year;
-    if (age < 18 || age > 65) {
+    int age = today.year - dateOfBirth.year;
+    if (dateOfBirth.month > today.month) {
+      age--;
+    } else if (dateOfBirth.month == today.month) {
+      if (dateOfBirth.day > today.day) {
+        age--;
+      } else {
+        age++;
+      }
+    }
+    if (age < 13 || age > 65) {
       return Constants.invalidAge;
     }
     return null;
