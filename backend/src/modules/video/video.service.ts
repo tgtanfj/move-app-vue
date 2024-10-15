@@ -344,6 +344,7 @@ export class VideoService {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
         const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
+
         videoItemDto.thumbnailURL = thumbnail.image;
         videoItemDto.videoLength = video.durationsVideo;
 
@@ -440,11 +441,16 @@ export class VideoService {
     return sortedVideos;
   }
 
-  async getVideoDetails(videoId: number, userId?: number): Promise<Video> {
+  async getVideoDetails(videoId: number, userId?: number) {
     if (userId) {
-      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId);
+      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId).catch((error) => {
+        throw new NotFoundException(ERRORS_DICTIONARY.NOT_CREATE_VIDEO_HISTORY);
+      });
     }
-    return await this.videoRepository.findVideoById(videoId);
+    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
+      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+    });
+    return video;
   }
 
   async findChannel(videoId: number): Promise<Video> {
