@@ -1,23 +1,18 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ChannelRepository } from './channel.repository';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Channel } from '@/entities/channel.entity';
-import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
-import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
-import { ChannelProfileDto } from './dto/response/channel-profile.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
-import { FollowService } from '../follow/follow.service';
-import { ChannelItemDto } from './dto/response/channel-item.dto';
-import { VideoService } from '../video/video.service';
-import { VideoItemDto } from '../video/dto/response/video-item.dto';
-import { SocialLink } from './dto/response/channel-profile.dto';
-import { ChannelVideosDto } from './dto/response/channel-videos.dto';
-import { PaginationDto } from '../video/dto/request/pagination.dto';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
-import { EmailService } from '../email/email.service';
-import { MailDTO } from '@/shared/interfaces/mail.dto';
-import { getTemplateBlueBadge } from '../email/templates/template-blue-badge';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { UpdateResult } from 'typeorm';
+import { EmailService } from '../email/email.service';
+import { FollowService } from '../follow/follow.service';
+import { PaginationDto } from '../video/dto/request/pagination.dto';
+import { VideoService } from '../video/video.service';
+import { ChannelRepository } from './channel.repository';
+import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import { ChannelItemDto } from './dto/response/channel-item.dto';
+import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
 
 @Injectable()
 export class ChannelService {
@@ -151,4 +146,7 @@ export class ChannelService {
   }
 
   async getUserByChannel(channelId: number) {}
+  async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
+    return this.channelRepository.updateREPs(channelId, numberOfREPs);
+  }
 }

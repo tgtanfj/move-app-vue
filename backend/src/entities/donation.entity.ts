@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
+import { GiftPackage } from './gift-package.entity';
 import { User } from './user.entity';
 import { Video } from './video.entity';
 
@@ -7,17 +8,16 @@ import { Video } from './video.entity';
 export class Donation extends BaseEntity {
   @Column({
     type: 'varchar',
+    default: 0,
   })
   numberOfREPs: string;
-
-  @Column({
-    type: 'varchar',
-  })
-  content: string;
 
   @ManyToOne(() => User, (user) => user.donations)
   user: User;
 
   @ManyToOne(() => Video, (video) => video.donations, { onDelete: 'CASCADE' })
   video: Video;
+
+  @ManyToOne(() => GiftPackage, (giftPackage) => giftPackage.donations)
+  giftPackage: GiftPackage;
 }
