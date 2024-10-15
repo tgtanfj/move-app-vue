@@ -109,7 +109,6 @@ const resetCountdown = () => {
 const onDialogClose = () => {
   isOpen.value = false
 }
-
 </script>
 
 <template>
@@ -132,7 +131,7 @@ const onDialogClose = () => {
 
       <div class="flex flex-col mt-4 gap-4">
         <div
-          v-if="Object.keys(authStore.user).length !== 0"
+          v-if="authStore.accessToken"
           v-for="channel in channels"
           :key="channel.id"
           class="flex items-center gap-1"
@@ -140,14 +139,11 @@ const onDialogClose = () => {
           <img :src="channel.avatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
           <span v-if="sidebarOpen" class="ml-4 text-sm text-nowrap">{{ channel.name }}</span>
         </div>
-        <p
-          v-if="sidebarOpen && Object.keys(authStore.user).length !== 0"
-          class="text-[16px] text-[#666666]"
-        >
+        <p v-if="sidebarOpen && authStore.accessToken" class="text-[16px] text-[#666666]">
           {{ $t('sidebar.not_login') }}
         </p>
         <div
-          v-if="sidebarOpen && Object.keys(authStore.user).length === 0"
+          v-if="sidebarOpen && !authStore.accessToken"
           :class="sidebarOpen ? 'opacity-100 delay-500' : 'opacity-0'"
           class="w-full h-[220px] bg-primary rounded-lg shadow-lg flex flex-col p-4 items-start justify-between transition-opacity opacity-0 duration-500 ease-in-out"
         >
@@ -202,20 +198,20 @@ const onDialogClose = () => {
   </Dialog>
 
   <ForgotPassword
-      v-if="!isUserLoggedIn"
-      v-model:open="openForgotPassword"
-      @open-login="openLoginModal"
-    />
-    <OTPVerificationModal
-      v-if="!isUserLoggedIn"
-      v-model:open="openOTPModal"
-      :signupInfo="signupInfo"
-      :countdown="countdown"
-      :isCounting="isCounting"
-      @verify-success="handleVerifySuccess"
-      @start="startCountdown"
-      @reset="resetCountdown"
-    />
+    v-if="!isUserLoggedIn"
+    v-model:open="openForgotPassword"
+    @open-login="openLoginModal"
+  />
+  <OTPVerificationModal
+    v-if="!isUserLoggedIn"
+    v-model:open="openOTPModal"
+    :signupInfo="signupInfo"
+    :countdown="countdown"
+    :isCounting="isCounting"
+    @verify-success="handleVerifySuccess"
+    @start="startCountdown"
+    @reset="resetCountdown"
+  />
 </template>
 
 <style scoped>
