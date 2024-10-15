@@ -18,7 +18,7 @@ export class DonationController {
   }
 
   @Post()
-    @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK)
   async donation(@User() user, @Body() donationDto: DonationDto) {
     return this.donationService.donation(user.id, donationDto);
   }
