@@ -36,4 +36,20 @@ export class ChannelRepository {
       .where('channel.name ILIKE :keyword', { keyword: `%${keyword}%` })
       .getMany();
   }
+
+  async updateChannel(channel: Channel) {
+    return await this.channelRepository.save(channel);
+  }
+
+  async getUserByChannel(channelId: number) {
+    const user = await this.channelRepository
+      .createQueryBuilder('ch')
+      .leftJoinAndSelect('ch.user', 'u')
+      .where('ch.id = :channelId', { channelId })
+      .select(['u.id', 'u.username', 'u.email', 'u.fullName', 'u.city', 'u.avatar'])
+      .getOne();
+    console.log(user); // Check if user is null
+    console.log(await this.channelRepository.createQueryBuilder('ch').getSql()); // Log the raw SQL query
+    return user;
+  }
 }

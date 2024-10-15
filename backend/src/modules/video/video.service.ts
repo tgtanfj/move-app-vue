@@ -184,6 +184,7 @@ export class VideoService {
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
+    // await this.channelService.increaseTotalVideo(foundChannel.id);
     // await this.uploadVideoUrlS3(video.id, urlS3);
     await this.uploadS3Queue.add('upload', {
       path: pathVideo,

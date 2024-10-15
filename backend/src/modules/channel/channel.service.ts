@@ -14,6 +14,10 @@ import { SocialLink } from './dto/response/channel-profile.dto';
 import { ChannelVideosDto } from './dto/response/channel-videos.dto';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
+import { EmailService } from '../email/email.service';
+import { MailDTO } from '@/shared/interfaces/mail.dto';
+import { getTemplateBlueBadge } from '../email/templates/template-blue-badge';
+import { ApiConfigService } from '@/shared/services/api-config.service';
 
 @Injectable()
 export class ChannelService {
@@ -21,6 +25,8 @@ export class ChannelService {
     private readonly channelRepository: ChannelRepository,
     private readonly followService: FollowService,
     private readonly videoService: VideoService,
+    private readonly emailService: EmailService,
+    private readonly apiConfig: ApiConfigService,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
@@ -111,4 +117,38 @@ export class ChannelService {
 
     return socialLinks;
   }
+
+  async increaseFollow(channelId: number) {
+    const channel = await this.findOne(channelId);
+    channel.numberOfFollowers = channel.numberOfFollowers + 1;
+    if (channel.numberOfFollowers > 10000) {
+      channel.isBlueBadge = true;
+      // const foundUser = await this.channelRepository.getUserByChannel(channelId)
+
+      // if (!foundUser) {
+      //   throw new BadRequestException('1')
+      // }
+      // const link = `${this.apiConfig.getString('FRONT_END_URL')}/channel/${channel.id}`
+      // send mail
+      // const dto: MailDTO = {
+      //   subject: 'Password reset',
+      //   to: foundUser.user.email,
+      //   html: getTemplateBlueBadge(channel.name, link),
+      //   from: this.apiConfig.getString('MAIL_USER'),
+      // };
+      // this.emailService.sendMail(dto);
+    }
+    return await this.channelRepository.updateChannel(channel);
+  }
+
+  async decreaseFollow(channelId: number) {
+    const channel = await this.findOne(channelId);
+    channel.numberOfFollowers = channel.numberOfFollowers - 1;
+    if (channel.numberOfFollowers < 10000) {
+      channel.isBlueBadge = false;
+    }
+    return await this.channelRepository.updateChannel(channel);
+  }
+
+  async getUserByChannel(channelId: number) {}
 }
