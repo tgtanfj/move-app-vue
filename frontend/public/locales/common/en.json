@@ -121,14 +121,16 @@
     "state": "State",
     "city": "City",
     "save": "Save settings",
-    "username_verify_message": "Username must be between 4 and 25 characters, containing only letters, numbers, and underscores",
+    "username_8_255_long": "Username must be between 4 and 25 characters",
+    "username_verify_message": "Username must contain only letters, numbers, and underscores",
     "fullname_8_255_long": "Full name must be 8-255 characters",
-    "fullname_no_special_characters": "Full name must not include special characters.",
-    "invalid_age": "Invalid age. Age must be between 18 and 65 years old",
+    "fullname_no_special_characters": "Full name must not include special characters and numbers.",
+    "invalid_age": "Invalid age. Age must be between 13 and 65 years old",
     "field_required": "This field is required",
     "select_one": "You need to select one",
     "file_exceed_5MB": "The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.",
-    "file_format_not_meet": "Invalid image"
+    "file_format_not_meet": "Invalid image",
+    "edit_success": "Profile Edited Successfully"
   },
   "logout": {
     "title": "Log Out",
