@@ -11,11 +11,11 @@ export class GiftPackageRepository {
   ) {}
 
   async getGiftPackages(): Promise<GiftPackage[]> {
-    return this.giftPackageRepository.find();
+    return await this.giftPackageRepository.find();
   }
 
   async findOneGiftPackage(giftPackageId: number): Promise<GiftPackage> {
-    return this.giftPackageRepository.findOneByOrFail({
+    return await this.giftPackageRepository.findOneByOrFail({
       id: giftPackageId,
     });
   }
