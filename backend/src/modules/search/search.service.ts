@@ -88,7 +88,7 @@ export class SearchService {
     );
 
     const limitedVideos = uniqueVideos.slice(0, limit);
-   
+
     const totalPages = Math.ceil(totalCount / limit);
     const itemFrom = offset + 1;
     const itemTo = Math.min(offset + limit, totalCount);

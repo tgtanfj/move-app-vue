@@ -16,13 +16,13 @@ export class CategoryService {
   }
 
   async getCategoryById(categoryId: number) {
-    const found = await this.categoryRepository.findCategoryById(categoryId)
+    const found = await this.categoryRepository.findCategoryById(categoryId);
     if (!found) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
     return {
       id: found.id,
-      title: found.title
-    }
+      title: found.title,
+    };
   }
 }
