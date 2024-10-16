@@ -57,10 +57,8 @@ const handleSendMail = async () => {
 }
 
 const openLogin = () => {
-  resetForm()
-  reset()
+  resetFormOnClose()
   emit('openLogin')
-  showError.value = false
 }
 
 const resetFormOnClose = () => {

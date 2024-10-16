@@ -3,4 +3,5 @@ class KeyScreen {
   static const String login = 'login';
   static const String home = 'home';
   static const String videoDetail = 'video_detail_page';
+  static const String categoryPage= 'category_page';
 }

@@ -120,7 +120,7 @@ export class HomeService {
   async getCategories(limit?: number) {
     const result = await this.cateRepository
       .createQueryBuilder('categories')
-      .select(['categories.numberOfViews', 'categories.image', 'categories.title'])
+      .select(['categories.id', 'categories.numberOfViews', 'categories.image', 'categories.title'])
       .limit(limit)
       .orderBy('categories.numberOfViews', 'DESC')
       .getMany();
@@ -478,7 +478,7 @@ export class HomeService {
       .createQueryBuilder('ch')
       .innerJoin('follows', 'f', 'ch.id = f.channelId')
       .where('f.userId = :userId', { userId })
-      .orderBy('f.createdAt', 'DESC') 
+      .orderBy('f.createdAt', 'DESC')
       .select([
         'ch.id',
         'ch.name',
@@ -487,7 +487,7 @@ export class HomeService {
         'ch.isBlueBadge',
         'ch.isPinkBadge',
         'ch.numberOfFollowers',
-        'f.createdAt', 
+        'f.createdAt',
       ])
       .getMany();
   }
