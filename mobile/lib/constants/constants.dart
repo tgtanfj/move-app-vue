@@ -210,8 +210,13 @@ class Constants {
   static const String monthsAgo = "months ago";
   static const String yeasAgo = "years ago";
   static const String notFound = "Not Found";
-
-
-
-
+  static const String rateTheVideo = "Rate the video";
+  static const String rateQuestion =
+      "Tell us what do you think about this session.";
+  static const String rateThanksTitle = "Thank you for your ratings!";
+  static const String rateThanksContent =
+      "The ratings you provided will definitely be helpful for the instructor.";
+  static const String rateNotFound = 'Rate not found.';
+  static const String videoId = 'videoId';
+  static const String rateValue = 'rate';
 }
