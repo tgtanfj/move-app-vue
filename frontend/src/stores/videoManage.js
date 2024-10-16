@@ -117,41 +117,31 @@ export const useVideoStore = defineStore('video', () => {
 
 
 
-  const shareVideoSocial = async (videoId, option) => {
-    try {
-      const response = await apiAxios.get(`/video/social-sharing/${videoId}?option=${option}`)
+  const shareVideoSocial = (videoId, option) => {
+    const shareFbUrl = 'https://www.facebook.com/sharer/sharer.php?u=';
+    const shareTwUrl = 'https://twitter.com/intent/tweet?url=';
+    const showVideoUrl = window.location.origin + '/video/' + videoId;
 
-      if (response.status === 200) {
-        const shareUrl = response.data.data
-        window.open(shareUrl, '_blank')
-      } else {
-        console.error('Failed to share video:', response.statusText)
-      }
-    } catch (error) {
-      console.error('Error sharing video:', error)
+    let shareUrl = '';
+    if (option === 'Facebook') {
+      shareUrl = shareFbUrl + showVideoUrl;
+      window.open(shareUrl, '_blank')
+    } else if (option === 'Twitter') {
+      shareUrl = shareTwUrl + showVideoUrl; 
+      window.open(shareUrl, '_blank')
+    } else {
+      console.error('Unsupported social media option');
+      return;
     }
   }
 
-  const getAndCopyUrlVideo = async (videoId) => {
-    try {
-      const response = await apiAxios.get(`/video/${videoId}`)
-
-      if (response.status === 200) {
-        const videoUrl = response.data.data
-
-        await navigator.clipboard.writeText(videoUrl)
-
-        isCopied.value = true;
-
-        setTimeout(() => {
-          isCopied.value = false
-        }, 2000);
-      } else {
-        console.error('Failed to get video URL:', response.statusText)
-      }
-    } catch (error) {
-      console.error('Error getting video URL:', error)
-    }
+  const getAndCopyUrlVideo = (videoId) => {
+    const showVideoUrl = window.location.origin + '/video/' + videoId
+    navigator.clipboard.writeText(showVideoUrl)
+    isCopied.value = true;
+    setTimeout(() => {
+      isCopied.value = false
+    }, 2000)
   }
 
   const downloadVideo = async (id) => {

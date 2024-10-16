@@ -103,6 +103,14 @@ export const useAuthStore = defineStore('auth', () => {
       if (data.success) {
         accessToken.value = data.data.accessToken
         refreshToken.value = data.data.refreshToken
+        const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        })
+
+        user.value = userInfo.data
+        localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -137,6 +145,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('token')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('loginMethod')
+          localStorage.removeItem('userInfo')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -147,6 +156,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('loginMethod')
+        localStorage.removeItem('userInfo')
       }
     } catch (err) {
       errorMsg.value = err.message

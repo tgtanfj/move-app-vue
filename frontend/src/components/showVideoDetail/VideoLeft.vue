@@ -1,17 +1,20 @@
 <script setup>
 import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
-import { ChevronRight, Heart, Star } from 'lucide-vue-next'
+import { ChevronRight } from 'lucide-vue-next'
 import { Tabs, TabsList, TabsContent } from '@common/ui/tabs'
 import { DropdownMenuSeparator } from '@common/ui/dropdown-menu'
-import defaultAvatar from '@assets/icons/default-avatar.png'
-import InstaIcon from '@assets/icons/InstaIcon.vue'
-import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
-import FBIcon from '@assets/icons/FBIcon.vue'
 import Comment from '@components/comment/Comment.vue'
 import Rating from './Rating.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
+import { onMounted, ref } from 'vue'
+import { fetchChannelAbout } from '@services/channel_about.services'
+import SocialLink from '@components/channel-view/SocialLink.vue'
+import HeartFilled from '@assets/icons/HeartFilled.vue'
+import { useAuthStore } from '../../stores/auth'
+import { useFollow, useUnfollow } from '@services/follow.services'
+import Heart from '@assets/icons/Heart.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -19,10 +22,74 @@ const props = defineProps({
     required: true
   }
 })
+
+const channelInfo = ref({})
+const userStore = useAuthStore()
+
+const isFollowed = ref(channelInfo.isFollowed)
+const mutationFollow = useFollow()
+const mutationUnfollow = useUnfollow()
+
+const durationLite =
+  props.videoDetail.duration === 'less than 30 minutes'
+    ? '30 mins'
+    : props.videoDetail.duration === 'less than 1 hours'
+      ? '< 1 hour'
+      : props.videoDetail.duration === 'more than 1 hours'
+        ? '> 1 hour'
+        : 'unknown'
+
+const workoutLevelLite =
+  props.videoDetail.workoutLevel === 'beginner'
+    ? 'Beginner'
+    : props.videoDetail.workoutLevel === 'intermediate'
+      ? 'Intermediate'
+      : props.videoDetail.workoutLevel === 'advanced'
+        ? 'Advanced'
+        : 'unknown'
+
+const handleFollow = () => {
+  const isLogin = !!userStore.accessToken
+
+  if (isLogin) {
+    if (isFollowed.value) {
+      mutationUnfollow.mutate(
+        {
+          channelId: props.videoDetail.channel.id
+        },
+        {
+          onSuccess: () => {
+            isFollowed.value = false
+          }
+        }
+      )
+    } else {
+      mutationFollow.mutate(
+        {
+          channelId: props.videoDetail.channel.id
+        },
+        {
+          onSuccess: () => {
+            isFollowed.value = true
+          }
+        }
+      )
+    }
+  } else {
+    openLoginStore.toggleOpenLogin()
+  }
+}
+
+onMounted(async () => {
+  if (props.videoDetail) {
+    const res = await fetchChannelAbout(props.videoDetail.channel.id)
+    channelInfo.value = res.data
+  }
+})
 </script>
 
 <template>
-  <div v-if="props.videoDetail" class="flex-[2.8]">
+  <div v-if="props.videoDetail" class="flex-[0.75]">
     <!-- video play -->
     <VideoDisplay :videoUrl="props.videoDetail.url" />
     <!-- /video play -->
@@ -31,24 +98,28 @@ const props = defineProps({
     <div class="p-5 w-full">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
-        <p class="flex gap-1 text-xl font-semibold"><StartIcon width="24px" height="24px" />4.5</p>
+        <p class="flex gap-1 text-xl font-semibold">
+          <StartIcon width="24px" height="24px" />{{ props.videoDetail.ratings }}
+        </p>
       </div>
 
       <div class="flex gap-2 mt-2">
         <p class="text-red-500 font-semibold">
-          <span class="font-semibold">10.3</span>k {{ $t('video_detail.views') }}
+          <span class="font-semibold">{{ props.videoDetail.numberOfViews }}</span> {{ $t('video_detail.views') }}
         </p>
-        <p class="font-semibold text-primary">• Just Move</p>
+        <p class="font-semibold text-primary">• {{ props.videoDetail.category?.title }}</p>
       </div>
 
       <div class="flex justify-between items-center mt-4">
         <div class="flex items-center gap-2">
-          <div class="py-2 px-4 rounded-3xl bg-gray-200 font-medium">Beginner</div>
-          <div class="py-2 px-4 rounded-3xl bg-gray-200 font-medium">< 30 mins</div>
+          <div class="py-2 px-4 rounded-3xl bg-gray-200 font-medium">{{ workoutLevelLite }}</div>
+          <div class="py-2 px-4 rounded-3xl bg-gray-200 font-medium">{{ durationLite }}</div>
         </div>
         <div class="flex items-center gap-5">
-          <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
-            <Heart width="20px" class="text-primary" /> {{ $t('video_detail.follow') }}
+          <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary" @click="handleFollow">
+            <Heart v-show="!isFollowed" width="24px" class="text-primary" />
+            {{ $t('video_detail.follow') }}
+            <HeartFilled v-show="isFollowed"/>
           </div>
           <Rating :videoDetail="videoDetail" />
           <ShareLinkVideo />
@@ -59,16 +130,18 @@ const props = defineProps({
       <!-- Video channel -->
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-4">
-          <img :src="defaultAvatar" alt="ava channel" class="w-[56px] h-[56px] rounded-full" />
+          <img :src="channelInfo.image" alt="ava channel" class="w-[56px] h-[56px] rounded-full" />
           <div>
-            <h3 class="text-xl font-semibold">dianeTV</h3>
-            <p class="text-gray-500 font-medium">10355 {{ $t('video_detail.follower') }}</p>
+            <h3 class="text-xl font-semibold">{{ channelInfo.name }}</h3>
+            <p class="text-gray-500 font-medium">
+              {{ channelInfo.numberOfFollowers }} {{ $t('video_detail.follower') }}
+            </p>
           </div>
         </div>
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 
-      <Tabs>
+      <Tabs class="w-full">
         <TabsList class="mt-4 rounded-none bg-white cursor-pointer mb-0 p-0">
           <span class="text-primary border-b-[5px] border-primary pb-2 font-semibold text-lg"
             >About</span
@@ -77,20 +150,20 @@ const props = defineProps({
         <DropdownMenuSeparator class="m-0" />
         <TabsContent class="flex mt-4">
           <div class="flex-[1.7] bg-black text-white p-3 rounded-lg">
-            <h3 class="font-semibold text-lg">About Diane</h3>
+            <h3 class="font-semibold text-lg">About {{ channelInfo.name }}</h3>
             <p class="font-medium">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-              invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
-              accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-              sanctus est Lorem
+              {{ channelInfo.bio }}
             </p>
           </div>
           <div class="flex-1 ml-10">
             <h3 class="font-semibold text-lg">Social network</h3>
-            <div class="flex mt-2 gap-3">
-              <FBIcon class="cursor-pointer" />
-              <InstaIcon class="cursor-pointer" />
-              <YoutubeIcon class="cursor-pointer" />
+            <div class="flex gap-3" v-if="channelInfo.socialLinks">
+              <SocialLink
+                v-for="item in channelInfo.socialLinks"
+                :key="item"
+                :title="item.name"
+                :link="item.link"
+              />
             </div>
           </div>
         </TabsContent>

@@ -14,6 +14,7 @@ import { formatViews } from '@utils/formatViews.util'
 import EyeIcon from '@assets/icons/EyeIcon.vue'
 import { homepageService } from '@services/homepage.services'
 import { onMounted, ref } from 'vue'
+import SliderHomePageSkeleton from './SliderHomePageSkeleton.vue'
 
 const channels = [
   {
@@ -111,7 +112,8 @@ onMounted(async () => {
   >
     <CarouselContent>
       <CarouselItem v-for="(item, index) in channels" :key="index">
-        <div class="p-1">
+        
+        <!-- <div class="p-1">
           <Card class="mt-5">
             <CardContent
               class="relative flex p-0 mt-0 pt-0 items-center h-[300px] w-full justify-center rounded-lg overflow-hidden"
@@ -167,7 +169,9 @@ onMounted(async () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> -->
+
+        <SliderHomePageSkeleton />
       </CarouselItem>
     </CarouselContent>
     <CarouselPrevious />

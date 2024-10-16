@@ -1,6 +1,9 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import Categories from './Categories.vue'
+import CategorySkeleton from './CategorySkeleton.vue'
+import { onMounted } from 'vue'
+import { homepageService } from '@services/homepage.services';
 
 const categories = [
   {
@@ -42,6 +45,13 @@ const categories = [
 ]
 
 const router = useRouter()
+
+// onMounted(async () => {
+//   const response = await homepageService.getTopCategories()
+//   if(response.message === 'success') {
+//     console.log("res", response.data)
+//   }
+// })
 </script>
 
 <template>
@@ -53,8 +63,15 @@ const router = useRouter()
       </p>
     </div>
     <div class="grid grid-cols-6 gap-3 mt-4">
-      <div v-for="(item, index) in categories" class="flex flex-col cursor-pointer">
+      <!-- <div
+        v-if="categories"
+        v-for="(item, index) in categories"
+        class="flex flex-col cursor-pointer"
+      >
         <Categories :category="item" :key="index" />
+      </div> -->
+      <div v-if="categories" v-for="item in 6" :key="item" class="flex flex-col cursor-pointer">
+        <CategorySkeleton />
       </div>
     </div>
   </div>

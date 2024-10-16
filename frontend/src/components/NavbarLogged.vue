@@ -25,7 +25,7 @@
             class="rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.user?.displayName || authStore.user?.name || 'Username' }}
+            {{ authStore.user?.displayName || authStore.user?.data?.username || storedUserInfo }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -111,12 +111,14 @@ const props = defineProps({
 
 const authStore = useAuthStore()
 const router = useRouter()
-
 const showLogoutModal = ref(false)
+const storedUserInfo = localStorage.getItem('userInfo')
 
 const logOutGoogle = async () => {
   await authStore.logout()
   showLogoutModal.value = false
   router.push('/')
 }
+
+
 </script>

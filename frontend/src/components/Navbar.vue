@@ -204,7 +204,6 @@ watchEffect(() => {
           :countdown="countdown"
           :isCounting="isCounting"
           @verify-success="handleVerifySuccess"
-          @start="startCountdown"
           @reset="resetCountdown"
         />
       </div>

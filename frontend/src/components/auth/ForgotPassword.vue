@@ -109,7 +109,7 @@ const clearErrorAPI = () => {
         <Button
           type="submit"
           :disabled="!isFormValid || isPending || isBanned"
-          :variant="isFormValid ? 'default' : 'disabled'"
+          :variant="!isFormValid || isBanned ? 'disabled' : 'default'"
           :isLoading="isPending"
           >{{
             isIdle
