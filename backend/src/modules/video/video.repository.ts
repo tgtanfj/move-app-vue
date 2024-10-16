@@ -14,7 +14,6 @@ import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { DurationType } from '@/entities/enums/durationType.enum';
-import { VideoTrend } from '@/entities/video-trend.entity';
 import { Follow } from '@/entities/follow.entity';
 import { Channel } from '@/entities/channel.entity';
 
@@ -22,7 +21,6 @@ import { Channel } from '@/entities/channel.entity';
 export class VideoRepository {
   constructor(
     @InjectRepository(Video) private readonly videoRepository: Repository<Video>,
-    @InjectRepository(VideoTrend) private readonly videoTrendRepository: Repository<VideoTrend>,
     @InjectRepository(Follow)
     private readonly followRepository: Repository<Follow>,
   ) {}
@@ -177,14 +175,15 @@ export class VideoRepository {
       userId,
     );
 
-    const { thumbnails, durationsVideo, ...dataVideoDetails } = videoDetails;
+    const { thumbnails, numberOfComments, numberOfViews, isPublish, shareCount, urlS3, ...dataVideoDetails } =
+      videoDetails;
 
-    const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0].image;
+    const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
 
     return {
       ...dataVideoDetails,
       thumbnailURL,
-      videoLength: durationsVideo,
+      numberOfViews: +numberOfViews,
       watchAlso,
     };
   }
@@ -202,10 +201,11 @@ export class VideoRepository {
     let options: any;
 
     const channelFollow = await this.getFollowedChannelsByUser(userId);
+    const channelIds = userId ? [...channelFollow, channel.id] : [channel.id];
 
     options = {
       categoryId: category.id,
-      channelId: userId ? channelFollow : [channel.id],
+      channelId: channelIds,
       workoutLevel: workoutLevel,
     };
     let initialVideos = await this.findVideoByOptions([videoId], relations, selectFields, limit, options);
@@ -216,7 +216,7 @@ export class VideoRepository {
     const limitVideoCategoryChannelDuration = 2 * limit - results.length;
     options = {
       categoryId: category.id,
-      channelId: userId ? channelFollow : [channel.id],
+      channelId: channelIds,
       duration: duration,
     };
     const moreCategoryChannelDuration = await this.findVideoByOptions(
@@ -230,7 +230,7 @@ export class VideoRepository {
 
     ignoreIds = [...results.map((video) => video.id), videoId];
     const limitVideoCategoryChannel = 3 * limit - results.length;
-    options = { categoryId: category.id, channelId: userId ? channelFollow : [channel.id] };
+    options = { categoryId: category.id, channelId: channelIds };
     const moreCategoryChannel = await this.findVideoByOptions(
       ignoreIds,
       relations,
@@ -254,7 +254,7 @@ export class VideoRepository {
     results = results.concat(moreCategoryVideos);
 
     ignoreIds = [...results.map((video) => video.id), videoId];
-    options = { channelId: userId ? channelFollow : [channel.id] };
+    options = { channelId: channelIds };
     const limitVideoChannel = 5 * limit - results.length;
     const moreChannelVideos = await this.findVideoByOptions(
       ignoreIds,
@@ -270,9 +270,12 @@ export class VideoRepository {
 
     const limitVideoOther = totalVideo - results.length;
     if (limitVideoOther > 0) {
-      return await this.videoTrendRepository.find({
+      return await this.videoRepository.find({
         take: limitVideoOther,
         where: { id: Not(In(ignoreIds)) },
+        order: {
+          numberOfViews: 'DESC',
+        },
       });
     }
 
@@ -300,11 +303,19 @@ export class VideoRepository {
     });
 
     const videoResponse = videos.map((video) => {
-      const { thumbnails, durationsVideo, ...dataVideoDetails } = video;
+      const {
+        thumbnails,
+        numberOfComments,
+        numberOfViews,
+        isPublish,
+        shareCount,
+        urlS3,
+        ...dataVideoDetails
+      } = video;
       const thumbnailURL = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
       return {
         ...dataVideoDetails,
-        videoLength: durationsVideo,
+        numberOfViews: +numberOfViews,
         thumbnailURL,
       };
     });
