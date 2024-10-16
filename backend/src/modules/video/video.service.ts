@@ -428,6 +428,7 @@ export class VideoService {
     return { ...video, totalScore };
   }
   async sortVideoByPriority() {
+    console.log(this.videoUploadPath);
     const videos = await this.videoRepository.getVideos();
     const min = this.getMin(videos);
     const max = this.getMax(videos);

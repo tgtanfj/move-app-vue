@@ -177,13 +177,14 @@ export class VideoRepository {
       userId,
     );
 
-    const { thumbnails, ...dataVideoDetails } = videoDetails;
+    const { thumbnails, durationsVideo, ...dataVideoDetails } = videoDetails;
 
     const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0].image;
 
     return {
       ...dataVideoDetails,
       thumbnailURL,
+      videoLength: durationsVideo,
       watchAlso,
     };
   }
@@ -299,10 +300,11 @@ export class VideoRepository {
     });
 
     const videoResponse = videos.map((video) => {
-      const { thumbnails, ...dataVideoDetails } = video;
+      const { thumbnails, durationsVideo, ...dataVideoDetails } = video;
       const thumbnailURL = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
       return {
         ...dataVideoDetails,
+        videoLength: durationsVideo,
         thumbnailURL,
       };
     });
