@@ -1,3 +1,4 @@
+import { ApiConfigService } from '@/shared/services/api-config.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
@@ -6,7 +7,7 @@ import axios from 'axios';
 export class PayPalService {
   private accessToken: string;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ApiConfigService) {}
 
   // Method to get the access token using client credentials
   private async getAccessToken() {
@@ -18,8 +19,8 @@ export class PayPalService {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         auth: {
-          username: this.configService.get('PAYPAL_CLIENT_ID'),
-          password: this.configService.get('PAYPAL_CLIENT_SECRET'),
+          username: this.configService.getString('PAYPAL_CLIENT_ID'),
+          password: this.configService.getString('PAYPAL_CLIENT_SECRET'),
         },
         params: {
           grant_type: 'client_credentials',
