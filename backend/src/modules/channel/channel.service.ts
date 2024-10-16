@@ -141,6 +141,9 @@ export class ChannelService {
 
   async decreaseFollow(channelId: number) {
     const channel = await this.findOne(channelId);
+    if (channel.numberOfFollowers === 0) {
+      throw new BadRequestException()
+    }
     channel.numberOfFollowers = channel.numberOfFollowers - 1;
     if (channel.numberOfFollowers < 10000) {
       channel.isBlueBadge = false;

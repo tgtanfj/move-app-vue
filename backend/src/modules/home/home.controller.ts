@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { HomeService } from './home.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/shared/guards';
 import { User } from '@/shared/decorators/user.decorator';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
@@ -24,7 +24,7 @@ export class HomeController {
   async getAllCategories() {
     return await this.homeService.getCategories();
   }
-
+  @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   @Get('/categories/:id')
   async getVideosOfCategory(
@@ -47,6 +47,7 @@ export class HomeController {
     return this.homeService.specificCategoryWithOutLogin(categoryId, newDto);
   }
 
+  @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   @Get('you-may-like')
   async youMayLike(@User() user) {
@@ -60,6 +61,7 @@ export class HomeController {
     return this.homeService.youMayLikeWithOutLogin();
   }
 
+  @ApiBearerAuth('jwt')
   @UseGuards(JwtAuthGuard)
   @Get('get-channels')
   async getChannels(@User() user) {
