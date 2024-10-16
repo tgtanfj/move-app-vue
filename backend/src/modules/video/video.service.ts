@@ -34,7 +34,7 @@ import { VideoRepository } from './video.repository';
 
 @Injectable()
 export class VideoService {
-  private readonly videoUploadPath = path.resolve(__dirname, '..', 'uploads', 'videos');
+  private readonly videoUploadPath = path.join(process.cwd(), 'src', 'shared', 'store');
   constructor(
     private apiConfig: ApiConfigService,
     private categoryService: CategoryService,

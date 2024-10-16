@@ -105,9 +105,11 @@ export class HomeService {
           this.categoryService.getCategoryById(video.categoryId)
         ]);
 
-        const { categoryId, channelId, ...restOfVideo } = video;
+        const { categoryId, channelId, videoLength, ...restOfVideo } = video;
+        const durationsVideo=videoLength
         return {
           ...restOfVideo,
+          durationsVideo,
           channel: {
             id: channel.id,
             name: channel.name,
