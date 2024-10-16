@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:image/image.dart' as img;
 import 'package:move_app/constants/constants.dart';
 
 class InputValidationHelper {
@@ -148,15 +147,6 @@ class InputValidationHelper {
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
       if (!allowedExtensions.contains(fileExtension)) {
         return Constants.allowFileType;
-      }
-      final imageBytes = await file.readAsBytes();
-      final image = img.decodeImage(imageBytes);
-      if (image == null ||
-          image.width < 100 ||
-          image.height < 100 ||
-          image.width > 2000 ||
-          image.height > 2000) {
-        return Constants.dimensionAvatar;
       }
     }
     return null;

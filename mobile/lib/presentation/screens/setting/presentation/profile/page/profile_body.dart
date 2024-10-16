@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/utils/string_extentions.dart';
@@ -29,7 +30,12 @@ class _ProfileBodyState extends State<ProfileBody> {
   Widget build(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state.status == ProfileStatus.success) {
+        if (state.status == ProfileStatus.processing) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+        if (state.status == ProfileStatus.editUserSuccess) {
           Fluttertoast.showToast(msg: Constants.editedProfileSuccessfully);
         }
       },
@@ -148,7 +154,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                             .read<ProfileBloc>()
                             .add(ProfileFullNameChangeEvent(fullName: value));
                       },
-                      onSubmitted: (value) {
+                      onLostFocus: (value) {
                         context.read<ProfileBloc>().add(
                             ProfileFullNameChangeEvent(fullName: value.trim()));
                       },

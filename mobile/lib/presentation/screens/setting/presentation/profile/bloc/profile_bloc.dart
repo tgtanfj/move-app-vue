@@ -40,6 +40,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(state.copyWith(status: ProfileStatus.failure));
     }, (r) {
       emit(state.copyWith(
+        status: ProfileStatus.success,
         user: r,
       ));
     });
@@ -49,14 +50,22 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ));
     }, (r) {
       emit(state.copyWith(
+        status: ProfileStatus.success,
         countryList: r,
       ));
     });
     if (state.user?.country?.id != null) {
       final states =
           await stateRepository.getStateList(state.user!.country!.id!);
-      states.fold((l) {}, (r) {
-        emit(state.copyWith(stateList: r));
+      states.fold((l) {
+        emit(state.copyWith(
+          status: ProfileStatus.failure,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          status: ProfileStatus.success,
+          stateList: r,
+        ));
       });
     }
     final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
@@ -66,7 +75,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   void _onProfileGenderChangedEvent(
       ProfileGenderChangedEvent event, Emitter<ProfileState> emit) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     emit(state.copyWith(
         user: state.user?.copyWith(gender: event.selectedGender.value)));
   }
@@ -81,6 +89,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(state.copyWith(status: ProfileStatus.failure));
     }, (r) {
       emit(state.copyWith(
+        status: ProfileStatus.success,
         user: state.user?.copyWith(
           country: state.countryList.firstWhere(
             (e) => e.id == event.countryId,
@@ -110,7 +119,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUpdateDateOfBirthEvent event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(dateOfBirth: event.dateOfBirth);
     final isShowDateOfBirthMessage =
         state.user?.dateOfBirth != event.dateOfBirth
@@ -128,7 +136,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUsernameChangeEvent event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(username: event.username);
     final isEnableSaveSettings = (updateUser?.username?.isNotEmpty ?? false) &&
         (state.user?.fullName?.isNotEmpty ?? false);
@@ -146,7 +153,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileFullNameChangeEvent event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(fullName: event.fullName);
     final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
         (updateUser?.fullName?.isNotEmpty ?? false);
@@ -163,7 +169,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileCityChangeEvent event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(city: event.city);
     emit(state.copyWith(
       user: updateUser,
@@ -227,15 +232,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(state.copyWith(status: ProfileStatus.failure));
       }, (r) {
         emit(state.copyWith(
-          status: ProfileStatus.success,
+          status: ProfileStatus.editUserSuccess,
         ));
       });
-      if (state.status == ProfileStatus.success) {
+      if (state.status == ProfileStatus.editUserSuccess) {
         final editedUser = await userRepository.getUserProfile();
         editedUser.fold((l) {
           emit(state.copyWith(status: ProfileStatus.failure));
         }, (r) {
           emit(state.copyWith(
+            status: ProfileStatus.success,
             user: r,
           ));
         });
@@ -247,7 +253,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileUpdateAvatarEvent event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final result = await userRepository.pickImageFromGallery();
     result.fold((l) {
       emit(state.copyWith(status: ProfileStatus.failure));
@@ -255,6 +260,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (r != null) {
         final avatarPath = r.path;
         emit(state.copyWith(
+          status: ProfileStatus.success,
           imageLocal: r,
           user: state.user?.copyWith(avatar: avatarPath),
         ));

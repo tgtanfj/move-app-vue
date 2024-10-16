@@ -10,6 +10,7 @@ enum ProfileStatus {
   processing,
   success,
   failure,
+  editUserSuccess,
 }
 
 final class ProfileState extends Equatable {
