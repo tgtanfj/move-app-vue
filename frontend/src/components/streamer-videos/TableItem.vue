@@ -1,10 +1,10 @@
 <template>
-  <TableRow class="cursor-pointer hover:bg-[#E6FFFB] group">
+  <TableRow class="cursor-pointer hover:bg-[#E6FFFB] group" :class="{ 'bg-[#F7FEFD]': isChecked }">
     <TableCell>
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
     <TableCell>
-    <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
+      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
     </TableCell>
     <TableCell>
       <div class="flex flex-col">

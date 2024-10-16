@@ -28,6 +28,9 @@ import ChangePasswordModal from './ChangePasswordModal.vue'
 import UploadAvatarFile from './UploadAvatarFile.vue'
 import { apiAxios } from '@helpers/axios.helper'
 import { t } from '@helpers/i18n.helper'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -280,6 +283,8 @@ const onSubmit = async () => {
             gender: normalizeGender(values.gender)
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
+          authStore.user.data.username = values.username
+          localStorage.setItem('userInfo', values.username)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })

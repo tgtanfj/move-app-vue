@@ -25,7 +25,7 @@
             class="rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.user?.displayName || authStore.user?.data?.username || storedUserInfo }}
+            {{ authStore.user?.data?.username || storedUserInfo }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -107,6 +107,7 @@ const props = defineProps({
   isInStreamerPage: {
     type: Boolean,
     required: false
+  }
   }
 })
 

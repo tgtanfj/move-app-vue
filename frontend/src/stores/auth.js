@@ -80,9 +80,20 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('Unsupported login method')
       }
 
-      const res = await axios.post(apiEndpoint, { idToken: idToken.value, email: emailFirebase.value })
+      const res = await axios.post(apiEndpoint, {
+        idToken: idToken.value,
+        email: emailFirebase.value
+      })
       accessToken.value = res.data.data.accessToken
       refreshToken.value = res.data.data.refreshToken
+      const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`
+        }
+      })
+
+      user.value = userInfo.data
+      localStorage.setItem('userInfo', userInfo.data.data.username)
       localStorage.setItem('token', accessToken.value)
       localStorage.setItem('refreshToken', refreshToken.value)
     } catch (error) {
@@ -105,8 +116,8 @@ export const useAuthStore = defineStore('auth', () => {
         refreshToken.value = data.data.refreshToken
         const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
           headers: {
-            Authorization: `Bearer ${accessToken.value}`,
-          },
+            Authorization: `Bearer ${accessToken.value}`
+          }
         })
 
         user.value = userInfo.data
