@@ -93,13 +93,9 @@ export class VideoService {
       throw error;
     }
   }
-  async getVideosDashboard(
-    // userId: number,
-    paginationDto: PaginationDto,
-  ): Promise<object> {
+  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      // const channel = await this.channelService.getChannelByUserId(userId);
-      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
+      const channel = await this.channelService.getChannelByUserId(userId);
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -122,7 +118,7 @@ export class VideoService {
 
           const selectedThumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
 
-          videoDetail.thumbnail_url = selectedThumbnail.image;
+          videoDetail.thumbnail_url = selectedThumbnail?.image;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
             excludeExtraneousValues: true,
@@ -146,7 +142,7 @@ export class VideoService {
       //get link upload
       const response = await this.vimeoService.createUploadSession(fileSize);
       const categories = await this.categoryService.findAll();
- 
+
       return {
         response,
         categories,
@@ -191,8 +187,7 @@ export class VideoService {
         videoId: video.id,
       });
     } catch (error) {
-      throw new Error(error)
-      
+      throw new Error(error);
     }
     return video;
   }
