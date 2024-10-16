@@ -343,10 +343,9 @@ export class VideoService {
       videos.map(async (video) => {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
-        const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
-
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
         videoItemDto.thumbnailURL = thumbnail.image;
-        videoItemDto.videoLength = video.durationsVideo;
+        videoItemDto.videoLength = Math.ceil(video.durationsVideo);
 
         videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
           excludeExtraneousValues: true,
