@@ -74,27 +74,28 @@ final class ProfileState extends Equatable {
         isShowAvatarMessage: false,
       );
 
-  ProfileState copyWith(
-      {ProfileStatus? status,
-      String? errorMessage,
-      UserModel? user,
-      List<CountryModel>? countryList,
-      List<StateModel>? stateList,
-      bool? isEnableSaveSettings,
-      String? messageInputUsername,
-      String? messageInputFullName,
-      bool? isShowUsernameMessage,
-      bool? isShowFullNameMessage,
-      File? imageLocal,
-      String? messageSelectDateOfBirth,
-      String? messageSelectCountry,
-      String? messageSelectState,
-      String? messageUpdateAvatar,
-      bool? isShowDateOfBirthMessage,
-      bool? isShowCountryMessage,
-      bool? isShowStateMessage,
-      bool? isShowUpdateMessage,
-      bool? isShowAvatarMessage}) {
+  ProfileState copyWith({
+    ProfileStatus? status,
+    String? errorMessage,
+    UserModel? user,
+    List<CountryModel>? countryList,
+    List<StateModel>? stateList,
+    bool? isEnableSaveSettings,
+    String? messageInputUsername,
+    String? messageInputFullName,
+    bool? isShowUsernameMessage,
+    bool? isShowFullNameMessage,
+    File? imageLocal,
+    String? messageSelectDateOfBirth,
+    String? messageSelectCountry,
+    String? messageSelectState,
+    String? messageUpdateAvatar,
+    bool? isShowDateOfBirthMessage,
+    bool? isShowCountryMessage,
+    bool? isShowStateMessage,
+    bool? isShowUpdateMessage,
+    bool? isShowAvatarMessage,
+  }) {
     return ProfileState(
         status: status ?? this.status,
         errorMessage: errorMessage ?? this.errorMessage,
@@ -118,7 +119,7 @@ final class ProfileState extends Equatable {
             isShowDateOfBirthMessage ?? this.isShowDateOfBirthMessage,
         isShowCountryMessage: isShowCountryMessage ?? this.isShowCountryMessage,
         isShowStateMessage: isShowStateMessage ?? this.isShowStateMessage,
-        isShowAvatarMessage: isShowUpdateMessage ?? this.isShowAvatarMessage);
+        isShowAvatarMessage: isShowAvatarMessage ?? this.isShowAvatarMessage);
   }
 
   @override
@@ -141,6 +142,6 @@ final class ProfileState extends Equatable {
         isShowDateOfBirthMessage,
         isShowCountryMessage,
         isShowStateMessage,
-        isShowAvatarMessage
+        isShowAvatarMessage,
       ];
 }

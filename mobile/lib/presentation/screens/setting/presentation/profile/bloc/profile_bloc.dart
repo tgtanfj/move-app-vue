@@ -199,6 +199,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       messageSelectCountry: validCountry,
       messageSelectState: validState,
       messageUpdateAvatar: validAvatar,
+      isShowAvatarMessage: validAvatar != null,
     ));
     if (validUsername == null &&
         validFullName == null &&
