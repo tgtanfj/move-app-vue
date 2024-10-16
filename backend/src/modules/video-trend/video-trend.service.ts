@@ -19,7 +19,7 @@ export class VideoTrendService {
       categoryId: obj.category.id,
       channelId: obj.channel.id,
     });
-    
+
     return await this.videoTrendRepository.save(newVideoTrend);
   }
   async deleteAll() {

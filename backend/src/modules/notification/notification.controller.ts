@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { MultipleDeviceNotificationDto,  TopicNotificationDto } from './dto/send-notification.dto';
+import { MultipleDeviceNotificationDto, TopicNotificationDto } from './dto/send-notification.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('notification')

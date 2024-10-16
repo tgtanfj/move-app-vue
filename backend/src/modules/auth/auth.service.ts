@@ -178,7 +178,7 @@ export class AuthService {
     });
 
     const accessToken = this.getAccessToken(userId, id);
-    
+
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,

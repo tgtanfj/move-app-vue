@@ -24,9 +24,7 @@ import { PayPalService } from './paypal.service';
 @ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
 export class PaymentController {
-  constructor(
-    private readonly paymentService: PaymentService,
-  ) {}
+  constructor(private readonly paymentService: PaymentService) {}
 
   @Get('list-reps-package')
   @HttpCode(HttpStatus.OK)

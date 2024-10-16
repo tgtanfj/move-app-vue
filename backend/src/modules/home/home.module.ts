@@ -28,7 +28,7 @@ import { CategoryModule } from '../category/category.module';
     VideoModule,
     ThumbnailModule,
     ChannelModule,
-    CategoryModule
+    CategoryModule,
   ],
   controllers: [HomeController],
   providers: [HomeService, JwtService, VimeoService],
