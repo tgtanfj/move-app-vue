@@ -11,6 +11,7 @@ import { PaymentService } from './payment.service';
 import { PayPalService } from './paypal.service';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
+import { RedisModule } from '@/shared/services/redis/redis.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RepsPackageRepository } from './repositories/reps-package.repository';
     forwardRef(() => UserModule),
     forwardRef(() => StripeModule),
     forwardRef(() => ChannelModule),
+    RedisModule,
   ],
   controllers: [PaymentController],
   providers: [PaymentService, RepsPackageRepository, PaymentRepository, JwtService, PayPalService],

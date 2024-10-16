@@ -52,7 +52,7 @@ export class PaymentController {
     }
   }
 
-  @Post('payout')
+  @Post('withdraw')
   async createPayout(@User() user, @Body() withDrawDto: WithDrawDto) {
     return await this.paymentService.withDraw(user.id, withDrawDto);
   }

@@ -1,5 +1,6 @@
 import { User } from '@/entities/user.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
@@ -24,7 +25,11 @@ export class PaymentService {
     private readonly channelService: ChannelService,
     private readonly stripeService: StripeService,
     private readonly paypalService: PayPalService,
+    private readonly redisService: RedisService,
   ) {}
+
+  private readonly WITHDRAW_PER_WEEK_EXPIRATION_TIME_AT = 604800; //
+  private readonly WITHDRAW_PER_DAY_EXPIRATION_TIME_AT = 86400; // seconds
 
   async listRepsPackage() {
     try {
@@ -89,6 +94,20 @@ export class PaymentService {
     const withDrawRate = 0.006;
     const repsNeedToWithDraw = 2500;
 
+    const timesWithdrawPerDay = await this.redisService.getValue<number>(`times_withdraw_per_day_${userId}`);
+
+    const timesWithdrawPerWeek = await this.redisService.getValue<number>(
+      `times_withdraw_per_week_${userId}`,
+    );
+
+    if (timesWithdrawPerDay) {
+      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_ONE_WITHDRAW_PER_DAY);
+    }
+
+    if (timesWithdrawPerWeek >= 3) {
+      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_THREE_WITHDRAW_PER_WEEK);
+    }
+
     const { channel } = await this.userService.findChannelByUserId(userId);
 
     if (numberOfREPs < repsNeedToWithDraw || channel.numberOfREPs < repsNeedToWithDraw) {
@@ -98,8 +117,30 @@ export class PaymentService {
     const amountWithDraw = numberOfREPs * withDrawRate;
     const repsAfterWithDraw = +channel.numberOfREPs - numberOfREPs;
 
-    await this.channelService.updateREPs(channel.id, repsAfterWithDraw);
+    this.channelService.updateREPs(channel.id, repsAfterWithDraw);
 
-    await this.paypalService.createPayout(email, amountWithDraw);
+    this.paypalService.createPayout(email, amountWithDraw);
+
+    if (!timesWithdrawPerDay) {
+      await this.redisService.setValue(
+        `times_withdraw_per_day_${userId}`,
+        1,
+        this.WITHDRAW_PER_DAY_EXPIRATION_TIME_AT,
+      );
+    }
+
+    if (!timesWithdrawPerWeek) {
+      await this.redisService.setValue(
+        `times_withdraw_per_week_${userId}`,
+        1,
+        this.WITHDRAW_PER_WEEK_EXPIRATION_TIME_AT,
+      );
+    } else {
+      await this.redisService.setValue(
+        `times_withdraw_per_week_${userId}`,
+        timesWithdrawPerWeek + 1,
+        this.WITHDRAW_PER_WEEK_EXPIRATION_TIME_AT,
+      );
+    }
   }
 }
