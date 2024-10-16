@@ -9,7 +9,7 @@
     <TableCell>
       <div class="flex flex-col">
         <div class="font-bold text-base capitalize">{{ item.title }}</div>
-        <div class="text-sm">{{ item.description }}</div>
+        <div class="text-sm">{{ item.category.title }}</div>
         <div class="flex gap-1 mt-3">
           <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">{{ item.workoutLevel }}</div>
           <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">
@@ -106,6 +106,7 @@ const props = defineProps({
     required: true
   }
 })
+console.log(props.item)
 
 const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'download:item'])
 

@@ -41,14 +41,12 @@ const route = useRoute()
 watch(
   () => route.path,
   (newValue) => {
-    if (
-      (newValue && newValue.includes('/streamer')) ||
-      (newValue && newValue.includes('/reset-password'))
-    ) {
+    if (newValue && newValue.includes('/streamer')) {
       isInStreamerPage.value = true
-    } else {
-      isInResetPWPage.value = false
-    }
+    } else isInStreamerPage.value = false
+    if (newValue && newValue.includes('/reset-password')) {
+      isInResetPWPage.value = true
+    } else isInResetPWPage.value = false
   },
   { immediate: true }
 )

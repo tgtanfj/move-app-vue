@@ -96,8 +96,8 @@ const router = createRouter({
   }
 })
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore()
-  const isLoggedIn = !!authStore.accessToken
+  const token = localStorage.getItem('token')
+  const isLoggedIn = !!token
 
   if (to.matched.some((record) => record.meta.requiresAuth) && !isLoggedIn) {
     next('/')
