@@ -72,6 +72,7 @@ const workoutLevelErr = ref('')
 const durationErr = ref('')
 const isCommentableErr = ref('')
 const thumbnailTypeValidationErr = ref('')
+const totalSeconds = ref(null)
 
 const nullFirstTab = ref(false)
 const nullSecondTab = ref(false)
@@ -122,6 +123,7 @@ const resetField = () => {
   nullSecondTab.value = false
   thumbnailTypeValidationErr.value = ''
   videoInput.value = null
+  totalSeconds.value = null
 }
 
 const onCloseConfirmModal = () => {
@@ -156,6 +158,8 @@ const validateVideo = async (file) => {
   videoElement.onloadedmetadata = async () => {
     const videoWidth = videoElement.videoWidth
     const videoHeight = videoElement.videoHeight
+
+    totalSeconds.value = videoElement.duration
 
     if (videoWidth < 426 || videoHeight < 420 || videoWidth > 3840 || videoHeight > 2160) {
       validateSizeTypeErr.value = 'File Format Requirement Not Meet'
@@ -385,6 +389,7 @@ const thirdButton = async (tab) => {
       formData.append('isCommentable', isCommentable.value === 'enabled' ? 'true' : 'false')
       formData.append('url', linkVideoInput.value)
       formData.append('isPublish', 'true')
+      formData.append('durationsVideo', totalSeconds.value)
       formData.append('video', videoInput.value)
       uploadLoading.value = true
       const uploadVideoData = await videoService.uploadVideo(formData)
@@ -404,7 +409,7 @@ const thirdButton = async (tab) => {
 <template>
   <Dialog v-model:open="isOpenUploadVideoModal">
     <DialogTrigger as-child>
-      <Button variant="default" class="flex items-center gap-2 mt-3">
+      <Button variant="default" class="flex items-center gap-2">
         <FileVideo2 class="text-xl" />
         <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
       </Button>

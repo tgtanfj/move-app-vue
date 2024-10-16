@@ -1,29 +1,35 @@
+import { UserModule } from '@/modules/user/user.module';
+import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config'; // Import the ConfigModule from the correct module
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { DatabaseModule } from './db/database.module';
-import { UserModule } from '@/modules/user/user.module';
+import { JwtService } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
 import { I18nMiddleware } from 'nestjs-i18n';
+import { DatabaseModule } from './db/database.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
+import { CategoryModule } from './modules/category/category.module';
+import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
 import { CountryModule } from './modules/country/country.module';
+import { DeeplinkModule } from './modules/deep-link/deep-link.module';
+import { DonationModule } from './modules/donation/donation.module';
 import { MailModule } from './modules/email/email.module';
+import { FaqsModule } from './modules/faqs/faqs.module';
+import { HomeModule } from './modules/home/home.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { SearchModule } from './modules/search/search.module';
 import { StripeModule } from './modules/stripe/stripe.module';
+import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
+import { VideoTrendModule } from './modules/video-trend/video-trend.module';
+import { VideoModule } from './modules/video/video.module';
+import { WatchingVideoHistoryModule } from './modules/watching-video-history/watching-video-history.module';
 import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
-import { RedisModule } from './shared/services/redis/redis.module';
-import { DeeplinkModule } from './modules/deep-link/deep-link.module';
-import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
-import { JwtService } from '@nestjs/jwt';
-import { VideoModule } from './modules/video/video.module';
-import { CategoryModule } from './modules/category/category.module';
-import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
-import { BullModule } from '@nestjs/bullmq';
 import { ApiConfigService } from './shared/services/api-config.service';
-import { SearchModule } from './modules/search/search.module';
-import { FaqsModule } from './modules/faqs/faqs.module';
-import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
+import { RedisModule } from './shared/services/redis/redis.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,6 +66,12 @@ import { CommentReactionModule } from './modules/comment-reaction/comment-reacti
       }),
     }),
     FaqsModule,
+    HomeModule,
+    ScheduleModule.forRoot(),
+    VideoTrendModule,
+    WatchingVideoHistoryModule,
+    PaymentModule,
+    DonationModule,
   ],
   providers: [
     {

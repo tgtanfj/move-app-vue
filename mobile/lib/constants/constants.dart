@@ -108,7 +108,7 @@ class Constants {
   static const String faq = 'FAQ';
   static const String faqsNotFound = 'FAQs not found!';
   static const String logout = 'Logout';
-  static const String logout_question = 'Logout ?';
+  static const String logoutQuestion = 'Logout ?';
   static const String loginMenu = "Login";
   static const String signUpSuccessful = "Sign Up Successful";
   static const String theEmail = 'The email ';
@@ -170,8 +170,53 @@ class Constants {
   static const String twitter = 'twitter';
   static const String youtube = 'youtube';
   static const String followers = 'followers';
+  static const String channelNotFound = 'Channel not found';
+  static const String noSocialNetworkFound = 'No social network found.';
+  static const String noInformationFound = 'No information found.';
   static const String categories = "Categories";
   static const String channels = "Channels";
   static const String searchResults = "Search Result";
 
+  static const String giftReps = 'Gift REPs';
+  static const String share = 'Share';
+  static const String reportVideo = 'Report video';
+  static const String rate = 'Rate';
+  static const String channel = 'channel';
+  static const String s = "'s";
+  static const String view = 'View';
+  static const String loading = 'Loading';
+  static const String quality = 'Quality';
+  static const String auto = 'Auto';
+  static const String writeComment = "Write a comment";
+  static const String reply = "Reply";
+  static const String repSender = "REPs Sender";
+  static const String send = "Send";
+  static const String cancel = "Cancel";
+  static const String lorem =
+      "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
+  static const String seeMore = "See More";
+  static const String seeLess = "See Less";
+  static const String cancelComment = "Cancel Comment?";
+  static const String areUSure = "Are you sure to cancel this comment?";
+  static const String getRep$ = 'Get REP\$';
+  static const String userName = 'User Name';
+  static const String writeReply = "Write a reply";
+  static const String justNow = "Just now";
+  static const String secondsAgo = "seconds ago";
+  static const String minutesAgo = "minutes ago";
+  static const String hoursAgo = "hours ago";
+  static const String daysAgo = "days ago";
+  static const String weeksAgo = "weeks ago";
+  static const String monthsAgo = "months ago";
+  static const String yeasAgo = "years ago";
+  static const String notFound = "Not Found";
+  static const String rateTheVideo = "Rate the video";
+  static const String rateQuestion =
+      "Tell us what do you think about this session.";
+  static const String rateThanksTitle = "Thank you for your ratings!";
+  static const String rateThanksContent =
+      "The ratings you provided will definitely be helpful for the instructor.";
+  static const String rateNotFound = 'Rate not found.';
+  static const String videoId = 'videoId';
+  static const String rateValue = 'rate';
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
   import 'package:flutter/material.dart';
   import 'package:move_app/data/models/channel_model.dart';
   import 'package:move_app/data/models/video_model.dart';

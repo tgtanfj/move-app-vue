@@ -5,16 +5,6 @@ import { RepsPackage } from './reps-package.entity';
 
 @Entity('payments')
 export class Payment extends BaseEntity {
-  @Column({
-    type: 'int',
-  })
-  amount: number;
-
-  @Column({
-    type: 'float',
-  })
-  totalCost: number;
-
   @ManyToOne(() => User, (user) => user.payments)
   user: User;
 

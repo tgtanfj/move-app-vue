@@ -18,12 +18,12 @@ export class CommentService {
     return await this.commentRepository.getNumberOfComments(videoId);
   }
 
-  async getCommentsOfVideo(userId: number, videoId: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getCommentsOfVideo(userId, videoId, limit, cursor);
+  async getCommentsOfVideo(id: number, limit: number, cursor?: number, userId?: number) {
+    return await this.commentRepository.getCommentsOfVideo(id, limit, cursor, userId);
   }
 
-  async getReplyComments(userId: number, id: number, limit: number, cursor?: number) {
-    return await this.commentRepository.getReplyComments(userId, id, limit, cursor);
+  async getReplyComments(id: number, limit: number, cursor?: number, userId?: number) {
+    return await this.commentRepository.getReplyComments(id, limit, cursor, userId);
   }
 
   async getOne(id: number): Promise<Comment> {
@@ -34,13 +34,14 @@ export class CommentService {
     return await this.commentRepository.getAll();
   }
 
-  async create(userId: number, dto: CreateCommentDto): Promise<Comment> {
+  async create(userId: number, dto: CreateCommentDto) {
     try {
       let videoId: number;
       dto.videoId && (videoId = dto.videoId);
 
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
+        await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
         videoId = comment.video.id;
       }
 
@@ -68,10 +69,20 @@ export class CommentService {
   async delete(id: number): Promise<void> {
     try {
       const comment = await this.commentRepository.getOneWithVideo(id);
-      const video = await this.videoRepository.findOne(comment.video.id);
+
+      if (comment.parent) {
+        await this.commentRepository.update(comment.parent.id, {
+          numberOfReply: comment.parent.numberOfReply - 1,
+        });
+      }
+
+      if (comment?.video) {
+        const video = await this.videoRepository.findOne(comment.video.id);
+        video.numberOfComments--;
+        await this.videoRepository.save(video);
+      }
+
       await this.commentRepository.delete(id);
-      video.numberOfComments--;
-      await this.videoRepository.save(video);
     } catch (error) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT);
     }

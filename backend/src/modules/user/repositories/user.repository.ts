@@ -92,4 +92,10 @@ export class UserRepository {
 
     return await this.userRepository.update(userId, dataUpdated);
   }
+
+  async updateREPs(userId: number, numberOfREPs: number): Promise<UpdateResult> {
+    return this.userRepository.update(userId, {
+      numberOfREPs,
+    });
+  }
 }

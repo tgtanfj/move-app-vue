@@ -32,4 +32,10 @@ export class UserProfile {
 
   @Expose()
   readonly city: string;
+
+  @Expose()
+  isBlueBadge: boolean = false;
+
+  @Expose()
+  isPinkBadge: boolean = false;
 }

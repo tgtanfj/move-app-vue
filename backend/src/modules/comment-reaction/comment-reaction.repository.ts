@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
-import { UpdateCommentReactionDto } from './dto/update-comment-reaction.dto';
 
 @Injectable()
 export class CommentReactionRepository {
@@ -14,6 +13,16 @@ export class CommentReactionRepository {
 
   async getOne(id: number): Promise<CommentReaction> {
     return await this.commentReactionRepository.findOneBy({ id: id });
+  }
+
+  async getOneWithUserComment(userId: number, commentId: number): Promise<CommentReaction> {
+    const commentReaction = await this.commentReactionRepository.findOne({
+      where: {
+        user: { id: userId },
+        comment: { id: commentId },
+      },
+    });
+    return commentReaction;
   }
 
   async getOneWithComment(id: number): Promise<CommentReaction> {
@@ -34,9 +43,12 @@ export class CommentReactionRepository {
     return await this.commentReactionRepository.save(data);
   }
 
-  async update(id: number, dto: UpdateCommentReactionDto): Promise<CommentReaction> {
+  async update(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     const commentReaction = await this.commentReactionRepository.findOne({
-      where: { id: id },
+      where: {
+        user: { id: userId },
+        comment: { id: dto.commentId },
+      },
       relations: { comment: true },
     });
     commentReaction.isLike = dto.isLike;

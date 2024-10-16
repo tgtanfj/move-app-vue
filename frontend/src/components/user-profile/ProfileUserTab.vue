@@ -26,6 +26,8 @@ import BaseDialog from '../BaseDialog.vue'
 import Loading from '../Loading.vue'
 import ChangePasswordModal from './ChangePasswordModal.vue'
 import UploadAvatarFile from './UploadAvatarFile.vue'
+import { apiAxios } from '@helpers/axios.helper'
+import { t } from '@helpers/i18n.helper'
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -51,14 +53,14 @@ const firstSubmittion = ref(true)
 const gender = ref('')
 
 const { toast } = useToast()
-const { handleSubmit, values, setValues, errors, meta } = useForm({
+const { values, setValues, errors } = useForm({
   initialValues: {
     avatar: null,
     username: '',
     email: '',
     fullName: '',
     gender: '',
-    birthday: '',
+    dateOfBirth: '',
     country: '',
     state: '',
     city: ''
@@ -70,15 +72,42 @@ const { handleSubmit, values, setValues, errors, meta } = useForm({
 onMounted(async () => {
   try {
     isLoading.value = true
-    const token = localStorage.getItem('token')
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-    const response = await axios.get(`${ADMIN_BASE}/user/profile`, config)
+    const response = await apiAxios.get(`/user/profile`)
+
     if (response.status === 200 && response.data) {
-      userData.value = response.data.data
+      userData.value = {
+        ...response.data.data,
+        gender: denormalizeGender(response.data.data.gender) || '',
+        state: response.data.data.state?.name || '',
+        country: response.data.data.country?.name || '',
+        dateOfBirth: response.data.data.dateOfBirth || '',
+        fullName: response.data.data.fullName || '',
+        city: response.data.data.citi || ''
+      }
+      setValues({
+        ...response.data.data,
+        gender: denormalizeGender(response.data.data.gender) || 'male',
+        state: response.data.data.state?.name || '',
+        country: response.data.data.country?.name || '',
+        fullName: response.data.data.fullName || '',
+        city: response.data.data.city || '',
+        dateOfBirth: response.data.data.dateOfBirth || ''
+      })
+      if (response.data.data.dateOfBirth) {
+        const [year, month, day] = response.data.data.dateOfBirth.split('-')
+        selectedDay.value = day
+        selectedMonth.value = month
+        selectedYear.value = year
+      } else {
+        selectedMonth.value = null
+        selectedDay.value = null
+        selectedYear.value = null
+      }
+
+      gender.value = denormalizeGender(response.data.data.gender) || 'male'
+      selectedCountry.value = response.data.data.country?.name || ''
+      selectedState.value = response.data.data.state?.name || ''
+      selectedCity.value = response.data.data.city || ''
     } else throw new Error(response.error)
   } catch (err) {
     console.log(err)
@@ -89,7 +118,7 @@ onMounted(async () => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${ADMIN_BASE}/countries`)
+    const res = await apiAxios.get(`/countries`)
     if (res.status === 200) {
       countries.value = res.data.data
     } else throw new Error(res.error)
@@ -98,69 +127,64 @@ onMounted(async () => {
   }
 })
 
-watch(userData, (newValue) => {
-  if (newValue) {
-    selectedCountry.value = newValue.country?.name || ''
-    selectedState.value = newValue.state?.name || ''
-    selectedCity.value = newValue.city || ''
-    gender.value = denormalizeGender(newValue.gender)
-    if (newValue.dateOfBirth) {
-      const [year, month, day] = newValue.dateOfBirth.split('-')
-      selectedDay.value = day || null
-      selectedMonth.value = month || null
-      selectedYear.value = year || null
+watch(gender, (newValue) => {
+  setValues({
+    ...values,
+    gender: newValue
+  })
+})
+
+watch(
+  selectedCountry,
+  async (newValue) => {
+    if (countries.value.length > 0) {
+      const temp = countries?.value.filter((item) => item.name === newValue)
+      if (temp[0].name) setValues({ ...values, country: temp[0].name })
+      try {
+        const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
+        if (res.status === 200) {
+          states.value = res.data.data
+        } else throw new Error(res.error)
+      } catch (error) {
+        console.log(error.message)
+      }
     }
-    setValues({
-      avatar: newValue.avatar || '',
-      username: newValue.username || '',
-      email: newValue.email || '',
-      fullName: newValue.fullName || '',
-      country: newValue.country?.name || '',
-      state: newValue.state?.name || '',
-      city: newValue.city || '',
-      gender: denormalizeGender(newValue.gender)
-    })
-  }
-})
-
-watch(selectedCountry, async (newValue) => {
-  const temp = countries.value.filter((item) => item.name === newValue)
-
-  try {
-    const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
-    if (res.status === 200) {
-      states.value = res.data.data
-    } else throw new Error(res.error)
-  } catch (error) {
-    console.log(error.message)
-  }
-})
+  },
+  { immediate: true }
+)
 
 watch(selectedState, async (newValue) => {
-  try {
-    const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
-      params: {
-        country: selectedCountry.value,
-        state: newValue
-      }
-    })
-    if (res.status === 200) {
-      cities.value = res.data.data
-    } else throw new Error(res.error)
-  } catch (error) {
-    console.log(error.message)
+  if (states.value.length > 0) {
+    const temp = states?.value.filter((item) => item.name === newValue)
+
+    if (temp[0].name) setValues({ ...values, state: temp[0].name })
+
+    if (temp.length > 0) userData.value = { ...userData.value, citi: temp[0] }
+    try {
+      const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
+        params: {
+          country: selectedCountry.value,
+          state: newValue
+        }
+      })
+      if (res.status === 200) {
+        cities.value = res.data.data
+      } else throw new Error(res.error)
+    } catch (error) {
+      console.log(error.message)
+    }
   }
+})
+watch(selectedCity, (newValue) => {
+  setValues({ ...values, city: newValue })
 })
 
 watch([selectedDay, selectedMonth, selectedYear], () => {
   if (selectedDay.value && selectedMonth.value && selectedYear.value) {
-    setValues(
-      {
-        ...values,
-        birthday: `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
-      },
-      { shouldValidate: false }
-    )
+    setValues({
+      ...values,
+      dateOfBirth: `${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`
+    })
   }
 })
 
@@ -185,6 +209,22 @@ const isFormDataEmpty = (formData) => {
   return formData.entries().next().done
 }
 
+function hasEmptyProperty(obj) {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (key === 'city') {
+        continue
+      }
+
+      const value = obj[key]
+      if (value === undefined || value === null || value === '') {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 const onSubmit = async () => {
   if (Object.keys(errors.value).length > 0) {
     showError.value = true
@@ -202,21 +242,25 @@ const onSubmit = async () => {
     if (userData.value.username !== values.username) formData.append('username', values.username)
     if (fileInfo.value) formData.append('avatar', fileInfo.value)
     if (values.fullName !== userData.value.fullName) formData.append('fullName', values.fullName)
-    if (values.birthday !== userData.value.dateOfBirth)
-      formData.append('dateOfBirth', values.birthday)
+    if (values.dateOfBirth !== userData.value.dateOfBirth)
+      formData.append('dateOfBirth', values.dateOfBirth)
     if (normalizeGender(values.gender) !== userData.value.gender)
       formData.append('gender', normalizeGender(values.gender))
-    if (values.country !== userData.value.country.name) {
+    if (
+      (values.country && !userData.value.country) ||
+      values.country !== userData.value.country?.name
+    ) {
       const countryId = countries.value.filter((item) => item.name === values.country)[0].id
       formData.append('countryId', countryId)
     }
-    if (values.state !== userData.value.state.name) {
+    if ((values.state && !userData.value.state) || values.state !== userData.value.state?.name) {
       const stateId = states.value.filter((item) => item.name === values.state)[0].id
       formData.append('stateId', stateId)
     }
-    if (values.city !== userData.value.city) formData.append('city', values.city || '')
+    if (values.city !== userData.value.city) formData.append('city', values.city)
 
     if (isFormDataEmpty(formData)) {
+      isSubmitting.value = false
       return
     } else {
       try {
@@ -236,7 +280,8 @@ const onSubmit = async () => {
             city: values.city,
             gender: normalizeGender(values.gender)
           }
-          toast({ description: 'Updated Profile Successfully', variant: 'successfully' })
+          toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
+          console.log(userData.value, values)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })
@@ -267,7 +312,9 @@ const onErrorMessage = (msg) => {
 
 <template>
   <div>
-    <Loading v-if="isLoading" />
+    <div v-if="isLoading" class="mt-56 flex justify-center items-center">
+      <Loading />
+    </div>
     <form class="" @submit.prevent="onSubmit" v-else>
       <div class="flex flex-col gap-3">
         <FormField v-slot="componentField" name="avatar">
@@ -279,7 +326,7 @@ const onErrorMessage = (msg) => {
               v-bind="componentField"
               alt=""
             />
-            <p class="text-red text-sm" v-if="message">{{ message }}</p>
+            <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>
             <UploadAvatarFile
               :buttonText="$t('user_profile.update_profile_pic')"
               @file-selected="onFileSelected"
@@ -293,9 +340,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="username">
             <FormItem>
-              <FormLabel :class="{ 'text-black': !showError && errors.username }">
-                Username
-              </FormLabel>
+              <FormLabel class="!text-black"> Username </FormLabel>
               <FormControl>
                 <Input
                   class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
@@ -303,6 +348,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Username"
                   v-bind="componentField"
+                  v-model.trim="values.username"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -312,7 +358,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="email">
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel class="!text-black">Email</FormLabel>
               <FormControl>
                 <div class="relative">
                   <Input
@@ -331,9 +377,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="fullName">
             <FormItem>
-              <FormLabel :class="{ 'text-black': !showError && errors.fullName }">
-                Full Name
-              </FormLabel>
+              <FormLabel class="!text-black"> Full Name </FormLabel>
               <FormControl>
                 <Input
                   class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
@@ -341,6 +385,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Full name"
                   v-bind="componentField"
+                  v-model.trim="values.fullName"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -350,7 +395,10 @@ const onErrorMessage = (msg) => {
 
         <div class="flex flex-col gap-1">
           <label>{{ $t('user_profile.password') }}</label>
-          <p class="text-primary underline cursor-pointer" @click="openChangePasswordModal = true">
+          <p
+            class="text-primary underline w-fit cursor-pointer"
+            @click="openChangePasswordModal = true"
+          >
             {{ $t('change_password.title') }}
           </p>
         </div>
@@ -358,7 +406,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" type="radio" name="gender">
             <FormItem class="space-y-2">
-              <FormLabel :class="{ 'text-black': !showError && errors.gender }"> Gender </FormLabel>
+              <FormLabel class="!text-black"> Gender </FormLabel>
               <FormControl>
                 <RadioGroup
                   class="flex space-x-3"
@@ -404,11 +452,11 @@ const onErrorMessage = (msg) => {
         </div>
         <div class="flex flex-col gap-1">
           <label>Date of birth</label>
-          <FormField v-slot="{ componentField }" name="birthday">
+          <FormField v-slot="{ componentField }" name="dateOfBirth">
             <FormItem class="flex items-center justify-start gap-2">
               <Select v-model="selectedDay">
                 <SelectTrigger class="w-[74px] h-[40px] mt-2 rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Day" />
+                  <SelectValue placeholder="DD" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in DAYS" :key="item">
@@ -418,7 +466,7 @@ const onErrorMessage = (msg) => {
               </Select>
               <Select v-model="selectedMonth">
                 <SelectTrigger class="w-[74px] h-[40px] rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Month" />
+                  <SelectValue placeholder="MM" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in MONTHS" :key="item">
@@ -430,7 +478,7 @@ const onErrorMessage = (msg) => {
               </Select>
               <Select v-model="selectedYear">
                 <SelectTrigger class="w-[90px] h-[40px] rounded-lg border-[#cccccc]">
-                  <SelectValue placeholder="Year" />
+                  <SelectValue placeholder="YYYY" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup v-for="item in YEARS" :key="item">
@@ -446,9 +494,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="country">
               <FormItem>
-                <FormLabel :class="{ 'text-black': !showError && errors.country }">
-                  Country
-                </FormLabel>
+                <FormLabel class="!text-black"> Country </FormLabel>
                 <Select v-bind="componentField" v-model="selectedCountry" @change="onCountryChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.country }">
@@ -474,16 +520,18 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="state">
               <FormItem>
-                <FormLabel :class="{ 'text-black': !showError && errors.state }"> State </FormLabel>
+                <FormLabel class="!text-black"> State </FormLabel>
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
-                      <SelectValue placeholder="Select state" />
+                      <SelectValue
+                        :placeholder="states.length === 0 ? 'No states' : 'Select state'"
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectGroup v-if="!states">
-                      <SelectItem> Loading </SelectItem>
+                    <SelectGroup v-if="states.length === 0">
+                      <SelectItem> No States </SelectItem>
                     </SelectGroup>
                     <SelectGroup v-else>
                       <SelectItem v-for="(state, index) in states" :key="index" :value="state.name">
@@ -501,31 +549,23 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
-                <FormLabel>City</FormLabel>
-                <Select v-bind="componentField" v-model="selectedCity" @change="onCityChange">
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue :placeholder="selectedCity || 'Select city'" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup v-if="!cities">
-                      <SelectItem> Loading </SelectItem>
-                    </SelectGroup>
-                    <SelectGroup v-else>
-                      <SelectItem v-for="city in states" :key="city.id" :value="city.name">
-                        {{ city.name }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <FormLabel class="!text-black">City</FormLabel>
+                <FormControl>
+                  <Input
+                    class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
+                    :class="{ 'border-red-500': showError && errors.city }"
+                    type="text"
+                    placeholder="City"
+                    v-bind="componentField"
+                  />
+                </FormControl>
                 <FormMessage :class="{ hidden: !showError }" />
               </FormItem>
             </FormField>
           </div>
           <div class="flex flex-col gap-1 w-full"></div>
         </div>
-        <Button type="submit" class="w-[230px] mt-6">
+        <Button type="submit" class="w-[230px] mt-6" :disabled="hasEmptyProperty(values)">
           <template v-if="isSubmitting">
             <Loading />
           </template>

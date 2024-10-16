@@ -9,11 +9,14 @@ import { FollowModule } from '../follow/follow.module';
 import { JwtService } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { VideoModule } from '../video/video.module';
+import { FollowService } from '../follow/follow.service';
+import { EmailService } from '../email/email.service';
+import { User } from '@/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel]), FollowModule, UserModule, forwardRef(() => VideoModule)],
+  imports: [TypeOrmModule.forFeature([Channel]), FollowModule, forwardRef(() => UserModule), VideoModule],
   controllers: [ChannelController],
-  providers: [ChannelService, ChannelRepository, JwtService],
+  providers: [ChannelService, ChannelRepository, JwtService, EmailService],
   exports: [ChannelService, ChannelRepository],
 })
 export class ChannelModule {}

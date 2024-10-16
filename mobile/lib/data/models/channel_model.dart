@@ -6,7 +6,7 @@ class ChannelModel {
   final String? bio;
   final String? image;
   final bool isBlueBadge;
-  final bool? isPinkBadge;
+  final bool isPinkBadge;
   final List<SocialNetworkModel>? socialLinks;
   final int? numberOfFollowed;
   final bool? isFollowed;
@@ -18,7 +18,7 @@ class ChannelModel {
     this.bio,
     this.image,
     this.isBlueBadge = false,
-    this.isPinkBadge,
+    this.isPinkBadge = false,
     this.socialLinks,
     this.numberOfFollowed,
     this.isFollowed,

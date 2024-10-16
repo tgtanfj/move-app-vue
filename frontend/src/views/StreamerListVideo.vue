@@ -1,9 +1,11 @@
 <template>
-  <div class="bg-white w-full h-full">
-    <Loading v-if="videoStore.isLoading" />
+  <div class="bg-white w-full h-full mt-[65px]">
+    <div class="h-full flex items-center justify-center" v-if="videoStore.isLoading">
+      <Loading />
+    </div>
     <template v-if="!videoStore.isLoading && videoStore.videos">
       <h2 class="text-2xl m-7 font-bold">{{ $t('streamer.videos') }}</h2>
-      <div class="mt-4" v-if="videoStore.videos.length !== 0">
+      <div class="mt-4 ml-5" v-if="videoStore.videos.length !== 0">
         <Table :list="videoStore.videos" />
         <div class="flex justify-between items-center mt-5">
           <div class="flex gap-3 items-center">
@@ -62,14 +64,6 @@
       </div>
       <div class="mt-4 ml-7" v-else>
         <p class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</p>
-        <Button
-          variant="default"
-          class="flex items-center gap-2 mt-3"
-          @click="handleUploadNewVideo"
-        >
-          <FileVideo2 class="text-xl" />
-          <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
-        </Button>
       </div>
     </template>
   </div>

@@ -73,9 +73,11 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
                   style: AppTextStyles.montserratStyle.regular14graniteGray,
                 ),
               ),
-              Badges(
-                channelModel: widget.channelModel,
-              ),
+              if(widget.channelModel != null)
+                Badges(
+                  isBlueBadge: widget.channelModel!.isBlueBadge,
+                  isPinkBadge: widget.channelModel!.isPinkBadge,
+                ),
             ],
           ),
           Row(
@@ -109,5 +111,6 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
         ],
       ),
     );
+
   }
 }

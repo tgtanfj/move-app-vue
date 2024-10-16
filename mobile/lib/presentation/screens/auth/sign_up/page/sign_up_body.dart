@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,20 +32,23 @@ class _SignUpBodyState extends State<SignUpBody>
   @override
   void initState() {
     super.initState();
-    focusNode.addListener(() {
-      if (!focusNode.hasFocus) {
-        setState(() {
-          controller.text = controller.text.trim();
-        });
-        context
-            .read<SignUpBloc>()
-            .add(SignUpValuesChangedEvent(email: controller.text.trim()));
-      }
-    });
+    focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        controller.text = controller.text.trim();
+      });
+      context
+          .read<SignUpBloc>()
+          .add(SignUpValuesChangedEvent(email: controller.text.trim()));
+    }
   }
 
   @override
   void dispose() {
+    focusNode.removeListener(_onFocusChange);
     controller.dispose();
     focusNode.dispose();
     super.dispose();
@@ -165,6 +169,9 @@ class _SignUpBodyState extends State<SignUpBody>
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(password: value.trim()));
                         },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                       ),
                       const SizedBox(height: 10),
                       CustomEditText(
@@ -179,6 +186,9 @@ class _SignUpBodyState extends State<SignUpBody>
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputConfirmPassword,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                         onChanged: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(

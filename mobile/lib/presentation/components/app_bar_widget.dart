@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;
@@ -9,7 +10,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String? prefixIconPath;
   final String? suffixIconPath;
   final bool isEnableIcon;
-  final VoidCallback? onSearchButtonTap;
 
   const AppBarWidget({
     super.key,
@@ -18,7 +18,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.prefixIconPath,
     this.suffixIconPath,
     this.isEnableIcon = true,
-    this.onSearchButtonTap,
   });
 
   @override
@@ -39,7 +38,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: widget.prefixButton,
+                onTap: widget.prefixButton ??
+                    () => Navigator.pushNamed(context, AppRoutes.routeMenu),
                 child: SvgPicture.asset(
                   widget.prefixIconPath ?? AppIcons.drawer.svgAssetPath,
                   height: 18.0,
@@ -48,13 +48,16 @@ class _AppBarWidgetState extends State<AppBarWidget> {
               )
             : const SizedBox(),
         Expanded(
-          child: SvgPicture.asset(
-            AppIcons.moveWhiteTextLogo.svgAssetPath,
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.home),
+            child: SvgPicture.asset(
+              AppIcons.moveWhiteTextLogo.svgAssetPath,
+            ),
           ),
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: widget.onSearchButtonTap,
+                onTap: widget.suffixButton,
                 child: SvgPicture.asset(
                   widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
                   width: 24.0,

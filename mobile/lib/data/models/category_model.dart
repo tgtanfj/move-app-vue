@@ -2,7 +2,7 @@ class CategoryModel {
   final int? id;
   final String? title;
   final String? image;
-  final String? numberOfViews;
+  final int? numberOfViews;
 
   CategoryModel({
     this.id,
@@ -15,7 +15,7 @@ class CategoryModel {
     int? id,
     String? title,
     String? image,
-    String? numberOfViews,
+    int? numberOfViews,
   }) {
     return CategoryModel(
       id: id ?? this.id,
@@ -31,7 +31,7 @@ class CategoryModel {
       title: (json['title'] is String?) ? json['title'] : '',
       image: (json['image'] is String?) ? json['image'] : '',
       numberOfViews:
-          (json['numberOfViews'] is String?) ? json['numberOfViews'] : '',
+          (json['numberOfViews'] is int?) ? json['numberOfViews'] : 0,
     );
   }
 }

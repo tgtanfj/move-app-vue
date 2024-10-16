@@ -44,4 +44,12 @@ class SharedPrefer {
     final history = _prefsInstance.getStringList(SharedPreferencesKey.searchHistory) ?? [];
     return history;
   }
+
+  Future<void> setAvatarUserUrl(String value) async {
+    await _prefsInstance.setString(SharedPreferencesKey.avatarUrl, value);
+  }
+
+  String getUserAvatarUrl() {
+    return _prefsInstance.getString(SharedPreferencesKey.avatarUrl) ?? "";
+  }
 }

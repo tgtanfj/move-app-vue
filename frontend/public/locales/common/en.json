@@ -1,6 +1,7 @@
 {
   "common": {
-    "hello_world": "Hello World!"
+    "hello_world": "Hello World!",
+    "no_data": "No data available"
   },
   "streamer": {
     "home": "Home",
@@ -20,7 +21,7 @@
     "fb": "Facebook",
     "twitter": "Twitter",
     "copy_link": "Copy Link",
-    "link_copied": "Link Copied",
+    "link_copied": "Link copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
@@ -30,9 +31,9 @@
     "select_all_videos": "Select all videos",
     "clear_selection": "Clear selection",
     "delete_selected_video_modal_title": "Delete video(s)",
-    "delete_video_modal_description": "The selected video(s) will be permanently deleted. You will lose all data such",
+    "delete_video_modal_description": "The selected video(s) will be permanently deleted. You will lose all data such from your videos as views, comments & ratings. Are you sure?",
     "cancel": "Cancel",
-    "delete_all_video_modal_title": "All of your videos will be permanently deleted. You will lose all data such from",
+    "delete_all_video_modal_title": "All of your videos will be permanently deleted. You will lose all datas such from your videos as views, comments & ratings. Are you sure?",
     "edit_modal_title": "Edit details",
     "tags": "Tags",
     "edit_modal_setting": "Settings",
@@ -70,7 +71,7 @@
     "send_link": "Send password reset link",
     "create_password": "Create new password",
     "create_password_desc": "Please enter your new password and make sure your password is alphanumeric with at least 8 characters.",
-    "reset_success_title": "Reset password success",
+    "reset_success_title": "Password reset successful",
     "reset_success_desc": "Good news! You are just few steps away to login to MOVE. Click on the button below to login.",
     "reset_fail_title": "Verification failed",
     "reset_fail_desc": "Your account verification has expired. Please verify your account again to enjoy full access on MOVE.",
@@ -88,7 +89,8 @@
     "upload_video": "Upload a video",
     "cancel": "Cancel",
     "submit": "Submit",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "rate": "Rate"
   },
   "label": {
     "password": "Password",
@@ -119,14 +121,16 @@
     "state": "State",
     "city": "City",
     "save": "Save settings",
-    "username_verify_message": "Username must be between 4 and 25 characters, containing only letters, numbers, and underscores",
+    "username_8_255_long": "Username must be between 4 and 25 characters",
+    "username_verify_message": "Username must contain only letters, numbers, and underscores",
     "fullname_8_255_long": "Full name must be 8-255 characters",
-    "fullname_no_special_characters": "Full name must not include special characters.",
-    "invalid_age": "Invalid age. Age must be between 18 and 65 years old",
+    "fullname_no_special_characters": "Full name must not include special characters and numbers.",
+    "invalid_age": "Invalid age. Age must be between 13 and 65 years old",
     "field_required": "This field is required",
     "select_one": "You need to select one",
     "file_exceed_5MB": "The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.",
-    "file_format_not_meet": "Invalid image"
+    "file_format_not_meet": "Invalid image",
+    "edit_success": "Profile Edited Successfully"
   },
   "logout": {
     "title": "Log Out",
@@ -226,6 +230,26 @@
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
+  },
+  "video": {
+    "rate": "Rate Video",
+    "rate_video": "Rate this video",
+    "rate_description": "Tell us what you think about this video."
+  },
+  "video_detail": {
+    "share_via": "Share via",
+    "share": "SHARE",
+    "rate": "RATE VIDEO",
+    "follow": "FOLLOW",
+    "watch_also": "WATCH ALSO",
+    "views": "views",
+    "follower": "followers"
+  },
+  "login": {
+    "google": "Log In with Google",
+    "facebook": "Log In with Facebook",
+    "email": "LOG IN WITH EMAIL",
+    "forgot_password": "Forgot password?"
   },
   "view_channel": {
     "about": "About",

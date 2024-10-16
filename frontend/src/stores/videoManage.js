@@ -95,11 +95,14 @@ export const useVideoStore = defineStore('video', () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
+
       if (res.status === 200) {
+        const updatedVideo = res.data.data
+
         const index = videos.value.findIndex(video => video.id === videoId.value);
+
         if (index !== -1) {
-          videos.value[index] = { ...videos.value[index], ...formData };
+          videos.value[index] = updatedVideo;
         }
       }
       return res.data;
@@ -112,9 +115,11 @@ export const useVideoStore = defineStore('video', () => {
     // }
   }
 
+
+
   const shareVideoSocial = async (videoId, option) => {
     try {
-      const response = await axios.get(`${ADMIN_BASE}/video/social-sharing/${videoId}?option=${option}`)
+      const response = await apiAxios.get(`/video/social-sharing/${videoId}?option=${option}`)
 
       if (response.status === 200) {
         const shareUrl = response.data.data
@@ -129,7 +134,7 @@ export const useVideoStore = defineStore('video', () => {
 
   const getAndCopyUrlVideo = async (videoId) => {
     try {
-      const response = await axios.get(`${ADMIN_BASE}/video/${videoId}`)
+      const response = await apiAxios.get(`/video/${videoId}`)
 
       if (response.status === 200) {
         const videoUrl = response.data.data

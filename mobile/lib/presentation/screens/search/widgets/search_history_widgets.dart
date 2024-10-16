@@ -28,9 +28,9 @@ class SearchHistoryWidgets extends StatelessWidget {
           width: 24,
           height: 24,
         ),
-        onPressed: () => onPress,
+        onPressed: onPress,
       ),
-      onTap: () => onTap,
+      onTap: onTap,
     );
   }
 }

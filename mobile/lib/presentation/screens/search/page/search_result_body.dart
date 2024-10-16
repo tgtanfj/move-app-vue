@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
@@ -55,19 +55,26 @@ class _SearchResultBodyState extends State<SearchResultBody> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SearchResultBloc, SearchResultState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if(state.status == SearchResultStatus.processing){
+          EasyLoading.show();
+        }else{
+          EasyLoading.dismiss();
+        }
+      },
       child: BlocBuilder<SearchResultBloc, SearchResultState>(
         builder: (context, state) {
           return Scaffold(
             appBar: CustomSearchBox(
               controller: _controller,
-              padding: const EdgeInsets.only(left: 16, bottom: 4, top: 4),
+              padding: const EdgeInsets.only(left: 16),
               borderRadius: 25,
               autoFocus: true,
               focusNode: _focusNode,
               suffix: IconButton(
                 onPressed: () {
                   _controller.clear();
+                  context.read<SearchResultBloc>().add(SearchLoadHistoryEvent());
                 },
                 icon: SvgPicture.asset(AppIcons.closeCircle.svgAssetPath),
                 padding: EdgeInsets.zero,
@@ -82,7 +89,6 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                     .add(SearchLoadSuggestionEvent(searchText: value));
               },
               onSubmitted: (value) {
-                _focusNode.unfocus();
                 context
                     .read<SearchResultBloc>()
                     .add(SearchSaveHistoryEvent(searchText: value));
@@ -106,7 +112,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                         left: 16,
                         right: 16,
                         top: 0,
-                        child: (_controller.text.isNotEmpty &&
+                        child: (_controller.text.isNotEmpty && state.suggestionList != null &&
                                 state.searchHistory != null)
                             ? Card(
                                 elevation: 4,
@@ -135,6 +141,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                                   searchText:
                                                       searchItem.content ?? ""),
                                             );
+                                        context.read<SearchResultBloc>().add(SearchLoadHistoryEvent());
                                       },
                                       onTap: () {
                                         _controller.text =
