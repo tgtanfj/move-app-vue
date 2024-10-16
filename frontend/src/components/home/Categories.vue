@@ -7,6 +7,10 @@ const props = defineProps({
   category: {
     type: Object,
     required: true
+  },
+  imageHeight: {
+    type: Number,
+    required: false
   }
 })
 
@@ -18,11 +22,18 @@ const categoryTitle = formatCategoryTitleToUrl(props.category.title)
 <template>
   <div @click="router.push(`/categories/${categoryTitle}/${category.id}`)">
     <div>
-      <img :src="props.category.img" class="h-[220px] w-full object-cover aspect-w-1 aspect-h-1" />
+      <img
+        :src="category.img"
+        class="w-full object-cover aspect-w-1 aspect-h-1"
+        :class="imageHeight ? `h-[${imageHeight}px]` : 'h-[220px]'"
+      />
     </div>
-    <p class="text-[18px] mt-3 font-bold">{{ props.category.title }}</p>
-    <p class="text-[14px] text-[#666666]">
-      {{ props.category.views ? formatViews(props.category.views) : '0 view' }} views
+    <p class="text-[18px] mt-3 font-bold">{{ category.title }}</p>
+    <p class="text-[14px] text-[#666666]" v-if="category.views">
+      {{ category.views ? formatViews(category.views) : '0 view' }} views
+    </p>
+    <p class="text-[14px] text-[#666666]" v-if="category.numberOfViews">
+      {{ category.numberOfViews ? formatViews(category.numberOfViews) : '0 view' }} views
     </p>
   </div>
 </template>

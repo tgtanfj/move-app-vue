@@ -23,6 +23,7 @@ import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 import { useOpenLoginStore } from '../stores/openLogin'
 import UploadVideo from './upload-video/UploadVideo.vue'
+import Search from './search/Search.vue'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -157,14 +158,7 @@ watchEffect(() => {
 
       <div v-if="!isInResetPWPage" class="flex flex-1 items-center gap-2">
         <div v-if="!isInStreamerPage" class="flex flex-1 justify-end">
-          <input
-            type="text"
-            class="w-[63%] max-w-[300px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
-            placeholder="Search"
-          />
-          <Button class="w-[44px] rounded-[0_0.5rem_0.5rem_0]">
-            <SearchIcon />
-          </Button>
+          <Search />
         </div>
 
         <div :class="{ 'ml-auto': isInStreamerPage }">

@@ -78,11 +78,11 @@ onMounted(async () => {
       userData.value = {
         ...response.data.data,
         gender: denormalizeGender(response.data.data.gender) || '',
-        state: response.data.data.state?.name || '',
-        country: response.data.data.country?.name || '',
+        state: response.data.data.state || '',
+        country: response.data.data.country || '',
         dateOfBirth: response.data.data.dateOfBirth || '',
         fullName: response.data.data.fullName || '',
-        city: response.data.data.citi || ''
+        city: response.data.data.city || ''
       }
       setValues({
         ...response.data.data,
@@ -244,7 +244,7 @@ const onSubmit = async () => {
     if (values.fullName !== userData.value.fullName) formData.append('fullName', values.fullName)
     if (values.dateOfBirth !== userData.value.dateOfBirth)
       formData.append('dateOfBirth', values.dateOfBirth)
-    if (normalizeGender(values.gender) !== userData.value.gender)
+    if (values.gender !== userData.value.gender)
       formData.append('gender', normalizeGender(values.gender))
     if (
       (values.country && !userData.value.country) ||
@@ -258,7 +258,6 @@ const onSubmit = async () => {
       formData.append('stateId', stateId)
     }
     if (values.city !== userData.value.city) formData.append('city', values.city)
-
     if (isFormDataEmpty(formData)) {
       isSubmitting.value = false
       return
@@ -281,7 +280,6 @@ const onSubmit = async () => {
             gender: normalizeGender(values.gender)
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
-          console.log(userData.value, values)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })

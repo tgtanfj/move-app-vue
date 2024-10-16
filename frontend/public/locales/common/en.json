@@ -193,6 +193,21 @@
     "progress_text": "Feel free to add your video details, tags and settings in the meantime!",
     "upload_video_title_progress": "Uploading video"
   },
+  "search": {
+    "result_for": "Search result for",
+    "no_result": "No search results for",
+    "try_another_keyword": "Please try searching with a different keyword.",
+    "category": "Categories",
+    "views": "views",
+    "channels": "Channels",
+    "videos": "Videos",
+    "followers": "followers",
+    "result_for_tags": "Results tagged with",
+    "sort_by": "Sort By",
+    "page_not_found": "Page not found",
+    "page_not_found_message": "The page you looking for does not exit.",
+    "back_to_home": "Back to home"
+  },
   "sidebar": {
     "followed_channels": "Followed channels",
     "not_login": "You have not followed any instructors yet.",
