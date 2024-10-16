@@ -115,6 +115,7 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                   height: 8,
                 ),
                 CustomEditText(
+                  initialValue: state.inputOtpCode,
                   maxLength: 6,
                   textInputType: TextInputType.number,
                   isShowMessage: state.isShowMessageOtp,

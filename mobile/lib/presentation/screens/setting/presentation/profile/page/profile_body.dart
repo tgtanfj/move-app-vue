@@ -25,6 +25,7 @@ class ProfileBody extends StatefulWidget {
 }
 
 class _ProfileBodyState extends State<ProfileBody> {
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
@@ -143,12 +144,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                       borderColor: AppColors.brinkPink,
                       preMessage: state.messageInputFullName,
                       widthMessage: MediaQuery.of(context).size.width,
+                      // controller: controller,
+                      // focusNode: focusNode,
                       onChanged: (value) {
                         context
                             .read<ProfileBloc>()
                             .add(ProfileFullNameChangeEvent(fullName: value));
                       },
-                      onSubmitted: (value) {
+                      onLostFocus: (value) {
                         context.read<ProfileBloc>().add(
                             ProfileFullNameChangeEvent(fullName: value.trim()));
                       },
