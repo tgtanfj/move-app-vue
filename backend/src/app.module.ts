@@ -28,6 +28,7 @@ import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { RedisModule } from './shared/services/redis/redis.module';
 import { WatchingVideoHistoryModule } from './modules/watching-video-history/watching-video-history.module';
+import { NotificationModule } from './modules/notification/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -68,6 +69,7 @@ import { WatchingVideoHistoryModule } from './modules/watching-video-history/wat
     ScheduleModule.forRoot(),
     VideoTrendModule,
     WatchingVideoHistoryModule,
+    NotificationModule,
   ],
   providers: [
     {

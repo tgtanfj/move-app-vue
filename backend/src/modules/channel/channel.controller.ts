@@ -66,4 +66,19 @@ export class ChannelController {
       data: await this.channelService.getChannelProfile(channelId, user ? user.id : undefined),
     };
   }
+
+
+  @ApiBearerAuth('jwt')
+  @Get('/:id/about')
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  async channelViewNumberOfRe(
+    @Param('id', new ParseIntPipe())
+    channelId: number,
+    @User() user?,
+  ) {
+    return {
+      data: await this.channelService.getChannelProfile(channelId, user ? user.id : undefined),
+    };
+  }
 }

@@ -147,7 +147,7 @@ export class VideoService {
       //get link upload
       const response = await this.vimeoService.createUploadSession(fileSize);
       const categories = await this.categoryService.findAll();
-
+ 
       return {
         response,
         categories,
