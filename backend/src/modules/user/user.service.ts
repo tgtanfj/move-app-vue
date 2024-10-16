@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AccountRepository } from './repositories/account.repository';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { UserRepository } from './repositories/user.repository';
+import { ChannelService } from '../channel/channel.service';
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,7 @@ export class UserService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly awsS3Service: AwsS3Service,
     private readonly countryService: CountryService,
+    private readonly channelService: ChannelService,
   ) {}
 
   async findOne(id: number): Promise<User> {
@@ -150,11 +152,19 @@ export class UserService {
               `The username '${dto.username}' has been taken. Try another username.`,
             );
           }
+          const channel = await this.channelService.getChannelByUserId(userId);
+          if (channel) {
+            await this.channelService.editChannel(channel.id, { name: dto.username });
+          }
         }
       }
 
       if (file) {
         const image = await this.awsS3Service.uploadAvatar(file);
+        const channel = await this.channelService.getChannelByUserId(userId);
+        if (channel) {
+          await this.channelService.editChannel(channel.id, { image: image });
+        }
         dto.avatar = image;
       }
 

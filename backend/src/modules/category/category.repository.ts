@@ -13,6 +13,9 @@ export class CategoryRepository {
   async getAll(): Promise<Category[]> {
     return await this.categoryRepository.find({
       select: ['id', 'title'],
+      order: {
+        id: 'asc',
+      },
     });
   }
 

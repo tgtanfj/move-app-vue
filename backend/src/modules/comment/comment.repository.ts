@@ -38,7 +38,22 @@ export class CommentRepository {
   }
 
   async getOneWithUser(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { user: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'user.channel'],
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+      },
+    });
   }
 
   async getAll(): Promise<Comment[]> {
