@@ -65,4 +65,8 @@ export class ChannelRepository {
     const newChannel = this.channelRepository.create({ ...dto, user: { id: userId } });
     return (await this.channelRepository.save(newChannel)).id;
   }
+
+  async editChannel(channelId: number, dto: Partial<Channel>) {
+    return await this.channelRepository.update(channelId, dto);
+  }
 }
