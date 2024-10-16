@@ -165,4 +165,10 @@ export class ChannelService {
 
     return channelSettingDto;
   }
+
+  async getChannelReps(userId: number) {
+    const channel = await this.getChannelByUserId(userId);
+    const repValueInUSD = channel.numberOfREPs * 0.006;
+    return { numberOfREPs: repValueInUSD };
+  }
 }

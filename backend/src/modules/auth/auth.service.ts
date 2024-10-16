@@ -16,7 +16,7 @@ import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
-
+import * as admin from 'firebase-admin';
 @Injectable()
 export class AuthService {
   constructor(
@@ -178,11 +178,20 @@ export class AuthService {
     });
 
     const accessToken = this.getAccessToken(userId, id);
-
+    
     return {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
+  }
+
+  async subscribeToTopic(fcmToken: string, topic: string) {
+    try {
+      await admin.messaging().subscribeToTopic(fcmToken, topic);
+      console.log(`Đã đăng ký FCM token vào topic ${topic}`);
+    } catch (error) {
+      console.error(`Lỗi khi đăng ký FCM token vào topic ${topic}:`, error);
+    }
   }
 
   async validateUser(email: string, password: string) {

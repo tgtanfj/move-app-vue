@@ -73,4 +73,11 @@ export class ChannelController {
   async getChannelSetting(@User() user?): Promise<ChannelSettingDto> {
     return await this.channelService.getChannelSetting(user.id);
   }
+
+  @ApiBearerAuth('jwt')
+  @Get('/get-reps')
+  @UseGuards(JwtAuthGuard)
+  async getReps(@User() user?) {
+    return await this.channelService.getChannelReps(user.id);
+  }
 }
