@@ -239,7 +239,7 @@ export class AuthService {
   async refresh(payload: any) {
     const deviceId = await this.userService.validateRefreshToken(payload.refreshToken);
 
-    const accessToken = this.getAccessToken(payload.userId, deviceId);
+    const accessToken = this.getAccessToken(payload.payload.sub, deviceId);
 
     return {
       accessToken,

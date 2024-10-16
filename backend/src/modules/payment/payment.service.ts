@@ -1,16 +1,19 @@
-import { FindManyOptions } from './../../../node_modules/typeorm/find-options/FindManyOptions.d';
 import { User } from '@/entities/user.entity';
-import { Injectable } from '@nestjs/common';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { objectResponse } from '@/shared/utils/response-metadata.function';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { ChannelService } from '../channel/channel.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
+import { PaginationMetadata } from '../video/dto/response/pagination.meta';
 import { BuyREPsDto } from './dto/buy-reps.dto';
+import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
+import PaymentDto, { RepsPackageDto } from './dto/response/payment.dto';
+import { WithDrawDto } from './dto/withdraw.dto';
+import { PayPalService } from './paypal.service';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
-import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
-import PaymentDto, { RepsPackageDto } from './dto/response/payment.dto';
-import { PaginationMetadata } from '../video/dto/response/pagination.meta';
-import { objectResponse } from '@/shared/utils/response-metadata.function';
 
 @Injectable()
 export class PaymentService {
@@ -18,7 +21,9 @@ export class PaymentService {
     private readonly repsPackageRepository: RepsPackageRepository,
     private readonly paymentRepository: PaymentRepository,
     private readonly userService: UserService,
+    private readonly channelService: ChannelService,
     private readonly stripeService: StripeService,
+    private readonly paypalService: PayPalService,
   ) {}
 
   async listRepsPackage() {
@@ -76,5 +81,25 @@ export class PaymentService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async withDraw(userId: number, withDrawDto: WithDrawDto) {
+    const { email, numberOfREPs } = withDrawDto;
+
+    const withDrawRate = 0.006;
+    const repsNeedToWithDraw = 2500;
+
+    const { channel } = await this.userService.findChannelByUserId(userId);
+
+    if (numberOfREPs < repsNeedToWithDraw || channel.numberOfREPs < repsNeedToWithDraw) {
+      throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
+    }
+
+    const amountWithDraw = numberOfREPs * withDrawRate;
+    const repsAfterWithDraw = +channel.numberOfREPs - numberOfREPs;
+
+    await this.channelService.updateREPs(channel.id, repsAfterWithDraw);
+
+    await this.paypalService.createPayout(email, amountWithDraw);
   }
 }
