@@ -180,6 +180,6 @@ export class ChannelService {
   }
 
   async editChannel(channelId: number, dto: Partial<Channel>) {
-    return this.channelRepository.editChannel(channelId, dto);
+    return await this.channelRepository.editChannel(channelId, dto);
   }
 }
