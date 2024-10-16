@@ -55,4 +55,14 @@ export class ChannelRepository {
       numberOfREPs,
     });
   }
+
+  async createChannel(userId: number, dto: object) {
+    const channelExist = await this.channelRepository.findOne({
+      where: { user: { id: userId } },
+    });
+
+    if (channelExist) return channelExist.id;
+    const newChannel = this.channelRepository.create({ ...dto, user: { id: userId } });
+    return (await this.channelRepository.save(newChannel)).id;
+  }
 }
