@@ -29,7 +29,7 @@
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink to="/streamer">
+        <RouterLink @click="createChannel" to="/streamer">
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
@@ -101,12 +101,13 @@ import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
+import { videoService } from '@services/video.services'
 
 const props = defineProps({
   isInStreamerPage: {
     type: Boolean,
     required: false
-  },
+  }
 })
 
 const authStore = useAuthStore()
@@ -120,5 +121,7 @@ const logOutGoogle = async () => {
   router.push('/')
 }
 
-
+const createChannel = async () => {
+  await videoService.createChannel()
+}
 </script>

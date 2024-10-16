@@ -1,3 +1,5 @@
+import { MONTHS } from "@constants/date.constant"
+
 export const captureThumbnail = (video, time) => {
   return new Promise((resolve) => {
     const canvas = document.createElement('canvas')
@@ -50,4 +52,12 @@ export const compareBlobs = async (blob1, blob2) => {
   }
 
   return true
+}
+
+export const formatDateString = (dateString) => {
+  const [year, month, day] = dateString.split('-');
+
+  const monthName = MONTHS.find(m => m.num === month).text;
+
+  return `${day} ${monthName} ${year}`;
 }

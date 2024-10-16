@@ -1,7 +1,7 @@
 <script setup>
 import { reject } from 'lodash-es'
 import { FileVideo2 } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 import {
@@ -36,6 +36,11 @@ import VideoIcon from '@assets/icons/videoIcon.vue'
 import ImageLoading from '../ImageLoading.vue'
 import Loading from '../Loading.vue'
 import UploadVideoProgress from './UploadVideoProgress.vue'
+import { useRoute } from 'vue-router'
+import { useVideoStore } from '../../stores/videoManage'
+
+const route = useRoute()
+const videoStore = useVideoStore()
 
 const isOpenUploadVideoModal = ref(false)
 const isOpenUploadVideoDetails = ref(false)
@@ -95,6 +100,8 @@ watch(isCommentable, (newValue) => {
   if (newValue) isCommentableErr.value = ''
 })
 
+const isVideosPage = computed(() => route.path === '/streamer/videos')
+
 const selectFile = () => {
   fileInput.value.click()
 }
@@ -145,10 +152,10 @@ const onBackToDetail = () => {
 const validateVideo = async (file) => {
   validateSizeTypeErr.value = ''
   if (!allowedFormats.includes(file.type)) {
-    validateSizeTypeErr.value = 'File Format Requirement Not Meet'
+    validateSizeTypeErr.value = 'File format requirement not meet'
   }
   if (file.size > maxFileSize) {
-    validateSizeTypeErr.value = 'File Format Requirement Not Meet'
+    validateSizeTypeErr.value = 'File format requirement not meet'
   }
 
   const videoElement = document.createElement('video')
@@ -269,9 +276,11 @@ const changeDuration = (value) => {
 
 const handleThumbnailUpload = (event) => {
   if (!validImageTypes.includes(event.target.files[0].type)) {
-    reject((thumbnailTypeValidationErr.value = 'File Format, File Size Limit Requirement Not Meet'))
+    reject((thumbnailTypeValidationErr.value = 'File format, file size limit requirement not meet'))
     return
   }
+
+  thumbnailTypeValidationErr.value = ''
 
   const files = Array.from(event.target.files)
   const newImages = []
@@ -338,7 +347,7 @@ const secondButton = (tab) => {
 }
 
 const thirdButton = async (tab) => {
-  if (!isCommentable.value) isCommentableErr.value = 'Please select comment setting'
+  if (!isCommentable.value) isCommentableErr.value = 'Please select comment settings'
   if (isCommentable.value) {
     if (!title.value || !imagesSelected.value) {
       nullFirstTab.value = true
@@ -350,7 +359,7 @@ const thirdButton = async (tab) => {
     if (!category.value || !workoutLevel.value || !duration.value) {
       nullSecondTab.value = true
       if (!category.value) categoryErr.value = 'Please select a category'
-      if (!workoutLevel.value) workoutLevelErr.value = 'Please select a level'
+      if (!workoutLevel.value) workoutLevelErr.value = 'Please select a workout level'
       if (!duration.value) durationErr.value = 'Please select a duration'
     } else {
       nullSecondTab.value = false
@@ -398,6 +407,9 @@ const thirdButton = async (tab) => {
         isOpenUploadVideoDetails.value = false
         uploadLoading.value = false
         resetField()
+        if (isVideosPage.value) {
+          await videoStore.getUploadedVideosList(10, 1)
+        }
       } else {
         uploadLoading.value = false
       }
@@ -541,7 +553,7 @@ const thirdButton = async (tab) => {
                 <div class="flex flex-col gap-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.video_title') }}</p>
-                    <div v-if="titleErr !== ''" class="text-destructive italic">
+                    <div v-if="titleErr !== ''" class="text-destructive text-sm italic">
                       {{ titleErr }}
                     </div>
                   </div>
@@ -591,7 +603,7 @@ const thirdButton = async (tab) => {
 
                   <div
                     v-if="thumbnailErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-destructive text-sm italic"
                   >
                     {{ thumbnailErr }}
                   </div>
@@ -607,7 +619,7 @@ const thirdButton = async (tab) => {
                 <div class="space-y-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.category') }}</p>
-                    <div v-if="categoryErr !== ''" class="text-destructive italic">
+                    <div v-if="categoryErr !== ''" class="text-destructive italic text-sm">
                       {{ categoryErr }}
                     </div>
                   </div>
@@ -626,7 +638,7 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2">
                       <p class="text-[16px]">{{ $t('upload_video.workout_level') }}</p>
-                      <div v-if="workoutLevelErr !== ''" class="text-destructive text-sm italic">
+                      <div v-if="workoutLevelErr !== ''" class="text-destructive ml-2 text-sm italic">
                         {{ workoutLevelErr }}
                       </div>
                     </div>
@@ -648,7 +660,7 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-4">
                       <p class="text-[16px]">{{ $t('upload_video.duration') }}</p>
-                      <div v-if="durationErr !== ''" class="text-destructive italic">
+                      <div v-if="durationErr !== ''" class="text-destructive text-sm italic">
                         {{ durationErr }}
                       </div>
                     </div>
@@ -722,7 +734,7 @@ const thirdButton = async (tab) => {
               <div v-show="tabChange === 'settings'" class="flex flex-col gap-2">
                 <div class="flex items-center gap-4">
                   <p class="text-[16px]">{{ $t('upload_video.comment_settings') }}</p>
-                  <div v-if="isCommentableErr !== ''" class="text-destructive italic">
+                  <div v-if="isCommentableErr !== ''" class="text-destructive text-sm italic">
                     {{ isCommentableErr }}
                   </div>
                 </div>
@@ -787,6 +799,7 @@ const thirdButton = async (tab) => {
           <Button
             @click="thirdButton('settings')"
             variant="default"
+            :disabled="uploadLoading"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
             <span class="font-bold" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>

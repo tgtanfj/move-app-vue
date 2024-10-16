@@ -4,7 +4,7 @@
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
     <TableCell>
-      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
+    <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
     </TableCell>
     <TableCell>
       <div class="flex flex-col">
@@ -18,7 +18,7 @@
         </div>
       </div>
     </TableCell>
-    <TableCell>{{ item.datePosted }}</TableCell>
+    <TableCell>{{ formatDateString(item.datePosted) }}</TableCell>
     <TableCell>{{ item.numberOfViews }}</TableCell>
     <TableCell>{{ item.numberOfComments }}</TableCell>
     <TableCell>
@@ -81,20 +81,17 @@
 </template>
 
 <script setup>
-import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
-import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
-import TwitterIcon from '@assets/icons/TwitterIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { Checkbox } from '@common/ui/checkbox'
 import { TableCell, TableRow } from '@common/ui/table'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
-import { ArrowDownToLine, EllipsisVertical, Pen, Trash, Upload } from 'lucide-vue-next'
+import { ArrowDownToLine, EllipsisVertical, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import BaseDialog from '../BaseDialog.vue'
 import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
+import { formatDateString } from '@utils/uploadVideo.util'
 
 const props = defineProps({
   item: {
@@ -106,7 +103,6 @@ const props = defineProps({
     required: true
   }
 })
-console.log(props.item)
 
 const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'download:item'])
 
