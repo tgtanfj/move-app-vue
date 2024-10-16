@@ -1,33 +1,40 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../constants/api_urls.dart';
+import '../../constants/constants.dart';
 import '../models/category_model.dart';
 import '../services/api_service.dart';
 
 class CategoriesRepository{
-  Future<List<CategoryModel>> searchCategory(String query) async {
+  Future<Either<String, List<CategoryModel>>> searchCategory(String query, int page) async {
     final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultCategory,
-        options: Options(
-          headers: {
-            'Accept': '/',
-            },
-        ),
-        queryParameters: {'q': query, 'limit': 10, 'page': 1},
+        queryParameters: {'q': query, 'limit': 1, 'page': page},
       );
      if (response.statusCode == 200) {
         final result = parseSearchResultCategory(response.data);
-        return result;
+        return Right(result);
       } else {
-        return [];
+        return const Left("Cannot load Category");
       }
     } catch (e) {
-      return [];
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      return Left(e.toString());
     }
   }
 
@@ -40,5 +47,35 @@ class CategoriesRepository{
     return parsed
         .map<CategoryModel>((json) => CategoryModel.fromJson(json))
         .toList();
+  }
+
+  Future<Either<String, int?>> getTotalCategoriesPages(String query, int page) async {
+    final ApiService apiService = ApiService();
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.get,
+        ApiUrls.searchResultCategory,
+        queryParameters: {'q': query, 'limit': 1, 'page': page},
+      );
+      if (response.statusCode == 200) {
+        final result = response.data['meta'];
+        final totalPages = result['totalPages'];
+        return Right(totalPages);
+      } else {
+        return const Left("Cannot get total pages");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      return Left(e.toString());
+    }
   }
 }

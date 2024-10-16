@@ -36,7 +36,7 @@ import 'package:flutter/material.dart';
                         height: MediaQuery.of(context).size.height * 0.21,
                         isLargePoster: true,
                         image: videoList?[index].urlS3,
-                        numberOfViews: videoList?[index].numberOfViews,
+                        numberOfViews: videoList?[index].numberOfViews.toString(),
                       )),
                   const SizedBox(
                     height: 4.0,

@@ -75,6 +75,7 @@ class VideoPoster extends StatelessWidget {
                     numberOfViews ?? "",
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
+                  const Text(" "),
                   isLargePoster
                       ? Text(
                           Constants.views,

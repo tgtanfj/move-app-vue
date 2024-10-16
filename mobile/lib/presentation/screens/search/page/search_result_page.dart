@@ -13,9 +13,8 @@ class SearchResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(searchQuery);
     return BlocProvider<SearchResultBloc>(
-      create: (context) => SearchResultBloc()..add(SearchResultInitialEvent(searchQuery: searchQuery)),
+      create: (context) => SearchResultBloc(),
       child:  SearchResultBody(searchQuery: searchQuery,),
     );
   }

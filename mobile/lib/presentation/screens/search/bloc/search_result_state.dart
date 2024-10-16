@@ -18,12 +18,14 @@ final class SearchResultState extends Equatable {
   final String? searchQuery;
   final String? errorMessage;
   final int? page;
+  final int? currentCategoriesPage;
   final List<SearchHistoryModel>? searchHistory;
   final List<CategoryModel> categoryList;
   final List<ChannelModel> channelList;
   final List<VideoModel> videoList;
   final SuggestionModel? suggestionList;
-  final int? totalPages;
+  final int? totalCategoriesPages;
+  final int? totalChannelPages;
 
   const SearchResultState({
     this.status,
@@ -35,7 +37,9 @@ final class SearchResultState extends Equatable {
     required this.channelList,
     required this.videoList,
     this.suggestionList,
-    this.totalPages,
+    this.totalCategoriesPages,
+    this.totalChannelPages,
+    this.currentCategoriesPage,
   });
 
   static SearchResultState initial() =>
@@ -44,6 +48,7 @@ final class SearchResultState extends Equatable {
         searchQuery: '',
         errorMessage: '',
         page: 1,
+        currentCategoriesPage: 1,
         searchHistory: [],
         categoryList: [],
         channelList: [],
@@ -55,7 +60,9 @@ final class SearchResultState extends Equatable {
     String? searchQuery,
     String? errorMessage,
     int? page,
-    int? totalPages,
+    int? currentCategoriesPage,
+    int? totalCategoriesPages,
+    int? totalChannelPages,
     List<SearchHistoryModel>? searchHistory,
     List<CategoryModel>? categoryList,
     List<ChannelModel>? channelList,
@@ -67,12 +74,14 @@ final class SearchResultState extends Equatable {
       searchQuery: searchQuery ?? this.searchQuery,
       errorMessage: errorMessage ?? this.errorMessage,
       page: page ?? this.page,
+      currentCategoriesPage: currentCategoriesPage ?? this.currentCategoriesPage,
       searchHistory: searchHistory ?? this.searchHistory,
       categoryList: categoryList ?? this.categoryList,
       channelList: channelList ?? this.channelList,
       videoList: videoList ?? this.videoList,
       suggestionList: suggestionList ?? this.suggestionList,
-      totalPages: totalPages ?? this.totalPages,
+      totalCategoriesPages: totalCategoriesPages ?? this.totalCategoriesPages,
+      totalChannelPages: totalChannelPages ?? this.totalChannelPages,
     );
   }
 
@@ -81,7 +90,9 @@ final class SearchResultState extends Equatable {
       [
         searchQuery,
         page,
-        totalPages,
+        currentCategoriesPage,
+        totalCategoriesPages,
+        totalChannelPages,
         errorMessage,
         searchHistory,
         categoryList,

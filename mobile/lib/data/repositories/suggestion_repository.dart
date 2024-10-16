@@ -16,11 +16,6 @@ class SuggestionRepository{
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.suggestionEndpoint,
-        options: Options(
-          headers: {
-            'Accept': '/',
-          },
-        ),
         queryParameters: {'q': query},
       );
       if (response.statusCode == 200) {

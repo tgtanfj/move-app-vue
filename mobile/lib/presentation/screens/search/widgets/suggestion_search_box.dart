@@ -22,100 +22,109 @@ class SuggestionSearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        (suggestionModel?.topCategory != null)
-            ? ListTile(
-                leading: Image.network(
-                  suggestionModel?.topCategory?.image ?? "",
-                  height: 40,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      AppImages.hiitCategory.pngAssetPath,
-                      fit: BoxFit.cover,
-                      height: 40,
-                      width: 40,
-                    );
-                  },
-                ),
-                title: Text(suggestionModel?.topCategory?.title ?? ""),
-                trailing: Text(
-                  Constants.categories,
-                  style: AppTextStyles.montserratStyle.regular12Black.copyWith(
-                    fontStyle: FontStyle.italic,
+    return Container(
+      child: Column(
+        children: [
+          (suggestionModel?.topCategory != null)
+              ? ListTile(
+                  leading: Image.network(
+                    suggestionModel?.topCategory?.image ?? "",
+                    height: 40,
+                    fit: BoxFit.fill,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        AppImages.hiitCategory.pngAssetPath,
+                        fit: BoxFit.cover,
+                        height: 40,
+                        width: 40,
+                      );
+                    },
                   ),
-                ),
-                onTap: () {},
-              )
-            : const SizedBox(),
-        (suggestionModel?.topInstructors != null)
-            ? ListView.builder(
-                shrinkWrap: true,
-                itemCount: suggestionModel?.topInstructors?.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Avatar(
-                        imageUrl:
-                            suggestionModel?.topInstructors?[index].image ?? "",
-                        widthAvatar: 40,
-                        heightAvatar: 40,
-                        radiusAvatar: 50),
-                    title: Row(
-                      children: [
-                        Text(suggestionModel?.topInstructors?[index].name ?? ""),
-                        const Text(" "),
-                        (suggestionModel?.topInstructors?[index].isBlueBadge ??
-                                false)
-                            ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
-                            : const SizedBox(),
-                      ],
+                  title: Text(suggestionModel?.topCategory?.title ?? ""),
+                  trailing: Text(
+                    Constants.categories,
+                    style: AppTextStyles.montserratStyle.regular12Black.copyWith(
+                      fontStyle: FontStyle.italic,
                     ),
-                    trailing: Text(
-                      "Instructors",
-                      style:
-                          AppTextStyles.montserratStyle.regular12Black.copyWith(
-                        fontStyle: FontStyle.italic,
+                  ),
+                  onTap: () {},
+                )
+              : const SizedBox(),
+          (suggestionModel?.topInstructors != null)
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: suggestionModel?.topInstructors?.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Avatar(
+                          imageUrl:
+                              suggestionModel?.topInstructors?[index].image ?? "",
+                          widthAvatar: 40,
+                          heightAvatar: 40,
+                          radiusAvatar: 50),
+                      title: Row(
+                        children: [
+                          Text(
+                              suggestionModel?.topInstructors?[index].name ?? ""),
+                          const Text(" "),
+                          (suggestionModel?.topInstructors?[index].isBlueBadge ??
+                                  false)
+                              ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
+                              : const SizedBox(),
+                        ],
                       ),
-                    ),
-                    onTap: () {},
-                  );
-                })
-            : const SizedBox(),
-        (suggestionModel?.topVideos != null)
-            ? ListView.builder(
-                shrinkWrap: true,
-                itemCount: suggestionModel?.topVideos?.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Avatar(
-                        imageUrl: suggestionModel?.topVideos?[index].url ?? "",
-                        widthAvatar: 40,
-                        heightAvatar: 40,
-                        radiusAvatar: 50),
-                    title: Text(suggestionModel?.topVideos?[index].title ?? ""),
-                    trailing: Text(
-                      Constants.videos,
-                      style:
-                          AppTextStyles.montserratStyle.regular12Black.copyWith(
-                        fontStyle: FontStyle.italic,
+                      trailing: Text(
+                        Constants.instructors,
+                        style:
+                            AppTextStyles.montserratStyle.regular12Black.copyWith(
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
-                    ),
-                    onTap: () {},
-                  );
-                })
-            : const SizedBox(),
-        if (suggestionModel?.topCategory != null ||
-            suggestionModel?.topInstructors != null ||
-            suggestionModel?.topVideos != null)
-          ListTile(
-            leading: const Icon(
-              Icons.search,
-              color: AppColors.tiffanyBlue,
-            ),
-            title: Text("All result for $resultSearchText"),
-          )
-      ],
+                      onTap: () {},
+                    );
+                  })
+              : const SizedBox(),
+          (suggestionModel?.topVideos != null)
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: suggestionModel?.topVideos?.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Avatar(
+                          imageUrl: suggestionModel?.topVideos?[index].url ?? "",
+                          widthAvatar: 40,
+                          heightAvatar: 40,
+                          radiusAvatar: 50),
+                      title: Text(suggestionModel?.topVideos?[index].title ?? ""),
+                      trailing: Text(
+                        Constants.videos,
+                        style:
+                            AppTextStyles.montserratStyle.regular12Black.copyWith(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      onTap: () {},
+                    );
+                  })
+              : const SizedBox(),
+          if (suggestionModel?.topCategory != null ||
+              suggestionModel?.topInstructors != null ||
+              suggestionModel?.topVideos != null)
+            ListTile(
+              leading: const Icon(
+                Icons.search,
+                color: AppColors.tiffanyBlue,
+              ),
+              title: Row(
+                children: [
+                  const Text(Constants.allResultFor),
+                  const Text(" "),
+                  Text(resultSearchText ?? " "),
+                ],
+              ),
+            )
+        ],
+      ),
     );
   }
 }

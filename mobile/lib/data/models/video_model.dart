@@ -7,7 +7,7 @@ class VideoModel {
   final String? workoutLevel;
   final String? duration;
   final String? url;
-  final String? numberOfViews;
+  final int? numberOfViews;
   final double? ratings;
   final String? urlS3;
   final CategoryModel? categories;
@@ -32,7 +32,7 @@ class VideoModel {
     String? workoutLevel,
     String? duration,
     String? url,
-    String? numberOfViews,
+    int? numberOfViews,
     double? ratings,
     String? urlS3,
     CategoryModel? categories,
@@ -61,7 +61,7 @@ class VideoModel {
       duration: (json['duration'] is String) ? json['duration'] : '',
       url: (json['url'] is String) ? json['url'] : '',
       numberOfViews:
-          (json['numberOfViews'] is int) ? json['numberOfViews'] : '',
+          (json['numberOfViews'] is int) ? json['numberOfViews'] : 0,
       ratings: (json['ratings'] is double) ? json['ratings'] : 0,
       urlS3: (json['urlS3'] is String) ? json['urlS3'] : '',
       categories: CategoryModel.fromJson(json['category']),

@@ -1,14 +1,15 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../constants/api_urls.dart';
+import '../../constants/constants.dart';
 import '../models/channel_model.dart';
-import '../models/channel_search_model.dart';
 import '../services/api_service.dart';
 
 class ChannelsRepository{
-  Future<List<ChannelModel>> searchChannel(String query, int page) async {
+  Future<Either<String, List<ChannelModel>>> searchChannel(String query, int page) async {
     final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
@@ -18,12 +19,22 @@ class ChannelsRepository{
       );
       if (response.statusCode == 200) {
         final result = parseSearchResultChannel(response.data);
-        return result;
+        return Right(result);
       } else {
-        return [];
+        return const Left("Cannot load channel");
       }
     } catch (e) {
-      return [];
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      return Left(e.toString());
     }
   }
 
@@ -37,7 +48,7 @@ class ChannelsRepository{
         .toList();
   }
 
-  Future<int?> getTotalPages(String query, int page) async {
+  Future<Either<String, int?>> getTotalPages(String query, int page) async {
     final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
@@ -48,12 +59,22 @@ class ChannelsRepository{
       if (response.statusCode == 200) {
         final result = response.data['meta'];
         final totalPages = result['totalPages'];
-        return totalPages;
+        return Right(totalPages);
       } else {
-        return null;
+        return const Left("Cannot get total pages");
       }
     } catch (e) {
-      return null;
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      return Left(e.toString());
     }
   }
 }

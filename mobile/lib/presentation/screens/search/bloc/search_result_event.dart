@@ -69,3 +69,25 @@ final class SearchResultLoadPreviousChannelEvent extends SearchResultEvent {
   @override
   List<Object?> get props => [];
 }
+
+final class SearchResultLoadMoreCategoriesEvent extends SearchResultEvent {
+  final String searchQuery;
+
+  const SearchResultLoadMoreCategoriesEvent({
+    required this.searchQuery,
+  });
+
+  @override
+  List<Object?> get props => [];
+}
+
+final class SearchResultLoadPreviousCategoriesEvent extends SearchResultEvent {
+  final String searchQuery;
+
+  const SearchResultLoadPreviousCategoriesEvent({
+    required this.searchQuery,
+  });
+
+  @override
+  List<Object?> get props => [];
+}

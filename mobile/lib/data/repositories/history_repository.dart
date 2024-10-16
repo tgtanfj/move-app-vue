@@ -9,7 +9,7 @@ import '../../constants/constants.dart';
 import '../data_sources/local/shared_preferences.dart';
 import '../services/api_service.dart';
 
-class SearchHistoryRepository {
+class HistoryRepository {
   final ApiService apiService = ApiService();
   String accessToken = SharedPrefer.sharedPrefer.getUserToken();
 
@@ -18,16 +18,11 @@ class SearchHistoryRepository {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchHistoryEndpoint,
-        options: Options(
-          headers: {
-            'Accept': '/',
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
       if (response.statusCode == 200) {
         final result = parseSearchHistory(response.data);
         return Right(result);
+
       } else {
         return const Left("Cannot load search history");
       }
@@ -108,12 +103,6 @@ class SearchHistoryRepository {
         APIRequestMethod.delete,
         ApiUrls.searchHistoryEndpoint,
         queryParameters: searchContent.toJson(),
-        options: Options(
-          headers: {
-            'Accept': '/',
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
       );
       if (response.statusCode == 200) {
         return const Right("Deleted successful");
