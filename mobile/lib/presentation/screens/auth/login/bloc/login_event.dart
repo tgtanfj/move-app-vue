@@ -18,7 +18,7 @@ final class LoginChangeEmailPasswordEvent extends LoginEvent {
   final String email;
   final String password;
 
-  LoginChangeEmailPasswordEvent({
+  const LoginChangeEmailPasswordEvent({
     required this.email,
     required this.password,
   });

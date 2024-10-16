@@ -53,6 +53,7 @@ export class VideoRepository {
       isPublish: isPublish,
       url: dto.url,
       title: dto.title,
+      durationsVideo: dto.durationsVideo,
     });
 
     return await this.videoRepository.save(newVideo);

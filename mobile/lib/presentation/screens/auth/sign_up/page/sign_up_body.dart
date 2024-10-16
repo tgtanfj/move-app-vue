@@ -169,7 +169,9 @@ class _SignUpBodyState extends State<SignUpBody>
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(password: value.trim()));
                         },
-                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                       ),
                       const SizedBox(height: 10),
                       CustomEditText(
@@ -184,7 +186,9 @@ class _SignUpBodyState extends State<SignUpBody>
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputConfirmPassword,
-                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                         onChanged: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(

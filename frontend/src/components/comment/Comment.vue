@@ -1,4 +1,3 @@
-commentVideo:
 <script setup>
 import { commentServices } from '@services/comment.services'
 import { onMounted, onUnmounted, ref } from 'vue'
@@ -7,13 +6,13 @@ import { useAuthStore } from '../../stores/auth'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 
+const userStore = useAuthStore()
 const commentData = ref([])
 const isLoading = ref(false)
 const hasMoreComments = ref(true)
 const cursor = ref(null)
 const commentFromChild = ref(null)
 const route = useRoute()
-const userStore = useAuthStore()
 
 const videoId = route.params.id
 
@@ -78,6 +77,7 @@ const handleUpdateComments = (updatedComments) => {
       <RenderComment
         :videoId="videoId"
         :comments="commentData"
+        :me="userStore?.user"
         @update-comments="handleUpdateComments"
       />
     </div>

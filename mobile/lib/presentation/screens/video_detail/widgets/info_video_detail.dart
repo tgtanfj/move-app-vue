@@ -14,11 +14,15 @@ class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
   final VoidCallback followButton;
   final VoidCallback giftRepButton;
-  const InfoVideoDetail(
-      {super.key,
-      required this.viewChanelButton,
-      required this.followButton,
-      required this.giftRepButton});
+  final VoidCallback onTapRate;
+
+  const InfoVideoDetail({
+    super.key,
+    required this.viewChanelButton,
+    required this.followButton,
+    required this.giftRepButton,
+    required this.onTapRate,
+  });
 
   @override
   State<InfoVideoDetail> createState() => _InfoVideoDetailState();
@@ -54,7 +58,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                           style: AppTextStyles.montserratStyle.regular20Black,
                         ),
                       ),
-                      const Badges(),
+                      const Badges(isBlueBadge: false, isPinkBadge: false,), // TODO : add badge
                     ],
                   ),
                   Row(
@@ -80,6 +84,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 onTap: widget.followButton,
                 child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
             PopupMenuButton<String>(
+              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(16.0), // Set the border radius here
@@ -90,6 +95,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
                   value: Constants.rate,
+                  onTap: widget.onTapRate,
                   child: Row(
                     children: [
                       Expanded(
@@ -133,14 +139,15 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               child: Row(
                 children: [
                   TypeLabel(
-                    typeLabel: Constants.intermediate == 'Intermediate' // TODO: add type label
+                    typeLabel: Constants.intermediate ==
+                            'Intermediate' // TODO: add type label
                         ? Constants.interm
                         : Constants.intermediate,
                   ),
                   SizedBox(
                     width: 6.0,
                   ),
-                  TypeLabel(typeLabel: '<30 mins' ), // TODO: add type label
+                  TypeLabel(typeLabel: '<30 mins'), // TODO: add type label
                 ],
               ),
             ),
@@ -165,7 +172,9 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             const SizedBox(width: 12.0),
           ],
         ),
-        const SizedBox(height: 14.0,),
+        const SizedBox(
+          height: 14.0,
+        ),
         GestureDetector(
           onTap: widget.viewChanelButton,
           child: Row(
@@ -174,7 +183,8 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 width: 12.0,
               ),
               Text(
-                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",  // TODO: add channel name
+                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",
+                // TODO: add channel name
                 style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
               ),
               const SizedBox(

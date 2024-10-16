@@ -6,9 +6,14 @@ import { Follow } from '@/entities/follow.entity';
 import { FollowRepository } from './follow.repository';
 import { JwtService } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
+import { ChannelModule } from '../channel/channel.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Follow]), forwardRef(() => UserModule)],
+  imports: [
+    TypeOrmModule.forFeature([Follow]),
+    forwardRef(() => UserModule),
+    forwardRef(() => ChannelModule),
+  ],
   controllers: [FollowController],
   providers: [FollowService, FollowRepository, JwtService],
   exports: [FollowService],

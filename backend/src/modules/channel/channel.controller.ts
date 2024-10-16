@@ -8,6 +8,7 @@ import { User } from '@/shared/decorators/user.decorator';
 import { Public } from '@/shared/decorators/public.decorator';
 import { QueryChannelDto } from './dto/request/query-channel.dto';
 import { Type } from 'class-transformer';
+import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -67,18 +68,16 @@ export class ChannelController {
     };
   }
 
+  @Get('/setting')
+  @UseGuards(JwtAuthGuard)
+  async getChannelSetting(@User() user?): Promise<ChannelSettingDto> {
+    return await this.channelService.getChannelSetting(user.id);
+  }
 
   @ApiBearerAuth('jwt')
-  @Get('/:id/about')
-  @Public()
+  @Get('/get-reps')
   @UseGuards(JwtAuthGuard)
-  async channelViewNumberOfRe(
-    @Param('id', new ParseIntPipe())
-    channelId: number,
-    @User() user?,
-  ) {
-    return {
-      data: await this.channelService.getChannelProfile(channelId, user ? user.id : undefined),
-    };
+  async getReps(@User() user?) {
+    return await this.channelService.getChannelReps(user.id);
   }
 }

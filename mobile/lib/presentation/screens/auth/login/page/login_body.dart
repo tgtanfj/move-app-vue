@@ -11,7 +11,6 @@ import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_bloc.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
 import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
-import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../../home/page/home_page.dart';
@@ -59,6 +58,7 @@ class _LoginBodyState extends State<LoginBody>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
@@ -73,7 +73,7 @@ class _LoginBodyState extends State<LoginBody>
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.only(top: 12),
             child: SingleChildScrollView(
               child: Column(
                 children: [

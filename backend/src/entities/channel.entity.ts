@@ -60,6 +60,12 @@ export class Channel extends BaseEntity {
   })
   numberOfFollowers: number;
 
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfREPs: number;
+
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -72,4 +78,14 @@ export class Channel extends BaseEntity {
 
   @OneToMany(() => Follow, (follow) => follow.channel)
   follows: Follow[];
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
+  })
+  numberOfVideos: number;
 }

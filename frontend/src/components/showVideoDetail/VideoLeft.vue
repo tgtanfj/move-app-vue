@@ -9,7 +9,9 @@ import InstaIcon from '@assets/icons/InstaIcon.vue'
 import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
 import FBIcon from '@assets/icons/FBIcon.vue'
 import Comment from '@components/comment/Comment.vue'
+import Rating from './Rating.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
+import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -20,25 +22,22 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="flex-[2.8]">
+  <div v-if="props.videoDetail" class="flex-[2.8]">
     <!-- video play -->
-    <video width="100%" height="auto" controls autoplay muted class="h-[519px]">
-      <source
-        src="https://move-project.s3.us-east-1.amazonaws.com/videos/1728017172580-1728017169372-Y2meta.app-Nature%20Beautiful%20short%20video%20720p%20HD.mp4"
-        type="video/mp4"
-      />
-    </video>
+    <VideoDisplay :videoUrl="props.videoDetail.url" />
     <!-- /video play -->
 
     <!-- Video actions and info -->
     <div class="p-5 w-full">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold">Video title</h1>
+        <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
         <p class="flex gap-1 text-xl font-semibold"><StartIcon width="24px" height="24px" />4.5</p>
       </div>
 
       <div class="flex gap-2 mt-2">
-        <p class="text-red-500 font-semibold"><span class="font-semibold">10.3</span>k {{ $t('video_detail.views') }}</p>
+        <p class="text-red-500 font-semibold">
+          <span class="font-semibold">10.3</span>k {{ $t('video_detail.views') }}
+        </p>
         <p class="font-semibold text-primary">• Just Move</p>
       </div>
 
@@ -51,10 +50,7 @@ const props = defineProps({
           <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
             <Heart width="20px" class="text-primary" /> {{ $t('video_detail.follow') }}
           </div>
-          <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
-            <Star width="20px" class="text-primary" /> {{ $t('video_detail.rate') }}
-          </div>
-
+          <Rating :videoDetail="videoDetail" />
           <ShareLinkVideo />
         </div>
       </div>

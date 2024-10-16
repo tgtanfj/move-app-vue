@@ -17,13 +17,12 @@ import ForgotPassword from '@components/auth/ForgotPassword.vue'
 import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
 import SignUpModal from '@components/auth/SignUpModal.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
-import { onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useOpenLoginStore } from '../stores/openLogin'
 import UploadVideo from './upload-video/UploadVideo.vue'
-import { useResetPasswordStore } from '../stores/resetPassword'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -35,16 +34,8 @@ const signupInfo = ref('')
 const isInStreamerPage = ref(false)
 const isInResetPWPage = ref(false)
 const authStore = useAuthStore()
-const resetPasswordStore = useResetPasswordStore()
-const router = useRouter();
+const openLoginStore = useOpenLoginStore()
 const route = useRoute()
-
-watch(
-  () => router.currentRoute.value, 
-  () => {
-    checkFromPasswordReset();
-  }
-);
 
 onMounted(() => {
   const currentUrl = window.location.href
@@ -61,12 +52,6 @@ onMounted(() => {
     }
   }
 })
-const checkFromPasswordReset = () => {
-  if (resetPasswordStore.fromResetPassword === true) {
-    isOpen.value = true
-    resetPasswordStore.toggleResetPasswordVariant()
-  }
-}
 
 const isUserLoggedIn = computed(() => !!authStore.accessToken)
 
@@ -140,6 +125,13 @@ const resetCountdown = () => {
   countdown.value = 60
   startCountdown()
 }
+
+watchEffect(() => {
+  if (openLoginStore.isOpenLogin) {
+    isOpen.value = true
+    openLoginStore.toggleOpenLogin()
+  }
+})
 </script>
 
 <template>

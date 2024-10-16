@@ -56,12 +56,12 @@ export class FollowRepository {
     return await this.followRepository.save(newIns);
   }
 
-  async delete(follow:Follow) {
-    return await this.followRepository.delete(follow.id)
+  async delete(follow: Follow) {
+    return await this.followRepository.delete(follow.id);
   }
 
   async findOneFollow(userId: number, channelId: number) {
-    return  await this.followRepository.findOne({
+    return await this.followRepository.findOne({
       where: {
         user: {
           id: userId,

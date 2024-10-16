@@ -1,19 +1,21 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ChannelRepository } from './channel.repository';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Channel } from '@/entities/channel.entity';
-import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
-import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
-import { ChannelProfileDto } from './dto/response/channel-profile.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
-import { FollowService } from '../follow/follow.service';
-import { ChannelItemDto } from './dto/response/channel-item.dto';
-import { VideoService } from '../video/video.service';
-import { VideoItemDto } from '../video/dto/response/video-item.dto';
-import { SocialLink } from './dto/response/channel-profile.dto';
-import { ChannelVideosDto } from './dto/response/channel-videos.dto';
-import { PaginationDto } from '../video/dto/request/pagination.dto';
+import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { ApiConfigService } from '@/shared/services/api-config.service';
 import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { UpdateResult } from 'typeorm';
+import { EmailService } from '../email/email.service';
+import { FollowService } from '../follow/follow.service';
+import { PaginationDto } from '../video/dto/request/pagination.dto';
+import { VideoService } from '../video/video.service';
+import { ChannelRepository } from './channel.repository';
+import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import { ChannelItemDto } from './dto/response/channel-item.dto';
+import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
+import { MailDTO } from '@/shared/interfaces/mail.dto';
+import { getTemplateBlueBadge } from '../email/templates/template-blue-badge';
+import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 
 @Injectable()
 export class ChannelService {
@@ -21,6 +23,8 @@ export class ChannelService {
     private readonly channelRepository: ChannelRepository,
     private readonly followService: FollowService,
     private readonly videoService: VideoService,
+    private readonly emailService: EmailService,
+    private readonly apiConfig: ApiConfigService,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
@@ -83,7 +87,7 @@ export class ChannelService {
                 excludeExtraneousValues: true,
               });
 
-              channelItem.numberOfFollowers = fixIntNumberResponse(channelItem.numberOfFollowers);
+              channelItem.numberOfFollowers = +channelItem.numberOfFollowers;
 
               return channelItem;
             }),
@@ -93,7 +97,7 @@ export class ChannelService {
     ]);
 
     channelProfileDto.isFollowed = isFollowed;
-    channelProfileDto.numberOfFollowers = fixIntNumberResponse(channelProfileDto.numberOfFollowers);
+    channelProfileDto.numberOfFollowers = +channelProfileDto.numberOfFollowers;
     channelProfileDto.followingChannels = followingChannels;
     channelProfileDto.socialLinks = socialLinks;
 
@@ -110,5 +114,61 @@ export class ChannelService {
     if (instagramLink) socialLinks.push({ name: 'instagram', link: instagramLink });
 
     return socialLinks;
+  }
+
+  async increaseFollow(channelId: number) {
+    const channel = await this.findOne(channelId);
+    channel.numberOfFollowers = channel.numberOfFollowers + 1;
+    if (channel.numberOfFollowers > 10000) {
+      channel.isBlueBadge = true;
+      // const foundUser = await this.channelRepository.getUserByChannel(channelId)
+
+      // if (!foundUser) {
+      //   throw new BadRequestException('1')
+      // }
+      // const link = `${this.apiConfig.getString('FRONT_END_URL')}/channel/${channel.id}`
+      // send mail
+      // const dto: MailDTO = {
+      //   subject: 'Password reset',
+      //   to: foundUser.user.email,
+      //   html: getTemplateBlueBadge(channel.name, link),
+      //   from: this.apiConfig.getString('MAIL_USER'),
+      // };
+      // this.emailService.sendMail(dto);
+    }
+    return await this.channelRepository.updateChannel(channel);
+  }
+
+  async decreaseFollow(channelId: number) {
+    const channel = await this.findOne(channelId);
+    channel.numberOfFollowers = channel.numberOfFollowers - 1;
+    if (channel.numberOfFollowers < 10000) {
+      channel.isBlueBadge = false;
+    }
+    return await this.channelRepository.updateChannel(channel);
+  }
+
+  async getUserByChannel(channelId: number) {}
+  async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
+    return this.channelRepository.updateREPs(channelId, numberOfREPs);
+  }
+
+  async getChannelSetting(userId: number) {
+    const channel = await this.getChannelByUserId(userId);
+
+    const channelSettingDto = plainToInstance(ChannelSettingDto, channel, { excludeExtraneousValues: true });
+    channelSettingDto.socialLinks = await this.getSocialLinks(
+      channel.facebookLink,
+      channel.youtubeLink,
+      channel.instagramLink,
+    );
+
+    return channelSettingDto;
+  }
+
+  async getChannelReps(userId: number) {
+    const channel = await this.getChannelByUserId(userId);
+    const repValueInUSD = channel.numberOfREPs * 0.006;
+    return { numberOfREPs: repValueInUSD };
   }
 }
