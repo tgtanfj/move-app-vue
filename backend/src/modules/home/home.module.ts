@@ -17,6 +17,8 @@ import { VideoTrend } from '@/entities/video-trend.entity';
 import { VideoModule } from '../video/video.module';
 import { VimeoService } from '@/shared/services/vimeo.service';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
+import { ChannelModule } from '../channel/channel.module';
+import { CategoryModule } from '../category/category.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { ThumbnailModule } from '../thumbnail/thumbnail.module';
     UserModule,
     VideoModule,
     ThumbnailModule,
+    ChannelModule,
+    CategoryModule
   ],
   controllers: [HomeController],
   providers: [HomeService, JwtService, VimeoService],

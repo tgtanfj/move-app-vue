@@ -6,20 +6,16 @@ export class VideoTrendRepository {
   constructor(@InjectRepository(VideoTrend) private readonly videoTrendRepository: Repository<VideoTrend>) {}
   async saveRecord(obj: any) {
     const newVideoTrend = this.videoTrendRepository.create({
-      videoId: obj.videoId,
+      videoId: obj.id,
       title: obj.title,
       workoutLevel: obj.workoutLevel,
-      thumbnailURL: obj.thumbnailURL,
-      numberOfViews: obj.numberOfViews,
+      createdAt: obj.createdAt,
+      duration: obj.duration,
       videoLength: obj.videoLength,
       ratings: obj.ratings,
-      category: obj.category,
-      createdAt: obj.createdAt ? new Date(obj.createdAt) : null, // Convert createdAt if present
-      duration: obj.duration,
-      channelName: obj.channelName,
-      channelImage: obj.channelImage,
-      isBlueBadge: obj.isBlueBadge,
-      isPinkBadge: obj.isPinkBadge,
+      numberOfViews: obj.numberOfView,
+      categoryId: obj.category,
+      channelId: obj.channelId,
     });
     return await this.videoTrendRepository.save(newVideoTrend);
   }

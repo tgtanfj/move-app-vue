@@ -57,6 +57,10 @@ export class Channel extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfFollowers: number;
 
