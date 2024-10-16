@@ -17,8 +17,8 @@ import ForgotPassword from '@components/auth/ForgotPassword.vue'
 import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
 import SignUpModal from '@components/auth/SignUpModal.vue'
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, ref, triggerRef, watch, watchEffect } from 'vue'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 import { useOpenLoginStore } from '../stores/openLogin'
@@ -38,47 +38,22 @@ const authStore = useAuthStore()
 const openLoginStore = useOpenLoginStore()
 const route = useRoute()
 
-onMounted(() => {
-  const currentUrl = window.location.href
-  if (currentUrl) {
-    if (currentUrl.includes('/streamer')) {
+watch(
+  () => route.path,
+  (newValue) => {
+    if (
+      (newValue && newValue.includes('/streamer')) ||
+      (newValue && newValue.includes('/reset-password'))
+    ) {
       isInStreamerPage.value = true
-    } else {
-      isInStreamerPage.value = false
-    }
-    if (currentUrl.includes('/reset-password')) {
-      isInResetPWPage.value = true
     } else {
       isInResetPWPage.value = false
     }
-  }
-})
+  },
+  { immediate: true }
+)
 
 const isUserLoggedIn = computed(() => !!authStore.accessToken)
-
-const checkStreamerStatus = (path) => {
-  isInStreamerPage.value = path.includes('/streamer')
-}
-
-const checkResetPassword = (path) => {
-  isInResetPWPage.value = path.includes('/reset-password')
-}
-
-checkStreamerStatus(route.path)
-
-watch(
-  () => route.path,
-  (newPath) => {
-    checkStreamerStatus(newPath)
-  }
-)
-
-watch(
-  () => route.path,
-  (newPath) => {
-    checkResetPassword(newPath)
-  }
-)
 
 const closeModal = () => {
   isOpen.value = false
@@ -212,7 +187,7 @@ watchEffect(() => {
             </DialogContent>
           </Dialog>
         </div>
-        <div v-if="isInStreamerPage" class="mr-4">
+        <div v-if="isInStreamerPage && authStore.accessToken" class="mr-4">
           <UploadVideo />
         </div>
         <div>

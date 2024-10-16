@@ -22,7 +22,15 @@ export const DURATIONTYPE = [
   }
 ]
 
-export const allowedFormats = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm']
+export const allowedFormats = [
+  'video/mp4',
+  'video/quicktime',
+  'video/x-msvideo',
+  'video/webm',
+  'video/x-ms-wmv',
+  'video/mpeg',
+  'video/mpeg4'
+]
 
 export const maxFileSize = 50 * 1024 * 1024 * 1024 // 50GB
 
