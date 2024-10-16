@@ -186,4 +186,11 @@ export class UserService {
   async updateREPs(userId: number, numberOfREPs: number) {
     return this.userRepository.updateREPs(userId, numberOfREPs);
   }
+
+  async findChannelByUserId(userId: number): Promise<User> {
+    return await this.userRepository.findOne(userId, { channel: true }).catch((error) => {
+      console.error(error);
+      throw new BadRequestException(error);
+    });
+  }
 }

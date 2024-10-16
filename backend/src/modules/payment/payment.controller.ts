@@ -1,5 +1,6 @@
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards';
+import { validateDate } from '@/shared/utils/validate-date.util';
 import {
   BadRequestException,
   Body,
@@ -13,16 +14,19 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { BuyREPsDto } from './dto/buy-reps.dto';
-import { PaymentService } from './payment.service';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
-import { validateDate } from '@/shared/utils/validate-date.util';
+import { WithDrawDto } from './dto/withdraw.dto';
+import { PaymentService } from './payment.service';
+import { PayPalService } from './paypal.service';
 
 @Controller('payment')
 @ApiTags('Payment')
 @ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+  ) {}
 
   @Get('list-reps-package')
   @HttpCode(HttpStatus.OK)
@@ -46,5 +50,10 @@ export class PaymentController {
     } catch (err) {
       throw new BadRequestException(err);
     }
+  }
+
+  @Post('withdraw')
+  async createPayout(@User() user, @Body() withDrawDto: WithDrawDto) {
+    return await this.paymentService.withDraw(user.id, withDrawDto);
   }
 }
