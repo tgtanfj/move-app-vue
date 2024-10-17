@@ -31,6 +31,7 @@ const openLoginStore = useOpenLoginStore()
 const isCancelComment = ref(false)
 const isFocused = ref(false)
 const comment = ref('')
+const userAvatar = ref(localStorage.getItem('userAvatar'))
 
 const handleBlur = () => {
   if (!comment.value) {
@@ -85,7 +86,7 @@ const handleClickInput = () => {
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
       <img
-        :src="me?.photoURL ? me?.photoURL : defaultAvatar"
+        :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
         class="w-[40px] h-[40px] rounded-full object-cover"
       />
       <Input

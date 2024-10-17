@@ -5,12 +5,12 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { ArrowRightFromLine } from 'lucide-vue-next'
 import { ArrowLeft } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
-import { homepageService } from '@services/homepage.services'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import FollowedChannelsSkeleton from './FollowedChannelsSkeleton.vue'
 import { getFollowerText } from '@utils/follower.util'
 import { useRouter } from 'vue-router'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const props = defineProps({
   sidebarOpen: {
@@ -24,21 +24,15 @@ const emit = defineEmits(['toggleSidebar'])
 const router = useRouter()
 const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
+const followerStore = useFollowerStore()
 
-const channels = ref(null)
-const notFollowedAnyOne = ref(false)
 const isLoading = ref(false)
 
 onMounted(async () => {
   const accessToken = localStorage.getItem('token')
   if (accessToken) {
     isLoading.value = true
-    const response = await homepageService.getFollowedChannels()
-    if (response.data.length > 0) {
-      channels.value = response.data
-    } else {
-      notFollowedAnyOne.value = true
-    }
+    await followerStore.getAllFollowers()
     isLoading.value = false
   }
 })
@@ -69,7 +63,7 @@ const toggleSidebar = () => {
       <div class="flex flex-col mt-4 gap-4">
         <div
           v-if="authStore.accessToken"
-          v-for="channel in channels"
+          v-for="channel in followerStore.follower"
           :key="channel.id"
           class="flex items-center gap-1 cursor-pointer"
           @click="router.push(`/channel/${channel.id}`)"
@@ -89,11 +83,11 @@ const toggleSidebar = () => {
             </div>
           </div>
         </div>
-        <div v-if="isLoading && !channel" v-for="item in 10">
+        <div v-if="isLoading && !followerStore.follower" v-for="item in 10">
           <FollowedChannelsSkeleton />
         </div>
         <p
-          v-if="sidebarOpen && authStore.accessToken && notFollowedAnyOne"
+          v-if="sidebarOpen && authStore.accessToken && followerStore.follower.length === 0"
           class="text-[16px] text-[#666666]"
         >
           {{ $t('sidebar.not_login') }}

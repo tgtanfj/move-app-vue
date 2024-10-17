@@ -33,7 +33,6 @@ onMounted(async () => {
   const response = await homepageService.getHotTrendVideos()
   if (response.message === 'success') {
     videos.value = response.data
-    console.log('videos', videos.value)
   }
 })
 </script>
@@ -63,6 +62,7 @@ onMounted(async () => {
               <div class="flex-[0.35] h-full flex flex-col items-center justify-center gap-2.5">
                 <div class="flex items-start gap-3 w-[80%]">
                   <img
+                    @click.stop="router.push(`/channel/${item.channel.id}`)"
                     :src="item.channel.image"
                     class="w-[56px] h-[56px] rounded-full object-cover cursor-pointer"
                   />
@@ -78,7 +78,7 @@ onMounted(async () => {
                       <PinkBadgeIcon v-if="item.channel.isPinkBadge" />
                     </div>
                     <div class="text-[#666666] text-[14px] flex flex-col">
-                      <p>{{ item.category.content }}</p>
+                      <p>{{ item.category.title }}</p>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
                       <Star />

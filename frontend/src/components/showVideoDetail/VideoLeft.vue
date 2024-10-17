@@ -18,6 +18,7 @@ import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import Rating from './Rating.vue'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const props = defineProps({
   videoDetail: {
@@ -30,6 +31,7 @@ const channelInfo = ref({})
 const userStore = useAuthStore()
 const router = useRouter()
 const openLoginStore = useOpenLoginStore()
+const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
 const mutationFollow = useFollow()
@@ -75,6 +77,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = false
             numFollower.value--
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -87,6 +90,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = true
             numFollower.value++
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -114,13 +118,16 @@ const handleNavigate = () => {
   router.push(`/channel/${props.videoDetail.channel.id}`)
 }
 
-watch(() => userStore.accessToken, (newToken) => {
-  if (newToken) {
-    checkFollowStatus()
-  } else {
-    isFollowed.value = null
+watch(
+  () => userStore.accessToken,
+  (newToken) => {
+    if (newToken) {
+      checkFollowStatus()
+    } else {
+      isFollowed.value = null
+    }
   }
-})
+)
 
 onMounted(() => {
   checkFollowStatus()
@@ -173,23 +180,23 @@ onMounted(() => {
       <!-- Video channel -->
       <div class="flex justify-between items-center">
         <RouterLink :to="`/channel/${props.videoDetail.channel.id}`">
-        <div class="flex items-center gap-4">
-          <img
-            :src="channelInfo.image"
-            alt="ava channel"
-            class="w-[56px] h-[56px] rounded-full cursor-pointer"
-            @click="handleNavigate"
-          />
-          <div>
-            <h3 class="text-xl font-semibold cursor-pointer" @click="handleNavigate">
-              {{ channelInfo.name }}
-            </h3>
-            <p class="text-gray-500 font-medium">
-              {{ numFollower }} {{ getFollowerText(numFollower) }}
-            </p>
-          </div>
-        </div>
-      </RouterLink>f
+          <div class="flex items-center gap-4">
+            <img
+              :src="channelInfo.image"
+              alt="ava channel"
+              class="w-[56px] h-[56px] rounded-full cursor-pointer"
+              @click="handleNavigate"
+            />
+            <div>
+              <h3 class="text-xl font-semibold cursor-pointer" @click="handleNavigate">
+                {{ channelInfo.name }}
+              </h3>
+              <p class="text-gray-500 font-medium">
+                {{ numFollower }} {{ getFollowerText(numFollower) }}
+              </p>
+            </div>
+          </div> </RouterLink
+        >f
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 

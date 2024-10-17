@@ -9,6 +9,7 @@ import { useFollow, useUnfollow } from '../../services/follow.services'
 import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useChannelStore } from '../../stores/view-channel'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const emit = defineEmits(['increaseFollower', 'decreaseFollower'])
 
@@ -18,6 +19,7 @@ const id = route.params.id
 const channelStore = useChannelStore()
 const openLoginStore = useOpenLoginStore()
 const userStore = useAuthStore()
+const followerStore = useFollowerStore()
 
 const isFollowed = ref(channelStore.channelInfo.isFollowed)
 const mutationFollow = useFollow()
@@ -43,6 +45,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = false
             emit('decreaseFollower')
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -55,6 +58,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = true
             emit('increaseFollower')
+            followerStore.getAllFollowers()
           }
         }
       )

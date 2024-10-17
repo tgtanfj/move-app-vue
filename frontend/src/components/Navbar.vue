@@ -24,6 +24,7 @@ import { useAuthStore } from '../stores/auth'
 import { useOpenLoginStore } from '../stores/openLogin'
 import UploadVideo from './upload-video/UploadVideo.vue'
 import Search from './search/Search.vue'
+import { useFollowerStore } from '../stores/follower.store'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -36,6 +37,7 @@ const isInStreamerPage = ref(false)
 const isInResetPWPage = ref(false)
 const authStore = useAuthStore()
 const openLoginStore = useOpenLoginStore()
+const followerStore = useFollowerStore()
 const route = useRoute()
 
 watch(
@@ -81,6 +83,7 @@ const handleVerifySuccess = async (values) => {
   clearInterval(timer)
   isCounting.value = false
   await authStore.loginWithEmail(values)
+  followerStore.getAllFollowers()
 }
 
 const startCountdown = () => {

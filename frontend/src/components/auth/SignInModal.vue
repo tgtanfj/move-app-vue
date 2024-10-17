@@ -8,6 +8,7 @@ import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { signinSchema } from '../../validation/schema'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const props = defineProps({
   closeModal: Function
@@ -26,6 +27,7 @@ const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 const { toast } = useToast()
 const authStore = useAuthStore()
+const followerStore = useFollowerStore()
 
 const isFillAllFields = computed(() => {
   return values.email && values.password
@@ -41,6 +43,7 @@ const handleSignIn = async () => {
   } else {
     await authStore.loginWithEmail(values)
     if (authStore.accessToken) {
+      followerStore.getAllFollowers()
       props.closeModal()
       toast({ description: 'Login successfully', variant: 'successfully' })
     } else {

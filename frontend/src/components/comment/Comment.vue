@@ -30,6 +30,13 @@ const handlePushCommentFromChild = (data) => {
   commentData.value.unshift(data)
 }
 
+const updateReplyCount = (id, newReplyCount) => {
+  const targetComment = commentData.value.find((c) => c.id === id)
+  if (targetComment) {
+    targetComment.numberOfReply = targetComment.numberOfReply + newReplyCount
+  }
+}
+
 const loadComments = async () => {
   if (!hasMoreComments.value || isLoading.value) return
   isLoading.value = true
@@ -79,6 +86,7 @@ const handleUpdateComments = (updatedComments) => {
         :comments="commentData"
         :me="userStore?.user"
         @update-comments="handleUpdateComments"
+        @updateReplyCount="updateReplyCount"
       />
     </div>
   </div>
