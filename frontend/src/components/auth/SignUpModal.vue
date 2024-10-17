@@ -9,6 +9,7 @@ import { computed, ref, watch } from 'vue'
 import { signupService } from '@services/signup.services'
 import { useAuthStore } from '../../stores/auth'
 import { registerSchema } from '../../validation/schema.js'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const props = defineProps({
   closeModal: Function
@@ -18,6 +19,7 @@ const errorsSignUp = ref('')
 const showError = ref(false)
 const isLoading = ref(false)
 const authStore = useAuthStore()
+const followerStore = useFollowerStore()
 const { toast } = useToast()
 
 const emit = defineEmits(['openOtpVerification'])
@@ -70,6 +72,7 @@ const handleGoogleSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })
       }
@@ -95,6 +98,7 @@ const handleFacebookSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })
       }
@@ -115,7 +119,6 @@ const handleFacebookSignIn = async () => {
 const clearErrorAPI = () => {
   errorsSignUp.value = ''
 }
-
 </script>
 
 <template>

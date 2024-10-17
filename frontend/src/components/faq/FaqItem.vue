@@ -1,5 +1,5 @@
 <script setup>
-import { ChevronDown, ChevronUp, Minus, Plus } from 'lucide-vue-next'
+import { Minus, Plus } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -22,12 +22,12 @@ const toggle = () => {
         {{ item.question }}
       </h2>
       <span class="text-gray-500">
-        <Plus :size="30" color="#000000" />
+        <Plus :size="30" color="#000000" v-if="!showAnswer"/>
       </span>
     </div>
     <div class="flex justify-between" v-if="showAnswer">
       <p class="pr-5 mt-4 text-gray-700 text-base">{{ item.answer }}</p>
-      <div class="cursor-pointer" @click="showAnswer = false">
+      <div class="cursor-pointer mt-[-25px]" @click="showAnswer = false">
         <Minus :size="30" color="#12bda3" />
       </div>
     </div>

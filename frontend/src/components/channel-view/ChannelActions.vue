@@ -1,12 +1,12 @@
 <script setup>
 import { Button } from '@common/ui/button'
-import { EllipsisVertical, Share2 } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Heart from '../../assets/icons/Heart.vue'
 import HeartFilled from '../../assets/icons/HeartFilled.vue'
 import { useFollow, useUnfollow } from '../../services/follow.services'
 import { useAuthStore } from '../../stores/auth'
+import { useFollowerStore } from '../../stores/follower.store'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useChannelStore } from '../../stores/view-channel'
 
@@ -18,6 +18,7 @@ const id = route.params.id
 const channelStore = useChannelStore()
 const openLoginStore = useOpenLoginStore()
 const userStore = useAuthStore()
+const followerStore = useFollowerStore()
 
 const isFollowed = ref(channelStore.channelInfo.isFollowed)
 const mutationFollow = useFollow()
@@ -43,6 +44,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = false
             emit('decreaseFollower')
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -55,6 +57,7 @@ const handleFollow = () => {
           onSuccess: () => {
             isFollowed.value = true
             emit('increaseFollower')
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -72,11 +75,6 @@ const handleFollow = () => {
         <Heart v-show="!isFollowed" />
         <span class="ml-3 font-bold uppercase">{{ $t('view_channel.follow') }}</span></Button
       >
-      <Button variant="link"
-        ><Share2 className="h-4 w-4" />
-        <span class="ml-3 font-bold uppercase">{{ $t('view_channel.share') }}</span></Button
-      >
-      <Button variant="link"><EllipsisVertical /> </Button>
     </div>
   </div>
 </template>

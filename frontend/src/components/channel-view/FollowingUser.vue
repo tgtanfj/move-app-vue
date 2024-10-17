@@ -47,8 +47,7 @@ const handleNavigate = () => {
       <div class="flex items-center">
         <span class="text-2xl ml-3 cursor-pointer" @click="handleNavigate">{{ name }}</span>
         <span class="flex gap-2 ml-3">
-          <BlueBadgeIcon v-if="isBlueBadge" /> <PinkBadgeIcon v-if="isPinkBadge"
-        /></span>
+          <BlueBadgeIcon v-if="isBlueBadge" /> </span>
       </div>
       <p class="text-sm">{{ follower }} {{ getFollowerText(follower) }}</p>
     </div>

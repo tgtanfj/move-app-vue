@@ -27,9 +27,8 @@ import { Follow } from '@/entities/follow.entity';
     forwardRef(() => ChannelModule),
     forwardRef(() => WatchingVideoHistoryModule),
     ThumbnailModule,
-    BullModule.registerQueue({
+    BullModule.registerQueueAsync({
       name: 'upload-s3',
-      prefix: 'video',
     }),
   ],
   controllers: [VideoController],
@@ -43,6 +42,6 @@ import { Follow } from '@/entities/follow.entity';
     VimeoService,
     UploadS3Processor,
   ],
-  exports: [VideoService, VideoRepository],
+  exports: [VideoService, VideoRepository, BullModule],
 })
 export class VideoModule {}

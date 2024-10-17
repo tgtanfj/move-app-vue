@@ -328,7 +328,7 @@ const handleThumbnailUpload = (event) => {
 
 const firstButton = (tab) => {
   if (!title.value) {
-    titleErr.value = 'Please enter a title'
+    titleErr.value = 'Please enter a title for the video'
   }
   if (!imagesSelected.value) {
     thumbnailErr.value = 'Please upload thumbnail'
@@ -657,7 +657,10 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2">
                       <p class="text-[16px]">{{ $t('upload_video.workout_level') }}</p>
-                      <div v-if="workoutLevelErr !== ''" class="text-destructive ml-2 text-sm italic">
+                      <div
+                        v-if="workoutLevelErr !== ''"
+                        class="text-destructive ml-2 text-sm italic"
+                      >
                         {{ workoutLevelErr }}
                       </div>
                     </div>

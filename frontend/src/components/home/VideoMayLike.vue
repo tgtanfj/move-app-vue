@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
-import { detectDuration } from '@utils/uploadVideo.util'
+import { detectDuration, detectWorkoutLevel } from '@utils/uploadVideo.util'
 
 const props = defineProps({
   video: {
@@ -41,9 +41,9 @@ const router = useRouter()
       </div>
     </div>
     <div class="flex items-start mt-2">
-      <img class="w-[32px] h-[32px] rounded-full" :src="video.channel.image" />
+      <img @click="router.push(`/channel/${video.channel.id}`)" class="w-[32px] h-[32px] rounded-full cursor-pointer" :src="video.channel.image" />
       <div class="ml-3">
-        <p class="text-[16px] font-bold mt-2">{{ video.title }}</p>
+        <p @click="router.push(`/video/${video.id}`)" class="text-[16px] font-bold mt-2 cursor-pointer">{{ video.title }}</p>
         <div class="flex flex-col items-start justify-start mt-1.5">
           <div class="flex items-center gap-3">
             <p
@@ -54,19 +54,18 @@ const router = useRouter()
             </p>
             <span class="flex gap-2 ml-2">
               <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
-              <PinkBadgeIcon v-if="video.channel.isPinkBadge" />
             </span>
           </div>
           <div class="flex gap-1 items-center">
-            <p class="text-[#666666] text-[14px]">{{ video.category.title }}</p>
+            <p class="text-[#666666] text-[12px]">{{ video.category.title }}</p>
             <p>⋅</p>
-            <p class="text-[#666666] text-[14px]">
+            <p class="text-[#666666] text-[12px]">
               {{ video.createdAt ? convertTimePostVideo(video.createdAt) : 'Posted a day ago' }}
             </p>
           </div>
           <div class="flex items-center gap-1 justify-start mt-2">
             <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
-              {{ video.workoutLevel }}
+              {{ detectWorkoutLevel(video.workoutLevel) }}
             </div>
             <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
               {{ detectDuration(video.duration) }}
