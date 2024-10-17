@@ -39,7 +39,7 @@ export class HomeService {
   ) {}
 
   // @Cron('* 1 0 * *')
-  @Cron('0 30 * * * *')
+  // @Cron('0 30 * * * *')
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
@@ -120,7 +120,7 @@ export class HomeService {
           },
           category: {
             id: category.id,
-            content: category.title,
+            title: category.title,
           },
           thumbnailURL: thumbnail && thumbnail.image ? thumbnail.image : null,
         };
