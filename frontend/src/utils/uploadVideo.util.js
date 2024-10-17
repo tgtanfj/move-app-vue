@@ -1,4 +1,4 @@
-import { MONTHS } from "@constants/date.constant"
+import { MONTHS } from '@constants/date.constant'
 
 export const captureThumbnail = (video, time) => {
   return new Promise((resolve) => {
@@ -55,11 +55,11 @@ export const compareBlobs = async (blob1, blob2) => {
 }
 
 export const formatDateString = (dateString) => {
-  const [year, month, day] = dateString.split('-');
+  const [year, month, day] = dateString.split('-')
 
-  const monthName = MONTHS.find(m => m.num === month).text;
+  const monthName = MONTHS.find((m) => m.num === month).text
 
-  return `${day} ${monthName} ${year}`;
+  return `${day} ${monthName} ${year}`
 }
 
 export const detectDuration = (duration) => {
@@ -70,6 +70,19 @@ export const detectDuration = (duration) => {
       return '< 1h'
     case 'more than 1 hours':
       return '> 1h'
+    default:
+      return 'Unknown'
+  }
+}
+
+export const detectWorkoutLevel = (item) => {
+  switch (item) {
+    case 'beginner':
+      return 'Beginner'
+    case 'intermediate':
+      return 'Intermediate'
+    case 'advanced':
+      return 'Advanced'
     default:
       return 'Unknown'
   }

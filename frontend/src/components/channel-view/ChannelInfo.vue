@@ -26,8 +26,7 @@ const handleDecrease = () => {
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>
           <span class="flex gap-2 ml-3">
-            <BlueBadgeIcon v-if="isBlueBadge" /> <PinkBadgeIcon v-if="isPinkBadge"
-          /></span>
+            <BlueBadgeIcon v-if="isBlueBadge" /></span>
         </div>
         <span class="text-sm">{{ numFollower }} {{ getFollowerText(numFollower) }}</span>
       </div>

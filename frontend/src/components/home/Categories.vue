@@ -30,7 +30,7 @@ const categoryTitle = formatCategoryTitleToUrl(props.category.title)
     </div>
     <p class="text-[18px] mt-3 font-bold">{{ props.category.title }}</p>
     <p class="text-[14px] text-[#666666]">
-      {{ props.category.numberOfViews ? formatViews(props.category.numberOfViews) : '0 view' }}
+      {{ props.category.numberOfViews ? formatViews(props.category.numberOfViews) : '0' }}
       views
     </p>
   </div>

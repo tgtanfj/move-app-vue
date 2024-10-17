@@ -1,15 +1,14 @@
 <script setup>
 import { Button } from '@common/ui/button'
-import { EllipsisVertical, Share2 } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Heart from '../../assets/icons/Heart.vue'
 import HeartFilled from '../../assets/icons/HeartFilled.vue'
 import { useFollow, useUnfollow } from '../../services/follow.services'
 import { useAuthStore } from '../../stores/auth'
+import { useFollowerStore } from '../../stores/follower.store'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useChannelStore } from '../../stores/view-channel'
-import { useFollowerStore } from '../../stores/follower.store'
 
 const emit = defineEmits(['increaseFollower', 'decreaseFollower'])
 
@@ -76,11 +75,6 @@ const handleFollow = () => {
         <Heart v-show="!isFollowed" />
         <span class="ml-3 font-bold uppercase">{{ $t('view_channel.follow') }}</span></Button
       >
-      <Button variant="link"
-        ><Share2 className="h-4 w-4" />
-        <span class="ml-3 font-bold uppercase">{{ $t('view_channel.share') }}</span></Button
-      >
-      <Button variant="link"><EllipsisVertical /> </Button>
     </div>
   </div>
 </template>
