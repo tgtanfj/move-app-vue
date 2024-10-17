@@ -13,7 +13,6 @@ apiAxios.interceptors.request.use(
     const authStore = useAuthStore()
     const token = authStore.accessToken || localStorage.getItem('token')
     if (token) {
-      console.log("api token")
       config.headers.Authorization = `Bearer ${token}`
     }
     return config

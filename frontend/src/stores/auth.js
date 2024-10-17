@@ -14,6 +14,7 @@ import { ADMIN_BASE } from '@constants/api.constant.js'
 export const useAuthStore = defineStore('auth', () => {
   // States
   const user = ref({})
+  const usernameUser = ref(null)
   const errorMsg = ref(null)
   const idToken = ref(null)
   const accessToken = ref(null)
@@ -92,8 +93,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
       })
 
-      user.value = userInfo.data
-      localStorage.setItem('userInfo', userInfo.data.data.username)
+      if (loginMethodLocal === 'email') {
+        user.value = userInfo.data
+        localStorage.setItem('userInfo', userInfo.data.data.username)
+      }
+      usernameUser.value = userInfo.data.data.username
       localStorage.setItem('token', accessToken.value)
       localStorage.setItem('refreshToken', refreshToken.value)
     } catch (error) {
@@ -150,6 +154,7 @@ export const useAuthStore = defineStore('auth', () => {
         const response = await axios.get(`${ADMIN_BASE}/auth/log-out`, config)
         if (response.status === 200) {
           user.value = {}
+          usernameUser.value = null
           idToken.value = null
           accessToken.value = null
           refreshToken.value = null
@@ -161,6 +166,7 @@ export const useAuthStore = defineStore('auth', () => {
       } else {
         await signOut(auth)
         user.value = {}
+        usernameUser.value = null
         idToken.value = null
         accessToken.value = null
         refreshToken.value = null
@@ -248,6 +254,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     isLoading,
     emailFirebase,
+    usernameUser,
     // actions
     googleSignIn,
     facebookSignIn,

@@ -10,24 +10,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
+import { Tabs, TabsList } from '@/common/ui/tabs'
 import { Label } from '@/common/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import { Textarea } from '@/common/ui/textarea'
 import { Button } from '@/common/ui/button'
-import { Tabs, TabsList } from '@/common/ui/tabs'
 import { Input } from '@/common/ui/input'
-import Loading from '../Loading.vue'
-import ImageLoading from '../ImageLoading.vue'
-import VideoIcon from '@assets/icons/videoIcon.vue'
 import { cn } from '@utils/shadcn.util'
+import Loading from '../Loading.vue'
+import VideoIcon from '@assets/icons/videoIcon.vue'
 import { useVideoStore } from '../../stores/videoManage'
-import {
-  allowedFormats,
-  maxFileSize,
-  validImageTypes,
-  WORKOUTLEVEL,
-  DURATIONTYPE
-} from '@constants/upload-video.constant'
+import { validImageTypes, WORKOUTLEVEL, DURATIONTYPE } from '@constants/upload-video.constant'
+import axios from 'axios'
+import { ADMIN_BASE } from '@constants/api.constant'
+import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 
 const props = defineProps({
   videoInfoSelected: {
@@ -42,10 +38,7 @@ const isOpenUploadVideoDetails = ref(false)
 
 const uploading = ref(false)
 const progress = ref(0)
-const error = ref(null)
 const images = ref([])
-const imagesAfterConvert = ref([])
-const selectedIndex = ref(null)
 const imagesSelected = ref(null)
 const imageSelectedFile = ref(null)
 const fileInputThumb = ref(null)
@@ -75,32 +68,7 @@ const displayWorkoutLevel = computed(() => capitalizeFirstLetter(videoDataEdit.v
 const displayDurationLevel = computed(() => convertDuration(videoDataEdit.value.duration))
 const keywords = computed(() => videoDataEdit.value.keywords)
 const isCommentable = ref(videoDataEdit.value.isCommentable)
-const categories = ref([
-  {
-    id: 1,
-    title: 'Gym'
-  },
-  {
-    id: 2,
-    title: 'MMA'
-  },
-  {
-    id: 3,
-    title: 'Weight Loss'
-  },
-  {
-    id: 4,
-    title: 'Muscle Gain'
-  },
-  {
-    id: 7,
-    title: 'Low Impact'
-  },
-  {
-    id: 10,
-    title: 'Upper Body'
-  }
-])
+const categories = ref([])
 
 watch(
   () => props.videoInfoSelected,
@@ -125,9 +93,19 @@ watch(isCommentable, (newValue) => {
   if (newValue) isCommentableErr.value = ''
 })
 
+const getListCategories = async () => {
+  try {
+    const res = await axios.get(`${ADMIN_BASE}/category`)
+    categories.value = res.data.data
+  } catch (error) {
+    console.log('Error category', error)
+  }
+}
+
 const handleEditVideo = () => {
   videoDataEdit.value = { ...props.videoInfoSelected }
   videoStore.videoId = props.videoInfoSelected.id
+  getListCategories()
 }
 
 const capitalizeFirstLetter = (string) => {
@@ -333,7 +311,7 @@ const thirdButton = async (tab) => {
       const response = await videoStore.updateDetailVideo(formData)
 
       if (response && response.statusCode === 200) {
-        // isOpenUploadVideoDetails.value = false
+        props.videoInfoSelected.title = title.value
         isEditSuccess.value = true
       }
     }
@@ -513,7 +491,7 @@ const thirdButton = async (tab) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup v-if="categories" v-for="cate in categories" :key="cate.id">
-                        <SelectItem :value="cate.id">{{ cate.title }}</SelectItem>
+                        <SelectItem v-if="cate" :value="cate.id">{{ cate.title }}</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

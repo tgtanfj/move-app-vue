@@ -12,7 +12,7 @@ import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
 import { fetchChannelAbout } from '@services/channel_about.services'
 import { useFollow, useUnfollow } from '@services/follow.services'
 import { ChevronRight } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
@@ -96,9 +96,35 @@ const handleFollow = () => {
   }
 }
 
+const checkFollowStatus = async () => {
+  const isLogin = !!userStore.accessToken
+  if (isLogin) {
+    try {
+      const response = await fetchChannelAbout(props.videoDetail.channel.id)
+      isFollowed.value = response.data.isFollowed
+    } catch (error) {
+      console.error('Error fetching follow status', error)
+    }
+  } else {
+    isFollowed.value = null
+  }
+}
+
 const handleNavigate = () => {
   router.push(`/channel/${props.videoDetail.channel.id}`)
 }
+
+watch(() => userStore.accessToken, (newToken) => {
+  if (newToken) {
+    checkFollowStatus()
+  } else {
+    isFollowed.value = null
+  }
+})
+
+onMounted(() => {
+  checkFollowStatus()
+})
 </script>
 
 <template>
@@ -146,6 +172,7 @@ const handleNavigate = () => {
       <DropdownMenuSeparator class="my-6" />
       <!-- Video channel -->
       <div class="flex justify-between items-center">
+        <RouterLink :to="`/channel/${props.videoDetail.channel.id}`">
         <div class="flex items-center gap-4">
           <img
             :src="channelInfo.image"
@@ -162,6 +189,7 @@ const handleNavigate = () => {
             </p>
           </div>
         </div>
+      </RouterLink>f
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 
