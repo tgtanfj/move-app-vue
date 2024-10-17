@@ -13,21 +13,43 @@ import { ChevronDown } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 import { commentServices } from '@services/comment.services'
+import { Input } from '@common/ui/input'
+import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
+import { Button } from '@common/ui/button'
+import { useOpenLoginStore } from '../../stores/openLogin'
+import { useAuthStore } from '../../stores/auth'
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const props = defineProps({
   comments: {
     type: Array,
+    required: true
+  },
+  me: {
+    type: Object,
     required: true
   }
 })
 
 const emit = defineEmits(['update-comments'])
 
-const showRepliesIds = ref([])
+const openLoginStore = useOpenLoginStore()
+const authStore = useAuthStore()
+
 const showFullContentIds = ref([])
 const showFullReplyIds = ref([])
-const repliesPerPage = 10
-const repliesToShow = ref({})
+const isShowedReplies = ref({})
+const cursorReplies = ref(null)
+const hasMoreRepliesPerComment = ref({})
+const repliesPerComment = ref({})
+const repliesCountPerComment = ref({})
+const replyData = ref(null)
+const replyInputId = ref(null)
+const isFocused = ref(false)
+const isCancelComment = ref(false)
+const myReplyPerComment = ref({})
+const numberReplies = ref(0)
 
 const localComments = ref([...props.comments])
 
@@ -37,6 +59,15 @@ watch(
     localComments.value = [...newComments]
   }
 )
+
+const checkIsAuth = () => {
+  if (!authStore.accessToken) {
+    openLoginStore.toggleOpenLogin()
+    return false
+  } else {
+    return true
+  }
+}
 
 const toggleCommentContent = (commentId) => {
   const index = showFullContentIds.value.indexOf(commentId)
@@ -49,6 +80,7 @@ const toggleCommentContent = (commentId) => {
 
 const handleLike = async (item) => {
   try {
+    if (!checkIsAuth()) return
     if (!item.hasOwnProperty('isLike')) {
       const res = await commentServices.createCommentReaction(item?.id, true)
       if (res.message === 'success') {
@@ -70,6 +102,7 @@ const handleLike = async (item) => {
 
 const handleUnLike = async (item) => {
   try {
+    if (!checkIsAuth()) return
     const res = await commentServices.deleteCommentReaction(item.id, false)
     if (res.message === 'success') {
       delete item.isLike
@@ -83,6 +116,7 @@ const handleUnLike = async (item) => {
 
 const handleDislike = async (item) => {
   try {
+    if (!checkIsAuth()) return
     if (!item.hasOwnProperty('isLike')) {
       const res = await commentServices.createCommentReaction(item?.id, false)
       if (res.message === 'success') item.isLike = false
@@ -101,6 +135,7 @@ const handleDislike = async (item) => {
 
 const handleUnDislike = async (item) => {
   try {
+    if (!checkIsAuth()) return
     const res = await commentServices.deleteCommentReaction(item.id)
     if (res.message === 'success') delete item.isLike
     emit('update-comments', toRaw(localComments.value))
@@ -109,48 +144,111 @@ const handleUnDislike = async (item) => {
   }
 }
 
-// const toggleReplies = (commentId) => {
-//   const index = showRepliesIds.value.indexOf(commentId)
-//   if (index > -1) {
-//     showRepliesIds.value.splice(index, 1)
-//   } else {
-//     showRepliesIds.value.push(commentId)
-//     repliesToShow.value[commentId] = repliesPerPage
-//   }
-// }
+const showRepliesByComment = async (commentId) => {
+  const response = await commentServices.getRepliesByComment(commentId)
+  if (response.message === 'success') {
+    isShowedReplies.value[commentId] = true
+    const repliesArray = response.data
+    cursorReplies.value = repliesArray[repliesArray.length - 1].id
+    repliesPerComment.value[commentId] = repliesArray
+    hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 10
+    if (cursorReplies.value === null) {
+      numberReplies.value += 1
+    }
+    if (!repliesCountPerComment.value[commentId]) {
+      repliesCountPerComment.value[commentId] = repliesArray.length
+    } else {
+      repliesCountPerComment.value[commentId] += repliesArray.length
+    }
+    if (myReplyPerComment.value[commentId]) myReplyPerComment.value = {}
+  }
+}
 
-// const showMoreReplies = (commentId) => {
-//   if (
-//     repliesToShow.value[commentId] <
-//     props.comments.find((comment) => comment.id === commentId).replies.length
-//   ) {
-//     repliesToShow.value[commentId] += repliesPerPage
-//   }
-// }
+const hideRepliesByComment = (commentId) => {
+  isShowedReplies.value[commentId] = false
+  hasMoreRepliesPerComment.value[commentId] = false
+  cursorReplies.value = null
+  repliesPerComment.value[commentId] = {}
+  repliesCountPerComment.value[commentId] = null
+  myReplyPerComment.value = {}
+}
 
-// const toggleReplyContent = (replyId) => {
-//   const index = showFullReplyIds.value.indexOf(replyId)
-//   if (index > -1) {
-//     showFullReplyIds.value.splice(index, 1)
-//   } else {
-//     showFullReplyIds.value.push(replyId)
-//   }
-// }
+const showMoreReplies = async (commentId) => {
+  if (!hasMoreRepliesPerComment.value[commentId]) return
+
+  const response = await commentServices.getRepliesByComment(commentId, cursorReplies.value)
+  if (response.message === 'success') {
+    const newReplies = response.data
+    repliesPerComment.value[commentId].push(...newReplies)
+    hasMoreRepliesPerComment.value[commentId] = newReplies.length >= 10
+    cursorReplies.value = newReplies[newReplies.length - 1].id
+    if (!repliesCountPerComment.value[commentId]) {
+      repliesCountPerComment.value[commentId] = newReplies.length
+    } else {
+      repliesCountPerComment.value[commentId] += newReplies.length
+    }
+  }
+}
+
+const toggleReplyContent = (replyId) => {
+  const index = showFullReplyIds.value.indexOf(replyId)
+  if (index > -1) {
+    showFullReplyIds.value.splice(index, 1)
+  } else {
+    showFullReplyIds.value.push(replyId)
+  }
+}
+
+const showReplyInput = async (commentId) => {
+  if (!checkIsAuth()) return
+  replyInputId.value = replyInputId.value === commentId ? null : commentId
+  replyData.value = ''
+}
+
+const handleBlur = () => {
+  if (!replyData.value) {
+    isFocused.value = false
+  }
+}
+
+const cancelComment = () => {
+  isCancelComment.value = false
+  replyData.value = ''
+  isFocused.value = false
+  replyInputId.value = null
+}
+
+const createReply = async (commentId) => {
+  const response = await commentServices.postReply(replyData.value, commentId)
+  if (response.message === 'success') {
+    myReplyPerComment.value[commentId] = response.data
+    replyData.value = ''
+    isFocused.value = false
+    replyInputId.value = null
+    isCancelComment.value = false
+    if (isShowedReplies.value[commentId]) {
+      repliesCountPerComment.value[commentId] += 1
+    }
+  }
+}
 </script>
 
 <template>
   <div class="w-full flex flex-col items-start gap-8">
-    <div v-for="(item, index) in comments" :key="item.id">
-      <div class="flex items-start gap-4">
+    <div class="w-full" v-for="item in comments" :key="item.id">
+      <div class="flex items-start gap-4 w-full">
         <img
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-1 w-full">
           <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
             <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
-            <CheckVerifyIcon v-if="item.user.isActive" />
+            <div v-if="item.user.channel" class="flex items-center gap-2">
+              <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
+              <PinkBadgeIcon v-if="item.user.channel.isPinkBadge" />
+            </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
               <YellowRepsIcon />
               <p class="text-[#FFB564] text-[12px] -mb-[1px]">
@@ -218,52 +316,210 @@ const handleUnDislike = async (item) => {
                   v-if="!item.hasOwnProperty('isLike')"
                 />
               </div>
-              <p class="text-primary text-[13px] cursor-pointer">{{ $t('comment.reply') }}</p>
+              <p @click="showReplyInput(item.id)" class="text-primary text-[13px] cursor-pointer">
+                {{ $t('comment.reply') }}
+              </p>
             </div>
           </div>
-          <!-- <div
-            v-if="item.replies.length > 0"
-            class="flex items-center gap-1 justify-start mt-1 cursor-pointer transition-all"
-            @click="toggleReplies(item.id)"
-          >
-            <ChevronDown
-              v-if="!showRepliesIds.includes(item.id)"
-              class="text-primary w-[20px] transition-all"
+
+          <div v-if="replyInputId === item.id" class="w-full flex items-center gap-4 mt-2">
+            <img
+              :src="me?.photoURL ? me?.photoURL : defaultAvatar"
+              class="w-[40px] h-[40px] rounded-full object-cover"
             />
-            <ChevronUp
-              v-if="showRepliesIds.includes(item.id)"
-              class="text-primary w-[20px] transition-all"
+            <Input
+              v-model="replyData"
+              @focus="isFocused = true"
+              placeholder="Write a reply"
+              class="w-full outline-none rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
             />
-            <p
-              v-if="!showRepliesIds.includes(item.id)"
-              class="text-primary text-[13px] font-semibold"
-            >
-            {{$t('comment.show')}} {{ item.replies.length }} {{$t('comment.replies')}}
-            </p>
-            <p
-              v-if="showRepliesIds.includes(item.id)"
-              class="text-primary text-[13px] font-semibold"
-            >
-            {{$t('comment.hide')}} {{ item.replies.length }} {{$t('comment.replies')}}
-            </p>
           </div>
-          <div v-if="showRepliesIds.includes(item.id)" class="w-full space-y-4 mt-2">
+          <div
+            v-if="isFocused && replyInputId === item.id"
+            class="flex items-center justify-end gap-4"
+          >
+            <Dialog v-model:open="isCancelComment">
+              <DialogTrigger aschild>
+                <Button class="text-[16px] font-normal" variant="outline">{{
+                  $t('comment.cancel')
+                }}</Button>
+              </DialogTrigger>
+              <DialogContent class="w-[400px] p-4">
+                <p class="text-2xl font-bold">{{ $t('comment.cancel_reservation') }}</p>
+                <p>{{ $t('comment.are_you_sure') }}</p>
+                <div class="w-full flex items-center justify-center gap-4 mt-4">
+                  <Button
+                    @click="isCancelComment = false"
+                    class="w-24 font-normal"
+                    variant="outline"
+                    >{{ $t('comment.no') }}</Button
+                  >
+                  <Button @click="cancelComment" class="w-24">{{ $t('comment.yes') }}</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button @click="createReply(item.id)" class="w-[104px] text-[16px]">{{
+              $t('comment.send')
+            }}</Button>
+          </div>
+
+          <div v-if="item.numberOfReply > 0" class="mt-1 cursor-pointer transition-all">
             <div
-              v-for="(reply, index) in item.replies.slice(0, repliesToShow[item.id])"
-              :key="index"
-              class="flex gap-4 items-start"
+              @click="showRepliesByComment(item.id)"
+              class="flex items-center gap-1 justify-start"
+              v-if="!isShowedReplies[item.id]"
             >
-              <img :src="reply.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
+              <ChevronDown class="text-primary w-[20px] transition-all" />
+              <p class="text-primary text-[13px] font-semibold">
+                {{ $t('comment.show') }}
+                {{ item.numberOfReply + numberReplies }}
+                {{ $t('comment.replies') }}
+              </p>
+            </div>
+            <div
+              @click="hideRepliesByComment(item.id)"
+              v-if="isShowedReplies[item.id]"
+              class="flex items-center gap-1 justify-start"
+            >
+              <ChevronUp class="text-primary w-[20px] transition-all" />
+              <p class="text-primary text-[13px] font-semibold">
+                {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
+                {{ $t('comment.replies') }}
+              </p>
+            </div>
+          </div>
+
+          <div v-if="myReplyPerComment[item.id]" class="w-full space-y-4 mt-2">
+            <div class="flex gap-4 items-start">
+              <img
+                :src="myReplyPerComment[item.id].user.avatar"
+                class="object-cover w-[40px] h-[40px] rounded-full"
+              />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-3">
-                  <p class="text-[13px] font-bold">{{ reply.name }}</p>
-                  <CheckVerifyIcon />
-                  <div class="flex items-end gap-2">
+                  <p class="text-[13px] font-bold">
+                    {{ myReplyPerComment[item.id].user.fullName }}
+                  </p>
+                  <div
+                    v-if="myReplyPerComment[item.id].user.channel"
+                    class="flex items-center gap-2"
+                  >
+                    <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
+                    <PinkBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isPinkBadge" />
+                  </div>
+                  <div
+                    v-if="myReplyPerComment[item.id].totalDonation > 0"
+                    class="flex items-end gap-2"
+                  >
                     <YellowRepsIcon />
-                    <p class="text-[#FFB564] text-[12px] -mb-[1px]">Gifted 25000 REPs</p>
+                    <p class="text-[#FFB564] text-[12px] -mb-[1px]">
+                      Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
+                    </p>
                   </div>
                   <p class="text-[12px] text-[#666666] -mb-[2px]">
-                    {{ reply.timestamp ? convertTimeComment(reply.timestamp) : '1 second ago' }}
+                    {{
+                      myReplyPerComment[item.id].createdAt
+                        ? convertTimeComment(myReplyPerComment[item.id].createdAt)
+                        : '1 second ago'
+                    }}
+                  </p>
+                </div>
+                <div>
+                  <div
+                    class="flex flex-col items-start"
+                    v-if="
+                      myReplyPerComment[item.id].content.length > 300 &&
+                      !showFullReplyIds.includes(myReplyPerComment[item.id].id)
+                    "
+                  >
+                    {{ reply.content.slice(0, 300) }}...
+                    <button @click="toggleReplyContent(reply.id)" class="text-[#666666]">
+                      {{ $t('comment.read_more') }}
+                    </button>
+                  </div>
+                  <div class="flex flex-col items-start" v-else>
+                    {{ myReplyPerComment[item.id].content }}
+                    <button
+                      v-if="myReplyPerComment[item.id].content.length > 300"
+                      @click="toggleReplyContent(myReplyPerComment[item.id].id)"
+                      class="text-[#666666]"
+                    >
+                      {{ $t('comment.show_less') }}
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-8 mt-1">
+                  <div class="flex items-center gap-3 justify-start">
+                    <div class="-mt-1">
+                      <LikeOnIcon
+                        @click="handleUnLike(myReplyPerComment[item.id])"
+                        class="cursor-pointer"
+                        v-if="myReplyPerComment[item.id].isLike === true"
+                      />
+                      <LikeOffIcon
+                        @click="handleLike(myReplyPerComment[item.id])"
+                        class="cursor-pointer"
+                        v-if="!myReplyPerComment[item.id].isLike === true"
+                      />
+                    </div>
+                    <p class="text-primary text-[13px]">
+                      {{
+                        myReplyPerComment[item.id].numberOfLike
+                          ? formatViews(myReplyPerComment[item.id].numberOfLike)
+                          : '0'
+                      }}
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-4 justify-start">
+                    <div class="-mb-[9px]">
+                      <DislikeOnIcon
+                        @click="handleUnDislike(myReplyPerComment[item.id])"
+                        class="cursor-pointer"
+                        v-if="myReplyPerComment[item.id].isLike === false"
+                      />
+                      <DislikeOffIcon
+                        @click="handleDislike(myReplyPerComment[item.id])"
+                        class="cursor-pointer"
+                        v-if="!myReplyPerComment[item.id].isLike === false"
+                      />
+                      <DislikeOffIcon
+                        @click="handleDislike(myReplyPerComment[item.id])"
+                        class="cursor-pointer"
+                        v-if="!myReplyPerComment[item.id].hasOwnProperty('isLike')"
+                      />
+                    </div>
+                    <p></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="repliesPerComment[item.id]" class="w-full space-y-4 mt-2">
+            <div
+              v-for="reply in repliesPerComment[item.id]"
+              :key="reply.id"
+              class="flex gap-4 items-start"
+            >
+              <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                  <p class="text-[13px] font-bold">{{ reply.user.fullName }}</p>
+                  <div v-if="reply.user.channel" class="flex items-center gap-2">
+                    <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
+                    <PinkBadgeIcon v-if="reply.user.channel.isPinkBadge" />
+                  </div>
+                  <div
+                    v-if="reply.totalDonation > 0"
+                    class="flex items-end gap-2"
+                  >
+                    <YellowRepsIcon />
+                    <p class="text-[#FFB564] text-[12px] -mb-[1px]">
+                      Gifted {{ reply.totalDonation }} REPs
+                    </p>
+                  </div>
+                  <p class="text-[12px] text-[#666666] -mb-[2px]">
+                    {{ reply.createdAt ? convertTimeComment(reply.createdAt) : '1 second ago' }}
                   </p>
                 </div>
                 <div>
@@ -273,7 +529,7 @@ const handleUnDislike = async (item) => {
                   >
                     {{ reply.content.slice(0, 300) }}...
                     <button @click="toggleReplyContent(reply.id)" class="text-[#666666]">
-                      {{$t('comment.read_more')}}
+                      {{ $t('comment.read_more') }}
                     </button>
                   </div>
                   <div class="flex flex-col items-start" v-else>
@@ -283,40 +539,63 @@ const handleUnDislike = async (item) => {
                       @click="toggleReplyContent(reply.id)"
                       class="text-[#666666]"
                     >
-                    {{$t('comment.show_less')}}
+                      {{ $t('comment.show_less') }}
                     </button>
                   </div>
                 </div>
                 <div class="flex items-center gap-8 mt-1">
                   <div class="flex items-center gap-3 justify-start">
                     <div class="-mt-1">
-                      <LikeOffIcon class="cursor-pointer" v-if="!reply.like" />
-                      <LikeOnIcon class="cursor-pointer" v-if="reply.like" />
+                      <LikeOnIcon
+                        @click="handleUnLike(reply)"
+                        class="cursor-pointer"
+                        v-if="reply.isLike === true"
+                      />
+                      <LikeOffIcon
+                        @click="handleLike(reply)"
+                        class="cursor-pointer"
+                        v-if="!reply.isLike === true"
+                      />
                     </div>
                     <p class="text-primary text-[13px]">
-                      {{ reply.likes ? formatViews(reply.likes) : '0' }}
+                      {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
                     </p>
                   </div>
-                  <div class="flex items-center gap-3 justify-start">
+                  <div class="flex items-center gap-4 justify-start">
                     <div class="-mb-[9px]">
-                      <DislikeOffIcon class="cursor-pointer" v-if="!reply.dislike" />
-                      <DislikeOnIcon class="cursor-pointer" v-if="reply.dislike" />
-                      <p></p>
+                      <DislikeOnIcon
+                        @click="handleUnDislike(reply)"
+                        class="cursor-pointer"
+                        v-if="reply.isLike === false"
+                      />
+                      <DislikeOffIcon
+                        @click="handleDislike(reply)"
+                        class="cursor-pointer"
+                        v-if="!reply.isLike === false"
+                      />
+                      <DislikeOffIcon
+                        @click="handleDislike(reply)"
+                        class="cursor-pointer"
+                        v-if="!reply.hasOwnProperty('isLike')"
+                      />
                     </div>
+                    <p></p>
                   </div>
                 </div>
               </div>
             </div>
             <div
-              v-if="item.replies.length > repliesToShow[item.id]"
+              v-if="hasMoreRepliesPerComment[item.id]"
               class="flex items-center gap-1 justify-start mt-1 cursor-pointer transition-all"
             >
               <div @click="showMoreReplies(item.id)" class="font-semibold flex items-center gap-2">
                 <ChevronDown class="transition-all text-primary w-[20px]" />
-                <div class="text-primary text-[13px] font-semibold">{{$t('comment.show_more_replies')}}</div>
+                <div class="text-primary text-[13px] font-semibold">
+                  {{ $t('comment.show_more_replies') }}
+                </div>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
       </div>
     </div>

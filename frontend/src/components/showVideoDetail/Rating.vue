@@ -7,6 +7,7 @@ import { apiAxios } from '@helpers/axios.helper'
 import { useRoute } from 'vue-router'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useToast } from '@common/ui/toast/use-toast'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 
 const authStore = useAuthStore()
 const openLoginStore = useOpenLoginStore()
@@ -39,10 +40,6 @@ watch(
   { immediate: true }
 )
 
-const cancel = () => {
-  showRatingModal.value = false
-}
-
 const setRating = (index) => {
   rating.value = index
 }
@@ -69,44 +66,46 @@ const onSubmit = async () => {
     }
   }
 }
+const cancel = () => {
+  showRatingModal.value = false
+}
 </script>
 <template>
-  <div
-    class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer"
-    @mouseenter="showRatingModal = true"
-    @mouseleave="showRatingModal = false"
-  >
-    <Star width="20px" class="text-primary" />
-    <span class="uppercase">{{ $t('video.rate') }}</span>
-    <div
-      class="min-w-[300px] flex flex-col bg-white p-7 duration-300 -translate-x-1/2 absolute top-0 -translate-y-full left-full text-black rounded-lg shadow-lg border-1 border-gray-200 z-10"
-      v-if="showRatingModal"
-    >
-      <h4 class="font-bold text-lg">{{ $t('video.rate_video') }}</h4>
-      <p class="text-base mt-2">{{ $t('video.rate_description') }}</p>
-      <div class="mt-2">
-        <div class="flex flex-col gap-2">
-          <div class="flex">
-            <Star
-              color="#12BDA3"
-              class="cursor-pointer"
-              :fill="index <= rating ? '#12BDA3' : '#ffffff'"
-              v-for="index in 5"
-              :key="index"
-              @click="setRating(index)"
-            />
-          </div>
-          <div class="mt-3 flex gap-2 justify-end">
-            <Button @click="cancel" variant="outline">{{ $t('button.cancel') }}</Button>
-            <Button
-              @click="onSubmit"
-              :disabled="rating === 0 || oldRating === rating"
-              :class="{ 'bg-gray-400': rating === 0 || oldRating === rating }"
-              >{{ $t('button.rate') }}</Button
-            >
+  <div class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer">
+    <Popover v-model:open="showRatingModal">
+      <PopoverTrigger class="flex gap-2 items-center">
+        <Star width="24px" class="text-primary" />
+        <span class="uppercase font-semibold text-sm">{{ $t('video.rate') }}</span>
+      </PopoverTrigger>
+      <PopoverContent
+        class="min-w-[300px] flex flex-col bg-white p-7 text-black rounded-lg shadow-lg border-1 border-gray-200 z-10"
+      >
+        <h4 class="font-bold text-lg">{{ $t('video.rate_video') }}</h4>
+        <p class="text-base mt-2">{{ $t('video.rate_description') }}</p>
+        <div class="mt-2">
+          <div class="flex flex-col gap-2">
+            <div class="flex">
+              <Star
+                color="#12BDA3"
+                class="cursor-pointer"
+                :fill="index <= rating ? '#12BDA3' : '#ffffff'"
+                v-for="index in 5"
+                :key="index"
+                @click="setRating(index)"
+              />
+            </div>
+            <div class="mt-3 flex gap-2 justify-end">
+              <Button @click="cancel" variant="outline">{{ $t('button.cancel') }}</Button>
+              <Button
+                @click="onSubmit"
+                :disabled="rating === 0 || oldRating === rating"
+                :class="{ 'bg-gray-400': rating === 0 || oldRating === rating }"
+                >{{ $t('button.rate') }}</Button
+              >
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </PopoverContent>
+    </Popover>
   </div>
 </template>

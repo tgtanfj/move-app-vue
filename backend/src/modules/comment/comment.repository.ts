@@ -1,11 +1,11 @@
-import { Comment } from './../../entities/comment.entity';
+import { CommentReaction } from '@/entities/comment-reaction.entity';
+import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { CommentReaction } from '@/entities/comment-reaction.entity';
-import { Donation } from '@/entities/donation.entity';
 
 @Injectable()
 export class CommentRepository {
@@ -38,7 +38,22 @@ export class CommentRepository {
   }
 
   async getOneWithUser(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { user: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'user.channel'],
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+      },
+    });
   }
 
   async getAll(): Promise<Comment[]> {
@@ -48,10 +63,23 @@ export class CommentRepository {
   async getComments(condition: any, videoId: number, limit: number, userId?: number) {
     const comments = await this.commentRepository.find({
       where: condition,
-      relations: ['user'],
+      relations: ['user', 'user.channel'],
       order: { createdAt: 'DESC' },
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+      },
       take: limit,
     });
+
     let checkLike: CommentReaction;
     const listComments = Promise.all(
       comments.map(async (comment) => {
@@ -111,11 +139,13 @@ export class CommentRepository {
         user: { id: userId },
         video: { id: videoId },
       },
-      select: ['numberOfREPs'],
+      relations: {
+        giftPackage: true,
+      },
     });
 
     const totalDonations = donations.reduce((total, donation) => {
-      return total + parseFloat(donation.numberOfREPs);
+      return total + donation.giftPackage.numberOfREPs;
     }, 0);
 
     return totalDonations;

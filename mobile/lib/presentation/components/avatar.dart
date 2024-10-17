@@ -33,7 +33,7 @@ class Avatar extends StatelessWidget {
         radius: radiusAvatar,
         backgroundImage: imageUrl.isNotEmpty
             ? NetworkImage(imageUrl)
-            : AssetImage(AppImages.defaultAvatar.webpAssetPath ),
+            : AssetImage(AppImages.defaultAvatar.webpAssetPath),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 
@@ -11,8 +12,7 @@ enum HomeStatus {
 
 final class HomeState extends Equatable {
   final HomeStatus? status;
-  final bool isVisible;
-  final List<String>? searchHistory;
+
   final List<CategoryModel> listTopCategory;
   final List<VideoModel> listMayULikeVideo;
   final List<VideoModel> listTrendVideo;
@@ -20,8 +20,6 @@ final class HomeState extends Equatable {
 
   const HomeState({
     this.status,
-    this.isVisible = false,
-    this.searchHistory,
     this.listTopCategory = const [],
     this.listMayULikeVideo = const [],
     this.listTrendVideo = const [],
@@ -30,8 +28,7 @@ final class HomeState extends Equatable {
 
   static HomeState initial() => const HomeState(
         status: HomeStatus.initial,
-        isVisible: false,
-        searchHistory: [],
+
         listTopCategory: [],
         listMayULikeVideo: [],
         listTrendVideo: [],
@@ -40,8 +37,6 @@ final class HomeState extends Equatable {
 
   HomeState copyWith({
     HomeStatus? status,
-    bool? isVisible,
-    List<String>? searchHistory,
     List<CategoryModel>? listTopCategory,
     List<VideoModel>? listMayULikeVideo,
     List<VideoModel>? listTrendVideo,
@@ -49,8 +44,6 @@ final class HomeState extends Equatable {
   }) {
     return HomeState(
       status: status ?? this.status,
-      isVisible: isVisible ?? this.isVisible,
-      searchHistory: searchHistory ?? this.searchHistory,
       listTopCategory: listTopCategory ?? this.listTopCategory,
       listMayULikeVideo: listMayULikeVideo ?? this.listMayULikeVideo,
       listTrendVideo: listTrendVideo ?? this.listTrendVideo,
@@ -60,8 +53,6 @@ final class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isVisible,
-        searchHistory,
         listTopCategory,
         status,
         listMayULikeVideo,

@@ -4,51 +4,42 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
+import '../../config/theme/app_images.dart';
 
-class VideoPoster extends StatefulWidget {
+class VideoPoster extends StatelessWidget {
   final double? height;
   final bool isLargePoster;
-  final int videoId;
-  final String posterUrl;
-  final String viewCount;
+  final String? image;
+  final String? numberOfViews;
   final String duration;
-  
+  final VoidCallback onTap;
   const VideoPoster({
     super.key,
     this.isLargePoster = false,
     this.height,
-    required this.videoId,
-    required this.posterUrl,
-    required this.viewCount,
+    this.image,
+    this.numberOfViews,
     required this.duration,
+    required this.onTap,
   });
 
   @override
-  State<VideoPoster> createState() => _VideoPosterState();
-}
-
-class _VideoPosterState extends State<VideoPoster> {
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoDetailPage(
-              videoId: widget.videoId,
-            ),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Stack(children: [
         Positioned(
           child: Image.network(
-            widget.posterUrl,
+            image ?? '',
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width - 40.0,
-            height: widget.height,
+            height: height,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                AppImages.posterVideo.pngAssetPath,
+                fit: BoxFit.cover,
+              );
+            },
           ),
         ),
         Positioned(
@@ -74,12 +65,13 @@ class _VideoPosterState extends State<VideoPoster> {
               Row(
                 children: [
                   Text(
-                    widget.viewCount,
+                    numberOfViews ?? "",
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
-                  widget.isLargePoster
+                  const Text(" "),
+                  isLargePoster
                       ? Text(
-                          ' ${Constants.views}',
+                          Constants.views,
                           style: AppTextStyles.montserratStyle.bold12White,
                         )
                       : const SizedBox(),
@@ -91,22 +83,24 @@ class _VideoPosterState extends State<VideoPoster> {
             ]),
           ),
         ),
-        Positioned(
-          right: 8.0,
-          bottom: 8.0,
-          child: Container(
-            height: 16.0,
-            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4.0),
-              color: AppColors.black,
-            ),
-            child: Text(
-              widget.duration,
-              style: AppTextStyles.montserratStyle.bold12White,
-            ),
-          ),
-        )
+        isLargePoster
+            ? const SizedBox()
+            : Positioned(
+                right: 8.0,
+                bottom: 8.0,
+                child: Container(
+                  height: 16.0,
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4.0),
+                    color: AppColors.black,
+                  ),
+                  child: Text(
+                    duration,
+                    style: AppTextStyles.montserratStyle.bold12White,
+                  ),
+                ),
+              )
       ]),
     );
   }

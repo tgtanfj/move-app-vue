@@ -7,6 +7,7 @@ enum VideoDetailStatus {
   processing,
   success,
   failure,
+  rateSuccess,
 }
 
 final class VideoDetailState extends Equatable {
@@ -19,6 +20,8 @@ final class VideoDetailState extends Equatable {
   final List<CommentModel>? listReplies;
   final int? lastCommentId;
   final CommentModel? commentModel;
+  final int? rateSelected;
+  final String? errorMessage;
 
   const VideoDetailState({
     this.videoUrls,
@@ -30,6 +33,8 @@ final class VideoDetailState extends Equatable {
     this.listReplies,
     this.lastCommentId,
     this.commentModel,
+    this.rateSelected,
+    this.errorMessage,
   });
 
   static VideoDetailState initial() => const VideoDetailState(
@@ -46,17 +51,22 @@ final class VideoDetailState extends Equatable {
     List<CommentModel>? listReplies,
     int? lastCommentId,
     CommentModel? commentModel,
+    int? rateSelected,
+    String? errorMessage,
   }) {
     return VideoDetailState(
-        selectedQuality: selectedQuality ?? this.selectedQuality,
-        status: status ?? this.status,
-        videoUrls: videoUrls ?? this.videoUrls,
-        inputComment: inputComment ?? this.inputComment,
-        listComments: listComments ?? this.listComments,
-        replies: replies ?? this.replies,
-        listReplies: listReplies ?? this.listReplies,
-        lastCommentId: lastCommentId ?? this.lastCommentId,
-        commentModel: commentModel ?? this.commentModel);
+      selectedQuality: selectedQuality ?? this.selectedQuality,
+      status: status ?? this.status,
+      videoUrls: videoUrls ?? this.videoUrls,
+      inputComment: inputComment ?? this.inputComment,
+      listComments: listComments ?? this.listComments,
+      replies: replies ?? this.replies,
+      listReplies: listReplies ?? this.listReplies,
+      lastCommentId: lastCommentId ?? this.lastCommentId,
+      commentModel: commentModel ?? this.commentModel,
+      rateSelected: rateSelected ?? this.rateSelected,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
   }
 
   @override
@@ -68,6 +78,8 @@ final class VideoDetailState extends Equatable {
         replies,
         listReplies,
         lastCommentId,
-        commentModel
+        commentModel,
+        rateSelected,
+        errorMessage,
       ];
 }

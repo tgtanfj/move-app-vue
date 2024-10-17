@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_may_u_like_description.dart';
-import 'package:move_app/presentation/screens/setting/presentation/profile/page/profile_body.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 import 'package:move_app/utils/string_extentions.dart';
 import 'package:move_app/utils/util_date_time.dart';
 import 'package:move_app/utils/util_number_format.dart';
@@ -27,19 +28,22 @@ class _ListVideosMayULikeState extends State<ListVideosMayULike> {
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: VideoPoster(
-                      videoId: widget.listMayULikeVideo[index].id ?? 0,
-                      posterUrl:
-                          widget.listMayULikeVideo[index].thumbnailURL ?? '',
-                      viewCount: widget.listMayULikeVideo[index].numberOfViews
-                              ?.toCompactViewCount() ??
-                          '0',
-                      duration: widget.listMayULikeVideo[index].durationsVideo
-                              ?.toDurationFormat() ??
-                          '',
+                  child: VideoPoster(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VideoDetailPage(
+                          videoId: widget.listMayULikeVideo[index].id ?? 0,
+                        ),
+                      ),
                     ),
+                    image: widget.listMayULikeVideo[index].thumbnailURL ?? '',
+                    numberOfViews: widget.listMayULikeVideo[index].numberOfViews
+                            ?.toCompactViewCount() ??
+                        '0',
+                    duration: widget.listMayULikeVideo[index].durationsVideo
+                            ?.toDurationFormat() ??
+                        '',
                   ),
                 ),
                 const SizedBox(
@@ -47,6 +51,23 @@ class _ListVideosMayULikeState extends State<ListVideosMayULike> {
                 ),
                 Expanded(
                   child: VideoMayULikeDescription(
+                    onTapToVideoDetail: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VideoDetailPage(
+                          videoId: widget.listMayULikeVideo[index].id ?? 0,
+                        ),
+                      ),
+                    ),
+                    onTapToProfile: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewChannelProfilePage(
+                          idChannel:
+                              widget.listMayULikeVideo[index].channel?.id ?? 0,
+                        ),
+                      ),
+                    ),
                     avatarUrl:
                         widget.listMayULikeVideo[index].channel?.image ?? '',
                     channelName:

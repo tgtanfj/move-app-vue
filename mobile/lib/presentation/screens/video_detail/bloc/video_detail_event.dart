@@ -62,3 +62,21 @@ final class VideoDetailDisLikeComment extends VideoDetailEvent {
   @override
   List<Object?> get props => [comment];
 }
+
+class VideoDetailRateEvent extends VideoDetailEvent {
+  final int rating;
+
+  const VideoDetailRateEvent(this.rating);
+
+  @override
+  List<Object> get props => [rating];
+}
+
+class VideoDetailRateSubmitEvent extends VideoDetailEvent {
+  final int rating;
+
+  const VideoDetailRateSubmitEvent(this.rating);
+
+  @override
+  List<Object?> get props => [rating];
+}

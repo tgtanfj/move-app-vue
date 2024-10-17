@@ -14,7 +14,7 @@ import { Share2, X } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 
 const route = useRoute()
-const currentUrl = ref('')
+const currentUrl = ref(window.location.origin + route.fullPath)
 const isCopied = ref(false)
 
 watch(route, (newRoute) => {
@@ -46,7 +46,6 @@ const copyLinkVideo = () => {
       console.error('Failed to copy: ', err)
     })
 }
-currentUrl.value = window.location.origin + route.fullPath
 </script>
 
 <template>
@@ -54,7 +53,7 @@ currentUrl.value = window.location.origin + route.fullPath
     <DropdownMenuTrigger
       class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
     >
-      <Share2 width="20px" class="text-primary" /> {{ $t('video_detail.share') }}
+      <Share2 width="24px" class="text-primary" /> {{ $t('video_detail.share') }}
     </DropdownMenuTrigger>
     <DropdownMenuContent side="top" align="end">
       <div class="flex items-center justify-between mb-2">

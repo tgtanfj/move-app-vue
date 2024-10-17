@@ -7,27 +7,25 @@ import { StripeService } from './stripe.service';
 
 @Controller('stripe')
 @ApiBearerAuth('jwt')
+@UseGuards(JwtAuthGuard)
 @ApiTags('stripe')
 export class StripeController {
   constructor(private stripeService: StripeService) {}
 
   @Get('list-cards')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   async getAllPaymentMethod(@User() user) {
     return this.stripeService.listPaymentMethod(user.stripeId);
   }
 
   @Post('attach-card')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   async attachPaymentMethod(@User() user, @Body() addPaymentMethod: AttachPaymentMethodDto) {
     return this.stripeService.attachPaymentMethod(user.stripeId, addPaymentMethod);
   }
 
   @Post('detach-card')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   async detachPaymentMethod(@Body() detachPaymentMethod: AttachPaymentMethodDto) {
     return this.stripeService.detachPaymentMethod(detachPaymentMethod);
   }

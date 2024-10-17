@@ -65,5 +65,35 @@ export const commentServices = {
       console.error('Update reaction comment error:', error)
       throw error
     }
+  },
+  getRepliesByComment: async (commentId, cursor) => {
+    const limit = 10
+    try {
+      const cursorParams = cursor ? cursor : null
+
+      const response = await apiAxios.get(`/comment/${commentId}/reply`, {
+        params: {
+          limit,
+          cursor: cursorParams
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Get comment error:', error)
+      throw error
+    }
+  },
+  postReply: async (content, commentId) => {
+    try {
+      const body = {
+        content: `${content}`,
+        commentId: +commentId
+      }
+      const response = await apiAxios.post(`/comment`, body)
+      return response.data
+    } catch (error) {
+      console.error('Post reply error:', error)
+      throw error
+    }
   }
 }

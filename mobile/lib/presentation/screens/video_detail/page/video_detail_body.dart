@@ -7,15 +7,18 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/constants/key_screen.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
+import 'package:move_app/presentation/components/rate_dialog.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_bloc.dart';
+import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../data/data_sources/local/shared_preferences.dart';
 import '../../../../data/models/comment_model.dart';
-import '../bloc/video_detail_event.dart';
+import '../../../components/thanks_rating_dialog.dart';
+import '../../auth/widgets/dialog_authentication.dart';
 import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
@@ -163,7 +166,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Dismissible(
       key: const Key(KeyScreen.videoDetail),
       direction: DismissDirection.startToEnd,
@@ -180,6 +182,14 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
             } else {
               EasyLoading.dismiss();
             }
+            state.status == VideoDetailStatus.rateSuccess
+                ? showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const ThanksRateDialog();
+                    },
+                  )
+                : null;
           },
           builder: (context, state) {
             return Column(
@@ -188,7 +198,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 Container(
                   color: AppColors.black,
                   height: height * 0.3,
-                  width: width,
+                  width: double.infinity,
                   child: Center(
                     child: _chewieController != null &&
                             _chewieController!
@@ -214,6 +224,34 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                       viewChanelButton: () {},
                       followButton: () {},
                       giftRepButton: () {},
+                      onTapRate: () {
+                        String token = SharedPrefer.sharedPrefer.getUserToken();
+                        if (token.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const DialogAuthentication();
+                            },
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return RateDialog(
+                                rateSelected: state.rateSelected ?? 0,
+                              );
+                            },
+                          ).then((onValue) {
+                            if (onValue != null) {
+                              if (context.mounted && onValue != null) {
+                                context
+                                    .read<VideoDetailBloc>()
+                                    .add(VideoDetailRateSubmitEvent(onValue));
+                              }
+                            }
+                          });
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(
@@ -264,6 +302,36 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                                 viewChanelButton: () {},
                                 followButton: () {},
                                 giftRepButton: () {},
+                                onTapRate: () {
+                                  String token =
+                                      SharedPrefer.sharedPrefer.getUserToken();
+                                  if (token.isEmpty) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return const DialogAuthentication();
+                                      },
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return RateDialog(
+                                          rateSelected: state.rateSelected ?? 0,
+                                        );
+                                      },
+                                    ).then((onValue) {
+                                      if (onValue != null) {
+                                        if (context.mounted &&
+                                            onValue != null) {
+                                          context.read<VideoDetailBloc>().add(
+                                              VideoDetailRateSubmitEvent(
+                                                  onValue));
+                                        }
+                                      }
+                                    });
+                                  }
+                                },
                               ),
                             ),
                             const SizedBox(

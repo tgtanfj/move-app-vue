@@ -4,7 +4,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
-import 'package:move_app/utils/string_extentions.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
 class SlideShowVideosFeature extends StatefulWidget {
@@ -35,11 +35,18 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               VideoPoster(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoDetailPage(
+                      videoId: widget.listVideo[index].id ?? 0,
+                    ),
+                  ),
+                ),
                 height: height * 0.21,
                 isLargePoster: true,
-                videoId: widget.listVideo[index].id ?? 0,
-                posterUrl: widget.listVideo[index].thumbnailURL ?? '',
-                viewCount: widget.listVideo[index].numberOfViews
+                image: widget.listVideo[index].thumbnailURL ?? '',
+                numberOfViews: widget.listVideo[index].numberOfViews
                         ?.toCompactViewCount() ??
                     '',
                 duration: widget.listVideo[index].durationsVideo
@@ -52,7 +59,15 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
               VideoFeatureDescription(
                 channelModel: widget.listVideo[index].channel,
                 videoModel: widget.listVideo[index],
-                category: widget.listVideo[index].categories?.title ?? '',
+                category: widget.listVideo[index].categories,
+                onTapToVideoDetail: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoDetailPage(
+                      videoId: widget.listVideo[index].id ?? 0,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

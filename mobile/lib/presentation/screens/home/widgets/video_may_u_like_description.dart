@@ -16,17 +16,22 @@ class VideoMayULikeDescription extends StatelessWidget {
   final bool isPinkBadge;
   final double ratings;
   final String duration;
-  const VideoMayULikeDescription(
-      {super.key,
-      required this.avatarUrl,
-      required this.channelName,
-      required this.title,
-      required this.workoutLevel,
-      required this.createTime,
-      required this.isBlueBadge,
-      required this.isPinkBadge,
-      required this.ratings,
-      required this.duration});
+  final VoidCallback onTapToVideoDetail;
+  final VoidCallback onTapToProfile;
+  const VideoMayULikeDescription({
+    super.key,
+    required this.avatarUrl,
+    required this.channelName,
+    required this.title,
+    required this.workoutLevel,
+    required this.createTime,
+    required this.isBlueBadge,
+    required this.isPinkBadge,
+    required this.ratings,
+    required this.duration,
+    required this.onTapToVideoDetail,
+    required this.onTapToProfile,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +41,23 @@ class VideoMayULikeDescription extends StatelessWidget {
           height: 40.0,
           child: Row(
             children: [
-              Avatar(
-                  heightAvatar: 31.0,
-                  widthAvatar: 31.0,
-                  radiusAvatar: 27.0,
-                  imageUrl: avatarUrl),
+              GestureDetector(
+                onTap: onTapToProfile,
+                child: Avatar(
+                    heightAvatar: 31.0,
+                    widthAvatar: 31.0,
+                    radiusAvatar: 27.0,
+                    imageUrl: avatarUrl),
+              ),
               Flexible(
-                child: Text(
-                  channelName,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  style: AppTextStyles.montserratStyle.regular14graniteGray,
+                child: GestureDetector(
+                  onTap: onTapToVideoDetail,
+                  child: Text(
+                    channelName,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: AppTextStyles.montserratStyle.regular14graniteGray,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -84,16 +95,19 @@ class VideoMayULikeDescription extends StatelessWidget {
         const SizedBox(
           height: 4.0,
         ),
-        Row(children: [
-          Expanded(
-            child: Text(
-              '$channelName • $createTime',
-              style: AppTextStyles.montserratStyle.regular14graniteGray,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+        GestureDetector(
+          onTap: onTapToVideoDetail,
+          child: Row(children: [
+            Expanded(
+              child: Text(
+                '$channelName • $createTime',
+                style: AppTextStyles.montserratStyle.regular14graniteGray,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
         const SizedBox(
           height: 4.0,
         ),
