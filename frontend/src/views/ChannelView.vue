@@ -31,7 +31,7 @@ watch(
 </script>
 <template>
   <div class="flex">
-    <div class="ml-6 mr-20 mb-6 pt-5 grow">
+    <div class="ml-6 mr-20 mb-6 pt-5 grow" :key="id">
       <div v-if="isLoading"><ChannelSkeleton /></div>
       <div v-else>
         <ChannelInfo class="mb-5" />
