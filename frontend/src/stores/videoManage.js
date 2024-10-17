@@ -116,8 +116,18 @@ export const useVideoStore = defineStore('video', () => {
 
         const index = videos.value.findIndex((video) => video.id === videoId.value)
 
+        // if (index !== -1) {
+        //   videos.value[index] = updatedVideo
+        // }
         if (index !== -1) {
-          videos.value[index] = updatedVideo
+          // Kiểm tra nếu thumbnail từ API là null hoặc undefined thì giữ lại thumbnail cũ
+          const currentVideo = videos.value[index]
+          if (!updatedVideo.thumbnail) {
+            updatedVideo.thumbnail = currentVideo.thumbnail
+          }
+          
+          // Cập nhật lại video trong danh sách
+          videos.value[index] = { ...currentVideo, ...updatedVideo }
         }
       }
       return res.data

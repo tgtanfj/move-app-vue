@@ -25,7 +25,7 @@
             class="rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.user?.data?.username || storedUserInfo }}
+            {{ authStore.usernameUser || authStore.user?.data?.username || storedUserInfo }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
