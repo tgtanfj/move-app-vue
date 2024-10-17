@@ -109,7 +109,7 @@ const props = defineProps({
     required: false
   }
   }
-})
+)
 
 const authStore = useAuthStore()
 const router = useRouter()

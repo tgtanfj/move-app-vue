@@ -35,7 +35,7 @@ const handleFollow = () => {
     if (isFollowed.value) {
       mutationUnfollow.mutate(
         {
-          channelId: id
+          channelId: +id
         },
         {
           onSuccess: () => {

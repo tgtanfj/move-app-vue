@@ -92,6 +92,7 @@ import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { formatDateString } from '@utils/uploadVideo.util'
+import { detectDuration } from '@utils/uploadVideo.util'
 
 const props = defineProps({
   item: {
@@ -111,19 +112,6 @@ const showConfirmModal = ref(false)
 const isChecked = computed(() => {
   return props.selectedItems && props.selectedItems.includes(props.item.id)
 })
-
-const detectDuration = (duration) => {
-  switch (duration) {
-    case 'less than 30 minutes':
-      return '< 30 mins'
-    case 'less than 1 hours':
-      return '<1h'
-    case 'more than 1 hours':
-      return '>1h'
-    default:
-      return 'Unknown'
-  }
-}
 
 const showModalDelete = () => {
   showConfirmModal.value = true

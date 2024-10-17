@@ -8,6 +8,7 @@ import { useChannelStore } from '../../stores/view-channel'
 import Video from '../home/Video.vue'
 import Loading from '../Loading.vue'
 import CustomSelection from './CustomSelection.vue'
+import VideoSkeleton from '@components/home/VideoSkeleton.vue'
 
 const route = useRoute()
 const id = route.params.id
@@ -106,7 +107,7 @@ onUnmounted(() => {
       <CustomSelection label="sort by" :listItems="SORT_BY" @update:value="handleSelectSortBy" />
     </div>
   </div>
-  <Loading v-if="isLoadingVideos && page === 1" class="mt-20" />
+  <VideoSkeleton v-if="isLoadingVideos && page === 1" />
   <div v-else class="@container">
     <div v-if="videos.length > 0" class="grid grid-cols-3 gap-6 mt-4 @[1100px]:grid-cols-4">
       <div v-for="item in videos" :key="item">

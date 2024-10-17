@@ -3,10 +3,10 @@ import ChannelInfo from '@components/channel-view/ChannelInfo.vue'
 import ChannelTabs from '@components/channel-view/ChannelTabs.vue'
 import { computed, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import Loading from '../components/Loading.vue'
 import { useChannelAbout } from '../services/channel_about.services'
 import { useAuthStore } from '../stores/auth'
 import { useChannelStore } from '../stores/view-channel'
+import ChannelSkeleton from '@components/channel-view/ChannelSkeleton.vue'
 
 const route = useRoute()
 const id = computed(() => route.params.id)
@@ -32,7 +32,7 @@ watch(
 <template>
   <div class="flex">
     <div class="ml-6 mr-20 mb-6 pt-5 grow">
-      <div v-if="isLoading"><Loading class="mt-40" /></div>
+      <div v-if="isLoading"><ChannelSkeleton /></div>
       <div v-else>
         <ChannelInfo class="mb-5" />
         <ChannelTabs />

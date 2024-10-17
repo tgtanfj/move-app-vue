@@ -61,3 +61,16 @@ export const formatDateString = (dateString) => {
 
   return `${day} ${monthName} ${year}`;
 }
+
+export const detectDuration = (duration) => {
+  switch (duration) {
+    case 'less than 30 minutes':
+      return '< 30 mins'
+    case 'less than 1 hours':
+      return '< 1h'
+    case 'more than 1 hours':
+      return '> 1h'
+    default:
+      return 'Unknown'
+  }
+}
