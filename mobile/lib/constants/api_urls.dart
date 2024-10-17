@@ -20,4 +20,8 @@ class ApiUrls {
   static const String searchResultVideo = 'search/videos';
   static const String suggestionEndpoint = 'search/suggestion';
   static const String searchHistoryEndpoint = 'search/history';
+  static const String homeTopCategoriesEndPoint = "home/top-categories";
+  static const String homeVideosTrendEndPoint = "home/videos-trend";
+  static const String homeVideosYouMayLikeEndPoint = "home/you-may-like";
+  static const String homeVideosYouMayLikeNoLoginEndPoint = "home/you-may-like-no-login";
 }

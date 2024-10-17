@@ -40,7 +40,7 @@ class ListSearchResultCategories extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Text(categoryList[index].numberOfViews.toString() ?? '',
+                  Text(categoryList[index].numberOfViews.toString(),
                       style:
                           AppTextStyles.montserratStyle.regular14graniteGray),
                   const Text(" views")

@@ -4,9 +4,6 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
-import 'package:move_app/data/models/video_model.dart';
-
 import '../../config/theme/app_images.dart';
 
 class VideoPoster extends StatelessWidget {
@@ -14,26 +11,22 @@ class VideoPoster extends StatelessWidget {
   final bool isLargePoster;
   final String? image;
   final String? numberOfViews;
-
+  final String duration;
+  final VoidCallback onTap;
   const VideoPoster({
     super.key,
     this.isLargePoster = false,
     this.height,
     this.image,
     this.numberOfViews,
+    required this.duration,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const VideoDetailPage(),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Stack(children: [
         Positioned(
           child: Image.network(
@@ -103,7 +96,7 @@ class VideoPoster extends StatelessWidget {
                     color: AppColors.black,
                   ),
                   child: Text(
-                    '12:32',
+                    duration,
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
                 ),

@@ -73,6 +73,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                         ),
                       ),
                       StarAndText(
+                        ratings: 4.5,
                         textStyle: AppTextStyles.montserratStyle.bold16Black,
                       ),
                     ],

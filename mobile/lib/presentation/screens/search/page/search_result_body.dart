@@ -9,7 +9,6 @@ import 'package:move_app/presentation/components/custom_section_title.dart';
 import 'package:move_app/presentation/screens/search/bloc/search_result_bloc.dart';
 import 'package:move_app/presentation/screens/search/bloc/search_result_event.dart';
 import 'package:move_app/presentation/screens/search/bloc/search_result_state.dart';
-import 'package:move_app/presentation/screens/search/page/search_result_page.dart';
 import 'package:move_app/presentation/screens/search/widgets/list_channels.dart';
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_categories.dart';
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_video.dart';
@@ -256,6 +255,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                         ),
                                         const SizedBox(height: 16),
                                         ListSearchResultVideo(
+                                          tapToVideoDetail: () {},
                                           videoList: state.videoList,
                                           channelList: state.channelList,
                                           onTap: () {},

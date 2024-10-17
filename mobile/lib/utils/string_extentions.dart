@@ -21,4 +21,19 @@ extension OptionalStringExtension on String? {
     }
     return '';
   }
+
+  String shorten() {
+    if (this != null) {
+      if (this!.contains("less than")) {
+        return this!.replaceAll("less than", "<");
+      } else if (this!.contains("more than")) {
+        return this!.replaceAll("more than", ">");
+      }
+    }
+    return this ?? '';
+  }
+  String? capitalizeFirstLetter() {
+    if (this == null || this!.isEmpty) return this;
+    return '${this![0].toUpperCase()}${this!.substring(1)}'; 
+  }
 }
