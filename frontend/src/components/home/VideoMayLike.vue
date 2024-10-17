@@ -43,7 +43,7 @@ const router = useRouter()
     <div class="flex items-start mt-2">
       <img @click="router.push(`/channel/${video.channel.id}`)" class="w-[32px] h-[32px] rounded-full cursor-pointer" :src="video.channel.image" />
       <div class="ml-3">
-        <p @click="router.push(`/video/${video.id}`)" class="text-[16px] font-bold mt-2 cursor-pointer">{{ video.title }}</p>
+        <p @click="router.push(`/video/${video.id}`)" class="text-[16px] font-bold cursor-pointer line-clamp-2">{{ video.title }}</p>
         <div class="flex flex-col items-start justify-start mt-1.5">
           <div class="flex items-center gap-3">
             <p
@@ -73,7 +73,7 @@ const router = useRouter()
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto mt-[5px]">
+      <div class="flex items-center gap-1 ml-auto pl-1 mt-[5px]">
         <StartIcon class="h-[16px] w-[16px]" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>

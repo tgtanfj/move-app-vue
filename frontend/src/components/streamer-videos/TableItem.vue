@@ -8,7 +8,7 @@
     </TableCell>
     <TableCell>
       <div class="flex flex-col">
-        <div class="font-bold text-base capitalize">{{ item.title }}</div>
+        <div class="font-bold text-base capitalize">{{ truncatedTitle }}</div>
         <div class="text-sm">{{ item.category.title }}</div>
         <div class="flex gap-1 mt-3">
           <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">{{ item.workoutLevel }}</div>
@@ -108,6 +108,12 @@ const props = defineProps({
 const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'download:item'])
 
 const showConfirmModal = ref(false)
+
+const truncatedTitle = computed(() => {
+  return props.item.title.length > 50
+    ? props.item.title.slice(0, 50) + '...'
+    : props.item.title
+})
 
 const isChecked = computed(() => {
   return props.selectedItems && props.selectedItems.includes(props.item.id)

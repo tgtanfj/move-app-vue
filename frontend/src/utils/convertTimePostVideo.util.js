@@ -11,7 +11,7 @@ export const convertTimePostVideo = (timestamp) => {
   const years = Math.floor(days / 365)
 
   if (hours < 24) {
-    return 'Most recent (Within 24 hours)'
+    return 'Most recent'
   } else if (days === 1) {
     return 'Posted a day ago'
   } else if (days > 1 && days <= 6) {
