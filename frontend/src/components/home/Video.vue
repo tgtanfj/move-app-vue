@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
+import { detectDuration } from '../../utils/uploadVideo.util'
 
 const props = defineProps({
   video: {
@@ -68,7 +69,7 @@ const router = useRouter()
               {{ video.workoutLevel }}
             </div>
             <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
-              {{ video.duration }}
+              {{ detectDuration(video.duration) }}
             </div>
           </div>
         </div>

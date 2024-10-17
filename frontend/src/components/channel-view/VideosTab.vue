@@ -114,7 +114,7 @@ onUnmounted(() => {
         <Video :video="item" />
       </div>
     </div>
-    <div v-else-if="!hasVideos" class="italic text-center mt-[20%]">
+    <div v-else-if="!hasVideos" class="italic text-center mt-[15%]">
       {{ $t('view_channel.not_upload_video', { name }) }}
     </div>
     <div v-else class="italic text-center mt-[15%]">
