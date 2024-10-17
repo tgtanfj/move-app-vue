@@ -6,6 +6,7 @@ import { Channel } from '@/entities/channel.entity';
 import { Video } from '@/entities/video.entity';
 import { CreateSearchHistoryDto } from './dto/create-search.dto';
 import { SearchHistory } from '@/entities/search-history.entity';
+import { VimeoService } from '@/shared/services/vimeo.service';
 
 @Injectable()
 export class SearchService {
@@ -14,6 +15,7 @@ export class SearchService {
     @InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video) private readonly videoRepository: Repository<Video>,
     @InjectRepository(SearchHistory) private readonly searchHistoryRepository: Repository<SearchHistory>,
+    private vimeoService: VimeoService,
   ) {}
 
   async searchCategories(params: {
@@ -70,7 +72,6 @@ export class SearchService {
       offset,
       limit,
     );
-
     const [searchedVideos, totalCount] = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.category', 'category')
@@ -87,6 +88,7 @@ export class SearchService {
     );
 
     const limitedVideos = uniqueVideos.slice(0, limit);
+
     const totalPages = Math.ceil(totalCount / limit);
     const itemFrom = offset + 1;
     const itemTo = Math.min(offset + limit, totalCount);

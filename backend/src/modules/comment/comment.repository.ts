@@ -38,7 +38,22 @@ export class CommentRepository {
   }
 
   async getOneWithUser(id: number): Promise<Comment> {
-    return await this.commentRepository.findOne({ where: { id: id }, relations: { user: true } });
+    return await this.commentRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'user.channel'],
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+      },
+    });
   }
 
   async getAll(): Promise<Comment[]> {
@@ -48,10 +63,23 @@ export class CommentRepository {
   async getComments(condition: any, videoId: number, limit: number, userId?: number) {
     const comments = await this.commentRepository.find({
       where: condition,
-      relations: ['user'],
+      relations: ['user', 'user.channel'],
       order: { createdAt: 'DESC' },
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+      },
       take: limit,
     });
+
     let checkLike: CommentReaction;
     const listComments = Promise.all(
       comments.map(async (comment) => {

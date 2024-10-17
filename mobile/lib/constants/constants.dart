@@ -220,4 +220,6 @@ class Constants {
   static const String rateNotFound = 'Rate not found.';
   static const String videoId = 'videoId';
   static const String rateValue = 'rate';
+  static const String allResultFor = 'All result for';
+  static const String instructors = 'Instructors';
 }

@@ -141,6 +141,9 @@ export class ChannelService {
 
   async decreaseFollow(channelId: number) {
     const channel = await this.findOne(channelId);
+    if (channel.numberOfFollowers === 0) {
+      throw new BadRequestException();
+    }
     channel.numberOfFollowers = channel.numberOfFollowers - 1;
     if (channel.numberOfFollowers < 10000) {
       channel.isBlueBadge = false;
@@ -164,5 +167,19 @@ export class ChannelService {
     );
 
     return channelSettingDto;
+  }
+
+  async getChannelReps(userId: number) {
+    const channel = await this.getChannelByUserId(userId);
+    const repValueInUSD = channel.numberOfREPs * 0.006;
+    return { numberOfREPs: repValueInUSD };
+  }
+
+  async createChannel(userId: number, dto: any) {
+    return this.channelRepository.createChannel(userId, dto);
+  }
+
+  async editChannel(channelId: number, dto: Partial<Channel>) {
+    return await this.channelRepository.editChannel(channelId, dto);
   }
 }

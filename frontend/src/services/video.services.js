@@ -1,4 +1,5 @@
 import { ADMIN_BASE } from '@constants/api.constant'
+import { apiAxios } from '@helpers/axios.helper'
 import { useFetch } from '@utils/vue-query.util'
 import axios from 'axios'
 
@@ -33,7 +34,7 @@ export const videoService = {
     try {
       startProgress()
 
-      const response = await axios.post(url, body, {
+      const response = await apiAxios.post(url, body, {
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const realProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -58,7 +59,7 @@ export const videoService = {
   uploadVideo: async (formdata) => {
     const url = `${ADMIN_BASE}/video/upload-video`
     try {
-      const response = await axios.post(url, formdata, {
+      const response = await apiAxios.post(url, formdata, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -129,5 +130,14 @@ export const videoService = {
       }
     }
     return useFetch(`${ADMIN_BASE}/video/dashboard`, config)
+  },
+  createChannel: async () => {
+    const url = `/channel`
+    try {
+      await apiAxios.get(url)
+    } catch (error) {
+      console.error('Create channel error:', error)
+      throw error
+    }
   }
 }

@@ -173,7 +173,7 @@
     "workout_level": "Workout level",
     "duration": "Duration",
     "search_keywords": "Search keywords",
-    "search_keywords_sub": "Adding keywords help your viewers to find your videos easily. Enter a comma after each word.",
+    "search_keywords_sub": "Adding keywords help your viewers to find your videos easily. Enter a comma after each word, only accepted (letters, numbers, commas)",
     "beginner": "Beginner",
     "intermediate": "Intermediate",
     "advanced": "Advanced",
@@ -192,6 +192,21 @@
     "upload_complete": "Upload complete",
     "progress_text": "Feel free to add your video details, tags and settings in the meantime!",
     "upload_video_title_progress": "Uploading video"
+  },
+  "search": {
+    "result_for": "Search result for",
+    "no_result": "No search results for",
+    "try_another_keyword": "Please try searching with a different keyword.",
+    "category": "Categories",
+    "views": "views",
+    "channels": "Channels",
+    "videos": "Videos",
+    "followers": "followers",
+    "result_for_tags": "Results tagged with",
+    "sort_by": "Sort By",
+    "page_not_found": "Page not found",
+    "page_not_found_message": "The page you looking for does not exit.",
+    "back_to_home": "Back to home"
   },
   "sidebar": {
     "followed_channels": "Followed channels",

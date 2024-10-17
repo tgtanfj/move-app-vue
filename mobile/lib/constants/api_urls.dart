@@ -15,4 +15,9 @@ class ApiUrls {
   static const String commentEndpoint = "comment";
   static const String commentReactionEndPoint = "comment-reaction";
   static const String rateVideo = 'watching-video-history/rate';
+  static const String searchResultCategory = 'search/categories';
+  static const String searchResultChannel = 'search/channels';
+  static const String searchResultVideo = 'search/videos';
+  static const String suggestionEndpoint = 'search/suggestion';
+  static const String searchHistoryEndpoint = 'search/history';
 }

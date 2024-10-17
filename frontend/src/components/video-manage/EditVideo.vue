@@ -47,7 +47,7 @@ const images = ref([])
 const imagesAfterConvert = ref([])
 const selectedIndex = ref(null)
 const imagesSelected = ref(null)
-const imageSelectedFile = ref(null);
+const imageSelectedFile = ref(null)
 const fileInputThumb = ref(null)
 const uploadLoading = ref(null)
 
@@ -99,7 +99,7 @@ const categories = ref([
   {
     id: 10,
     title: 'Upper Body'
-  },
+  }
 ])
 
 watch(
@@ -230,7 +230,7 @@ const handleThumbnailUpload = (event) => {
   const newImages = []
 
   const promises = files.map((file) => {
-    imageSelectedFile.value = file;
+    imageSelectedFile.value = file
     return new Promise((resolve) => {
       const imageUrl = URL.createObjectURL(file)
       newImages.push(imageUrl)
@@ -433,7 +433,7 @@ const thirdButton = async (tab) => {
                 <div class="flex flex-col gap-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.video_title') }}</p>
-                    <div v-if="titleErr !== ''" class="text-destructive italic">
+                    <div v-if="titleErr !== ''" class="text-destructive text-sm italic">
                       {{ titleErr }}
                     </div>
                   </div>
@@ -487,13 +487,13 @@ const thirdButton = async (tab) => {
 
                   <div
                     v-if="thumbnailErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-sm text-destructive italic"
                   >
                     {{ thumbnailErr }}
                   </div>
                   <div
                     v-if="thumbnailTypeValidationErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-destructive text-sm italic"
                   >
                     {{ thumbnailTypeValidationErr }}
                   </div>
@@ -503,7 +503,7 @@ const thirdButton = async (tab) => {
                 <div class="space-y-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.category') }}</p>
-                    <div v-if="categoryErr !== ''" class="text-destructive italic">
+                    <div v-if="categoryErr !== ''" class="text-destructive text-sm italic">
                       {{ categoryErr }}
                     </div>
                   </div>
@@ -544,7 +544,7 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-4">
                       <p class="text-[16px]">{{ $t('upload_video.duration') }}</p>
-                      <div v-if="durationErr !== ''" class="text-destructive italic">
+                      <div v-if="durationErr !== ''" class="text-destructive text-sm italic">
                         {{ durationErr }}
                       </div>
                     </div>
@@ -594,7 +594,7 @@ const thirdButton = async (tab) => {
               <div v-show="tabChange === 'settings'" class="flex flex-col gap-2">
                 <div class="flex items-center gap-4">
                   <p class="text-[16px]">{{ $t('upload_video.comment_settings') }}</p>
-                  <div v-if="isCommentableErr !== ''" class="text-destructive italic">
+                  <div v-if="isCommentableErr !== ''" class="text-destructive text-sm italic">
                     {{ isCommentableErr }}
                   </div>
                 </div>
@@ -623,9 +623,14 @@ const thirdButton = async (tab) => {
             </div>
           </Tabs>
         </div>
-        <p v-if="isEditSuccess" class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1">Edit successfully</p>
+        <p
+          v-if="isEditSuccess"
+          class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1"
+        >
+          Edit successfully
+        </p>
       </div>
-      
+
       <DialogFooter
         class="border-2 h-[70px] border-t-[#CCCCCC] !flex !items-center !justify-between w-full"
       >
@@ -661,6 +666,7 @@ const thirdButton = async (tab) => {
           <Button
             @click="thirdButton('settings')"
             variant="default"
+            :disabled="uploadLoading"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
             <span class="font-bold" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>

@@ -1,0 +1,94 @@
+<script setup>
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import EyeIcon from '@assets/icons/EyeIcon.vue'
+import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
+import StartIcon from '@assets/icons/startIcon.vue'
+import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
+
+const props = defineProps({
+  video: {
+    type: Object,
+    required: true
+  }
+})
+const detectDuration = (duration) => {
+  switch (duration) {
+    case 'less than 30 minutes':
+      return '< 30 mins'
+    case 'less than 1 hours':
+      return '<1h'
+    case 'more than 1 hours':
+      return '>1h'
+    default:
+      return 'Unknown'
+  }
+}
+</script>
+<template>
+  <div class="flex flex-col cursor-pointer shadow-md border-gray-50 border-[.1px] p-5 rounded-sm">
+    <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
+      <router-link :to="`/video/${video.id}`">
+        <img class="object-cover w-full h-[170px]" :src="video.urlS3" :alt="video.title" />
+      </router-link>
+      <div
+        class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
+      >
+        <EyeIcon />
+        <p class="font-bold">
+          {{ video.numberOfViews }}
+        </p>
+      </div>
+      <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
+        <p class="font-bold">{{ video.videoTime || '0:00' }}</p>
+      </div>
+    </div>
+    <div class="flex items-start mt-2">
+      <router-link :to="`/channel/${video.channel.id}`">
+        <img
+          class="w-[50px] h-[50px] rounded-full"
+          :src="video.channel.image"
+          :class="
+            video.channel.isBlueBadge
+              ? 'border-blue-300 border-[3px]'
+              : video.channel.isPinkBadge
+                ? 'border-pink-300 border-[3px]'
+                : ''
+          "
+        />
+      </router-link>
+      <div class="ml-3">
+        <router-link :to="`/video/${video.id}`">
+          <p class="text-[16px] font-bold">{{ video.title }}</p>
+        </router-link>
+        <div class="flex flex-col items-start justify-start mt-1.5">
+          <router-link :to="`/channel/${video.channel.id}`">
+            <div class="flex items-center gap-3">
+              <p class="text-[#666666] text-[14px]">{{ video.channel.name }}</p>
+              <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
+              <PinkBadgeIcon v-if="video.channel.isPinkBadge" />
+            </div>
+          </router-link>
+          <div class="flex gap-1 items-center">
+            <p class="text-[#666666] text-[14px]">{{ video.category.title }}</p>
+            <p>⋅</p>
+            <p class="text-[#666666] text-[14px]">
+              {{ video.postedTime ? convertTimePostVideo(video.postedTime) : 'Posted a day ago' }}
+            </p>
+          </div>
+          <div class="flex items-center gap-1 justify-start mt-2">
+            <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
+              {{ video.workoutLevel }}
+            </div>
+            <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
+              {{ detectDuration(video.duration) }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 ml-auto">
+        <StartIcon class="h-[16px] w-[16px] mr-1" />
+        <p class="text-[14px] font-bold">{{ video.ratings }}</p>
+      </div>
+    </div>
+  </div>
+</template>

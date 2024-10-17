@@ -10,6 +10,8 @@ import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useChannelStore } from '../../stores/view-channel'
 
+const emit = defineEmits(['increaseFollower', 'decreaseFollower'])
+
 const route = useRoute()
 const id = route.params.id
 
@@ -40,6 +42,7 @@ const handleFollow = () => {
         {
           onSuccess: () => {
             isFollowed.value = false
+            emit('decreaseFollower')
           }
         }
       )
@@ -51,6 +54,7 @@ const handleFollow = () => {
         {
           onSuccess: () => {
             isFollowed.value = true
+            emit('increaseFollower')
           }
         }
       )
