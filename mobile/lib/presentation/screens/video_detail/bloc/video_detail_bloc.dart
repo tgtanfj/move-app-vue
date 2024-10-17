@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/video_detail_repository.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
@@ -12,7 +13,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   final VideoDetailRepository videoRepository = VideoDetailRepository();
 
   final commentRepository = CommentRepository();
-
   VideoDetailBloc() : super(VideoDetailState.initial()) {
     on<VideoDetailInitialEvent>(_onVideoDetailInitialEvent);
     on<VideoDetailSelectQualityEvent>(_onVideoDetailSelectQualityEvent);
@@ -27,10 +27,10 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailInitialEvent(
       VideoDetailInitialEvent event, Emitter<VideoDetailState> emit) async {
-    //TODO: replace id video after finish function video at home screen
     final result = await Future.wait([
       commentRepository.getListCommentVideo(1),
       videoRepository.getRateByVideoId(8),
+      videoRepository.getVideoDetail(event.videoId),
     ]);
     final listCommentVideo = result[0] as Either<String, List<CommentModel>>;
     listCommentVideo.fold((l) {
@@ -43,6 +43,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
               : null,
         );
       }).toList();
+
       final lastCommentId =
           updatedComments.isNotEmpty ? updatedComments.last.id : null;
       emit(state.copyWith(
@@ -73,6 +74,17 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       emit(state.copyWith(errorMessage: l));
     }, (r) {
       emit(state.copyWith(rateSelected: r));
+    });
+    (result[2] as Either<String, VideoModel>).fold((l) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.failure,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        video: r,
+        isShowVideo: true,
+        status: VideoDetailStatus.success,
+      ));
     });
   }
 

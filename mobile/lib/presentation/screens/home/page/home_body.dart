@@ -14,6 +14,8 @@ import 'package:move_app/presentation/screens/home/bloc/home_state.dart';
 import 'package:move_app/presentation/screens/home/widgets/list_videos_may_u_like.dart';
 import 'package:move_app/presentation/screens/home/widgets/slide_show_videos_feature.dart';
 import 'package:move_app/presentation/screens/home/widgets/horizontal_divider.dart';
+import 'package:move_app/presentation/screens/setting/presentation/profile/page/profile_body.dart';
+import 'package:move_app/utils/string_extentions.dart';
 
 
 class HomeBody extends StatefulWidget {

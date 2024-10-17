@@ -32,8 +32,9 @@ extension OptionalStringExtension on String? {
     }
     return this ?? '';
   }
+
   String? capitalizeFirstLetter() {
     if (this == null || this!.isEmpty) return this;
-    return '${this![0].toUpperCase()}${this!.substring(1)}'; 
+    return '${this![0].toUpperCase()}${this!.substring(1)}';
   }
 }

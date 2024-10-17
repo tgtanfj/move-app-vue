@@ -3,17 +3,16 @@ import 'package:dartz/dartz.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/category_repository.dart';
-import 'package:move_app/data/repositories/video_repository.dart';
+import 'package:move_app/data/repositories/videos_repository.dart';
 import 'package:move_app/presentation/screens/home/bloc/home_event.dart';
 import 'package:move_app/presentation/screens/home/bloc/home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState.initial()) {
     on<HomeInitialEvent>(_onHomeInitialEvent);
-
   }
   final CategoryRepository categoryRepository = CategoryRepository();
-  final VideoRepository videoRepository = VideoRepository();
+  final VideosRepository videoRepository = VideosRepository();
   void _onHomeInitialEvent(
       HomeInitialEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(status: HomeStatus.processing));

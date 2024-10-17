@@ -4,12 +4,9 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/comment_model.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
-
 import '../../../../config/theme/app_images.dart';
-import '../../auth/widgets/dialog_authentication.dart';
 
 class ItemComment extends StatefulWidget {
   final CommentModel? commentModel;

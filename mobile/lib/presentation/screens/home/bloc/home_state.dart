@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 
@@ -16,7 +15,7 @@ final class HomeState extends Equatable {
   final List<CategoryModel> listTopCategory;
   final List<VideoModel> listMayULikeVideo;
   final List<VideoModel> listTrendVideo;
-  final bool isShowListVideoTrend ;
+  final bool isShowListVideoTrend;
 
   const HomeState({
     this.status,
@@ -28,7 +27,6 @@ final class HomeState extends Equatable {
 
   static HomeState initial() => const HomeState(
         status: HomeStatus.initial,
-
         listTopCategory: [],
         listMayULikeVideo: [],
         listTrendVideo: [],

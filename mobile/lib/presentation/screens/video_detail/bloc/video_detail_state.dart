@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/data/models/video_model.dart';
 
 import '../../../../data/models/comment_model.dart';
 
@@ -12,8 +13,8 @@ enum VideoDetailStatus {
 
 final class VideoDetailState extends Equatable {
   final VideoDetailStatus? status;
-  final String? selectedQuality;
-  final Map<String, String>? videoUrls;
+  final bool isShowVideo;
+  final VideoModel? video;
   final String? inputComment;
   final List<CommentModel>? listComments;
   final Map<int, List<CommentModel>>? replies;
@@ -24,9 +25,9 @@ final class VideoDetailState extends Equatable {
   final String? errorMessage;
 
   const VideoDetailState({
-    this.videoUrls,
+    this.video,
     this.status,
-    this.selectedQuality,
+    this.isShowVideo = false,
     this.inputComment,
     this.listComments,
     this.replies,
@@ -43,8 +44,6 @@ final class VideoDetailState extends Equatable {
 
   VideoDetailState copyWith({
     VideoDetailStatus? status,
-    String? selectedQuality,
-    Map<String, String>? videoUrls,
     String? inputComment,
     List<CommentModel>? listComments,
     Map<int, List<CommentModel>>? replies,
@@ -53,11 +52,13 @@ final class VideoDetailState extends Equatable {
     CommentModel? commentModel,
     int? rateSelected,
     String? errorMessage,
+    VideoModel? video,
+    bool? isShowVideo,
   }) {
     return VideoDetailState(
-      selectedQuality: selectedQuality ?? this.selectedQuality,
+      video: video ?? this.video,
       status: status ?? this.status,
-      videoUrls: videoUrls ?? this.videoUrls,
+      isShowVideo: isShowVideo ?? this.isShowVideo,
       inputComment: inputComment ?? this.inputComment,
       listComments: listComments ?? this.listComments,
       replies: replies ?? this.replies,
@@ -72,7 +73,6 @@ final class VideoDetailState extends Equatable {
   @override
   List<Object?> get props => [
         status,
-        selectedQuality,
         inputComment,
         listComments,
         replies,
@@ -81,5 +81,7 @@ final class VideoDetailState extends Equatable {
         commentModel,
         rateSelected,
         errorMessage,
+        video,
+        isShowVideo
       ];
 }
