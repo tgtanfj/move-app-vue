@@ -30,6 +30,7 @@ import { ResponseInterceptor } from './shared/interceptors/response.interceptor'
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { RedisModule } from './shared/services/redis/redis.module';
+import { NotificationModule } from './modules/notification/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -61,7 +62,13 @@ import { RedisModule } from './shared/services/redis/redis.module';
           host: apiConfig.getString('REDIS_HOST'),
           port: apiConfig.getNumber('REDIS_PORT'),
           connectTimeout: 200000,
-          password: apiConfig.getString('REDIS_PASSWORD'),
+          defaultJobOptions: {
+            removeOnComplete: true,
+            removeOnFail: true,
+          },
+          settings: {
+            lockDuration: 300000,
+          },
         },
       }),
     }),
@@ -72,6 +79,7 @@ import { RedisModule } from './shared/services/redis/redis.module';
     WatchingVideoHistoryModule,
     PaymentModule,
     DonationModule,
+    NotificationModule,
   ],
   providers: [
     {
