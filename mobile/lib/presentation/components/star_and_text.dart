@@ -10,18 +10,20 @@ class StarAndText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        SvgPicture.asset(AppIcons.star.svgAssetPath),
-        const SizedBox(
-          width: 7.0,
-        ),
-        Text(
-          ratings.toString(),
-          style: textStyle,
-        ),
-      ],
-    );
+    return ratings >= 1
+        ? Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              SvgPicture.asset(AppIcons.star.svgAssetPath),
+              const SizedBox(
+                width: 7.0,
+              ),
+              Text(
+                ratings.toString(),
+                style: textStyle,
+              ),
+            ],
+          )
+        : const SizedBox();
   }
 }

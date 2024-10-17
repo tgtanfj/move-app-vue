@@ -16,10 +16,11 @@ import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
 import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
 import { WatchingVideoHistoryModule } from '../watching-video-history/watching-video-history.module';
+import { Follow } from '@/entities/follow.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Video]),
+    TypeOrmModule.forFeature([Video, Follow]),
     CategoryModule,
     WatchingVideoHistoryModule,
     forwardRef(() => UserModule),

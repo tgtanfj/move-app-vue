@@ -8,10 +8,11 @@ import { Category } from '@/entities/category.entity';
 import { SearchHistory } from '@/entities/search-history.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
+import { VimeoService } from '@/shared/services/vimeo.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category, Channel, Video, SearchHistory]), JwtModule, UserModule],
-  providers: [SearchService],
+  providers: [SearchService, VimeoService],
   controllers: [SearchController],
 })
 export class SearchModule {}

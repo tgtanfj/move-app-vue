@@ -56,6 +56,10 @@ export class Video extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfViews: number;
 
@@ -68,6 +72,10 @@ export class Video extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfComments: number;
 
@@ -115,4 +123,10 @@ export class Video extends BaseEntity {
   viewHistories: VideoViewHistorys[];
 
   viewGrowthRate?: number;
+
+  @Column({
+    type: 'float',
+    default: 0,
+  })
+  durationsVideo: number;
 }

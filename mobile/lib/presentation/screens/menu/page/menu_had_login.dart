@@ -49,18 +49,11 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
         children: [
           Row(
             children: [
-              widget.avatarPath.isNotEmpty
-                  ? Avatar(
-                      heightAvatar: 40.0,
-                      widthAvatar: 40.0,
-                      radiusAvatar: 32.0,
-                      imageUrl: widget.avatarPath)
-                  : Image.asset(
-                      AppImages.defaultAvatar.webpAssetPath,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                    ),
+              Avatar(
+                  heightAvatar: 40.0,
+                  widthAvatar: 40.0,
+                  radiusAvatar: 32.0,
+                  imageUrl: widget.avatarPath),
               const SizedBox(
                 width: 8.0,
               ),

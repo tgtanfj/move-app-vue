@@ -72,15 +72,16 @@ class VideoModel {
           (json['workoutLevel'] is String) ? json['workoutLevel'] : '',
       duration: (json['duration'] is String) ? json['duration'] : '',
       url: (json['url'] is String) ? json['url'] : '',
-      numberOfViews: (json['numberOfViews'] is int) ? json['numberOfViews'] : 0,
-      ratings: (json['ratings'] is num) ? json['ratings'].toDouble() : 0.0,
+      numberOfViews:
+          (json['numberOfViews'] is num) ? json['numberOfViews'].toInt() : 0,
+      ratings: (json["ratings"] is num) ? json['ratings'].toDouble() : 0.0,
       urlS3: (json['urlS3'] is String) ? json['urlS3'] : '',
       categories: CategoryModel.fromJson(json['category']),
       channel: ChannelModel.fromJson(json['channel']),
       thumbnailURL:
           (json['thumbnailURL'] is String) ? json['thumbnailURL'] : '',
       durationsVideo:
-          (json['durationsVideo'] is int) ? json['durationsVideo'] : 0,
+          (json['durationsVideo'] is num) ? json['durationsVideo'].toInt() : 0,
       createdAt: (json['createdAt'] is String)
           ? DateTime.parse(json['createdAt'])
           : null,

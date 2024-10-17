@@ -6,6 +6,7 @@ import {
   REGEX_USERNAME_CODE
 } from '../constants/regex.constant'
 import { t } from '../helpers/i18n.helper'
+import { isBefore, subYears } from 'date-fns'
 
 export const passwordSchema = object({
   password: string()
@@ -41,25 +42,25 @@ export const registerSchema = object({
 })
 
 export const signinSchema = object({
-  email: string()
-    .required(t('error_message.required_email'))
-    .matches(REGEX_EMAIL, t('error_message.invalid_email')),
-  password: string()
-    .required(t('error_message.required'))
-    .min(8, t('error_message.invalid_password'))
-    .max(32, t('error_message.invalid_password'))
-    .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password')),
+  email: string().required(t('error_message.required_email')),
+  // .matches(REGEX_EMAIL, t('error_message.invalid_email')),
+  password: string().required(t('error_message.required'))
+  // .min(8, t('error_message.invalid_password'))
+  // .max(32, t('error_message.invalid_password'))
+  // .matches(REGEX_STRONG_PASSWORD, t('error_message.invalid_password')),
 })
 
 export const userProfileSchema = yup.object().shape({
   username: yup
     .string()
+    .trim()
     .required(t('user_profile.field_required'))
     .matches(REGEX_USERNAME_CODE, t('user_profile.username_verify_message'))
-    .min(4, t('user_profile.username_verify_message'))
-    .max(25, t('user_profile.username_verify_message')),
+    .min(4, t('user_profile.username_8_255_long'))
+    .max(25, t('user_profile.username_8_255_long')),
   fullName: yup
     .string()
+    .trim()
     .matches(/^.{8,255}$/, t('user_profile.fullname_8_255_long'))
     .matches(/^[A-Za-z\s]*$/, t('user_profile.fullname_no_special_characters')),
   country: yup.string().required(t('user_profile.field_required')),
@@ -78,13 +79,15 @@ export const userProfileSchema = yup.object().shape({
     .test('is-in-range', t('user_profile.invalid_age'), (value) => {
       const date = new Date(value)
       const maxAge = 65
-      const minAge = 18
+      const minAge = 13
       const today = new Date()
-      const minDate = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate())
-      const maxDate = new Date(today.getFullYear() - maxAge, today.getMonth(), today.getDate())
 
-      return date <= minDate && date >= maxDate // Check if the date is in the range
+      const maxDate = subYears(today, minAge)
+      const minDate = subYears(today, maxAge)
+      return isBefore(date, maxDate) && isBefore(minDate, date)
     }),
   avatar: yup.mixed().nullable().required(t('user_profile.field_required')),
-  city: yup.string()
+  city: yup.string().trim()
 })
+
+export const searchSchema = yup.string().max(255)

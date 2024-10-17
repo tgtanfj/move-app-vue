@@ -18,33 +18,6 @@ class ForgotPasswordBody extends StatefulWidget {
 }
 
 class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
-  final TextEditingController _emailController = TextEditingController();
-  final FocusNode focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    if (!focusNode.hasFocus) {
-      setState(() {
-        _emailController.text = _emailController.text.trim();
-      });
-      context
-          .read<ForgotPasswordBloc>()
-          .add(ForgotPasswordEmailChangedEvent(_emailController.text.trim()));
-    }
-  }
-
-  @override
-  void dispose() {
-    focusNode.removeListener(_onFocusChange);
-    _emailController.dispose();
-    focusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +58,17 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           title: Constants.enterEmailAddress,
                           titleStyle:
                               AppTextStyles.montserratStyle.regular14Black,
-                          controller: _emailController,
-                          focusNode: focusNode,
                           isPasswordInput: false,
+                          initialValue: state.email,
                           onChanged: (email) {
                             context
                                 .read<ForgotPasswordBloc>()
                                 .add(ForgotPasswordEmailChangedEvent(email));
+                          },
+                          onLostFocus:  (email) {
+                            context
+                                .read<ForgotPasswordBloc>()
+                                .add(ForgotPasswordEmailChangedEvent(email.trim()));
                           },
                           preMessage: hasError
                               ? state.isEmailValid
@@ -101,7 +78,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                           mainMessage: state.isEmailSent
                               ? state.email
                               : state.isEmailValid
-                                  ? Constants.exampleEmail
+                                  ? state.email
                                   : "",
                           sufMessage: hasError
                               ? state.isEmailValid
@@ -131,7 +108,7 @@ class _ForgotPasswordBodyState extends State<ForgotPasswordBody> {
                             isEnabled: state.email.isNotEmpty &&
                                 (state.isEmailSent
                                     ? state.remainingSeconds == 0
-                                    : !state.isEmailSent),
+                                    : true),
                             onTap: state.email.isNotEmpty &&
                                     (state.isEmailSent
                                         ? state.remainingSeconds == 0

@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { VideoTrendRepository } from './video-trend.repository';
-import { VideoTrend } from '@/entities/video-trend.entity';
 import { Repository } from 'typeorm';
+import { VideoTrend } from '@/entities/video-trend.entity';
 
 export class VideoTrendService {
   constructor(@InjectRepository(VideoTrend) private readonly videoTrendRepository: Repository<VideoTrend>) {}
@@ -11,17 +11,15 @@ export class VideoTrendService {
       videoId: obj.id,
       title: obj.title,
       workoutLevel: obj.workoutLevel,
-      thumbnailURL: obj.thumbnailURL,
-      numberOfViews: obj.numberOfViews,
+      createdAt: obj.createdAt,
+      duration: obj.duration,
       videoLength: obj.videoLength,
       ratings: obj.ratings,
-      category: obj.category,
-      duration: obj.duration,
-      channelName: obj.channel.name,
-      channelImage: obj.channel.name,
-      isBlueBadge: obj.channel.isBlueBadge,
-      isPinkBadge: obj.channel.isPinkBadge,
+      numberOfViews: obj.numberOfView,
+      categoryId: obj.category.id,
+      channelId: obj.channel.id,
     });
+
     return await this.videoTrendRepository.save(newVideoTrend);
   }
   async deleteAll() {

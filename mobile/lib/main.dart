@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
-
 import 'config/app_config.dart';
 
 void main() async {
@@ -56,7 +55,7 @@ class _MyAppState extends State<MyApp> {
         );
       } else {
         if (kDebugMode) {
-        print('Token is missing or empty.');
+          print('Token is missing or empty.');
         }
       }
     } else {
@@ -99,9 +98,8 @@ class _MyAppState extends State<MyApp> {
           ),
         );
       },
-      // initialRoute: AppRoutes.getInitialRoute(),
-      // routes: AppRoutes.getRoutes(),
-      home: VideoDetailPage(videoId: 22),
+      initialRoute: AppRoutes.getInitialRoute(),
+      routes: AppRoutes.getRoutes(),
     );
   }
 }

@@ -98,8 +98,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       emit(state.copyWith(status: SignUpStatus.loading));
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
-        emit(
-            state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
+        emit(state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
           emit(

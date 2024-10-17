@@ -22,7 +22,7 @@ enum AppIcons {
   closeWhite,
   faqs,
   like,
-  likeFilled,
+  likeFiled,
   dislike,
   dislikeFilled,
   moveReps,
@@ -48,6 +48,8 @@ enum AppIcons {
   heartTiffany,
   filter,
   arrowWhiteLeft,
+  rateStar,
+  rateStarFill,
 }
 
 extension AppIconsExtension on AppIcons {

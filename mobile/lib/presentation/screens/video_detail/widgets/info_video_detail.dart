@@ -10,20 +10,21 @@ import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
-import 'package:move_app/presentation/screens/setting/presentation/profile/page/profile_body.dart';
 import 'package:move_app/utils/string_extentions.dart';
-import 'package:move_app/utils/util_date_time.dart';
+
 
 class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
   final VoidCallback followButton;
   final VoidCallback giftRepButton;
+  final VoidCallback onTapRate;
   final VideoModel? video;
   const InfoVideoDetail({
     super.key,
     required this.viewChanelButton,
     required this.followButton,
     required this.giftRepButton,
+    required this.onTapRate,
     required this.video,
   });
 
@@ -92,6 +93,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 onTap: widget.followButton,
                 child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
             PopupMenuButton<String>(
+              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(16.0), // Set the border radius here
@@ -102,6 +104,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
                   value: Constants.rate,
+                  onTap: widget.onTapRate,
                   child: Row(
                     children: [
                       Expanded(

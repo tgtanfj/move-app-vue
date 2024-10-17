@@ -10,24 +10,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
+import { Tabs, TabsList } from '@/common/ui/tabs'
 import { Label } from '@/common/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import { Textarea } from '@/common/ui/textarea'
 import { Button } from '@/common/ui/button'
-import { Tabs, TabsList } from '@/common/ui/tabs'
 import { Input } from '@/common/ui/input'
-import Loading from '../Loading.vue'
-import ImageLoading from '../ImageLoading.vue'
-import VideoIcon from '@assets/icons/videoIcon.vue'
 import { cn } from '@utils/shadcn.util'
+import Loading from '../Loading.vue'
+import VideoIcon from '@assets/icons/videoIcon.vue'
 import { useVideoStore } from '../../stores/videoManage'
-import {
-  allowedFormats,
-  maxFileSize,
-  validImageTypes,
-  WORKOUTLEVEL,
-  DURATIONTYPE
-} from '@constants/upload-video.constant'
+import { validImageTypes, WORKOUTLEVEL, DURATIONTYPE } from '@constants/upload-video.constant'
+import axios from 'axios'
+import { ADMIN_BASE } from '@constants/api.constant'
+import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 
 const props = defineProps({
   videoInfoSelected: {
@@ -42,12 +38,9 @@ const isOpenUploadVideoDetails = ref(false)
 
 const uploading = ref(false)
 const progress = ref(0)
-const error = ref(null)
 const images = ref([])
-const imagesAfterConvert = ref([])
-const selectedIndex = ref(null)
 const imagesSelected = ref(null)
-const imageSelectedFile = ref(null);
+const imageSelectedFile = ref(null)
 const fileInputThumb = ref(null)
 const uploadLoading = ref(null)
 
@@ -75,32 +68,7 @@ const displayWorkoutLevel = computed(() => capitalizeFirstLetter(videoDataEdit.v
 const displayDurationLevel = computed(() => convertDuration(videoDataEdit.value.duration))
 const keywords = computed(() => videoDataEdit.value.keywords)
 const isCommentable = ref(videoDataEdit.value.isCommentable)
-const categories = ref([
-  {
-    id: 1,
-    title: 'Gym'
-  },
-  {
-    id: 2,
-    title: 'MMA'
-  },
-  {
-    id: 3,
-    title: 'Weight Loss'
-  },
-  {
-    id: 4,
-    title: 'Muscle Gain'
-  },
-  {
-    id: 7,
-    title: 'Low Impact'
-  },
-  {
-    id: 10,
-    title: 'Upper Body'
-  },
-])
+const categories = ref([])
 
 watch(
   () => props.videoInfoSelected,
@@ -125,9 +93,19 @@ watch(isCommentable, (newValue) => {
   if (newValue) isCommentableErr.value = ''
 })
 
+const getListCategories = async () => {
+  try {
+    const res = await axios.get(`${ADMIN_BASE}/category`)
+    categories.value = res.data.data
+  } catch (error) {
+    console.log('Error category', error)
+  }
+}
+
 const handleEditVideo = () => {
   videoDataEdit.value = { ...props.videoInfoSelected }
   videoStore.videoId = props.videoInfoSelected.id
+  getListCategories()
 }
 
 const capitalizeFirstLetter = (string) => {
@@ -230,7 +208,7 @@ const handleThumbnailUpload = (event) => {
   const newImages = []
 
   const promises = files.map((file) => {
-    imageSelectedFile.value = file;
+    imageSelectedFile.value = file
     return new Promise((resolve) => {
       const imageUrl = URL.createObjectURL(file)
       newImages.push(imageUrl)
@@ -333,7 +311,7 @@ const thirdButton = async (tab) => {
       const response = await videoStore.updateDetailVideo(formData)
 
       if (response && response.statusCode === 200) {
-        // isOpenUploadVideoDetails.value = false
+        props.videoInfoSelected.title = title.value
         isEditSuccess.value = true
       }
     }
@@ -433,7 +411,7 @@ const thirdButton = async (tab) => {
                 <div class="flex flex-col gap-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.video_title') }}</p>
-                    <div v-if="titleErr !== ''" class="text-destructive italic">
+                    <div v-if="titleErr !== ''" class="text-destructive text-sm italic">
                       {{ titleErr }}
                     </div>
                   </div>
@@ -487,13 +465,13 @@ const thirdButton = async (tab) => {
 
                   <div
                     v-if="thumbnailErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-sm text-destructive italic"
                   >
                     {{ thumbnailErr }}
                   </div>
                   <div
                     v-if="thumbnailTypeValidationErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-destructive text-sm italic"
                   >
                     {{ thumbnailTypeValidationErr }}
                   </div>
@@ -503,7 +481,7 @@ const thirdButton = async (tab) => {
                 <div class="space-y-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.category') }}</p>
-                    <div v-if="categoryErr !== ''" class="text-destructive italic">
+                    <div v-if="categoryErr !== ''" class="text-destructive text-sm italic">
                       {{ categoryErr }}
                     </div>
                   </div>
@@ -513,7 +491,7 @@ const thirdButton = async (tab) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup v-if="categories" v-for="cate in categories" :key="cate.id">
-                        <SelectItem :value="cate.id">{{ cate.title }}</SelectItem>
+                        <SelectItem v-if="cate" :value="cate.id">{{ cate.title }}</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -544,7 +522,7 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-4">
                       <p class="text-[16px]">{{ $t('upload_video.duration') }}</p>
-                      <div v-if="durationErr !== ''" class="text-destructive italic">
+                      <div v-if="durationErr !== ''" class="text-destructive text-sm italic">
                         {{ durationErr }}
                       </div>
                     </div>
@@ -594,7 +572,7 @@ const thirdButton = async (tab) => {
               <div v-show="tabChange === 'settings'" class="flex flex-col gap-2">
                 <div class="flex items-center gap-4">
                   <p class="text-[16px]">{{ $t('upload_video.comment_settings') }}</p>
-                  <div v-if="isCommentableErr !== ''" class="text-destructive italic">
+                  <div v-if="isCommentableErr !== ''" class="text-destructive text-sm italic">
                     {{ isCommentableErr }}
                   </div>
                 </div>
@@ -623,9 +601,14 @@ const thirdButton = async (tab) => {
             </div>
           </Tabs>
         </div>
-        <p v-if="isEditSuccess" class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1">Edit successfully</p>
+        <p
+          v-if="isEditSuccess"
+          class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1"
+        >
+          Edit successfully
+        </p>
       </div>
-      
+
       <DialogFooter
         class="border-2 h-[70px] border-t-[#CCCCCC] !flex !items-center !justify-between w-full"
       >
@@ -661,6 +644,7 @@ const thirdButton = async (tab) => {
           <Button
             @click="thirdButton('settings')"
             variant="default"
+            :disabled="uploadLoading"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
             <span class="font-bold" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>

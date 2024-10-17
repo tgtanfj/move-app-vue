@@ -37,7 +37,7 @@ class ForgotPasswordBloc
 
     if (state.isEmailValid) {
       final emailExists =
-          await forgotPasswordRepository.checkEmailExists(state.email);
+          await forgotPasswordRepository.checkEmailExists(state.email.trim());
       if (emailExists) {
         emit(state.copyWith(
             isEmailSent: true, errorMessage: '', isShowEmailMessage: true));
@@ -45,7 +45,7 @@ class ForgotPasswordBloc
         add(ForgotPasswordStartTimerEvent());
       } else {
         emit(state.copyWith(
-            isEmailSent: true,
+            isEmailSent: false,
             errorMessage: 'Email does not found',
             isShowEmailMessage: true));
       }

@@ -2,15 +2,8 @@ extension UtilDateTime on DateTime {
   String timeAgo() {
     final now = DateTime.now();
     final difference = now.difference(this);
-
     if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        return "Most recent";
-      } else if (difference.inHours == 1) {
-        return "Posted ${difference.inHours} hour(s) ago";
-      } else {
-        return "Posted ${difference.inHours} hours ago";
-      }
+      return "Most recent";
     } else if (difference.inDays == 1) {
       return "Posted a day ago";
     } else if (difference.inDays <= 6) {

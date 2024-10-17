@@ -7,6 +7,10 @@ import { BaseEntity } from './base/base.entity';
 export class VideoTrend extends BaseEntity {
   @Column({
     type: 'bigint',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   videoId: number;
 
@@ -23,33 +27,26 @@ export class VideoTrend extends BaseEntity {
   workoutLevel: WorkoutLevel;
 
   @Column({
-    type: 'varchar',
-    length: 255,
-  })
-  thumbnailURL: string;
-
-  @Column({
     type: 'bigint',
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfViews: number;
-
-  @Column({
-    type: 'varchar',
-    length: 50,
-  })
-  videoLength: string;
 
   @Column({
     type: 'int',
     default: 0,
   })
-  ratings: number;
+  videoLength: number;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'float',
+    default: 0,
   })
-  category: string;
+  ratings: number;
 
   @Column({
     type: 'timestamp',
@@ -64,26 +61,16 @@ export class VideoTrend extends BaseEntity {
   duration: DurationType;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'int',
   })
-  channelName: string;
+  categoryId: number;
 
   @Column({
-    type: 'varchar',
-    length: 255,
+    type: 'bigint',
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
-  channelImage: string;
-
-  @Column({
-    type: 'boolean',
-    default: false,
-  })
-  isBlueBadge: boolean;
-
-  @Column({
-    type: 'boolean',
-    default: false,
-  })
-  isPinkBadge: boolean;
+  channelId: number;
 }
