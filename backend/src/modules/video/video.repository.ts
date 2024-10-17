@@ -175,8 +175,16 @@ export class VideoRepository {
       userId,
     );
 
-    const { thumbnails, numberOfComments, numberOfViews, isPublish, shareCount, urlS3, ...dataVideoDetails } =
-      videoDetails;
+    const {
+      thumbnails,
+      numberOfComments,
+      channel,
+      numberOfViews,
+      isPublish,
+      shareCount,
+      urlS3,
+      ...dataVideoDetails
+    } = videoDetails;
 
     const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
     const channelIds = await this.getFollowedChannelsByUser(userId);
@@ -185,7 +193,7 @@ export class VideoRepository {
       ...dataVideoDetails,
       thumbnailURL,
       numberOfViews: +numberOfViews,
-      isFollowed,
+      channel: { ...channel, isFollowed },
       watchAlso,
     };
   }
