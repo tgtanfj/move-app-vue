@@ -18,6 +18,8 @@ import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
 import { Button } from '@common/ui/button'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useAuthStore } from '../../stores/auth'
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const props = defineProps({
   comments: {
@@ -149,7 +151,7 @@ const showRepliesByComment = async (commentId) => {
     const repliesArray = response.data
     cursorReplies.value = repliesArray[repliesArray.length - 1].id
     repliesPerComment.value[commentId] = repliesArray
-    hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 12
+    hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 10
     if (cursorReplies.value === null) {
       numberReplies.value += 1
     }
@@ -178,7 +180,7 @@ const showMoreReplies = async (commentId) => {
   if (response.message === 'success') {
     const newReplies = response.data
     repliesPerComment.value[commentId].push(...newReplies)
-    hasMoreRepliesPerComment.value[commentId] = newReplies.length >= 12
+    hasMoreRepliesPerComment.value[commentId] = newReplies.length >= 10
     cursorReplies.value = newReplies[newReplies.length - 1].id
     if (!repliesCountPerComment.value[commentId]) {
       repliesCountPerComment.value[commentId] = newReplies.length
@@ -243,7 +245,10 @@ const createReply = async (commentId) => {
           <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
             <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
-            <CheckVerifyIcon v-if="item.user.isActive" />
+            <div v-if="item.user.channel" class="flex items-center gap-2">
+              <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
+              <PinkBadgeIcon v-if="item.user.channel.isPinkBadge" />
+            </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
               <YellowRepsIcon />
               <p class="text-[#FFB564] text-[12px] -mb-[1px]">
@@ -367,7 +372,7 @@ const createReply = async (commentId) => {
               <ChevronDown class="text-primary w-[20px] transition-all" />
               <p class="text-primary text-[13px] font-semibold">
                 {{ $t('comment.show') }}
-                {{ item.numberOfReply > 12 ? 12 : item.numberOfReply + numberReplies }}
+                {{ item.numberOfReply + numberReplies }}
                 {{ $t('comment.replies') }}
               </p>
             </div>
@@ -395,14 +400,20 @@ const createReply = async (commentId) => {
                   <p class="text-[13px] font-bold">
                     {{ myReplyPerComment[item.id].user.fullName }}
                   </p>
-                  <CheckVerifyIcon />
                   <div
-                    v-if="myReplyPerComment[item.id].user.numberOfREPs > 0"
+                    v-if="myReplyPerComment[item.id].user.channel"
+                    class="flex items-center gap-2"
+                  >
+                    <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
+                    <PinkBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isPinkBadge" />
+                  </div>
+                  <div
+                    v-if="myReplyPerComment[item.id].totalDonation > 0"
                     class="flex items-end gap-2"
                   >
                     <YellowRepsIcon />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                      Gifted {{ myReplyPerComment[item.id].user.numberOfREPs }} REPs
+                      Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
                     </p>
                   </div>
                   <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -494,11 +505,17 @@ const createReply = async (commentId) => {
               <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-3">
                   <p class="text-[13px] font-bold">{{ reply.user.fullName }}</p>
-                  <CheckVerifyIcon />
-                  <div v-if="reply.user.numberOfREPs > 0" class="flex items-end gap-2">
+                  <div v-if="reply.user.channel" class="flex items-center gap-2">
+                    <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
+                    <PinkBadgeIcon v-if="reply.user.channel.isPinkBadge" />
+                  </div>
+                  <div
+                    v-if="reply.totalDonation > 0"
+                    class="flex items-end gap-2"
+                  >
                     <YellowRepsIcon />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                      Gifted {{ reply.user.numberOfREPs }} REPs
+                      Gifted {{ reply.totalDonation }} REPs
                     </p>
                   </div>
                   <p class="text-[12px] text-[#666666] -mb-[2px]">

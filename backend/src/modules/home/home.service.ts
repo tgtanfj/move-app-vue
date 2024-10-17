@@ -17,6 +17,8 @@ import { PaginationMetadata } from '../video/dto/response/pagination.meta';
 import { VideoService } from '../video/video.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { ChannelService } from '../channel/channel.service';
+import { CategoryService } from '../category/category.service';
 
 @Injectable()
 export class HomeService {
@@ -32,6 +34,8 @@ export class HomeService {
     private apiConfig: ApiConfigService,
     private videoTrendService: VideoTrendService,
     private thumbnailService: ThumbnailService,
+    private channelService: ChannelService,
+    private categoryService: CategoryService,
   ) {}
 
   // @Cron('* 1 0 * *')
@@ -39,6 +43,7 @@ export class HomeService {
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
+
     //The video was posted 14 days ago
     const numberDayValid = this.apiConfig.getNumber('NUMBER_DAY_VALID');
     const postedDateValid = new Date();
@@ -54,7 +59,6 @@ export class HomeService {
       .leftJoinAndSelect('video.views', 'views')
       .innerJoinAndSelect('video.channel', 'channel')
       .innerJoinAndSelect('video.category', 'category')
-      .innerJoinAndSelect('video.thumbnails', 'thumbnails')
       .where('video.createdAt <= :postedDateValid', { postedDateValid: postedDateValid })
       .andWhere('video.isPublish = true')
       .andWhere('views.viewDate = :yesterday', { yesterday: formattedYesterday })
@@ -67,23 +71,25 @@ export class HomeService {
         'video.workoutLevel',
         'video.duration',
         'video.ratings',
-        'video.numberOfViews as number_of_views',
-        'channel.name AS channel_name',
-        'channel.image as channel_avt',
-        'channel.isBlueBadge as is_blue_badge',
-        'channel.isPinkBadge as is_pink_badge',
-        'category.title as category_name',
+        'video.createdAt',
+        'video.numberOfViews',
+        'channel.numberOfFollowers',
+        'channel.isBlueBadge',
+        'channel.isPinkBadge',
+        'channel.image',
+        'channel.name',
+        'channel.id',
+        'category.id',
+        'category.title',
       ])
-      .addSelect('thumbnails')
-      .getRawMany();
+      .getMany();
 
     const banners = [];
     result.forEach(async (obj) => {
-      const item = this.convertToVideoItemDto(obj);
-      banners.push(item);
-      await this.videoTrendService.createVideoTrend(item);
+      banners.push(obj);
+      await this.videoTrendService.createVideoTrend(obj);
     });
-    return banners;
+    return result;
   }
 
   async getListVideoTrend() {
@@ -91,7 +97,36 @@ export class HomeService {
     if (!result) {
       throw new BadRequestException();
     }
-    return result;
+    const response = await Promise.all(
+      result.map(async (video) => {
+        const [thumbnail, channel, category] = await Promise.all([
+          this.thumbnailService.getSelectedThumbnail(video.id),
+          this.channelService.findOne(video.channelId),
+          this.categoryService.getCategoryById(video.categoryId),
+        ]);
+
+        const { categoryId, channelId, videoLength, ...restOfVideo } = video;
+        const durationsVideo = videoLength;
+        return {
+          ...restOfVideo,
+          durationsVideo,
+          channel: {
+            id: channel.id,
+            name: channel.name,
+            image: channel.image,
+            isBlueBadge: channel.isBlueBadge,
+            isPinkBadge: channel.isPinkBadge,
+            numberOfFollowers: channel.numberOfFollowers,
+          },
+          category: {
+            id: category.id,
+            content: category.title,
+          },
+          thumbnailURL: thumbnail && thumbnail.image ? thumbnail.image : null,
+        };
+      }),
+    );
+    return response;
   }
 
   convertToVideoItemDto(rawData: any): VideoItemDto {
@@ -140,10 +175,13 @@ export class HomeService {
       'v.duration',
       'v.createdAt',
       'c.title',
+      'c.id',
       'ch.id',
       'ch.name',
+      'ch.image',
       'ch.isBlueBadge',
       'ch.isPinkBadge',
+      'ch.numberOfFollowers',
     ];
     const [list, total] = await this.videoRepository.findAndCount({
       where: {
@@ -185,18 +223,19 @@ export class HomeService {
     }
 
     const videosForPage1ID = videosForPage1.map((video) => video.id);
-
     if (dto.page === 1) {
       const update = await Promise.all(
         videosForPage1.map(async (video) => {
-          const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
+          const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
+          console.log(thumbnail);
+
           return {
             ...video,
-            thumbnailURL: thumbnail,
+            thumbnailURL: thumbnail && thumbnail.image ? thumbnail.image : null,
           };
         }),
       );
-      return objectResponse(update, {});
+      return objectResponse(update, new PaginationMetadata(total, dto.page, dto.take, totalPage));
     } else {
       let remainVideos = await (
         await this.queryVideoNotIn(videosForPage1ID, categoryId, selected)
@@ -211,7 +250,7 @@ export class HomeService {
 
           return {
             ...video,
-            thumbnailURL: thumbnail,
+            thumbnailURL: thumbnail.image,
           };
         }),
       );
@@ -246,10 +285,13 @@ export class HomeService {
       'v.duration',
       'v.durationsVideo',
       'v.createdAt',
+      'c.id',
       'c.title',
       'ch.id',
       'ch.name',
+      'ch.image',
       'ch.isBlueBadge',
+      'ch.numberOfFollowers',
       'ch.isPinkBadge',
     ];
     const [list, total] = await this.videoRepository.findAndCount({
@@ -279,7 +321,7 @@ export class HomeService {
 
         return {
           ...video,
-          thumbnailURL: thumbnail,
+          thumbnailURL: thumbnail.image,
         };
       }),
     );
@@ -298,9 +340,12 @@ export class HomeService {
       'v.duration',
       'v.durationsVideo',
       'v.createdAt',
+      'c.id',
       'c.title',
       'ch.id',
       'ch.name',
+      'ch.numberOfFollowers',
+      'ch.image',
       'ch.isBlueBadge',
       'ch.isPinkBadge',
       'SUM(vw."totalView") AS "weeklyTotalView"', // Tính tổng view cho tuần
@@ -377,7 +422,10 @@ export class HomeService {
       'v.durationsVideo',
       'v.createdAt',
       'c.title',
+      'c.id',
       'ch.id',
+      'ch.numberOfFollowers',
+      'ch.image',
       'ch.name',
       'ch.isBlueBadge',
       'ch.isPinkBadge',
@@ -434,7 +482,7 @@ export class HomeService {
 
         return {
           ...video,
-          thumbnailURL: thumbnail,
+          thumbnailURL: thumbnail.image,
         };
       }),
     );
@@ -466,7 +514,7 @@ export class HomeService {
         const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
         return {
           ...video,
-          thumbnailURL: thumbnail,
+          thumbnailURL: thumbnail.image,
         };
       }),
     );

@@ -74,8 +74,8 @@ const cancel = () => {
   <div class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer">
     <Popover v-model:open="showRatingModal">
       <PopoverTrigger class="flex gap-2 items-center">
-        <Star width="20px" class="text-primary" />
-        <span class="uppercase">{{ $t('video.rate') }}</span>
+        <Star width="24px" class="text-primary" />
+        <span class="uppercase font-semibold text-sm">{{ $t('video.rate') }}</span>
       </PopoverTrigger>
       <PopoverContent
         class="min-w-[300px] flex flex-col bg-white p-7 text-black rounded-lg shadow-lg border-1 border-gray-200 z-10"

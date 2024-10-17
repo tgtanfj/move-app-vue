@@ -8,7 +8,7 @@ export class ChannelRepository {
   constructor(@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
-    return await this.channelRepository.findOneOrFail({
+    return await this.channelRepository.findOne({
       where: {
         user: { id: userId },
       },
@@ -54,5 +54,19 @@ export class ChannelRepository {
     return await this.channelRepository.update(channelId, {
       numberOfREPs,
     });
+  }
+
+  async createChannel(userId: number, dto: object) {
+    const channelExist = await this.channelRepository.findOne({
+      where: { user: { id: userId } },
+    });
+
+    if (channelExist) return channelExist.id;
+    const newChannel = this.channelRepository.create({ ...dto, user: { id: userId } });
+    return (await this.channelRepository.save(newChannel)).id;
+  }
+
+  async editChannel(channelId: number, dto: Partial<Channel>) {
+    return await this.channelRepository.update(channelId, dto);
   }
 }

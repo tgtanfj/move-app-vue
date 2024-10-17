@@ -14,7 +14,7 @@ const props = defineProps({
       class="absolute top-0 left-0 w-full h-full"
       frameborder="0"
       allow="autoplay; fullscreen"
-      allowfullscreen
+      allowfullscreen="true"
     >
     </iframe>
   </div>

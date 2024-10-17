@@ -4,7 +4,13 @@ import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { ArrowRightFromLine } from 'lucide-vue-next'
 import { ArrowLeft } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { homepageService } from '@services/homepage.services'
+import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import FollowedChannelsSkeleton from './FollowedChannelsSkeleton.vue'
+import { getFollowerText } from '@utils/follower.util'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   sidebarOpen: {
@@ -15,23 +21,27 @@ const props = defineProps({
 
 const emit = defineEmits(['toggleSidebar'])
 
+const router = useRouter()
 const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
 
-const channels = [
-  {
-    id: 1,
-    name: 'The Rock',
-    avatar:
-      'https://vcdn1-giaitri.vnecdn.net/2020/10/18/main-qimg-0382435c04d3012b3370-2771-8312-1602985058.jpg?w=460&h=0&q=100&dpr=2&fit=crop&s=Rk2kSfST--gVjysQOZTyaw'
-  },
-  {
-    id: 2,
-    name: 'Larry Wheels',
-    avatar:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4J3EBuyb_XhtUkG8nGP4X5tqFslH8b5IfVg&s'
+const channels = ref(null)
+const notFollowedAnyOne = ref(false)
+const isLoading = ref(false)
+
+onMounted(async () => {
+  const accessToken = localStorage.getItem('token')
+  if (accessToken) {
+    isLoading.value = true
+    const response = await homepageService.getFollowedChannels()
+    if (response.data.length > 0) {
+      channels.value = response.data
+    } else {
+      notFollowedAnyOne.value = true
+    }
+    isLoading.value = false
   }
-]
+})
 
 const toggleSidebar = () => {
   emit('toggleSidebar')
@@ -61,12 +71,31 @@ const toggleSidebar = () => {
           v-if="authStore.accessToken"
           v-for="channel in channels"
           :key="channel.id"
-          class="flex items-center gap-1"
+          class="flex items-center gap-1 cursor-pointer"
+          @click="router.push(`/channel/${channel.id}`)"
         >
-          <img :src="channel.avatar" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
-          <span v-if="sidebarOpen" class="ml-4 text-sm text-nowrap">{{ channel.name }}</span>
+          <img :src="channel.image" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
+          <div class="flex flex-col gap-0">
+            <div class="flex items-center justify-start gap-2">
+              <span v-if="sidebarOpen" class="ml-2 text-sm text-nowrap">{{ channel.name }}</span>
+              <BlueBadgeIcon v-if="channel.isBlueBadge && sidebarOpen" />
+              <PinkBadgeIcon v-if="channel.isPinkBadge && sidebarOpen" />
+            </div>
+            <div v-show="sidebarOpen" class="ml-2">
+              <span class="text-sm text-[#666666]"
+                >{{ channel.numberOfFollowers }}
+                {{ getFollowerText(channel.numberOfFollowers) }}</span
+              >
+            </div>
+          </div>
         </div>
-        <p v-if="sidebarOpen && authStore.accessToken" class="text-[16px] text-[#666666]">
+        <div v-if="isLoading && !channel" v-for="item in 10">
+          <FollowedChannelsSkeleton />
+        </div>
+        <p
+          v-if="sidebarOpen && authStore.accessToken && notFollowedAnyOne"
+          class="text-[16px] text-[#666666]"
+        >
           {{ $t('sidebar.not_login') }}
         </p>
         <div

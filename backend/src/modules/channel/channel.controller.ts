@@ -1,14 +1,12 @@
-import { Controller, Get, Param, ParseEnumPipe, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Query, UseGuards } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { query } from 'express';
-import { FilterVideoChannelDto, FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/shared/guards';
 import { User } from '@/shared/decorators/user.decorator';
 import { Public } from '@/shared/decorators/public.decorator';
-import { QueryChannelDto } from './dto/request/query-channel.dto';
-import { Type } from 'class-transformer';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { EditChannelDto } from './dto/request/edit-channel.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -72,5 +70,27 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async getChannelSetting(@User() user?): Promise<ChannelSettingDto> {
     return await this.channelService.getChannelSetting(user.id);
+  }
+
+  @ApiBearerAuth('jwt')
+  @Get('/get-reps')
+  @UseGuards(JwtAuthGuard)
+  async getReps(@User() user?) {
+    return await this.channelService.getChannelReps(user.id);
+  }
+
+  @ApiBearerAuth('jwt')
+  @Get('')
+  @UseGuards(JwtAuthGuard)
+  async create(@User() user?) {
+    const dto = { name: user.username, image: user.avatar ?? undefined };
+    return await this.channelService.createChannel(user.id, dto);
+  }
+
+  @ApiBearerAuth('jwt')
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async editChannel(@Param('id') id: number, @Body() dto: EditChannelDto) {
+    return await this.channelService.editChannel(id, dto);
   }
 }

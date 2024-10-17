@@ -89,3 +89,5 @@ export const userProfileSchema = yup.object().shape({
   avatar: yup.mixed().nullable().required(t('user_profile.field_required')),
   city: yup.string().trim()
 })
+
+export const searchSchema = yup.string().max(255)

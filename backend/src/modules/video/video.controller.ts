@@ -41,19 +41,13 @@ export class VideoController {
   constructor(private readonly videoService: VideoService) {}
 
   @Get('/dashboard')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   // @Roles(Role.INSTRUCTOR)
-  async getVideosDashboard(
-    // @User() user,
-    @Query() paginationDto: PaginationDto,
-  ) {
-    return await this.videoService.getVideosDashboard(
-      // user.id,
-      paginationDto,
-    );
+  async getVideosDashboard(@User() user, @Query() paginationDto: PaginationDto) {
+    return await this.videoService.getVideosDashboard(user.id, paginationDto);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('create-upload-session')
   async createUploadSession(@Body() dto: CreateVideoDTO) {
     const data = await this.videoService.createUploadSession(dto.fileSize);
@@ -61,7 +55,7 @@ export class VideoController {
   }
 
   // @Roles(Role.INSTRUCTOR)
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('upload-video')
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -80,7 +74,7 @@ export class VideoController {
     @Body() dto: UploadVideoDTO,
   ) {
     const savedVideo = await this.videoService.saveVideoToServer(files.video[0]);
-    return await this.videoService.uploadVideo(1, files.thumbnails, dto, savedVideo, files.video[0]);
+    return await this.videoService.uploadVideo(user.id, files.thumbnails, dto, savedVideo, files.video[0]);
   }
 
   @Put('edit-video/:videoId')

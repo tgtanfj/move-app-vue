@@ -34,7 +34,7 @@ import { VideoRepository } from './video.repository';
 
 @Injectable()
 export class VideoService {
-  private readonly videoUploadPath = path.resolve(__dirname, '..', 'uploads', 'videos');
+  private readonly videoUploadPath = path.join(process.cwd(), 'src', 'shared', 'store');
   constructor(
     private apiConfig: ApiConfigService,
     private categoryService: CategoryService,
@@ -93,13 +93,9 @@ export class VideoService {
       throw error;
     }
   }
-  async getVideosDashboard(
-    // userId: number,
-    paginationDto: PaginationDto,
-  ): Promise<object> {
+  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      // const channel = await this.channelService.getChannelByUserId(userId);
-      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
+      const channel = await this.channelService.getChannelByUserId(userId);
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -122,7 +118,7 @@ export class VideoService {
 
           const selectedThumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
 
-          videoDetail.thumbnail_url = selectedThumbnail.image;
+          videoDetail.thumbnail_url = selectedThumbnail?.image;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
             excludeExtraneousValues: true,
@@ -185,10 +181,14 @@ export class VideoService {
     }
     // await this.channelService.increaseTotalVideo(foundChannel.id);
     // await this.uploadVideoUrlS3(video.id, urlS3);
-    await this.uploadS3Queue.add('upload', {
-      path: pathVideo,
-      videoId: video.id,
-    });
+    try {
+      await this.uploadS3Queue.add('upload', {
+        path: pathVideo,
+        videoId: video.id,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
     return video;
   }
 
@@ -327,25 +327,66 @@ export class VideoService {
     }
 
     if (workoutLevel) {
-      if (workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
+      if (workoutLevel in FilterWorkoutLevel && workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
         searchConditions = { ...searchConditions, workoutLevel };
     }
 
-    const order: FindOptionsOrder<Video> = {
+    let order: FindOptionsOrder<Video> = {
       createdAt: 'DESC',
       title: 'ASC',
     };
 
+    switch (sortBy) {
+      case SortBy.MOST_RECENT:
+        break;
+      case SortBy.VIEWS_HIGH_TO_LOW:
+        order = {
+          ...order,
+          numberOfViews: 'DESC',
+        };
+        break;
+      case SortBy.VIEWS_LOW_TO_HIGH:
+        order = {
+          ...order,
+          numberOfViews: 'ASC',
+        };
+        break;
+      case SortBy.DURATION_HIGH_TO_LOW:
+        order = {
+          ...order,
+          durationsVideo: 'DESC',
+        };
+        break;
+      case SortBy.DURATION_LOW_TO_HIGH:
+        order = {
+          ...order,
+          durationsVideo: 'ASC',
+        };
+        break;
+      case SortBy.RATINGS_HIGH_TO_LOW:
+        order = {
+          ...order,
+          ratings: 'DESC',
+        };
+        break;
+      case SortBy.RATINGS_LOW_TO_HIGH:
+        order = {
+          ...order,
+          ratings: 'ASC',
+        };
+        break;
+      default:
+        break;
+    }
+
     const [videos, total] = await this.videoRepository.find(channelId, searchConditions, order);
-    console.log([videos, total], searchConditions);
 
     const videoItems = await Promise.all(
       videos.map(async (video) => {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
-        const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
         videoItemDto.thumbnailURL = thumbnail.image;
-        videoItemDto.videoLength = video.durationsVideo;
 
         videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
           excludeExtraneousValues: true,
@@ -355,33 +396,14 @@ export class VideoService {
           excludeExtraneousValues: true,
         });
 
-        videoItemDto.numberOfViews = fixIntNumberResponse(videoItemDto.numberOfViews);
-        videoItemDto.channel.numberOfFollowers = fixIntNumberResponse(videoItemDto.channel.numberOfFollowers);
+        videoItemDto.videoLength = Math.ceil(video.durationsVideo);
+
+        videoItemDto.numberOfViews = +videoItemDto.numberOfViews;
+        videoItemDto.channel.numberOfFollowers = +videoItemDto.channel.numberOfFollowers;
 
         return videoItemDto;
       }),
-    ).then((videos) => {
-      const sortedVideos = videos.sort((video1, video2) => {
-        switch (sortBy) {
-          case SortBy.MOST_RECENT:
-            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-          case SortBy.VIEWS_HIGH_TO_LOW:
-            return video2.numberOfViews - video1.numberOfViews;
-          case SortBy.VIEWS_LOW_TO_HIGH:
-            return video1.numberOfViews - video2.numberOfViews;
-          case SortBy.DURATION_HIGH_TO_LOW:
-            return video2.videoLength - video1.videoLength;
-          case SortBy.DURATION_LOW_TO_HIGH:
-            return video1.videoLength - video2.videoLength;
-          case SortBy.RATINGS_HIGH_TO_LOW:
-            return video2.ratings - video1.ratings;
-          case SortBy.RATINGS_LOW_TO_HIGH:
-            return video1.ratings - video2.ratings;
-          default:
-            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-        }
-      });
-
+    ).then((sortedVideos) => {
       const startIndex = PaginationDto.getSkip(paginationDto.take, paginationDto.page);
       return sortedVideos.slice(startIndex, startIndex + paginationDto.take);
     });
@@ -427,6 +449,7 @@ export class VideoService {
     return { ...video, totalScore };
   }
   async sortVideoByPriority() {
+    console.log(this.videoUploadPath);
     const videos = await this.videoRepository.getVideos();
     const min = this.getMin(videos);
     const max = this.getMax(videos);
@@ -440,11 +463,16 @@ export class VideoService {
     return sortedVideos;
   }
 
-  async getVideoDetails(videoId: number, userId?: number): Promise<Video> {
+  async getVideoDetails(videoId: number, userId?: number) {
     if (userId) {
-      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId);
+      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId).catch((error) => {
+        throw new NotFoundException(ERRORS_DICTIONARY.NOT_CREATE_VIDEO_HISTORY);
+      });
     }
-    return await this.videoRepository.findVideoById(videoId);
+    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
+      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+    });
+    return video;
   }
 
   async findChannel(videoId: number): Promise<Video> {

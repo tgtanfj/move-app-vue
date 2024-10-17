@@ -64,9 +64,15 @@ export enum ERRORS_DICTIONARY {
   //Payment
   ADD_PAYMENT_METHOD_FAIL = 'Add payment method fail',
   DETACH_PAYMENT_METHOD_FAIL = 'Delete payment method fail',
+  NOT_ENOUGH_REPS = 'Insufficient balance',
+  ONLY_ONE_WITHDRAW_PER_DAY = 'You can only perform one cashout per day',
+  ONLY_THREE_WITHDRAW_PER_WEEK = 'You can only perform three cashout per week',
 
   //Date
   START_DATE_AFTER_END_DATE = 'Start Date is after to End Date',
   START_DATE_AFTER_CURRENT_DATE = 'Start Date is after to Current Date',
   END_DATE_AFTER_CURRENT_DATE = 'End Date is after to Current Date',
+
+  //video history
+  NOT_CREATE_VIDEO_HISTORY = 'Can not create video history',
 }

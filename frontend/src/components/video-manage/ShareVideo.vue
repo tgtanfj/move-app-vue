@@ -32,6 +32,7 @@ import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import TwitterIcon from '@assets/icons/TwitterIcon.vue'
 import { useVideoStore } from '../../stores/videoManage'
 import { PopoverContent } from '@common/ui/popover'
+import { useToast } from '@common/ui/toast'
 
 const props = defineProps({
   videoIdSelected: {
@@ -41,13 +42,32 @@ const props = defineProps({
 })
 
 const videoStore = useVideoStore()
+const { toast } = useToast()
 
-const handleGetFBLink = async () => {
-  await videoStore.shareVideoSocial(props.videoIdSelected, 'Facebook')
+const handleGetFBLink = () => {
+  if (!navigator.onLine) {
+    toast({ description: 'Network Unavailable', variant: 'destructive' })
+    return
+  }
+
+  try {
+    videoStore.shareVideoSocial(props.videoIdSelected, 'Facebook')
+  } catch (error) {
+    toast({ description: 'Error sharing video', variant: 'destructive' })
+  }
 }
 
-const handleGetTwitterLink = async () => {
-  await videoStore.shareVideoSocial(props.videoIdSelected, 'Twitter')
+const handleGetTwitterLink = () => {
+  if (!navigator.onLine) {
+    toast({ description: 'Network Unavailable', variant: 'destructive' })
+    return
+  }
+
+  try {
+    videoStore.shareVideoSocial(props.videoIdSelected, 'Twitter')
+  } catch (error) {
+    toast({ description: 'Error sharing video', variant: 'destructive' })
+  }
 }
 
 const handleGetLink = () => {

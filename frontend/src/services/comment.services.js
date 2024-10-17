@@ -67,7 +67,7 @@ export const commentServices = {
     }
   },
   getRepliesByComment: async (commentId, cursor) => {
-    const limit = 12
+    const limit = 10
     try {
       const cursorParams = cursor ? cursor : null
 

@@ -21,6 +21,7 @@ export class Channel extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   image: string;
 
@@ -57,6 +58,10 @@ export class Channel extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfFollowers: number;
 
