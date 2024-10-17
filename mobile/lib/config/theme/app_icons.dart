@@ -47,6 +47,7 @@ enum AppIcons {
   heartTiffany,
   filter,
   arrowWhiteLeft,
+  copied
 }
 
 extension AppIconsExtension on AppIcons {

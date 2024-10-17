@@ -9,16 +9,25 @@ import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
+import 'package:move_app/presentation/screens/video_detail/widgets/share_video_dialog.dart';
 
 class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
   final VoidCallback followButton;
   final VoidCallback giftRepButton;
-  const InfoVideoDetail(
-      {super.key,
-      required this.viewChanelButton,
-      required this.followButton,
-      required this.giftRepButton});
+  final VoidCallback facebookButton;
+  final VoidCallback twitterButton;
+  final VoidCallback copyLinkButton;
+
+  const InfoVideoDetail({
+    super.key,
+    required this.viewChanelButton,
+    required this.followButton,
+    required this.giftRepButton,
+    required this.facebookButton,
+    required this.twitterButton,
+    required this.copyLinkButton,
+  });
 
   @override
   State<InfoVideoDetail> createState() => _InfoVideoDetailState();
@@ -111,6 +120,18 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                   value: Constants.share,
                   child: Text(Constants.share,
                       style: AppTextStyles.montserratStyle.regular16Black),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ShareVideoDialog(
+                          onFacebookTap: widget.facebookButton,
+                          onTwitterTap: widget.twitterButton,
+                          onCopyLinkTap: widget.copyLinkButton,
+                        );
+                      },
+                    );
+                  },
                 ),
                 PopupMenuItem<String>(
                   value: Constants.reportVideo,
@@ -133,14 +154,15 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               child: Row(
                 children: [
                   TypeLabel(
-                    typeLabel: Constants.intermediate == 'Intermediate' // TODO: add type label
+                    typeLabel: Constants.intermediate ==
+                            'Intermediate' // TODO: add type label
                         ? Constants.interm
                         : Constants.intermediate,
                   ),
                   SizedBox(
                     width: 6.0,
                   ),
-                  TypeLabel(typeLabel: '<30 mins' ), // TODO: add type label
+                  TypeLabel(typeLabel: '<30 mins'), // TODO: add type label
                 ],
               ),
             ),
@@ -165,7 +187,9 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             const SizedBox(width: 12.0),
           ],
         ),
-        const SizedBox(height: 14.0,),
+        const SizedBox(
+          height: 14.0,
+        ),
         GestureDetector(
           onTap: widget.viewChanelButton,
           child: Row(
@@ -174,7 +198,8 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 width: 12.0,
               ),
               Text(
-                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",  // TODO: add channel name
+                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",
+                // TODO: add channel name
                 style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
               ),
               const SizedBox(

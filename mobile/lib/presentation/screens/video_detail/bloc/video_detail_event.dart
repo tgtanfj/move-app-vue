@@ -13,6 +13,24 @@ final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
   final String selectedQuality;
 
   const VideoDetailSelectQualityEvent(this.selectedQuality);
+
   @override
   List<Object?> get props => [];
 }
+
+final class VideoDetailShareSocialEvent extends VideoDetailEvent {
+  final int? videoId;
+  final String? option;
+
+  const VideoDetailShareSocialEvent({
+    this.videoId,
+    required this.option,
+  });
+
+  @override
+  List<Object?> get props => [
+        videoId,
+        option,
+      ];
+}
+
