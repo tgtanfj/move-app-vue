@@ -8,7 +8,6 @@ import '../../constants/api_urls.dart';
 
 class ViewChannelProfileRepository {
   final ApiService apiService = ApiService();
-
   Future<Either<String, ChannelModel>> getViewChannelProfileAbout(
       int channelId) async {
     try {
@@ -61,7 +60,6 @@ class ViewChannelProfileRepository {
   }
 
   Future<Either<String, String>> followChannel(int channelId) async {
-    print('ChannelID ---- $channelId');
     try {
       final response = await apiService.request(
         APIRequestMethod.post,
@@ -83,11 +81,8 @@ class ViewChannelProfileRepository {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
-          print('EEEEE $errorData');
           final errorMessage =
               errorData['message'] ?? Constants.unknownErrorOccurred;
-          print('MMM $errorMessage');
-
           return Left(errorMessage);
         } else {
           return Left(e.message.toString());

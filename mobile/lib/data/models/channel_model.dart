@@ -8,10 +8,9 @@ class ChannelModel {
   final bool isBlueBadge;
   final bool isPinkBadge;
   final List<SocialNetworkModel>? socialLinks;
-  final int? numberOfFollowed;
+  final int? numberOfFollowers;
   final bool? isFollowed;
   final List<ChannelModel>? followingChannels;
-  final String? numberOfFollowers;
 
   ChannelModel({
     this.id,
@@ -21,7 +20,6 @@ class ChannelModel {
     this.isBlueBadge = false,
     this.isPinkBadge = false,
     this.socialLinks,
-    this.numberOfFollowed,
     this.isFollowed,
     this.followingChannels,
     this.numberOfFollowers,
@@ -35,21 +33,21 @@ class ChannelModel {
     bool? isBlueBadge,
     bool? isPinkBadge,
     List<SocialNetworkModel>? socialLinks,
-    int? numberOfFollowed,
     bool? isFollowed,
     List<ChannelModel>? followingChannels,
-    String? numberOfFollowers,
+    int? numberOfFollowers,
   }) {
     return ChannelModel(
-      id: id,
+      id: id ?? this.id,
       name: name ?? this.name,
       bio: bio ?? this.bio,
       image: image ?? this.image,
       isBlueBadge: isBlueBadge ?? this.isBlueBadge,
       isPinkBadge: isPinkBadge ?? this.isPinkBadge,
       socialLinks: socialLinks ?? this.socialLinks,
-      numberOfFollowed: numberOfFollowed ?? this.numberOfFollowed,
+      numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers,
       followingChannels: followingChannels ?? this.followingChannels,
+      isFollowed: isFollowed ?? this.isFollowed,
     );
   }
 
@@ -64,13 +62,12 @@ class ChannelModel {
       socialLinks: (json['socialLinks'] as List<dynamic>?)
           ?.map((e) => SocialNetworkModel.fromJson(e))
           .toList(),
-      numberOfFollowed:
-          json['numberOfFollowed'] is int? ? json['numberOfFollowed'] : 0,
+      numberOfFollowers:
+          json['numberOfFollowers'] is num? ? json['numberOfFollowers'] : 0,
       followingChannels: (json['followingChannels'] as List<dynamic>?)
           ?.map((e) => ChannelModel.fromJson(e))
           .toList(),
-      numberOfFollowers:
-          json['numberOfFollowers'] is String? ? json['numberOfFollowers'] : '',
+      isFollowed: json['isFollowed'] is bool? ? json['isFollowed'] : false,
     );
   }
 }

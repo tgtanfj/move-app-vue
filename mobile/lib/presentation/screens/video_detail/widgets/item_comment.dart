@@ -5,23 +5,37 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/comment_model.dart';
-import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
+
 import '../../../../config/theme/app_images.dart';
 
 class ItemComment extends StatefulWidget {
   final CommentModel? commentModel;
   final VoidCallback? onTapLike;
   final VoidCallback? onTapDislike;
-  final List<CommentModel>? listReply;
-  final Widget? itemReply;
+  final Widget? widgetListReplies;
+  final Widget? widgetShowListReplies;
+  final Widget? widgetHideListReplies;
+  final bool isHideReplies;
+  final VoidCallback? onTapShowInputReply;
+  final Widget? widgetReplyInput;
+  final bool isShowReplyButton;
+  final bool isShowTemporaryListReply;
+  final int? originalNumOfReply;
 
   const ItemComment(
       {super.key,
       this.commentModel,
       this.onTapLike,
       this.onTapDislike,
-      this.listReply,
-      this.itemReply});
+      this.widgetListReplies,
+      this.widgetShowListReplies,
+      this.widgetHideListReplies,
+      this.isHideReplies = true,
+      this.widgetReplyInput,
+      this.onTapShowInputReply,
+      this.isShowReplyButton = true,
+      this.isShowTemporaryListReply = false,
+      this.originalNumOfReply});
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -29,7 +43,7 @@ class ItemComment extends StatefulWidget {
 
 class _ItemCommentState extends State<ItemComment> {
   bool isSeeMore = false;
-  bool isShowReply = false;
+  bool isShowInputReply = false;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +114,7 @@ class _ItemCommentState extends State<ItemComment> {
                       children: [
                         Text(
                           (widget.commentModel?.user?.username?.isEmpty ?? true)
-                              ? "Anonymous"
+                              ? Constants.anonymous
                               : "${widget.commentModel?.user?.username!}",
                           maxLines: null,
                           style: AppTextStyles.montserratStyle.bold16Black,
@@ -110,9 +124,20 @@ class _ItemCommentState extends State<ItemComment> {
                         ),
                         Visibility(
                             visible:
-                                widget.commentModel?.user?.isActive ?? false,
+                                widget.commentModel?.channel?.isBlueBadge ??
+                                    false,
                             child: SvgPicture.asset(
                               AppIcons.verify.svgAssetPath,
+                            )),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Visibility(
+                            visible:
+                                widget.commentModel?.channel?.isPinkBadge ??
+                                    false,
+                            child: SvgPicture.asset(
+                              AppIcons.starFlower.svgAssetPath,
                             )),
                       ],
                     ),
@@ -132,19 +157,23 @@ class _ItemCommentState extends State<ItemComment> {
                                   width: 8,
                                 ),
                                 Text(
-                                  Constants.repSender,
+                                  "Gifted '${widget.commentModel?.totalDonation}' REPs",
                                   style: AppTextStyles
                                       .montserratStyle.semiBold14Rajah,
                                 ),
                                 const SizedBox(
-                                  width: 24,
+                                  width: 12,
                                 ),
                               ],
                             )),
-                        Text(
-                          (widget.commentModel?.timeConvert ?? "").toString(),
-                          style: AppTextStyles
-                              .montserratStyle.regular14GraniteGray,
+                        Expanded(
+                          child: Text(
+                            (widget.commentModel?.createTimeConvert ?? "")
+                                .toString(),
+                            style: AppTextStyles
+                                .montserratStyle.regular14GraniteGray,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
@@ -178,8 +207,8 @@ class _ItemCommentState extends State<ItemComment> {
                                   },
                                   child: Text(
                                     isSeeMore
-                                        ? Constants.seeLess
-                                        : Constants.seeMore,
+                                        ? Constants.readLess
+                                        : Constants.readMore,
                                     style: AppTextStyles
                                         .montserratStyle.semiBold16Grey,
                                   ),
@@ -240,18 +269,17 @@ class _ItemCommentState extends State<ItemComment> {
                             const SizedBox(
                               width: 20,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    isShowReply = true;
-                                  });
-                                },
-                                child: Text(
-                                  Constants.reply,
-                                  style: AppTextStyles
-                                      .montserratStyle.regular16TiffanyBlue,
+                            Visibility(
+                              visible: widget.isShowReplyButton,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: GestureDetector(
+                                  onTap: widget.onTapShowInputReply,
+                                  child: Text(
+                                    Constants.reply,
+                                    style: AppTextStyles
+                                        .montserratStyle.regular16TiffanyBlue,
+                                  ),
                                 ),
                               ),
                             ),
@@ -265,18 +293,35 @@ class _ItemCommentState extends State<ItemComment> {
                         ),
                       ],
                     ),
-                    Visibility(
-                        visible: isShowReply,
-                        child: WriteComment(
-                          marginLeft: 0,
-                          isCancelReply: true,
-                          hintText: Constants.writeReply,
-                          onTapCancel: () {
-                            setState(() {
-                              isShowReply = false;
-                            });
-                          },
-                        )),
+                    widget.widgetReplyInput ?? const SizedBox.shrink(),
+                    widget.widgetHideListReplies ?? const SizedBox.shrink(),
+                    (widget.isShowTemporaryListReply &&
+                            ((widget.commentModel?.numberOfReply ?? 0) >=
+                                (widget.originalNumOfReply ?? 0)))
+                        ? Wrap(
+                            children: [
+                              Container(
+                                margin: widget.isHideReplies
+                                    ? const EdgeInsets.only(left: 70)
+                                    : EdgeInsets.zero,
+                                child: widget.widgetShowListReplies,
+                              ),
+                              widget.widgetListReplies ??
+                                  const SizedBox.shrink(),
+                            ],
+                          )
+                        : Wrap(
+                            children: [
+                              widget.widgetListReplies ??
+                                  const SizedBox.shrink(),
+                              Container(
+                                margin: widget.isHideReplies
+                                    ? const EdgeInsets.only(left: 70)
+                                    : EdgeInsets.zero,
+                                child: widget.widgetShowListReplies,
+                              ),
+                            ],
+                          ),
                     const SizedBox(
                       height: 16,
                     )

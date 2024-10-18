@@ -8,7 +8,6 @@ const props = defineProps({
     required: true
   }
 })
-console.log(props.channel)
 </script>
 <template>
   <div class="flex items-center justify-start my-4">

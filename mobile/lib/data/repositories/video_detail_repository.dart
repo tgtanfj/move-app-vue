@@ -21,11 +21,17 @@ class VideoDetailRepository {
         return const Left(Constants.rateNotFound);
       }
     } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }
 
   Future<Either<String, int>> rateVideo(int videoId, int rate) async {
+    videoId = 22;
     try {
       final response = await apiService.request(
         APIRequestMethod.patch,
@@ -48,6 +54,11 @@ class VideoDetailRepository {
         return const Left(Constants.rateNotFound);
       }
     } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }

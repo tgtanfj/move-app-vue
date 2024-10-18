@@ -9,6 +9,7 @@ import SeparatorCross from '@components/SeparatorCross.vue'
 import { ChevronsLeft, ChevronsRight } from 'lucide-vue-next'
 import Loading from '@components/Loading.vue'
 import SearchVideo from '@components/search/SearchVideo.vue'
+import NoResult from '@components/search/NoResult.vue'
 
 const searchStore = useSearchStore()
 
@@ -212,20 +213,7 @@ const handleBackChannels = () => {
           </div>
         </div>
         <!-- No search results -->
-        <div
-          v-else
-          class="flex flex-col flex-grow mt-5 mr-10"
-          :style="{ height: 'calc(100vh - 60px)' }"
-        >
-          <SeparatorCross :title="`${$t('search.no_result')} ${searchQuery}`" class="mt-3" />
-          <div class="flex items-center justify-center flex-col flex-grow">
-            <h6 class="font-semibold text-lg">
-              {{ $t('search.no_result') }}
-              {{ searchQuery ? searchQuery : searchStore.text ? searchStore.text : '' }}
-            </h6>
-            <p class="italic">{{ $t('search.try_another_keyword') }}</p>
-          </div>
-        </div>
+        <NoResult v-else :searchQuery="searchQuery" />
       </div>
     </div>
   </div>
