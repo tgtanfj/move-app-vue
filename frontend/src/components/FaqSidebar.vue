@@ -12,18 +12,6 @@ const sidebarList = [
   {
     name: 'FAQ',
     path: '/move/faq'
-  },
-  {
-    name: 'Community Guildlines',
-    path: '/move/community-guildline'
-  },
-  {
-    name: 'Term of Service',
-    path: '/move/term-of-service'
-  },
-  {
-    name: 'Privacy Policy',
-    path: '/move/privacy-policy'
   }
 ]
 </script>

@@ -32,7 +32,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-comments'])
+const emit = defineEmits(['update-comments', 'updateReplyCount'])
 
 const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
@@ -49,7 +49,8 @@ const replyInputId = ref(null)
 const isFocused = ref(false)
 const isCancelComment = ref(false)
 const myReplyPerComment = ref({})
-const numberReplies = ref(0)
+
+const userAvatar = ref(localStorage.getItem('userAvatar'))
 
 const localComments = ref([...props.comments])
 
@@ -59,6 +60,10 @@ watch(
     localComments.value = [...newComments]
   }
 )
+
+const increaseReplies = (id, number) => {
+  emit('updateReplyCount', id, number)
+}
 
 const checkIsAuth = () => {
   if (!authStore.accessToken) {
@@ -152,9 +157,6 @@ const showRepliesByComment = async (commentId) => {
     cursorReplies.value = repliesArray[repliesArray.length - 1].id
     repliesPerComment.value[commentId] = repliesArray
     hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 10
-    if (cursorReplies.value === null) {
-      numberReplies.value += 1
-    }
     if (!repliesCountPerComment.value[commentId]) {
       repliesCountPerComment.value[commentId] = repliesArray.length
     } else {
@@ -164,7 +166,11 @@ const showRepliesByComment = async (commentId) => {
   }
 }
 
-const hideRepliesByComment = (commentId) => {
+const hideRepliesByComment = (commentId, item) => {
+  if (item.numberOfReply < repliesCountPerComment.value[commentId]) {
+    const numberCount = repliesCountPerComment.value[commentId] - item.numberOfReply
+    increaseReplies(commentId, numberCount)
+  }
   isShowedReplies.value[commentId] = false
   hasMoreRepliesPerComment.value[commentId] = false
   cursorReplies.value = null
@@ -205,12 +211,6 @@ const showReplyInput = async (commentId) => {
   replyData.value = ''
 }
 
-const handleBlur = () => {
-  if (!replyData.value) {
-    isFocused.value = false
-  }
-}
-
 const cancelComment = () => {
   isCancelComment.value = false
   replyData.value = ''
@@ -221,7 +221,12 @@ const cancelComment = () => {
 const createReply = async (commentId) => {
   const response = await commentServices.postReply(replyData.value, commentId)
   if (response.message === 'success') {
-    myReplyPerComment.value[commentId] = response.data
+    if (myReplyPerComment.value[commentId]) {
+      myReplyPerComment.value[commentId] = response.data
+      increaseReplies(commentId, 1)
+    } else {
+      myReplyPerComment.value[commentId] = response.data
+    }
     replyData.value = ''
     isFocused.value = false
     replyInputId.value = null
@@ -247,7 +252,6 @@ const createReply = async (commentId) => {
             <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
             <div v-if="item.user.channel" class="flex items-center gap-2">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
-              <PinkBadgeIcon v-if="item.user.channel.isPinkBadge" />
             </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
               <YellowRepsIcon />
@@ -324,7 +328,7 @@ const createReply = async (commentId) => {
 
           <div v-if="replyInputId === item.id" class="w-full flex items-center gap-4 mt-2">
             <img
-              :src="me?.photoURL ? me?.photoURL : defaultAvatar"
+              :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
               class="w-[40px] h-[40px] rounded-full object-cover"
             />
             <Input
@@ -372,12 +376,12 @@ const createReply = async (commentId) => {
               <ChevronDown class="text-primary w-[20px] transition-all" />
               <p class="text-primary text-[13px] font-semibold">
                 {{ $t('comment.show') }}
-                {{ item.numberOfReply + numberReplies }}
+                {{ item.numberOfReply }}
                 {{ $t('comment.replies') }}
               </p>
             </div>
             <div
-              @click="hideRepliesByComment(item.id)"
+              @click="hideRepliesByComment(item.id, item)"
               v-if="isShowedReplies[item.id]"
               class="flex items-center gap-1 justify-start"
             >
@@ -405,7 +409,6 @@ const createReply = async (commentId) => {
                     class="flex items-center gap-2"
                   >
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
-                    <PinkBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isPinkBadge" />
                   </div>
                   <div
                     v-if="myReplyPerComment[item.id].totalDonation > 0"
@@ -507,12 +510,8 @@ const createReply = async (commentId) => {
                   <p class="text-[13px] font-bold">{{ reply.user.fullName }}</p>
                   <div v-if="reply.user.channel" class="flex items-center gap-2">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
-                    <PinkBadgeIcon v-if="reply.user.channel.isPinkBadge" />
                   </div>
-                  <div
-                    v-if="reply.totalDonation > 0"
-                    class="flex items-end gap-2"
-                  >
+                  <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
                     <YellowRepsIcon />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                       Gifted {{ reply.totalDonation }} REPs

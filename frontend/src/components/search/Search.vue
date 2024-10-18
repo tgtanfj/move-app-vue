@@ -9,11 +9,13 @@ import { useSearchStore } from '../../stores/search'
 import { apiAxios } from '@helpers/axios.helper'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
 
 const searchStore = useSearchStore()
 const router = useRouter()
 const authStore = useAuthStore()
 const resultModal = ref(null)
+const deleteButtonRef = ref(null)
 
 onMounted(() => {
   window.addEventListener('click', handleCloseResultModal)
@@ -25,16 +27,31 @@ onBeforeUnmount(() => {
 watch(
   () => searchStore.text,
   (newValue) => {
-    if (authStore.accessToken && newValue === '') searchStore.getUserHistory()
-    if (!authStore.accessToken && newValue === '') searchStore.closeResultBox()
-    else searchStore.debounceFetch(newValue)
+    if (newValue === '') {
+      if (authStore.accessToken && newValue === '' && searchStore.isClearingText) {
+        searchStore.getUserHistory() // Call API only if not closing by click
+      }
+      if (!authStore.accessToken) {
+        searchStore.closeResultBox()
+      }
+    } else {
+      searchStore.debounceFetch(newValue)
+    }
   }
 )
 
 const handleCloseResultModal = (event) => {
   const modal = resultModal.value
-  if (modal && !modal.contains(event.target)) {
+  const deleteBtn = deleteButtonRef.value
+
+  // Check if the click is outside the modal and not on the delete button
+  const isClickOutsideModal = modal && !modal.contains(event.target)
+  const isClickOnDeleteButton = deleteBtn && deleteBtn.contains && deleteBtn.contains(event.target)
+
+  if (isClickOutsideModal && !isClickOnDeleteButton) {
+    searchStore.updateClearingText(true)
     searchStore.closeResultBox()
+    searchStore.updateClearingText(false)
   }
 }
 
@@ -73,14 +90,15 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <div class="flex flex-1 justify-end relative" ref="resultModal">
-    <form class="flex items-center" @submit.prevent="onSubmit">
+  <div class="flex flex-1 justify-end relative">
+    <form class="flex items-center" @submit.prevent="onSubmit" ref="resultModal">
       <input
         type="text"
-        class="h-full max-w-[400px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
+        class="h-full w-[280px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
         placeholder="Search"
         v-model.trim="searchStore.text"
         @focus="handleFocus"
+        :maxlength="255"
       />
       <Button type="submit" class="w-[44px] rounded-[0_0.5rem_0.5rem_0]">
         <SearchIcon />
@@ -88,7 +106,7 @@ const onSubmit = () => {
     </form>
 
     <div
-      class="absolute bg-white top-full min-w-[340px] rounded-md shadow-md p-4 pt-0 z-20 transition-opacity duration-500 ease-in-out opacity-0 mt-2"
+      class="absolute bg-white top-full w-[324px] rounded-md shadow-md p-2 pl-0 pt-0 z-20 transition-opacity duration-500 ease-in-out opacity-0 mt-1"
       :class="searchStore.showResultBox ? 'flex opacity-100' : 'hidden'"
     >
       >
@@ -96,13 +114,13 @@ const onSubmit = () => {
         class="flex flex-col mb-3 w-full"
         v-if="authStore.accessToken && searchStore.history.length > 0 && searchStore.text === ''"
       >
-        <div v-for="item in searchStore.history" :key="item.id" class="">
+        <div v-for="item in searchStore.history.slice(0, 5)" :key="item.id" class="">
           <div class="flex justify-between hover:bg-gray-100 pr-2 mt-3 py-2 rounded-lg">
-            <div class="flex gap-4 items-center">
+            <div class="flex gap-4 items-center pl-2 pr-1">
               <Clock color="#CCCCCC" />
               <p
                 @click="redirectToSearch(item?.content)"
-                class="text-lg text-black cursor-pointer min-w-[200px]"
+                class="text-base text-black cursor-pointer min-w-[150px]"
               >
                 {{
                   item?.content && item?.content.length > 20
@@ -111,15 +129,19 @@ const onSubmit = () => {
                 }}
               </p>
             </div>
-            <div class="cursor-pointer" @click="handleDeleteHistory(item.content)">
+            <div
+              ref="deleteButtonRef"
+              class="cursor-pointer"
+              @click.stop="handleDeleteHistory(item.content)"
+            >
               <X color="#000000" :size="16" />
             </div>
           </div>
         </div>
       </div>
-      <div v-if="searchStore.text !== ''">
+      <div v-if="searchStore.text !== ''" class="w-full">
         <!-- 1 Category -->
-        <div v-if="typeof searchStore.results.topCategory === 'object'" class="mt-4">
+        <div v-if="typeof searchStore.results.topCategory === 'object'" class="mt-4 w-full">
           <div class="border-b-[3px] pb-4">
             <div class="flex items-center justify-between mb-1">
               <div
@@ -137,11 +159,11 @@ const onSubmit = () => {
                   alt=""
                   class="w-[60px] h-[90px]"
                 />
-                <p class="text-xl font-medium text-black capitalize">
+                <p class="text-base font-medium text-black capitalize">
                   {{ searchStore.results.topCategory?.title }}
                 </p>
               </div>
-              <p class="italic text-gray-500 text-lg ml-5">Categories</p>
+              <p class="italic text-gray-500 text-base ml-5">Categories</p>
             </div>
           </div>
         </div>
@@ -160,13 +182,31 @@ const onSubmit = () => {
           >
             <div class="flex items-center" @click="redirectTo('channel', item.id)">
               <img :src="item.image" alt="item.name" class="w-[60px] h-[60px] rounded-full" />
-              <p class="text-xl font-medium text-black capitalize ml-4 mr-1">
+              <!-- <TooltipProvider :delayDuration="300">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <p
+                      class="text-base font-medium text-black capitalize ml-4 mr-1 max-w-[155px] overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                      {{ item.name }}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p class="text-base font-medium text-black capitalize ml-4 mr-1">
+                      {{ item.name }}
+                    </p>
+                    <BlueBadgeIcon v-if="item.isBlueBadge" />
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider> -->
+              <p
+                class="text-base font-medium text-black capitalize ml-4 mr-1 max-w-[160px] overflow-hidden whitespace-nowrap"
+              >
                 {{ item.name }}
               </p>
               <BlueBadgeIcon v-if="item.isBlueBadge" />
-              <PinkBadgeIcon v-if="item.isPinkBadge" />
             </div>
-            <p class="italic text-gray-500 text-lg">Instructor</p>
+            <p class="italic text-gray-500 text-base">Instructor</p>
           </div>
         </div>
         <!-- 2 Videos -->
@@ -184,24 +224,24 @@ const onSubmit = () => {
           >
             <div class="flex items-center" @click="redirectTo('video', item.id)">
               <img :src="item.thumbnail_url" alt="" class="w-[60px] h-[50px]" />
-              <p class="text-xl font-medium text-black capitalize ml-4">
+              <p class="text-base font-medium text-black capitalize ml-4">
                 {{ item.title }}
               </p>
             </div>
-            <p class="italic text-gray-500 text-lg">Video</p>
+            <p class="italic text-gray-500 text-base">Video</p>
           </div>
         </div>
         <!-- All search with ... -->
         <div
           @click="redirectToSearch(searchStore.text)"
-          class="flex items-center justify-start gap-12 mt-3 cursor-pointer"
+          class="flex items-center justify-start gap-12 mt-3 cursor-pointer ml-2 mb-2"
         >
-          <Search size="32" color="#13D0B4" />
-          <p class="text-xl text-black">
+          <Search size="20" color="#13D0B4" />
+          <p class="text-base text-black">
             All results for
-            <strong class="text-xl">{{
-              searchStore.text && searchStore.text.length > 50
-                ? searchStore.text.slice(0, 50) + '...'
+            <strong class="text-base">{{
+              searchStore.text && searchStore.text.length > 10
+                ? searchStore.text.slice(0, 10) + '...'
                 : searchStore.text
             }}</strong>
           </p>

@@ -5,9 +5,18 @@ import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { useChannelStore } from '../../stores/view-channel'
 import { getFollowerText } from '../../utils/follower.util'
 import ChannelActions from './ChannelActions.vue'
+import { ref } from 'vue'
 
 const channelStore = useChannelStore()
 const { image, numberOfFollowers, name, isBlueBadge, isPinkBadge } = channelStore.channelInfo
+const numFollower = ref(numberOfFollowers)
+
+const handleIncrease = () => {
+  numFollower.value++
+}
+const handleDecrease = () => {
+  numFollower.value--
+}
 </script>
 <template>
   <div class="flex items-center justify-between">
@@ -17,14 +26,11 @@ const { image, numberOfFollowers, name, isBlueBadge, isPinkBadge } = channelStor
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>
           <span class="flex gap-2 ml-3">
-            <BlueBadgeIcon v-if="isBlueBadge" /> <PinkBadgeIcon v-if="isPinkBadge"
-          /></span>
+            <BlueBadgeIcon v-if="isBlueBadge" /></span>
         </div>
-        <span class="text-sm"
-          >{{ numberOfFollowers }} {{ getFollowerText(numberOfFollowers) }}</span
-        >
+        <span class="text-sm">{{ numFollower }} {{ getFollowerText(numFollower) }}</span>
       </div>
     </div>
-    <ChannelActions />
+    <ChannelActions @increaseFollower="handleIncrease" @decreaseFollower="handleDecrease" />
   </div>
 </template>

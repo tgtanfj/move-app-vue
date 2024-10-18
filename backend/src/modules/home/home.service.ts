@@ -3,7 +3,7 @@ import { Video } from '@/entities/video.entity';
 import { WatchingVideoHistory } from '@/entities/watching-video-history.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { User } from '@/entities/user.entity';
 import { ChannelItem, VideoItemDto } from './dto/video-item.dto';
 import { Cron } from '@nestjs/schedule';
@@ -39,7 +39,7 @@ export class HomeService {
   ) {}
 
   // @Cron('* 1 0 * *')
-  @Cron('0 30 * * * *')
+  // @Cron('0 30 * * * *')
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
@@ -120,7 +120,7 @@ export class HomeService {
           },
           category: {
             id: category.id,
-            content: category.title,
+            title: category.title,
           },
           thumbnailURL: thumbnail && thumbnail.image ? thumbnail.image : null,
         };
@@ -210,16 +210,31 @@ export class HomeService {
       .getMany();
 
     const rcmVideoIds = rcmVideos.map((video) => video.id);
-
-    const otherVideosQuery = await (await this.queryVideoNotIn(rcmVideoIds, categoryId, selected)).getMany();
-
     let videosForPage1: any[] = [];
-    if (rcmVideos.length < dto.take) {
-      const extraNeeded = dto.take - rcmVideos.length;
-      const extraVideos = otherVideosQuery.slice(0, extraNeeded);
-      videosForPage1 = [...rcmVideos, ...extraVideos];
+    if (rcmVideoIds.length > 0) {
+      const otherVideosQuery = await (
+        await this.queryVideoNotIn(rcmVideoIds, categoryId, selected)
+      ).getMany();
+
+      if (rcmVideos.length < dto.take) {
+        const extraNeeded = dto.take - rcmVideos.length;
+        const extraVideos = otherVideosQuery.slice(0, extraNeeded);
+        videosForPage1 = [...rcmVideos, ...extraVideos];
+      } else {
+        videosForPage1 = rcmVideos;
+      }
     } else {
-      videosForPage1 = rcmVideos;
+      let topViewVideo = await this.videoRepository.find({
+        take: 12,
+        order: {
+          numberOfViews: 'DESC',
+        },
+        relations: {
+          channel: true,
+          category: true,
+        },
+      });
+      videosForPage1 = topViewVideo;
     }
 
     const videosForPage1ID = videosForPage1.map((video) => video.id);
@@ -227,7 +242,6 @@ export class HomeService {
       const update = await Promise.all(
         videosForPage1.map(async (video) => {
           const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
-          console.log(thumbnail);
 
           return {
             ...video,
@@ -471,10 +485,27 @@ export class HomeService {
       this.getVideoByIds(videosWithValue1, selected),
       this.getVideoByIds(recentWatchedVideoIds, selected),
     ]);
+    const ignoreIds = [...videosWithValue2, ...videosWithValue2, ...recentWatchedVideoIds];
     let result = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
 
     if (result.length >= 32) {
       result = result.slice(0, 31);
+    }
+
+    const limitVideoOther = 32 - result.length;
+    if (limitVideoOther > 0) {
+      let topViewVideo = await this.videoRepository.find({
+        take: limitVideoOther,
+        where: { id: Not(In(ignoreIds)) },
+        order: {
+          numberOfViews: 'DESC',
+        },
+        relations: {
+          category: true,
+          channel: true,
+        },
+      });
+      result = [...result, ...topViewVideo];
     }
     const updateResult = await Promise.all(
       result.map(async (video) => {
@@ -482,7 +513,7 @@ export class HomeService {
 
         return {
           ...video,
-          thumbnailURL: thumbnail.image,
+          thumbnailURL: thumbnail?.image,
         };
       }),
     );
@@ -505,16 +536,31 @@ export class HomeService {
   }
 
   async youMayLikeWithOutLogin() {
-    const result = await this.topView7Day();
-    if (result.length === 0) {
-      return [];
+    let result = await this.topView7Day();
+    const resultId = result.map((obj) => {
+      return obj.id;
+    });
+    const limitVideoOther = 32 - result.length;
+    if (limitVideoOther > 0) {
+      let topViewVideo = await this.videoRepository.find({
+        take: limitVideoOther,
+        where: { id: Not(In(resultId)) },
+        order: {
+          numberOfViews: 'DESC',
+        },
+        relations: {
+          channel: true,
+          category: true,
+        },
+      });
+      result = [...result, ...topViewVideo];
     }
     const updateResult = await Promise.all(
       result.map(async (video) => {
         const [thumbnail] = await Promise.all([this.thumbnailService.getSelectedThumbnail(video.id)]);
         return {
           ...video,
-          thumbnailURL: thumbnail.image,
+          thumbnailURL: thumbnail?.image,
         };
       }),
     );

@@ -1,14 +1,14 @@
 <template>
-  <TableRow class="cursor-pointer hover:bg-[#E6FFFB] group">
+  <TableRow  class="cursor-pointer hover:bg-[#E6FFFB] group" :class="{ 'bg-[#F7FEFD]': isChecked }">
     <TableCell>
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
     <TableCell>
-    <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
+      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
     </TableCell>
     <TableCell>
       <div class="flex flex-col">
-        <div class="font-bold text-base capitalize">{{ item.title }}</div>
+        <div class="font-bold text-base capitalize">{{ truncatedTitle }}</div>
         <div class="text-sm">{{ item.category.title }}</div>
         <div class="flex gap-1 mt-3">
           <div class="text-xs font-bold rounded-2xl bg-[#EEEEEE] p-2">{{ item.workoutLevel }}</div>
@@ -34,7 +34,7 @@
           <ShareVideo :videoIdSelected="props.item.id" />
         </Popover>
         <!-- Edit video -->
-        <EditVideo :videoInfoSelected="props.item" />
+         <EditVideo :videoInfoSelected="props.item.id"/>
         <!-- More -->
         <Popover>
           <PopoverTrigger>
@@ -88,10 +88,11 @@ import { TableCell, TableRow } from '@common/ui/table'
 import { ArrowDownToLine, EllipsisVertical, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import BaseDialog from '../BaseDialog.vue'
-import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { formatDateString } from '@utils/uploadVideo.util'
+import { detectDuration } from '@utils/uploadVideo.util'
+import EditVideo from '@components/video-manage/EditVideo.vue'
 
 const props = defineProps({
   item: {
@@ -108,22 +109,15 @@ const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'd
 
 const showConfirmModal = ref(false)
 
+const truncatedTitle = computed(() => {
+  return props.item.title.length > 50
+    ? props.item.title.slice(0, 50) + '...'
+    : props.item.title
+})
+
 const isChecked = computed(() => {
   return props.selectedItems && props.selectedItems.includes(props.item.id)
 })
-
-const detectDuration = (duration) => {
-  switch (duration) {
-    case 'less than 30 minutes':
-      return '< 30 mins'
-    case 'less than 1 hours':
-      return '<1h'
-    case 'more than 1 hours':
-      return '>1h'
-    default:
-      return 'Unknown'
-  }
-}
 
 const showModalDelete = () => {
   showConfirmModal.value = true

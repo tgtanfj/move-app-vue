@@ -1,20 +1,24 @@
 <script setup>
+import Heart from '@assets/icons/Heart.vue'
+import HeartFilled from '@assets/icons/HeartFilled.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
-import { ChevronRight } from 'lucide-vue-next'
-import { Tabs, TabsList, TabsContent } from '@common/ui/tabs'
 import { DropdownMenuSeparator } from '@common/ui/dropdown-menu'
+import { Tabs, TabsContent, TabsList } from '@common/ui/tabs'
+import SocialLink from '@components/channel-view/SocialLink.vue'
 import Comment from '@components/comment/Comment.vue'
-import Rating from './Rating.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
-import { onMounted, ref } from 'vue'
 import { fetchChannelAbout } from '@services/channel_about.services'
-import SocialLink from '@components/channel-view/SocialLink.vue'
-import HeartFilled from '@assets/icons/HeartFilled.vue'
-import { useAuthStore } from '../../stores/auth'
 import { useFollow, useUnfollow } from '@services/follow.services'
-import Heart from '@assets/icons/Heart.vue'
+import { ChevronRight } from 'lucide-vue-next'
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
+import { useOpenLoginStore } from '../../stores/openLogin'
+import { getFollowerText } from '../../utils/follower.util'
+import Rating from './Rating.vue'
+import { useFollowerStore } from '../../stores/follower.store'
 
 const props = defineProps({
   videoDetail: {
@@ -25,10 +29,22 @@ const props = defineProps({
 
 const channelInfo = ref({})
 const userStore = useAuthStore()
-
-const isFollowed = ref(channelInfo.isFollowed)
+const router = useRouter()
+const openLoginStore = useOpenLoginStore()
+const followerStore = useFollowerStore()
+const isFollowed = ref(null)
+const numFollower = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
+
+onMounted(async () => {
+  if (props.videoDetail) {
+    const res = await fetchChannelAbout(props.videoDetail.channel.id)
+    channelInfo.value = res.data
+    isFollowed.value = channelInfo.value.isFollowed
+    numFollower.value = channelInfo.value.numberOfFollowers
+  }
+})
 
 const durationLite =
   props.videoDetail.duration === 'less than 30 minutes'
@@ -60,6 +76,8 @@ const handleFollow = () => {
         {
           onSuccess: () => {
             isFollowed.value = false
+            numFollower.value--
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -71,6 +89,8 @@ const handleFollow = () => {
         {
           onSuccess: () => {
             isFollowed.value = true
+            numFollower.value++
+            followerStore.getAllFollowers()
           }
         }
       )
@@ -80,11 +100,37 @@ const handleFollow = () => {
   }
 }
 
-onMounted(async () => {
-  if (props.videoDetail) {
-    const res = await fetchChannelAbout(props.videoDetail.channel.id)
-    channelInfo.value = res.data
+const checkFollowStatus = async () => {
+  const isLogin = !!userStore.accessToken
+  if (isLogin) {
+    try {
+      const response = await fetchChannelAbout(props.videoDetail.channel.id)
+      isFollowed.value = response.data.isFollowed
+    } catch (error) {
+      console.error('Error fetching follow status', error)
+    }
+  } else {
+    isFollowed.value = null
   }
+}
+
+const handleNavigate = () => {
+  router.push(`/channel/${props.videoDetail.channel.id}`)
+}
+
+watch(
+  () => userStore.accessToken,
+  (newToken) => {
+    if (newToken) {
+      checkFollowStatus()
+    } else {
+      isFollowed.value = null
+    }
+  }
+)
+
+onMounted(() => {
+  checkFollowStatus()
 })
 </script>
 
@@ -105,7 +151,8 @@ onMounted(async () => {
 
       <div class="flex gap-2 mt-2">
         <p class="text-red-500 font-semibold">
-          <span class="font-semibold">{{ props.videoDetail.numberOfViews }}</span> {{ $t('video_detail.views') }}
+          <span class="font-semibold">{{ props.videoDetail.numberOfViews }}</span>
+          {{ $t('video_detail.views') }}
         </p>
         <p class="font-semibold text-primary">• {{ props.videoDetail.category?.title }}</p>
       </div>
@@ -116,10 +163,13 @@ onMounted(async () => {
           <div class="py-2 px-4 rounded-3xl bg-gray-200 font-medium">{{ durationLite }}</div>
         </div>
         <div class="flex items-center gap-5">
-          <div class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary" @click="handleFollow">
+          <div
+            class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
+            @click="handleFollow"
+          >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
+            <HeartFilled v-show="isFollowed" />
             {{ $t('video_detail.follow') }}
-            <HeartFilled v-show="isFollowed"/>
           </div>
           <Rating :videoDetail="videoDetail" />
           <ShareLinkVideo />
@@ -129,15 +179,24 @@ onMounted(async () => {
       <DropdownMenuSeparator class="my-6" />
       <!-- Video channel -->
       <div class="flex justify-between items-center">
-        <div class="flex items-center gap-4">
-          <img :src="channelInfo.image" alt="ava channel" class="w-[56px] h-[56px] rounded-full" />
-          <div>
-            <h3 class="text-xl font-semibold">{{ channelInfo.name }}</h3>
-            <p class="text-gray-500 font-medium">
-              {{ channelInfo.numberOfFollowers }} {{ $t('video_detail.follower') }}
-            </p>
-          </div>
-        </div>
+        <RouterLink :to="`/channel/${props.videoDetail.channel.id}`">
+          <div class="flex items-center gap-4">
+            <img
+              :src="channelInfo.image"
+              alt="ava channel"
+              class="w-[56px] h-[56px] rounded-full cursor-pointer"
+              @click="handleNavigate"
+            />
+            <div>
+              <h3 class="text-xl font-semibold cursor-pointer" @click="handleNavigate">
+                {{ channelInfo.name }}
+              </h3>
+              <p class="text-gray-500 font-medium">
+                {{ numFollower }} {{ getFollowerText(numFollower) }}
+              </p>
+            </div>
+          </div> </RouterLink
+        >
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 

@@ -85,6 +85,8 @@ const nullSecondTab = ref(false)
 const tabChange = ref('details')
 const charCount = ref(0)
 const charLimit = 500
+const charCountTitle = ref(0)
+const charLimitTitle = 100
 
 const { toast } = useToast()
 
@@ -255,6 +257,11 @@ const handleInput = (inputValue) => {
   charCount.value = tags.value.length
 }
 
+const handleTitleInput = (inputValue) => {
+  title.value = inputValue
+  charCountTitle.value = title.value.length
+}
+
 const selectFilesThumbnail = () => {
   fileInputThumb.value.click()
 }
@@ -321,7 +328,7 @@ const handleThumbnailUpload = (event) => {
 
 const firstButton = (tab) => {
   if (!title.value) {
-    titleErr.value = 'Please enter a title'
+    titleErr.value = 'Please enter a title for the video'
   }
   if (!imagesSelected.value) {
     thumbnailErr.value = 'Please upload thumbnail'
@@ -550,14 +557,26 @@ const thirdButton = async (tab) => {
             </TabsList>
             <div class="w-full mt-1">
               <div v-show="tabChange === 'details'" class="flex flex-col w-full gap-4">
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 relative">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.video_title') }}</p>
                     <div v-if="titleErr !== ''" class="text-destructive text-sm italic">
                       {{ titleErr }}
                     </div>
                   </div>
-                  <Input v-model="title" maxlength="100" placeholder="Add a title" class="w-full" />
+                  <Input
+                    v-model="title"
+                    @input="(e) => handleTitleInput(e.target.value)"
+                    maxlength="100"
+                    placeholder="Add a title"
+                    class="w-full"
+                  />
+                  <span
+                    class="absolute top-[65px] right-0 ml-auto text-lightGray text-[14px] font-light"
+                    :class="{ 'text-red-500': charCountTitle > charLimitTitle }"
+                  >
+                    {{ charCountTitle }} / {{ charLimitTitle }} characters
+                  </span>
                 </div>
                 <div class="flex items-center gap-2 relative">
                   <div class="flex flex-col gap-1">
@@ -638,7 +657,10 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2">
                       <p class="text-[16px]">{{ $t('upload_video.workout_level') }}</p>
-                      <div v-if="workoutLevelErr !== ''" class="text-destructive ml-2 text-sm italic">
+                      <div
+                        v-if="workoutLevelErr !== ''"
+                        class="text-destructive ml-2 text-sm italic"
+                      >
                         {{ workoutLevelErr }}
                       </div>
                     </div>

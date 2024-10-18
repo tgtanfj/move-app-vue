@@ -28,6 +28,9 @@ import ChangePasswordModal from './ChangePasswordModal.vue'
 import UploadAvatarFile from './UploadAvatarFile.vue'
 import { apiAxios } from '@helpers/axios.helper'
 import { t } from '@helpers/i18n.helper'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -280,6 +283,9 @@ const onSubmit = async () => {
             gender: normalizeGender(values.gender)
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
+          if (authStore.user.username) authStore.user.username = values.username
+          localStorage.setItem('userInfo', values.username)
+          localStorage.setItem('userAvatar', values.avatar)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })
@@ -347,6 +353,8 @@ const onErrorMessage = (msg) => {
                   placeholder="Username"
                   v-bind="componentField"
                   v-model.trim="values.username"
+                  :maxlength="25"
+                  :minlength="4"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -384,6 +392,8 @@ const onErrorMessage = (msg) => {
                   placeholder="Full name"
                   v-bind="componentField"
                   v-model.trim="values.fullName"
+                  :maxlength="255"
+                  :minlength="8"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />

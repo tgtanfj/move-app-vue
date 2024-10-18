@@ -5,7 +5,7 @@
     <DropdownMenu>
       <DropdownMenuTrigger>
         <img
-          :src="authStore.user?.photoURL || defaultAvatar"
+          :src="authStore.user.photoURL ?? authStore.user.avatar ??  userAvatar ?? defaultAvatar"
           alt="Avatar"
           width="30"
           height="30"
@@ -18,14 +18,14 @@
           class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <img
-            :src="authStore.user?.photoURL || defaultAvatar"
+            :src="authStore.user.photoURL ?? authStore.user.avatar ?? userAvatar ?? defaultAvatar"
             alt="Avatar"
             width="40"
             height="40"
             class="rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.user?.displayName || authStore.user?.data?.username || storedUserInfo }}
+            {{ authStore.usernameUser || authStore.user.username || authStore.user?.data?.username || storedUserInfo }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -113,6 +113,7 @@ const props = defineProps({
 const authStore = useAuthStore()
 const router = useRouter()
 const showLogoutModal = ref(false)
+const userAvatar = ref(localStorage.getItem('userAvatar'))
 const storedUserInfo = localStorage.getItem('userInfo')
 
 const logOutGoogle = async () => {

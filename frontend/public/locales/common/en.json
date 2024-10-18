@@ -173,7 +173,7 @@
     "workout_level": "Workout level",
     "duration": "Duration",
     "search_keywords": "Search keywords",
-    "search_keywords_sub": "Adding keywords help your viewers to find your videos easily. Enter a comma after each word.",
+    "search_keywords_sub": "Adding keywords help your viewers to find your videos easily. Enter a comma after each word, only accepted (letters, numbers, commas)",
     "beginner": "Beginner",
     "intermediate": "Intermediate",
     "advanced": "Advanced",

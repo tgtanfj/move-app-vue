@@ -16,7 +16,7 @@ class _ListCategoriesState extends State<ListCategories> {
     return ListView.separated(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
-      itemCount: 6,
+      itemCount: widget.listCategories.length,
       itemBuilder: (BuildContext context, int index) {
         return CategoryItem(
           categoryModel: widget.listCategories[index],
