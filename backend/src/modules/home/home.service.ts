@@ -531,8 +531,9 @@ export class HomeService {
           numberOfViews: 'DESC',
         },
         relations: {
-          channel:true
-        }
+          channel: true,
+          category: true,
+        },
       });
       result = [...result, ...topViewVideo];
     }
