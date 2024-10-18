@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/theme/app_colors.dart';
-
 import 'package:move_app/constants/key_screen.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
@@ -14,7 +13,6 @@ import 'package:move_app/presentation/screens/video_detail/widgets/info_video_de
 import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
 
 import '../../../../data/data_sources/local/shared_preferences.dart';
-
 import '../../../components/thanks_rating_dialog.dart';
 import '../../auth/widgets/dialog_authentication.dart';
 
@@ -55,6 +53,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    String token = SharedPrefer.sharedPrefer.getUserToken();
     return Dismissible(
       key: const Key(KeyScreen.videoDetail),
       direction: DismissDirection.startToEnd,
@@ -101,10 +100,23 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     child: InfoVideoDetail(
                       video: state.video,
                       viewChanelButton: () {},
-                      followButton: () {},
+                      isFollowed: state.video?.channel?.isFollowed,
+                      followButton: () {
+                        if (token.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const DialogAuthentication();
+                            },
+                          );
+                        } else {
+                          context.read<VideoDetailBloc>().add(
+                              VideoDetailFollowChannelEvent(
+                                  state.video?.channel?.id ?? 0));
+                        }
+                      },
                       giftRepButton: () {},
                       onTapRate: () {
-                        String token = SharedPrefer.sharedPrefer.getUserToken();
                         if (token.isEmpty) {
                           showDialog(
                             context: context,

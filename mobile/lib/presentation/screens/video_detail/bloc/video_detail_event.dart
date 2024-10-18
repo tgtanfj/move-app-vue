@@ -8,7 +8,9 @@ sealed class VideoDetailEvent extends Equatable {
 
 final class VideoDetailInitialEvent extends VideoDetailEvent {
   final int videoId;
+
   const VideoDetailInitialEvent({required this.videoId});
+
   @override
   List<Object?> get props => [videoId];
 }
@@ -81,4 +83,13 @@ class VideoDetailRateSubmitEvent extends VideoDetailEvent {
 
   @override
   List<Object?> get props => [rating];
+}
+
+class VideoDetailFollowChannelEvent extends VideoDetailEvent {
+  final int channelId;
+
+  const VideoDetailFollowChannelEvent(this.channelId);
+
+  @override
+  List<Object?> get props => [channelId];
 }

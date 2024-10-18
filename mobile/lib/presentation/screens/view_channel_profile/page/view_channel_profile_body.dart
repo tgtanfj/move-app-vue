@@ -98,7 +98,7 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${state.channel?.numberOfFollowed ?? 0} ${Constants.followers}',
+                          '${state.channel?.numberOfFollowers ?? 0} ${Constants.followers}',
                           style: AppTextStyles
                               .montserratStyle.regular14graniteGray,
                         ),
@@ -107,12 +107,20 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: SvgPicture.asset(
-                      state.channel?.isFollowed ?? false
-                          ? AppIcons.fillHeart.svgAssetPath
-                          : AppIcons.heart.svgAssetPath,
-                      width: 20,
-                      height: 18,
+                    child: InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      onTap: () {
+                        context.read<ViewChannelProfileBloc>().add(
+                            ViewChannelProfileFollowChannelEvent(
+                                state.channel?.id ?? 0));
+                      },
+                      child: SvgPicture.asset(
+                        state.channel?.isFollowed ?? false
+                            ? AppIcons.fillHeart.svgAssetPath
+                            : AppIcons.heart.svgAssetPath,
+                        width: 20,
+                        height: 18,
+                      ),
                     ),
                   )
                 ],

@@ -12,13 +12,13 @@ import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
 import 'package:move_app/utils/string_extentions.dart';
 
-
 class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
   final VoidCallback followButton;
   final VoidCallback giftRepButton;
   final VoidCallback onTapRate;
   final VideoModel? video;
+  final bool? isFollowed;
   const InfoVideoDetail({
     super.key,
     required this.viewChanelButton,
@@ -26,6 +26,7 @@ class InfoVideoDetail extends StatefulWidget {
     required this.giftRepButton,
     required this.onTapRate,
     required this.video,
+    this.isFollowed,
   });
 
   @override
@@ -91,7 +92,9 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             ),
             GestureDetector(
                 onTap: widget.followButton,
-                child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
+                child: SvgPicture.asset(widget.isFollowed ?? false
+                    ? AppIcons.fillHeart.svgAssetPath
+                    : AppIcons.heart.svgAssetPath)),
             PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(

@@ -1,8 +1,7 @@
-import 'package:move_app/data/models/following_channel_model.dart';
 import 'package:move_app/data/models/social_network_model.dart';
 
 class ChannelModel {
-  final int id;
+  final int? id;
   final String? name;
   final String? bio;
   final String? image;
@@ -11,11 +10,11 @@ class ChannelModel {
   final List<SocialNetworkModel>? socialLinks;
   final int? numberOfFollowed;
   final bool? isFollowed;
-  final List<FollowingChannelModel>? followingChannels;
+  final List<ChannelModel>? followingChannels;
   final String? numberOfFollowers;
 
-  ChannelModel({  
-    required this.id,  
+  ChannelModel({
+    this.id,
     this.name,
     this.bio,
     this.image,
@@ -29,6 +28,7 @@ class ChannelModel {
   });
 
   ChannelModel copyWith({
+    int? id,
     String? name,
     String? bio,
     String? image,
@@ -37,7 +37,7 @@ class ChannelModel {
     List<SocialNetworkModel>? socialLinks,
     int? numberOfFollowed,
     bool? isFollowed,
-    List<FollowingChannelModel>? followingChannels,
+    List<ChannelModel>? followingChannels,
     String? numberOfFollowers,
   }) {
     return ChannelModel(
@@ -50,7 +50,6 @@ class ChannelModel {
       socialLinks: socialLinks ?? this.socialLinks,
       numberOfFollowed: numberOfFollowed ?? this.numberOfFollowed,
       followingChannels: followingChannels ?? this.followingChannels,
-      numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers
     );
   }
 
@@ -68,10 +67,10 @@ class ChannelModel {
       numberOfFollowed:
           json['numberOfFollowed'] is int? ? json['numberOfFollowed'] : 0,
       followingChannels: (json['followingChannels'] as List<dynamic>?)
-          ?.map((e) => FollowingChannelModel.fromJson(e))
+          ?.map((e) => ChannelModel.fromJson(e))
           .toList(),
       numberOfFollowers:
-      json['numberOfFollowers'] is String? ? json['numberOfFollowers'] : '',
+          json['numberOfFollowers'] is String? ? json['numberOfFollowers'] : '',
     );
   }
 }
