@@ -223,9 +223,13 @@ const onSubmit = () => {
             class="flex items-center justify-between gap-5"
           >
             <div class="flex items-center" @click="redirectTo('video', item.id)">
-              <img :src="item.thumbnail_url" alt="" class="w-[60px] h-[50px]" />
-              <p class="text-base font-medium text-black capitalize ml-4">
-                {{ item.title }}
+              <img
+                :src="item.thumbnail"
+                :alt="item.title"
+                class="w-[60px] h-[50px] cursor-pointer"
+              />
+              <p class="text-base font-medium text-black capitalize ml-4 cursor-pointer">
+                {{ item?.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title }}
               </p>
             </div>
             <p class="italic text-gray-500 text-base">Video</p>

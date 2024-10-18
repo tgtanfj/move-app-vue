@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from 'vue'
-import AboutTab from './AboutTab.vue'
-import VideosTab from './VideosTab.vue'
+import PaymentHistory from './PaymentHistory.vue'
+import PaymentMethod from './PaymentMethod.vue'
+
 const tabs = [
-  { id: 1, label: 'view_channel.videos' },
-  { id: 2, label: 'view_channel.about' }
+  { id: 1, label: 'payment_history.payment_method' },
+  { id: 2, label: 'payment_history.payment_history' }
 ]
+
 const tabShow = ref(1)
 
 const changeTab = (tab) => {
@@ -14,7 +16,7 @@ const changeTab = (tab) => {
 </script>
 
 <template>
-  <div class="w-full mt-2">
+  <div class="w-full mt-7">
     <div
       class="ml-0 pl-0 text-[16px] w-full border-b-[1px] border-[#999999] pb-0 rounded-none mb-4 self-start flex justify-start gap-4"
     >
@@ -32,10 +34,10 @@ const changeTab = (tab) => {
       </div>
     </div>
     <div v-show="tabShow === 1">
-      <VideosTab />
+      <PaymentMethod />
     </div>
     <div v-show="tabShow === 2">
-      <AboutTab />
+      <PaymentHistory />
     </div>
   </div>
 </template>

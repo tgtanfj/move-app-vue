@@ -36,10 +36,13 @@
         <DropdownMenuItem
           class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
-          <WalletIcon class="group-hover:text-primary duration-100" />
-          <p class="font-semibold group-hover:text-primary duration-100">
-            Wallet (<span class="font-semibold">0</span> REPs)
-          </p>
+          <RouterLink
+            to="/wallet"
+            class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+          >
+            <WalletIcon class="group-hover:text-primary duration-100" />
+            <p class="font-semibold group-hover:text-primary duration-100">Wallet (0 REPs)</p>
+          </RouterLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem class="group cursor-pointer px-0 focus:bg-transparent">

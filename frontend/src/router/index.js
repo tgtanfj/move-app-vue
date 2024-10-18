@@ -23,6 +23,12 @@ const router = createRouter({
           component: () => import('../views/UserProfile.vue')
         },
         {
+          path: '/wallet',
+          name: 'wallet',
+          meta: { requiresAuth: true },
+          component: () => import('../views/WalletView.vue')
+        },
+        {
           path: '/categories',
           name: 'categories',
           component: () => import('../views/CategoriesView.vue')
