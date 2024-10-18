@@ -353,6 +353,8 @@ const onErrorMessage = (msg) => {
                   placeholder="Username"
                   v-bind="componentField"
                   v-model.trim="values.username"
+                  :maxlength="25"
+                  :minlength="4"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -390,6 +392,8 @@ const onErrorMessage = (msg) => {
                   placeholder="Full name"
                   v-bind="componentField"
                   v-model.trim="values.fullName"
+                  :maxlength="255"
+                  :minlength="8"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />

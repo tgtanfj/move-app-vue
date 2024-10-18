@@ -67,9 +67,9 @@ export const detectDuration = (duration) => {
     case 'less than 30 minutes':
       return '< 30 mins'
     case 'less than 1 hours':
-      return '< 1h'
+      return '< 1 hour'
     case 'more than 1 hours':
-      return '> 1h'
+      return '> 1 hour'
     default:
       return 'Unknown'
   }

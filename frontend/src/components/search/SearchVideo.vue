@@ -4,6 +4,7 @@ import EyeIcon from '@assets/icons/EyeIcon.vue'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
+import { detectDuration } from '@utils/uploadVideo.util'
 
 const props = defineProps({
   video: {
@@ -11,18 +12,6 @@ const props = defineProps({
     required: true
   }
 })
-const detectDuration = (duration) => {
-  switch (duration) {
-    case 'less than 30 minutes':
-      return '< 30 mins'
-    case 'less than 1 hours':
-      return '<1h'
-    case 'more than 1 hours':
-      return '>1h'
-    default:
-      return 'Unknown'
-  }
-}
 </script>
 <template>
   <div class="flex flex-col cursor-pointer shadow-md border-gray-50 border-[.1px] p-5 rounded-sm">
@@ -76,7 +65,7 @@ const detectDuration = (duration) => {
             </p>
           </div>
           <div class="flex items-center gap-1 justify-start mt-2">
-            <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
+            <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold capitalize">
               {{ video.workoutLevel }}
             </div>
             <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">

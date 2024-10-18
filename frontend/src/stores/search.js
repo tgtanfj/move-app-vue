@@ -14,6 +14,7 @@ export const useSearchStore = defineStore('search', () => {
   //This results variable hold value of search modal in navbar
   const results = ref({})
   const isLoadingMoreVideos = ref(false)
+  const isClearingText = ref(false)
 
   // This searchResults variable hold value in search page (search by query text)
   const searchResults = ref({
@@ -31,7 +32,12 @@ export const useSearchStore = defineStore('search', () => {
     }
   })
 
+  const updateClearingText = (value) => {
+    isClearingText.value = value
+  }
+
   const closeResultBox = () => {
+    text.value = ''
     showResultBox.value = false
     results.value = {}
   }
@@ -57,13 +63,13 @@ export const useSearchStore = defineStore('search', () => {
 
   const getUserHistory = async () => {
     try {
-      showResultBox.value = true
       const response = await apiAxios.get(`${ADMIN_BASE}/search/history`)
       if (response.status === 200 && response.data.data.histories.length > 0) {
         history.value = [...response.data.data.histories]
+        showResultBox.value = true
       } else {
         showResultBox.value = false
-        throw new Error(response.error)
+        return
       }
     } catch (error) {
       console.log(error.message)
@@ -86,6 +92,7 @@ export const useSearchStore = defineStore('search', () => {
       const response = await apiAxios.delete(`/search/history?content=${content}`)
       if (response.status === 200) {
         history.value = history.value.filter((item) => item.content !== content)
+        if (history.value.length === 0) showResultBox.value = false
       } else throw new Error(response.data)
     } catch (error) {
       console.log(error)
@@ -203,6 +210,8 @@ export const useSearchStore = defineStore('search', () => {
     searchResults,
     isLoadingMoreVideos,
     history,
+    isClearingText,
+    updateClearingText,
     closeResultBox,
     debounceFetch,
     getResultsByQuery,
