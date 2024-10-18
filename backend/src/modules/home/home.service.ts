@@ -530,6 +530,9 @@ export class HomeService {
         order: {
           numberOfViews: 'DESC',
         },
+        relations: {
+          channel:true
+        }
       });
       result = [...result, ...topViewVideo];
     }
