@@ -72,10 +72,16 @@ export class SearchService {
       offset,
       limit,
     );
+
     const [searchedVideos, totalCount] = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.category', 'category')
       .leftJoinAndSelect('video.channel', 'channel')
+      .leftJoinAndSelect(
+        'video.thumbnails',
+        'thumbnail',
+        'thumbnail.videoId = video.id AND thumbnail.selected = true',
+      )
       .where('video.title ILIKE :keyword', { keyword })
       .skip(offset)
       .take(limit)
