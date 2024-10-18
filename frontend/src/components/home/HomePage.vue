@@ -19,7 +19,7 @@ import VideosMayYouLike from './VideosMayYouLike.vue'
       </div>
       <SeparatorCrossWithoutTitle class="pt-14" />
       <div class="w-full">
-        <!-- <VideosMayYouLike /> -->
+        <VideosMayYouLike />
       </div>
     </div>
   </div>

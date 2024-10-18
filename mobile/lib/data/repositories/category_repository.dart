@@ -26,4 +26,23 @@ class CategoryRepository {
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, List<CategoryModel>>> getListTopCategory() async {
+    try {
+      final response = await ApiService().request(
+        APIRequestMethod.get,
+        ApiUrls.homeTopCategoriesEndPoint,
+      );
+      if (response.data != null) {
+        List<dynamic> categoriesJson = response.data['data'] as List<dynamic>;
+        var categories =
+            categoriesJson.map((json) => CategoryModel.fromJson(json)).toList();
+        return Right(categories);
+      } else {
+        return const Right([]);
+      }
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
 }

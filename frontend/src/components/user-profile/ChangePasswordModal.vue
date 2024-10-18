@@ -58,9 +58,10 @@ const togglePasswordVisibility = () => {
 }
 
 const resetFormOnClose = () => {
-  showError.value = false
   resetForm()
   oldPassword.value = ''
+  showError.value = false
+  showPassword.value = false
 }
 
 const handlePasswordInput = (event) => {

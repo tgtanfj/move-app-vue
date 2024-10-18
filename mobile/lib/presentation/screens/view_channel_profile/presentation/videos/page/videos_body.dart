@@ -7,7 +7,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/category_model.dart';
-import 'package:move_app/data/models/channel_video_model.dart';
+import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
@@ -17,20 +17,26 @@ import 'package:move_app/presentation/screens/view_channel_profile/presentation/
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_bloc.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_state.dart';
+import 'package:move_app/utils/util_number_format.dart';
 import 'package:tuple/tuple.dart';
 
 class VideosBody extends StatefulWidget {
-  final ChannelVideoModel? channelVideoModel;
+  final ChannelModel? channelModel;
   final List<VideoModel>? videos;
-  const VideosBody({super.key, this.channelVideoModel, this.videos});
+  const VideosBody({super.key, this.channelModel, this.videos});
 
   @override
   State<VideosBody> createState() => _VideosBodyState();
 }
 
-class _VideosBodyState extends State<VideosBody> {
+class _VideosBodyState extends State<VideosBody>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -58,9 +64,6 @@ class _VideosBodyState extends State<VideosBody> {
                     context.read<VideosBloc>().state.selectedCategory;
                 final selectedSortBy =
                     context.read<VideosBloc>().state.selectedSortBy;
-                print(
-                    "selectedSortBy: $selectedSortBy selectedLevel: $selectedLevel selectedCategoryId: $selectedCategoryId");
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -94,7 +97,7 @@ class _VideosBodyState extends State<VideosBody> {
                   if (state.videos.isEmpty) {
                     return Center(
                       child: Text(
-                          '${widget.channelVideoModel?.name ?? 'No'} has not uploaded any videos yet.'),
+                          '${state.channel?.name ?? 'No'} has not uploaded any videos yet.'),
                     );
                   }
 
@@ -125,16 +128,19 @@ class _VideosBodyState extends State<VideosBody> {
                               onTap: () {},
                               child: VideoPoster(
                                 height: height * 0.22,
-                                isLargePoster: true,
-                                thumbnailURL: video.thumbnailURL,
-                                videoLength: video.videoLength,
-                                numberOfViews: video.numberOfViews,
+                                isLargePoster: false,
+                                image: video.thumbnailURL,
+                                duration:
+                                    video.videoLength?.toDurationFormat() ??
+                                        '00:00',
+                                numberOfViews:
+                                    video.numberOfViews?.toCompactViewCount(),
                               ),
                             ),
                             const SizedBox(height: 4.0),
                             VideoFeatureDescription(
                               channelModel: video.channel,
-                              categoryModel: video.category,
+                              category: video.category,
                               videoModel: video,
                             ),
                             const SizedBox(height: 20),

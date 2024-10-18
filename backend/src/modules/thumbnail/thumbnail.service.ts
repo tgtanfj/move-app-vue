@@ -2,7 +2,6 @@ import { ApiConfigService } from '@/shared/services/api-config.service';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ThumbnailRepository } from './thumbnail.repository';
-import { error } from 'console';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Thumbnail } from '@/entities/thumbnail.entity';
 
@@ -40,4 +39,20 @@ export class ThumbnailService {
   async getSelectedThumbnail(videoId: number): Promise<Thumbnail> {
     return await this.thumbnailRepository.findSelectedThumbnail(videoId);
   }
+
+  async getThumbnails(videoId: number): Promise<Thumbnail[]> {
+    return await this.thumbnailRepository.findThumbnails(videoId);
+  }
+
+  async updateThumbnail(thumbnailUrl: string, isSelected: boolean, videoId: number): Promise<void> {
+    const thumbnail = await this.thumbnailRepository.findThumbnails(videoId);
+    const selectedThumbnail = thumbnail.find((item) => item.selected);
+
+    if (selectedThumbnail) {
+      selectedThumbnail.image = thumbnailUrl;
+      selectedThumbnail.selected = isSelected;
+      await this.thumbnailRepository.updateThumbnail(selectedThumbnail);
+    }
+  }
+
 }

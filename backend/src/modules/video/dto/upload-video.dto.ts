@@ -75,4 +75,7 @@ export class UploadVideoDTO {
 
   @IsNotEmpty()
   selectedThumbnail: string;
+
+  @IsNotEmpty()
+  durationsVideo: number;
 }

@@ -25,39 +25,13 @@ class LoginBody extends StatefulWidget {
 }
 
 class _LoginBodyState extends State<LoginBody>
-    with AutomaticKeepAliveClientMixin {
-  final TextEditingController controller = TextEditingController();
-  final FocusNode focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    if (!focusNode.hasFocus) {
-      setState(() {
-        controller.text = controller.text.trim();
-      });
-      context.read<LoginBloc>().add(LoginChangeEmailPasswordEvent(
-          email: controller.text.trim(), password: ''));
-    }
-  }
-
-  @override
-  void dispose() {
-    focusNode.removeListener(_onFocusChange);
-    controller.dispose();
-    focusNode.dispose();
-    super.dispose();
-  }
-
+  with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
@@ -72,7 +46,7 @@ class _LoginBodyState extends State<LoginBody>
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.only(top: 12),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -108,14 +82,21 @@ class _LoginBodyState extends State<LoginBody>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomEditText(
+                              initialValue: state.email,
                               title: Constants.email,
-                              focusNode: focusNode,
-                              controller: controller,
                               maxLength: 255,
                               onChanged: (email) {
                                 context.read<LoginBloc>().add(
                                       LoginChangeEmailPasswordEvent(
                                         email: email,
+                                        password: state.password,
+                                      ),
+                                    );
+                              },
+                              onLostFocus: (email) {
+                                context.read<LoginBloc>().add(
+                                      LoginChangeEmailPasswordEvent(
+                                        email: email.trim(),
                                         password: state.password,
                                       ),
                                     );
@@ -134,13 +115,14 @@ class _LoginBodyState extends State<LoginBody>
                             ),
                             const SizedBox(height: 12),
                             CustomEditText(
+                              initialValue: state.password,
                               title: Constants.password,
                               isPasswordInput: true,
                               maxLength: 32,
                               onChanged: (password) {
                                 context.read<LoginBloc>().add(
                                       LoginChangeEmailPasswordEvent(
-                                        email: state.email,
+                                        email: state.email.trim(),
                                         password: password,
                                       ),
                                     );

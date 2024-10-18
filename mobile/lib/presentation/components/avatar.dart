@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:move_app/config/theme/app_images.dart';
 
 class Avatar extends StatelessWidget {
   final String imageUrl;
@@ -13,7 +14,7 @@ class Avatar extends StatelessWidget {
     this.isLive = false,
     required this.widthAvatar,
     required this.heightAvatar,
-    required this.radiusAvatar, 
+    required this.radiusAvatar,
   });
 
   @override
@@ -30,7 +31,9 @@ class Avatar extends StatelessWidget {
       ),
       child: CircleAvatar(
         radius: radiusAvatar,
-        backgroundImage: NetworkImage(imageUrl),
+        backgroundImage: imageUrl.isNotEmpty
+            ? NetworkImage(imageUrl)
+            : AssetImage(AppImages.defaultAvatar.webpAssetPath),
       ),
     );
   }

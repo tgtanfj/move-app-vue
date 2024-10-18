@@ -17,13 +17,14 @@ import ForgotPassword from '@components/auth/ForgotPassword.vue'
 import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
 import SignUpModal from '@components/auth/SignUpModal.vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, triggerRef, watch, watchEffect } from 'vue'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
-import { onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useOpenLoginStore } from '../stores/openLogin'
 import UploadVideo from './upload-video/UploadVideo.vue'
-import { useResetPasswordStore } from '../stores/resetPassword'
+import Search from './search/Search.vue'
+import { useFollowerStore } from '../stores/follower.store'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -35,64 +36,24 @@ const signupInfo = ref('')
 const isInStreamerPage = ref(false)
 const isInResetPWPage = ref(false)
 const authStore = useAuthStore()
-const resetPasswordStore = useResetPasswordStore()
-const router = useRouter();
+const openLoginStore = useOpenLoginStore()
+const followerStore = useFollowerStore()
 const route = useRoute()
 
 watch(
-  () => router.currentRoute.value, 
-  () => {
-    checkFromPasswordReset();
-  }
-);
-
-onMounted(() => {
-  const currentUrl = window.location.href
-  if (currentUrl) {
-    if (currentUrl.includes('/streamer')) {
+  () => route.path,
+  (newValue) => {
+    if (newValue && newValue.includes('/streamer')) {
       isInStreamerPage.value = true
-    } else {
-      isInStreamerPage.value = false
-    }
-    if (currentUrl.includes('/reset-password')) {
+    } else isInStreamerPage.value = false
+    if (newValue && newValue.includes('/reset-password')) {
       isInResetPWPage.value = true
-    } else {
-      isInResetPWPage.value = false
-    }
-  }
-})
-const checkFromPasswordReset = () => {
-  if (resetPasswordStore.fromResetPassword === true) {
-    isOpen.value = true
-    resetPasswordStore.toggleResetPasswordVariant()
-  }
-}
+    } else isInResetPWPage.value = false
+  },
+  { immediate: true }
+)
 
 const isUserLoggedIn = computed(() => !!authStore.accessToken)
-
-const checkStreamerStatus = (path) => {
-  isInStreamerPage.value = path.includes('/streamer')
-}
-
-const checkResetPassword = (path) => {
-  isInResetPWPage.value = path.includes('/reset-password')
-}
-
-checkStreamerStatus(route.path)
-
-watch(
-  () => route.path,
-  (newPath) => {
-    checkStreamerStatus(newPath)
-  }
-)
-
-watch(
-  () => route.path,
-  (newPath) => {
-    checkResetPassword(newPath)
-  }
-)
 
 const closeModal = () => {
   isOpen.value = false
@@ -122,6 +83,7 @@ const handleVerifySuccess = async (values) => {
   clearInterval(timer)
   isCounting.value = false
   await authStore.loginWithEmail(values)
+  followerStore.getAllFollowers()
 }
 
 const startCountdown = () => {
@@ -140,6 +102,17 @@ const resetCountdown = () => {
   countdown.value = 60
   startCountdown()
 }
+
+const onDialogClose = () => {
+  openLoginStore.handleLeaveSignUpFromSidebar()
+}
+
+watchEffect(() => {
+  if (openLoginStore.isOpenLogin) {
+    isOpen.value = true
+    openLoginStore.toggleOpenLogin()
+  }
+})
 </script>
 
 <template>
@@ -165,18 +138,11 @@ const resetCountdown = () => {
 
       <div v-if="!isInResetPWPage" class="flex flex-1 items-center gap-2">
         <div v-if="!isInStreamerPage" class="flex flex-1 justify-end">
-          <input
-            type="text"
-            class="w-[63%] max-w-[300px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
-            placeholder="Search"
-          />
-          <Button class="w-[44px] rounded-[0_0.5rem_0.5rem_0]">
-            <SearchIcon />
-          </Button>
+          <Search />
         </div>
 
         <div :class="{ 'ml-auto': isInStreamerPage }">
-          <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn">
+          <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn" @update:open="onDialogClose">
             <DialogTrigger>
               <Button v-if="authStore.isLoading" variant="default" class="rounded-lg" disabled>
                 Loading...
@@ -193,7 +159,7 @@ const resetCountdown = () => {
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription></DialogDescription>
-              <Tabs default-value="login" class="w-full">
+              <Tabs :default-value="openLoginStore.isSignUpFromSidebar ? 'signup' : 'login'" class="w-full">
                 <TabsList
                   class="w-full m-auto border-b-[1px] border-[#999999] pb-0 rounded-none mb-3 bg-white"
                 >
@@ -226,7 +192,7 @@ const resetCountdown = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <div v-if="isInStreamerPage" class="mr-4">
+        <div v-if="isInStreamerPage && authStore.accessToken" class="mr-4">
           <UploadVideo />
         </div>
         <div>
@@ -245,7 +211,6 @@ const resetCountdown = () => {
           :countdown="countdown"
           :isCounting="isCounting"
           @verify-success="handleVerifySuccess"
-          @start="startCountdown"
           @reset="resetCountdown"
         />
       </div>

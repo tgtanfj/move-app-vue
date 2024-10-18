@@ -19,6 +19,20 @@ export class ThumbnailRepository {
     await this.thumbnailRepository.save(thumbnail);
   }
 
+  async findThumbnailsByVideoId(
+    videoId: number,
+    relations: FindOptionsRelations<Thumbnail> = {},
+  ): Promise<Thumbnail[]> {
+    return await this.thumbnailRepository.find({
+      where: {
+        video: {
+          id: videoId,
+        },
+      },
+      relations,
+    });
+  }
+
   async findOne(
     thumbnailId: number,
     relations: FindOptionsRelations<Thumbnail> = {},
@@ -46,5 +60,19 @@ export class ThumbnailRepository {
       },
       relations,
     });
+  }
+
+  async findThumbnails(videoId: number): Promise<Thumbnail[]> {
+    return await this.thumbnailRepository.find({
+      where: {
+        video: {
+          id: videoId,
+        },
+      },
+    });
+  }
+
+  async updateThumbnail(thumbnail: Thumbnail): Promise<void> {
+    await this.thumbnailRepository.save(thumbnail);
   }
 }

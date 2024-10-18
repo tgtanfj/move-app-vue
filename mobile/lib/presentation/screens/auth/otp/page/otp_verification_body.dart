@@ -11,10 +11,9 @@ import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_bloc.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_event.dart';
 import 'package:move_app/presentation/screens/auth/otp/bloc/otp_verification_state.dart';
-
+import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import '../../../../../config/theme/app_colors.dart';
 import '../../../../../config/theme/app_icons.dart';
-import '../../../home/page/home_body.dart';
 import '../widgets/title_verification_code.dart';
 
 class OtpVerificationBody extends StatefulWidget {
@@ -36,8 +35,8 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
           Navigator.of(context).pop();
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeBody()),
-                (Route<dynamic> route) => false,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+            (Route<dynamic> route) => false,
           );
           Fluttertoast.showToast(msg: Constants.signUpSuccessful);
         }
@@ -116,6 +115,7 @@ class _OtpVerificationBodyState extends State<OtpVerificationBody> {
                   height: 8,
                 ),
                 CustomEditText(
+                  initialValue: state.inputOtpCode,
                   maxLength: 6,
                   textInputType: TextInputType.number,
                   isShowMessage: state.isShowMessageOtp,

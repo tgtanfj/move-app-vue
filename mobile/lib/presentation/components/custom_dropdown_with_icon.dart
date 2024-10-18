@@ -6,7 +6,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 
 class CustomDropdownWithIcon extends StatelessWidget {
-  final List<(int, String)> items;
+  final List<(int?, String?)> items;
   final int? initialValue;
   final String? hintText;
   final TextStyle? hintTextStyle;
@@ -81,7 +81,7 @@ class CustomDropdownWithIcon extends StatelessWidget {
                   return Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      item.$2,
+                      item.$2 ?? '',
                       style: AppTextStyles.montserratStyle.medium16TiffanyBlue,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -93,7 +93,7 @@ class CustomDropdownWithIcon extends StatelessWidget {
                 return DropdownMenuItem<int>(
                   value: item.$1,
                   child: Text(
-                    item.$2,
+                    item.$2 ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: item.$1 == initialValue

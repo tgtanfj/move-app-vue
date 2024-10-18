@@ -19,11 +19,21 @@ class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
-  const MenuHadLogin(
-      {super.key,
-      required this.logoutSuccessEvent,
-      required this.moreButton,
-      required this.isMoreEnable});
+
+  final String avatarPath;
+  final String userName;
+  final bool isBlueBadge;
+  final bool isPinkBadge;
+  const MenuHadLogin({
+    super.key,
+    required this.logoutSuccessEvent,
+    required this.moreButton,
+    required this.isMoreEnable,
+    required this.avatarPath,
+    required this.userName,
+    required this.isBlueBadge,
+    required this.isPinkBadge,
+  });
 
   @override
   State<MenuHadLogin> createState() => _MenuHadLoginState();
@@ -38,22 +48,21 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
         children: [
           Row(
             children: [
-              const Avatar(
+              Avatar(
                   heightAvatar: 40.0,
                   widthAvatar: 40.0,
                   radiusAvatar: 32.0,
-                  imageUrl:
-                      'https://www.1zoom.me/big2/946/289597-frederika.jpg'),
+                  imageUrl: widget.avatarPath),
               const SizedBox(
                 width: 8.0,
               ),
               Text(
-                'Philip2020',
+                widget.userName,
                 style: AppTextStyles.montserratStyle.bold17White,
               ),
-              const Badges(
-                isBlueBadge: true,
-                isPinkBadge: true,
+              Badges(
+                isBlueBadge: widget.isBlueBadge,
+                isPinkBadge: widget.isPinkBadge,
               ),
             ],
           ),
@@ -76,7 +85,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                       width: 5.0,
                     ),
                     Text(
-                      'Get REP\$',
+                      Constants.getRep$,
                       style: AppTextStyles.montserratStyle.bold16White,
                     )
                   ],

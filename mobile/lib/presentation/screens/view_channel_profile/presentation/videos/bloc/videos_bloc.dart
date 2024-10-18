@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/view_channel_profile_repository.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_state.dart';
@@ -46,7 +45,7 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
       },
       (newVideos) {
         final updatedVideos = [
-          ...(state.videos ?? <VideoModel>[]),
+          ...(state.videos),
           ...newVideos,
         ];
         emit(state.copyWith(

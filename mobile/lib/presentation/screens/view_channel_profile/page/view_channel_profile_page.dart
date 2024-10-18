@@ -5,15 +5,15 @@ import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_cha
 import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_body.dart';
 
 class ViewChannelProfilePage extends StatelessWidget {
-  // final List<VideoModel>? videos;
-  const ViewChannelProfilePage({super.key});
+  final int idChannel;
+  const ViewChannelProfilePage({super.key, required this.idChannel});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ViewChannelProfileBloc>(
       create: (context) {
         final bloc = ViewChannelProfileBloc();
-        bloc.add(ViewChannelProfileInitialEvent());
+        bloc.add(ViewChannelProfileInitialEvent(idChannel: idChannel));
         return bloc;
       },
       child: const ViewChannelProfileBody(),

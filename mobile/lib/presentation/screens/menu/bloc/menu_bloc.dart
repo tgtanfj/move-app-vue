@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
+import 'package:move_app/data/repositories/user_repository.dart';
 
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_state.dart';
@@ -10,10 +11,20 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     on<MenuSelectMoreEvent>(_onMenuSelectMoreEvent);
     on<MenuLogoutSuccessEvent>(_onMenuLogoutSuccessEvent);
   }
+  final userRepository = UserRepository();
 
-  void _onMenuInitialEvent(MenuInitialEvent event, Emitter<MenuState> emit) {
+  void _onMenuInitialEvent(
+      MenuInitialEvent event, Emitter<MenuState> emit) async {
     String token = SharedPrefer.sharedPrefer.getUserToken();
     if (token.isNotEmpty) {
+      final result = await userRepository.getUserProfile();
+      result.fold((l) {
+        emit(state.copyWith(status: MenuStatus.failure));
+      }, (r) {
+        emit(state.copyWith(
+          user: r,
+        ));
+      });
       emit(state.copyWith(status: MenuStatus.hadlogin));
     } else {
       emit(state.copyWith(status: MenuStatus.notlogin));
@@ -25,9 +36,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     emit(state.copyWith(isEnableMore: event.isMoreEnable));
   }
 
-  void _onMenuLogoutSuccessEvent (
-      MenuLogoutSuccessEvent event, Emitter<MenuState>  emit
-      ){
+  void _onMenuLogoutSuccessEvent(
+      MenuLogoutSuccessEvent event, Emitter<MenuState> emit) {
     emit(state.copyWith(status: MenuStatus.notlogin));
   }
 }
