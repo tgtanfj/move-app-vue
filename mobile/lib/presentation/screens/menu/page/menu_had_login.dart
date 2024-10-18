@@ -10,7 +10,6 @@ import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
-import 'package:move_app/presentation/screens/video_detail/widgets/dialog_cancel_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/item_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
 
@@ -21,7 +20,10 @@ class MenuHadLogin extends StatefulWidget {
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
   const MenuHadLogin(
-      {super.key,required this.logoutSuccessEvent, required this.moreButton, required this.isMoreEnable});
+      {super.key,
+      required this.logoutSuccessEvent,
+      required this.moreButton,
+      required this.isMoreEnable});
 
   @override
   State<MenuHadLogin> createState() => _MenuHadLoginState();
@@ -49,7 +51,10 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                 'Philip2020',
                 style: AppTextStyles.montserratStyle.bold17White,
               ),
-              const Badges(),
+              const Badges(
+                isBlueBadge: true,
+                isPinkBadge: true,
+              ),
             ],
           ),
           const SizedBox(
@@ -91,9 +96,16 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             height: 20.0,
           ),
           ContentMenu(
-            followingButton: () {Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Column(children: [ItemComment(), WriteComment(),],)));
+            followingButton: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Column(
+                            children: [
+                              ItemComment(),
+                              WriteComment(),
+                            ],
+                          )));
             },
             browseButton: () {},
             walletButton: () {},
@@ -135,8 +147,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                      return LogoutDialog(yesButton: widget.logoutSuccessEvent);
-
+                  return LogoutDialog(yesButton: widget.logoutSuccessEvent);
                 },
               );
             },

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_icons.dart';
-import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 
@@ -17,15 +16,30 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Avatar(imageUrl: "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg", widthAvatar: 72, heightAvatar: 72, radiusAvatar: 50),
-        const SizedBox(width: 22,),
+        const Avatar(
+            imageUrl:
+                "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg",
+            widthAvatar: 72,
+            heightAvatar: 72,
+            radiusAvatar: 50),
+        const SizedBox(
+          width: 22,
+        ),
         Column(
           children: [
-            Text("Jensen94", style: AppTextStyles.montserratStyle.regular16Black,),
-            Text("810 followers", style: AppTextStyles.montserratStyle.regular12Black,),
+            Text(
+              "Jensen94",
+              style: AppTextStyles.montserratStyle.regular16Black,
+            ),
+            Text(
+              "810 followers",
+              style: AppTextStyles.montserratStyle.regular12Black,
+            ),
           ],
         ),
-        const SizedBox(width: 8,),
+        const SizedBox(
+          width: 8,
+        ),
         SvgPicture.asset(AppIcons.blueStick.svgAssetPath),
       ],
     );

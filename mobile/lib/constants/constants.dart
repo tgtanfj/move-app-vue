@@ -2,6 +2,7 @@ class Constants {
   static const String featured = 'Featured';
   static const String views = 'views';
   static const String category = 'Category';
+  static const String categoryNotFound = 'Category Not Found';
   static const String viewAll = 'View All';
   static const String videosYouMayLike = 'Videos you may like';
   static const String logIn = "Log In";

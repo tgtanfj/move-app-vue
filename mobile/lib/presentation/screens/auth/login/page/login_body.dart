@@ -11,7 +11,6 @@ import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_bloc.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
 import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
-import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../../home/page/home_page.dart';

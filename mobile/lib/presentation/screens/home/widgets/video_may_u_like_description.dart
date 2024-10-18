@@ -34,7 +34,10 @@ class VideoMayULikeDescription extends StatelessWidget {
               const SizedBox(
                 width: 5.0,
               ),
-              const Badges(),
+              const Badges(
+                isBlueBadge: true,
+                isPinkBadge: true,
+              ),
             ],
           ),
         ),
@@ -90,7 +93,6 @@ class VideoMayULikeDescription extends StatelessWidget {
             TypeLabel(typeLabel: '<30 mins'),
           ],
         )
-        
       ],
     );
   }

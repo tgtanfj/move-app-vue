@@ -9,21 +9,23 @@ class ViewChannelProfileBloc
   final channelRepository = ViewChannelProfileRepository();
 
   ViewChannelProfileBloc() : super(ViewChannelProfileState.initial()) {
-    on<ViewChannelProfileEvent>(_onChannelInitialEvent);
+    on<ViewChannelProfileInitialEvent>(_onChannelInitialEvent);
     on<ViewChannelProfileFollowingItemSelectEvent>(
         _onViewChannelProfileFollowingItemSelectEvent);
   }
 
-  void _onChannelInitialEvent(ViewChannelProfileEvent event,
+  void _onChannelInitialEvent(ViewChannelProfileInitialEvent event,
       Emitter<ViewChannelProfileState> emit) async {
     emit(state.copyWith(status: ViewChannelProfileStatus.processing));
-    final result = await channelRepository.getViewChannelProfileAbout(2);
-    result.fold((l) {
+
+    final channelResult = await channelRepository.getViewChannelProfileAbout(2);
+
+    channelResult.fold((failure) {
       emit(state.copyWith(status: ViewChannelProfileStatus.failure));
-    }, (r) {
+    }, (channel) async {
       emit(state.copyWith(
         status: ViewChannelProfileStatus.success,
-        channel: r,
+        channel: channel,
       ));
     });
   }

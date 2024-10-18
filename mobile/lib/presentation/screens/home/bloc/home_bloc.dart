@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/presentation/screens/home/bloc/home_event.dart';
 import 'package:move_app/presentation/screens/home/bloc/home_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState.initial()) {
@@ -22,29 +21,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onHomeLoadSearchHistoryEvent(
       HomeLoadSearchHistoryEvent event, Emitter<HomeState> emit) async {
-    final history =
-        await SharedPrefer.sharedPrefer.loadSearchHistory();
+    final history = await SharedPrefer.sharedPrefer.loadSearchHistory();
     emit(state.copyWith(searchHistory: history));
   }
 
   Future<void> _onHomeSaveSearchHistoryEvent(
       HomeSaveSearchHistoryEvent event, Emitter<HomeState> emit) async {
-    final history =
-        await SharedPrefer.sharedPrefer.loadSearchHistory();
+    final history = await SharedPrefer.sharedPrefer.loadSearchHistory();
     history.add(event.searchText);
-    await SharedPrefer.sharedPrefer
-        .saveSearchHistory(history);
+    await SharedPrefer.sharedPrefer.saveSearchHistory(history);
     emit(state.copyWith(searchHistory: history));
   }
 
   Future<void> _onHomeRemoveSearchHistoryEvent(
       HomeRemoveSearchHistoryEvent event, Emitter<HomeState> emit) async {
-    final history =
-        await SharedPrefer.sharedPrefer.loadSearchHistory();
+    final history = await SharedPrefer.sharedPrefer.loadSearchHistory();
 
     history.remove(event.searchText);
-    await SharedPrefer.sharedPrefer
-        .saveSearchHistory(history);
+    await SharedPrefer.sharedPrefer.saveSearchHistory(history);
     emit(state.copyWith(searchHistory: history));
   }
 }

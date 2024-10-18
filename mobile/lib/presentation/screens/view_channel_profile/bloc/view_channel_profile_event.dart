@@ -1,7 +1,5 @@
 class ViewChannelProfileInitialEvent extends ViewChannelProfileEvent {}
 
-class FetchViewChannelProfileEvent extends ViewChannelProfileEvent {}
-
 sealed class ViewChannelProfileEvent {
   const ViewChannelProfileEvent();
 }

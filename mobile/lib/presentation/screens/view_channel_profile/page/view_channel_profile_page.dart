@@ -5,6 +5,7 @@ import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_cha
 import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_body.dart';
 
 class ViewChannelProfilePage extends StatelessWidget {
+  // final List<VideoModel>? videos;
   const ViewChannelProfilePage({super.key});
 
   @override

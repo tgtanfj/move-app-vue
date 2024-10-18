@@ -6,7 +6,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 
 class CustomDropdownWithIcon extends StatelessWidget {
-  final List<dynamic>? items;
+  final List<(int, String)> items;
   final int? initialValue;
   final String? hintText;
   final TextStyle? hintTextStyle;
@@ -15,7 +15,7 @@ class CustomDropdownWithIcon extends StatelessWidget {
 
   const CustomDropdownWithIcon({
     super.key,
-    this.items,
+    required this.items,
     this.initialValue,
     this.hintText,
     this.hintTextStyle,
@@ -41,6 +41,7 @@ class CustomDropdownWithIcon extends StatelessWidget {
                   ),
                 ),
                 offset: const Offset(0, -4),
+                maxHeight: 300,
                 elevation: 0,
                 scrollbarTheme: ScrollbarThemeData(
                   radius: const Radius.circular(8.0),
@@ -49,12 +50,11 @@ class CustomDropdownWithIcon extends StatelessWidget {
                 ),
               ),
               value: (initialValue != null &&
-                      items != null &&
-                      items!.any((item) => item['id'] == initialValue))
+                      items.any((item) => item.$1 == initialValue))
                   ? initialValue
                   : null,
               hint: Text(
-                hintText ?? 'Select',
+                hintText ?? '',
                 style: hintTextStyle ??
                     AppTextStyles.montserratStyle.medium16TiffanyBlue,
               ),
@@ -77,31 +77,26 @@ class CustomDropdownWithIcon extends StatelessWidget {
                 ),
               ),
               selectedItemBuilder: (BuildContext context) {
-                return items?.map<Widget>((item) {
-                      return Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          item['title'],
-                          style:
-                              AppTextStyles.montserratStyle.medium16TiffanyBlue,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList() ??
-                    [];
+                return items.map<Widget>((item) {
+                  return Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      item.$2,
+                      style: AppTextStyles.montserratStyle.medium16TiffanyBlue,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList();
               },
-              items: items?.asMap().entries.map<DropdownMenuItem<int>>((entry) {
-                int index = entry.key;
-                var item = entry.value;
-
+              items: items.map<DropdownMenuItem<int>>((item) {
                 return DropdownMenuItem<int>(
-                  value: item['id'],
+                  value: item.$1,
                   child: Text(
-                    item['title'],
+                    item.$2,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: index == 0
+                    style: item.$1 == initialValue
                         ? AppTextStyles.montserratStyle.bold16TiffanyBlue
                         : AppTextStyles.montserratStyle.regular16TiffanyBlue,
                   ),

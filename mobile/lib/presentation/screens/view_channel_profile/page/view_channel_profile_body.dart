@@ -124,7 +124,9 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                 labelPadding: const EdgeInsets.fromLTRB(16, 0, 20, 0),
                 dividerColor: AppColors.chineseSilver,
                 tabsWithViews: {
-                  Constants.videos: const VideosPage(),
+                  Constants.videos: VideosPage(
+                    videos: state.videos,
+                  ),
                   Constants.about: AboutPage(
                     channelName: state.channel?.name,
                     channelBio: state.channel?.bio,

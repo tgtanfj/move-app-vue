@@ -1,10 +1,27 @@
-import 'package:equatable/equatable.dart';
-
-abstract class VideosEvent extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+import 'package:move_app/data/models/category_model.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/bloc/sort_and_filter_state.dart';
 
 class VideosInitialEvent extends VideosEvent {}
 
-class FetchVideosEvent extends VideosEvent {}
+sealed class VideosEvent {
+  const VideosEvent();
+}
+
+class VideoSortedAndFiledEvent extends VideosEvent {
+    final WorkoutLevelType selectedLevel;
+  final CategoryModel? selectedCategory;
+  final SortAndFilterType selectedSortBy;
+
+  const VideoSortedAndFiledEvent({
+    required this.selectedLevel,
+    this.selectedCategory,
+    required this.selectedSortBy
+  });
+
+  List<Object?> get props => [
+    selectedLevel,
+    selectedCategory,
+    selectedSortBy,];
+}
+
+class LoadMoreVideosEvent extends VideosEvent {}
