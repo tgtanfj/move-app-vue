@@ -37,9 +37,23 @@ class WriteComment extends StatefulWidget {
 class _WriteCommentState extends State<WriteComment> {
   bool hasValue = false;
   final TextEditingController controller = TextEditingController();
+  final FocusNode focusNode = FocusNode();
   String avatarUrl = SharedPrefer.sharedPrefer.getUserAvatarUrl();
-
   @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void clearComment() {
+    controller.clear();
+    focusNode.unfocus();
+    setState(() {
+      hasValue = false;
+    });
+  }
+    @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
@@ -88,6 +102,7 @@ class _WriteCommentState extends State<WriteComment> {
                     absorbing: SharedPrefer.sharedPrefer.getUserToken().isEmpty,
                     child: TextField(
                       controller: controller,
+                      focusNode: focusNode,
                       maxLines: null,
                       onChanged: (value) {
                         widget.onChanged?.call(value);
@@ -135,15 +150,10 @@ class _WriteCommentState extends State<WriteComment> {
                     borderColor: AppColors.white,
                     onTap: () {
                       if (widget.isCancelReply == true) {
-                        FocusScope.of(context).unfocus();
-                        controller.clear();
+                        clearComment();
                         widget.onTapCancel?.call();
-                        setState(() {
-                          hasValue = false;
-                        });
                         return;
                       }
-                      FocusScope.of(context).unfocus();
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -151,11 +161,8 @@ class _WriteCommentState extends State<WriteComment> {
                           return DialogCancelComment(
                             onTapCancel: () {
                               widget.onTapCancel?.call();
-                              controller.clear();
-                              setState(() {
-                                hasValue = false;
-                              });
                               Navigator.of(context).pop();
+                              clearComment();
                             },
                           );
                         },
@@ -170,11 +177,7 @@ class _WriteCommentState extends State<WriteComment> {
                     title: Constants.send,
                     onTap: () {
                       widget.onTapSend?.call();
-                      FocusScope.of(context).unfocus();
-                      setState(() {
-                        hasValue = false;
-                      });
-                      controller.clear();
+                      clearComment();
                     },
                     titleStyle: AppTextStyles.montserratStyle.bold16White,
                     backgroundColor: AppColors.tiffanyBlue,
