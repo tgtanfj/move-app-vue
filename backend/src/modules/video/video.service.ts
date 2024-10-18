@@ -31,6 +31,7 @@ import { VideoDetail } from './dto/response/video-detail.dto';
 import { VideoItemDto } from './dto/response/video-item.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
+import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
 
 @Injectable()
 export class VideoService {
@@ -40,7 +41,7 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
-
+    private thumbnailRepository: ThumbnailRepository,
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
@@ -194,13 +195,13 @@ export class VideoService {
 
   async editVideo(videoId: number, dto: EditVideoDTO, thumbnail: Express.Multer.File): Promise<Video> {
     try {
-      // Find video by id
       const video = await this.videoRepository.findVideoById(videoId);
       if (!video) {
         throw new NotFoundException({
           message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
         });
       }
+
       if (dto.categoryId) {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
         if (!category) {
@@ -215,8 +216,6 @@ export class VideoService {
       video.workoutLevel = dto.workoutLevel || video.workoutLevel;
       video.duration = dto.duration || video.duration;
       video.keywords = dto.keywords || video.keywords;
-
-      // Convert isCommentable to boolean if it's a string
       if (dto.isCommentable !== undefined) {
         if (typeof dto.isCommentable === 'string') {
           video.isCommentable = dto.isCommentable.toLowerCase() === 'true';
@@ -224,17 +223,24 @@ export class VideoService {
           video.isCommentable = Boolean(dto.isCommentable);
         }
       }
-      // Log the updated video object for debugging
-      console.log('Updated video object:', video);
-      // Save updated video
+
+      if (thumbnail) {
+        const thumbnailUrl = await this.s3.uploadImage(thumbnail);
+
+        await this.thumbnailService.updateThumbnail(thumbnailUrl, true, videoId);
+      }
+
       const updatedVideo = await this.videoRepository.save(video);
       if (!updatedVideo) {
         throw new BadRequestException({
           message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
         });
       }
-      console.log(updatedVideo);
-      return updatedVideo;
+
+      return await this.videoRepository.findOne(videoId, {
+        thumbnails: true,
+        category: true,
+      });
     } catch (error) {
       console.error('Error updating video:', error);
       throw error;
