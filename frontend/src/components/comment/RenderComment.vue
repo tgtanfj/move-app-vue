@@ -411,7 +411,7 @@ const createReply = async (commentId) => {
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                   </div>
                   <div
-                    v-if="myReplyPerComment[item.id].totalDonation > 0"
+                    v-if="myReplyPerComment[item.id].totalDonation !== 0"
                     class="flex items-end gap-2"
                   >
                     <YellowRepsIcon />

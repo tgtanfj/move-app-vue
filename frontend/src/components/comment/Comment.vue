@@ -6,6 +6,13 @@ import { useAuthStore } from '../../stores/auth'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 
+const props = defineProps({
+  isCommentable: {
+    type: Boolean,
+    required: true
+  }
+})
+
 const userStore = useAuthStore()
 const commentData = ref([])
 const isLoading = ref(false)
@@ -71,7 +78,7 @@ const handleUpdateComments = (updatedComments) => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full" v-if="isCommentable">
     <div class="w-full">
       <WriteComment
         :videoId="videoId"
@@ -89,5 +96,8 @@ const handleUpdateComments = (updatedComments) => {
         @updateReplyCount="updateReplyCount"
       />
     </div>
+  </div>
+  <div v-else class="flex w-full items-center justify-center">
+    <p class="text-black text-base mt-4">Comments feature has been disabled.</p>
   </div>
 </template>

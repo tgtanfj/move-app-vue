@@ -195,8 +195,8 @@ onMounted(() => {
                 {{ numFollower }} {{ getFollowerText(numFollower) }}
               </p>
             </div>
-          </div> </RouterLink
-        >
+          </div>
+        </RouterLink>
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 
@@ -230,7 +230,7 @@ onMounted(() => {
       <!-- /Video channel -->
       <DropdownMenuSeparator class="my-4" />
 
-      <Comment class="mt-10" />
+      <Comment :isCommentable="videoDetail?.isCommentable" class="mt-10" />
     </div>
   </div>
 </template>
