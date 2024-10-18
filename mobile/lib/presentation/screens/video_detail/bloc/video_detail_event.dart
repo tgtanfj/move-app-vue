@@ -23,14 +23,14 @@ final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
 }
 
 final class VideoDetailCommentChangedEvent extends VideoDetailEvent {
-  final String comment;
+  final String content;
 
   const VideoDetailCommentChangedEvent({
-    required this.comment,
+    required this.content,
   });
 
   @override
-  List<Object?> get props => [comment];
+  List<Object?> get props => [content];
 }
 
 class VideoDetailLoadMoreCommentsEvent extends VideoDetailEvent {

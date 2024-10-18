@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
-import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/video_detail_repository.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
@@ -93,8 +92,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,
       Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(status: VideoDetailStatus.processing));
-    //TODO: Replace the actual of video id instead of 1
-    final result = await commentRepository.getListCommentVideo(1,
+    final result = await commentRepository.getListCommentVideo(state.video?.id ?? 0,
         limit: 30, cursor: event.lastCommentId);
     result.fold((l) {
       emit(state.copyWith(status: VideoDetailStatus.failure));

@@ -14,14 +14,14 @@ import 'package:move_app/presentation/screens/video_detail/widgets/info_video_de
 import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
 
 import '../../../../config/theme/app_icons.dart';
+import '../../../../config/theme/app_text_styles.dart';
+import '../../../../constants/constants.dart';
 import '../../../../data/data_sources/local/shared_preferences.dart';
 
 import '../../../components/thanks_rating_dialog.dart';
 import '../../auth/widgets/dialog_authentication.dart';
 import '../../../../data/models/comment_model.dart';
 import '../../../components/custom_button.dart';
-import '../../auth/widgets/dialog_authentication.dart';
-import '../bloc/video_detail_event.dart';
 import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
@@ -110,7 +110,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         ),
                       )
                     : const SizedBox(),
-                  buildInfoVideoPart(height),
+                if (state.listComments?.isEmpty ?? true) ...[
+                  buildInfoVideoPart(height, state),
                   buildWriteCommentPart(context, state),
                   Center(
                     child: Text(
@@ -135,7 +136,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                       return Column(
                         children: [
                           if (index == 0) ...[
-                            buildInfoVideoPart(height),
+                            buildInfoVideoPart(height, state),
                             buildWriteCommentPart(context, state),
                           ],
                           ItemComment(
@@ -317,7 +318,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     );
   }
 
-  Widget buildInfoVideoPart(double height,  VideoDetailState state) {
+  Widget buildInfoVideoPart(double height, VideoDetailState state) {
     return Column(
       children: [
         const SizedBox(
@@ -382,9 +383,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 .add(VideoDetailCommentChangedEvent(content: value));
           },
           onTapSend: () {
-            //TODO: Replace the videoId by the actual id of video
             context.read<VideoDetailBloc>().add(VideoDetailPostCommentEvent(
-                content: state.inputComment ?? "", videoId: 1));
+                content: state.inputComment ?? "",
+                videoId: state.video?.id ?? 0));
           },
         ),
         const SizedBox(
