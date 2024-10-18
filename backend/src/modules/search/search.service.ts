@@ -128,6 +128,7 @@ export class SearchService {
   async suggestion(query: string) {
     const keyword = `%${query}%`;
 
+    // Truy vấn Top Category
     const topCategoryPromise = this.categoryRepository
       .createQueryBuilder('category')
       .select('category')
@@ -135,6 +136,7 @@ export class SearchService {
       .orderBy('category.numberOfViews', 'DESC')
       .getOne();
 
+    // Truy vấn Top Instructors (sắp xếp theo số lượng followers)
     const topInstructorsPromise = this.channelRepository
       .createQueryBuilder('channel')
       .select('channel')
@@ -142,26 +144,43 @@ export class SearchService {
       .orderBy('channel.numberOfFollowers', 'DESC')
       .getMany();
 
+    // Truy vấn Top Videos với views của ngày hôm qua
     const topVideosPromise = this.getVideosWithHighestViewsYesterday(keyword, 0, 2);
 
+    // Chạy các promises đồng thời
     const [topCategory, topInstructors, topVideos] = await Promise.all([
       topCategoryPromise,
       topInstructorsPromise,
       topVideosPromise,
     ]);
 
+    // Nếu không có kết quả từ getVideosWithHighestViewsYesterday thì fallback bằng truy vấn trong bảng video
+    let finalTopVideos = topVideos;
+    if (finalTopVideos.length === 0) {
+      finalTopVideos = await this.videoRepository
+        .createQueryBuilder('video')
+        .select('video')
+        .where('video.title ILIKE :keyword OR video.keywords ILIKE :keyword', { keyword })
+        .orderBy('video.numberOfViews', 'DESC')
+        .limit(2)
+        .getMany();
+    }
+
+    // Sắp xếp instructors theo badge (ưu tiên blue badge trước, sau đó pink badge)
     const sortedInstructors = topInstructors.sort((a, b) => {
       const priorityA = (a.isBlueBadge ? 2 : 0) + (a.isPinkBadge ? 1 : 0);
       const priorityB = (b.isBlueBadge ? 2 : 0) + (b.isPinkBadge ? 1 : 0);
       return priorityB - priorityA;
     });
 
+    // Chọn ra 2 instructors hàng đầu
     const topTwoInstructors = sortedInstructors.slice(0, 2);
 
+    // Trả về kết quả
     return {
       topCategory: topCategory || 'Notfound',
       topInstructors: topTwoInstructors.length > 0 ? topTwoInstructors : 'Notfound',
-      topVideos: topVideos.length > 0 ? topVideos : 'Notfound',
+      topVideos: finalTopVideos.length > 0 ? finalTopVideos : 'Notfound',
     };
   }
 
