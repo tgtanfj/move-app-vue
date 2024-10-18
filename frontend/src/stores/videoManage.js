@@ -9,7 +9,7 @@ const DOWNLOAD_VIDEO_URL = `/video/download`
 export const useVideoStore = defineStore('video', () => {
   //State
   const videos = ref([])
-  const videoId = ref(null)
+  // const videoId = ref(null)
   const errorMsg = ref('')
   const isLoading = ref(false)
   const totalPages = ref(0)
@@ -103,38 +103,42 @@ export const useVideoStore = defineStore('video', () => {
     }
   }
 
-  const updateDetailVideo = async (formData) => {
+  const updateDetailVideo = async (formData, videoId) => {
     try {
-      const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId.value}`, formData, {
+      const res = await axios.put(`${ADMIN_BASE}/video/edit-video/${videoId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       })
-
+      
       if (res.status === 200) {
         const updatedVideo = res.data.data
 
-        const index = videos.value.findIndex((video) => video.id === videoId.value)
+        const index = videos.value.findIndex((video) => video.id === videoId)
 
         // if (index !== -1) {
         //   videos.value[index] = updatedVideo
         // }
         if (index !== -1) {
-          // Kiểm tra nếu thumbnail từ API là null hoặc undefined thì giữ lại thumbnail cũ
           const currentVideo = videos.value[index]
           if (!updatedVideo.thumbnail) {
             updatedVideo.thumbnail = currentVideo.thumbnail
           }
-          
-          // Cập nhật lại video trong danh sách
           videos.value[index] = { ...currentVideo, ...updatedVideo }
         }
       }
-      return res.data
+      return res
+
+
     } catch (error) {
       console.error('Error updating video:', error)
     }
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
   }
+
+
 
   const shareVideoSocial = (videoId, option) => {
     const shareFbUrl = 'https://www.facebook.com/sharer/sharer.php?u='
@@ -192,7 +196,7 @@ export const useVideoStore = defineStore('video', () => {
   return {
     //states
     videos,
-    videoId,
+    // videoId,
     errorMsg,
     isLoading,
     isCopied,

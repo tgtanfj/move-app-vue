@@ -1,5 +1,5 @@
 <template>
-  <TableRow class="cursor-pointer hover:bg-[#E6FFFB] group" :class="{ 'bg-[#F7FEFD]': isChecked }">
+  <TableRow  class="cursor-pointer hover:bg-[#E6FFFB] group" :class="{ 'bg-[#F7FEFD]': isChecked }">
     <TableCell>
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
@@ -34,7 +34,7 @@
           <ShareVideo :videoIdSelected="props.item.id" />
         </Popover>
         <!-- Edit video -->
-        <EditVideo :videoInfoSelected="props.item" />
+         <EditVideo :videoInfoSelected="props.item.id"/>
         <!-- More -->
         <Popover>
           <PopoverTrigger>
@@ -88,11 +88,11 @@ import { TableCell, TableRow } from '@common/ui/table'
 import { ArrowDownToLine, EllipsisVertical, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import BaseDialog from '../BaseDialog.vue'
-import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { formatDateString } from '@utils/uploadVideo.util'
 import { detectDuration } from '@utils/uploadVideo.util'
+import EditVideo from '@components/video-manage/EditVideo.vue'
 
 const props = defineProps({
   item: {

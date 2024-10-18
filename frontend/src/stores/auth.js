@@ -95,11 +95,12 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (loginMethodLocal === 'email') {
         user.value = userInfo.data
-        localStorage.setItem('userInfo', userInfo.data.data.username)
+        // localStorage.setItem('userInfo', userInfo.data.data.username)
       }
       usernameUser.value = userInfo.data.data.username
       localStorage.setItem('token', accessToken.value)
       localStorage.setItem('refreshToken', refreshToken.value)
+      localStorage.setItem('userInfo', userInfo.data.data.username)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
       console.error('Error during token submission:', error)
@@ -124,7 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         })
 
-        user.value = userInfo.data
+        user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('userAvatar', userInfo.data.data.avatar)
         localStorage.setItem('token', accessToken.value)
@@ -163,6 +164,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('loginMethod')
           localStorage.removeItem('userInfo')
+          localStorage.removeItem('userAvatar')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -175,6 +177,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('loginMethod')
         localStorage.removeItem('userInfo')
+        localStorage.removeItem('userAvatar')
       }
     } catch (err) {
       errorMsg.value = err.message
