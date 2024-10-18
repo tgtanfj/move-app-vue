@@ -126,7 +126,9 @@ export const useAuthStore = defineStore('auth', () => {
 
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
-        localStorage.setItem('userAvatar', userInfo.data.data.avatar)
+        if (userInfo.data.data.avatar !== null) {
+          localStorage.setItem('userAvatar', userInfo.data.data.avatar)
+        }
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -212,7 +214,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Lifecycle hooks (onMounted)
-  onMounted(() => {
+  onMounted(async () => {
     // Check status login
     isLoading.value = true
     const tokenLocal = localStorage.getItem('token')
@@ -221,6 +223,18 @@ export const useAuthStore = defineStore('auth', () => {
     if (tokenLocal && loginMethodLocal === 'email') {
       accessToken.value = tokenLocal
       isLoading.value = false
+
+      try {
+        const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`
+          }
+        })
+
+        user.value = userInfo.data.data
+      } catch (error) {
+        console.error("Error get profile: ", error)
+      }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {

@@ -105,7 +105,10 @@ const handleEditVideo = async () => {
     category.value = String(videoDataEditing.value.category.id)
     workoutLevel.value = capitalizeFirstLetter(videoDataEditing.value.workoutLevel)
     duration.value = convertDuration(videoDataEditing.value.duration)
-    if (videoDataEditing.value.keywords !== 'null' && videoDataEditing.value.keywords !== 'undefined') {
+    if (
+      videoDataEditing.value.keywords !== 'null' &&
+      videoDataEditing.value.keywords !== 'undefined'
+    ) {
       tags.value = videoDataEditing.value.keywords
     } else {
       tags.value = ''
@@ -114,7 +117,7 @@ const handleEditVideo = async () => {
     isCommentable.value = String(videoDataEditing.value.isCommentable)
     images.value = [videoDataEditing.value.thumbnailURL]
     imagesSelected.value = videoDataEditing.value.thumbnailURL
-    await getListCategories() 
+    await getListCategories()
   } catch (error) {
     console.log(error)
   }
@@ -284,6 +287,7 @@ const thirdButton = async (tab) => {
               ? 'advanced'
               : 'unknown'
 
+      uploadLoading.value = true
       const formData = new FormData()
       formData.append('title', title.value)
       formData.append('categoryId', Number(category.value))
@@ -300,6 +304,7 @@ const thirdButton = async (tab) => {
       if (response) {
         toast({ description: 'Edit successfully', variant: 'successfully' })
         isOpenUploadVideoDetails.value = false
+        uploadLoading.value = false
         resetField()
       }
     }

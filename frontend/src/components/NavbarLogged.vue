@@ -5,11 +5,9 @@
     <DropdownMenu>
       <DropdownMenuTrigger>
         <img
-          :src="authStore.user.photoURL ?? authStore.user.avatar ??  userAvatar ?? defaultAvatar"
+        :src="authStore.user.photoURL || authStore.user.avatar ||  userAvatar || defaultAvatar"
           alt="Avatar"
-          width="30"
-          height="30"
-          class="rounded-full"
+          class="w-[30px] h-[30px] rounded-full"
         />
       </DropdownMenuTrigger>
 
@@ -18,11 +16,9 @@
           class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <img
-            :src="authStore.user.photoURL ?? authStore.user.avatar ?? userAvatar ?? defaultAvatar"
+            :src="authStore.user.photoURL || authStore.user.avatar ||  userAvatar || defaultAvatar"
             alt="Avatar"
-            width="40"
-            height="40"
-            class="rounded-full"
+            class="w-[40px] h-[40px] rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
             {{ authStore.usernameUser || authStore.user.username || authStore.user?.data?.username || storedUserInfo }}
