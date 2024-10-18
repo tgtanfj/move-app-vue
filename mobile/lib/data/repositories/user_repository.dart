@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/constants.dart';
 
+import '../data_sources/local/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 
@@ -20,6 +21,8 @@ class UserRepository {
       );
       if (response.data != null) {
         final user = UserModel.fromJson(response.data['data']);
+        await SharedPrefer.sharedPrefer
+            .setAvatarUserUrl(response.data['data']['avatar']);
         return Right(user);
       } else {
         return const Left(Constants.userNotFound);

@@ -82,6 +82,7 @@ export class VimeoService {
           Authorization: `Bearer ${this.accessToken}`,
         },
       });
+
       // console.log(response.data);
       return response.data.duration;
     } catch (error) {

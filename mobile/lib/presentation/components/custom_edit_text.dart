@@ -19,7 +19,6 @@ class CustomEditText extends StatefulWidget {
   final int? maxLength;
   final bool isPasswordInput, isShowMessage;
   final Widget? suffix;
-  final TextEditingController? controller;
   final Color? cursorColor;
   final String preMessage;
   final String sufMessage;
@@ -27,8 +26,8 @@ class CustomEditText extends StatefulWidget {
   final double? widthMessage;
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onSubmitted;
-  final FocusNode? focusNode;
   final String? initialValue;
+  final Function(String)? onLostFocus;
 
   const CustomEditText({
     super.key,
@@ -47,7 +46,6 @@ class CustomEditText extends StatefulWidget {
     this.borderColor = Colors.grey,
     this.isShowMessage = false,
     this.backgroundColorMessage = AppColors.lavenderBlush,
-    this.controller,
     this.cursorColor,
     this.preMessage = "",
     this.sufMessage = "",
@@ -55,8 +53,8 @@ class CustomEditText extends StatefulWidget {
     this.enable,
     this.widthMessage,
     this.onSubmitted,
-    this.focusNode,
     this.initialValue,
+    this.onLostFocus,
   });
 
   @override
@@ -65,20 +63,34 @@ class CustomEditText extends StatefulWidget {
 
 class _CustomEditTextState extends State<CustomEditText> {
   late bool isTextVisible;
-  late TextEditingController _controller;
+  late TextEditingController controller;
+  late FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
-    super.initState();
     isTextVisible = !widget.isPasswordInput;
-    _controller = TextEditingController(text: widget.initialValue);
+    focusNode.addListener(_onFocusChange);
+    controller = TextEditingController(text: widget.initialValue ?? "");
+    super.initState();
+  }
+
+  void _onFocusChange() {
+    if (!focusNode.hasFocus) {
+      String trimmedText = controller.text.trim();
+      if (trimmedText != controller.text) {
+        controller.text = trimmedText;
+        controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: trimmedText.length));
+      }
+      widget.onLostFocus?.call(trimmedText);
+    }
   }
 
   @override
   void dispose() {
-    if (widget.controller != null) {
-      widget.controller?.dispose();
-    }
+    focusNode.removeListener(_onFocusChange);
+    controller.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -109,8 +121,8 @@ class _CustomEditTextState extends State<CustomEditText> {
                 AppTextStyles.montserratStyle.regular14Black,
             onChanged: widget.onChanged,
             onSubmitted: widget.onSubmitted,
-            controller: widget.controller ?? _controller,
-            focusNode: widget.focusNode,
+            controller: controller,
+            focusNode: focusNode,
             autofocus: false,
             cursorColor: widget.cursorColor ?? AppColors.tiffanyBlue,
             textCapitalization:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,30 +26,6 @@ class SignUpBody extends StatefulWidget {
 
 class _SignUpBodyState extends State<SignUpBody>
     with AutomaticKeepAliveClientMixin {
-  final TextEditingController controller = TextEditingController();
-  final FocusNode focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    focusNode.addListener(() {
-      if (!focusNode.hasFocus) {
-        setState(() {
-          controller.text = controller.text.trim();
-        });
-        context
-            .read<SignUpBloc>()
-            .add(SignUpValuesChangedEvent(email: controller.text.trim()));
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    focusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,31 +102,31 @@ class _SignUpBodyState extends State<SignUpBody>
                     children: [
                       CustomEditText(
                         title: Constants.email,
+                        initialValue: state.inputEmail,
                         isShowMessage: state.isShowEmailMessage,
                         textStyle: state.isShowEmailMessage
                             ? AppTextStyles.montserratStyle.regular14BrinkPink
                             : AppTextStyles.montserratStyle.regular14Black,
                         borderColor: AppColors.brinkPink,
-                        controller: controller,
                         cursorColor: state.isShowEmailMessage
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputEmail,
                         maxLength: 255,
-                        focusNode: focusNode,
-                        onChanged: (value) {
+                        onChanged: (email) {
                           context
                               .read<SignUpBloc>()
-                              .add(SignUpValuesChangedEvent(email: value));
+                              .add(SignUpValuesChangedEvent(email: email));
                         },
-                        onSubmitted: (value) {
+                        onLostFocus: (email) {
                           context.read<SignUpBloc>().add(
-                              SignUpValuesChangedEvent(email: value.trim()));
+                              SignUpValuesChangedEvent(email: email.trim()));
                         },
                       ),
                       const SizedBox(height: 10),
                       CustomEditText(
                         title: Constants.password,
+                        initialValue: state.inputPassword,
                         isPasswordInput: true,
                         isShowMessage: state.isShowPasswordMessage,
                         textStyle: state.isShowPasswordMessage
@@ -163,12 +140,16 @@ class _SignUpBodyState extends State<SignUpBody>
                         maxLength: 32,
                         onChanged: (value) {
                           context.read<SignUpBloc>().add(
-                              SignUpValuesChangedEvent(password: value.trim()));
+                              SignUpValuesChangedEvent(password: value));
                         },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                       ),
                       const SizedBox(height: 10),
                       CustomEditText(
                         title: Constants.confirmPassword,
+                        initialValue: state.inputConfirmPassword,
                         isPasswordInput: true,
                         textStyle: state.isShowConfirmPasswordMessage
                             ? AppTextStyles.montserratStyle.regular14BrinkPink
@@ -179,10 +160,13 @@ class _SignUpBodyState extends State<SignUpBody>
                             ? AppColors.brinkPink
                             : AppColors.tiffanyBlue,
                         preMessage: state.messageInputConfirmPassword,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
                         onChanged: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(
-                                  confirmPassword: value.trim()));
+                                  confirmPassword: value));
                         },
                         maxLength: 32,
                       ),
@@ -195,6 +179,7 @@ class _SignUpBodyState extends State<SignUpBody>
                             .copyWith(fontStyle: FontStyle.italic),
                       ),
                       CustomEditText(
+                        initialValue: state.inputReferralCode,
                         textCapitalization: TextCapitalization.characters,
                         textInputType: TextInputType.text,
                         textStyle: state.isShowReferralCodeMessage
@@ -210,7 +195,7 @@ class _SignUpBodyState extends State<SignUpBody>
                         onChanged: (value) {
                           context.read<SignUpBloc>().add(
                               SignUpValuesChangedEvent(
-                                  referralCode: value.trim()));
+                                  referralCode: value));
                         },
                       ),
                       const SizedBox(height: 17),

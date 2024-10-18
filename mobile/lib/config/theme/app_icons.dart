@@ -22,7 +22,7 @@ enum AppIcons {
   closeWhite,
   faqs,
   like,
-  likeFilled,
+  likeFiled,
   dislike,
   dislikeFilled,
   moveReps,
@@ -39,6 +39,7 @@ enum AppIcons {
   youtubeLogo,
   twitterLogo,
   blueCheckCircle,
+  instagram,
   closeCircle,
   back,
   arrowRight,
@@ -47,6 +48,8 @@ enum AppIcons {
   heartTiffany,
   filter,
   arrowWhiteLeft,
+  rateStar,
+  rateStarFill,
   copied
 }
 

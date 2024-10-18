@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_images.dart';
-import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import 'package:move_app/utils/string_extentions.dart';
 
 import '../../../../../../config/theme/app_colors.dart';
@@ -28,9 +30,13 @@ class _ProfileBodyState extends State<ProfileBody> {
   Widget build(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state.status == ProfileStatus.success) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const HomePage()));
+        if (state.status == ProfileStatus.processing) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+        if (state.status == ProfileStatus.editUserSuccess) {
+          Fluttertoast.showToast(msg: Constants.editedProfileSuccessfully);
         }
       },
       child: BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
@@ -115,10 +121,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                       preMessage: state.messageInputUsername,
                       widthMessage: MediaQuery.of(context).size.width,
                       onChanged: (value) {
-                        context
-                            .read<ProfileBloc>()
-                            .add(ProfileUsernameChangeEvent(username: value));
+                        context.read<ProfileBloc>().add(
+                            ProfileUsernameChangeEvent(username: value.trim()));
                       },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                      ],
                     ),
                     const SizedBox(height: 16),
                     CustomEditText(
@@ -144,9 +152,11 @@ class _ProfileBodyState extends State<ProfileBody> {
                       onChanged: (value) {
                         context
                             .read<ProfileBloc>()
-                            .add(ProfileFullNameChangeEvent(
-                              fullName: value,
-                            ));
+                            .add(ProfileFullNameChangeEvent(fullName: value));
+                      },
+                      onLostFocus: (value) {
+                        context.read<ProfileBloc>().add(
+                            ProfileFullNameChangeEvent(fullName: value.trim()));
                       },
                     ),
                     const SizedBox(height: 16),
@@ -220,15 +230,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                     CustomEditText(
                       initialValue: state.user?.city,
                       title: Constants.city,
-                      isShowMessage: state.isShowCityMessage,
-                      textStyle: state.isShowCityMessage
-                          ? AppTextStyles.montserratStyle.regular16BrinkPink
-                          : AppTextStyles.montserratStyle.regular16Black,
-                      cursorColor: state.isShowCityMessage
-                          ? AppColors.brinkPink
-                          : AppColors.tiffanyBlue,
+                      textStyle: AppTextStyles.montserratStyle.regular16Black,
+                      cursorColor: AppColors.tiffanyBlue,
                       borderColor: AppColors.brinkPink,
-                      preMessage: state.messageInputCity,
                       widthMessage: MediaQuery.of(context).size.width,
                       onChanged: (value) {
                         context

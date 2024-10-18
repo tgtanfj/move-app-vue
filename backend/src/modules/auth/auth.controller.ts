@@ -4,16 +4,27 @@ import { JwtRefreshGuard } from '@/shared/guards/jwt-refresh.guard';
 import { LocalAuthGuard } from '@/shared/guards/local-auth.guard';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 import { PublicIpAddressService } from '@/shared/utils/publicIpAddressService';
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Ip,
+  Post,
+  Req,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { ForgotPasswordDTO } from './dto/forgot-password.dto';
+import { LoginSocialDto } from './dto/login-social.dto';
 import { LoginDto } from './dto/login.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
-import { LoginSocialDto } from './dto/login-social.dto';
 
 @ApiTags('Auth')
 @ApiBearerAuth('jwt')
@@ -65,14 +76,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
-  async login(@Request() req, @Body() loginDto: LoginDto) {
-    const publicIp = await this.publicIpAddressService.getPublicIpAddress();
-
+  async login(@Request() req, @Body() loginDto: LoginDto, @Ip() ip) {
     const userAgent = req.headers['user-agent'];
 
     const userId = req.user.id;
 
-    return await this.authService.login(userId, publicIp, userAgent);
+    return await this.authService.login(userId, ip, userAgent);
   }
 
   @Get('refresh')

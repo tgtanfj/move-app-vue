@@ -98,8 +98,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       emit(state.copyWith(status: SignUpStatus.loading));
       try {
         await AuthRepository().sendVerificationCode(state.inputEmail);
-        emit(
-            state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
+        emit(state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
       } catch (e) {
         if (e is Exception) {
           emit(
@@ -118,6 +117,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       SignUpWithGoogleEvent event, Emitter emit) async {
     final user = await AuthRepository().googleLogin();
     try {
+      // ignore: unnecessary_null_comparison
       if (user != null) {
         emit(state.copyWith(
           status: SignUpStatus.success,
@@ -139,6 +139,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       SignUpWithFacebookEvent event, Emitter emit) async {
     final facebookAccount = await AuthRepository().loginWithFacebook();
     try {
+      // ignore: unnecessary_null_comparison
       if (facebookAccount != null) {
         emit(state.copyWith(
           status: SignUpStatus.success,

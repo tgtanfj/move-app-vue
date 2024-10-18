@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
@@ -27,21 +28,7 @@ class CreateNewPasswordBody extends StatefulWidget {
 }
 
 class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +106,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                             ),
                             const SizedBox(height: 20),
                             CustomEditText(
+                              initialValue: state.newPassword,
                               title: Constants.newPassword,
-                              controller: _passwordController,
+                              inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                               isPasswordInput: true,
                               maxLength: 32,
                               borderColor: state.isShowValidationError &&
@@ -139,8 +127,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                             ),
                             const SizedBox(height: 16),
                             CustomEditText(
+                              initialValue: state.confirmNewPassword,
                               title: Constants.confirmNewPassword,
-                              controller: _confirmPasswordController,
+                              inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                               maxLength: 32,
                               borderColor: state.isShowValidationError &&
                                       (!state.isPasswordValid ||

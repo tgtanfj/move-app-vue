@@ -6,16 +6,24 @@ import {
   FindOptionsOrder,
   FindOptionsRelations,
   FindOptionsWhere,
+  In,
+  Not,
   Repository,
 } from 'typeorm';
 import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
-import { channel } from 'diagnostics_channel';
-import { boolean } from 'joi';
+import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
+import { DurationType } from '@/entities/enums/durationType.enum';
+import { Follow } from '@/entities/follow.entity';
+import { Channel } from '@/entities/channel.entity';
 
 @Injectable()
 export class VideoRepository {
-  constructor(@InjectRepository(Video) private readonly videoRepository: Repository<Video>) {}
+  constructor(
+    @InjectRepository(Video) private readonly videoRepository: Repository<Video>,
+    @InjectRepository(Follow)
+    private readonly followRepository: Repository<Follow>,
+  ) {}
 
   async findAndCount(
     channelId: number,
@@ -53,6 +61,7 @@ export class VideoRepository {
       isPublish: isPublish,
       url: dto.url,
       title: dto.title,
+      durationsVideo: dto.durationsVideo,
     });
 
     return await this.videoRepository.save(newVideo);
@@ -113,7 +122,6 @@ export class VideoRepository {
     channelId: number,
     queries: FindOptionsWhere<Video> = {},
     order: FindOptionsOrder<Video> = {},
-    paginationDto: PaginationDto,
     relations: FindOptionsRelations<Video> = {
       category: true,
       channel: true,
@@ -127,11 +135,210 @@ export class VideoRepository {
         },
         ...queries,
       },
-      skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
-      take: paginationDto.take,
       order,
       relations,
       withDeleted,
     });
+  }
+  async getVideos() {
+    return await this.videoRepository.find();
+  }
+
+  async findVideoAndAlso(videoId: number, userId?: number) {
+    const selectFields = {
+      channel: {
+        id: true,
+        image: true,
+        name: true,
+        isBlueBadge: true,
+        isPinkBadge: true,
+      },
+      category: {
+        id: true,
+        title: true,
+      },
+    };
+
+    const relations = ['category', 'channel', 'thumbnails'];
+
+    const videoDetails = await this.videoRepository.findOne({
+      where: { id: videoId },
+      relations,
+      select: selectFields,
+    });
+
+    const watchAlso = await this.videoAlsoChannelCategory(
+      selectFields,
+      videoDetails,
+      videoId,
+      relations,
+      userId,
+    );
+
+    const {
+      thumbnails,
+      numberOfComments,
+      channel,
+      numberOfViews,
+      isPublish,
+      shareCount,
+      urlS3,
+      ...dataVideoDetails
+    } = videoDetails;
+
+    const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
+    const channelIds = await this.getFollowedChannelsByUser(userId);
+    const isFollowed = !!channelIds.find((id) => id == videoDetails.channel.id);
+    return {
+      ...dataVideoDetails,
+      thumbnailURL,
+      numberOfViews: +numberOfViews,
+      channel: { ...channel, isFollowed },
+      watchAlso,
+    };
+  }
+
+  async videoAlsoChannelCategory(
+    selectFields: any,
+    videoDetails: Video,
+    videoId: number,
+    relations: any,
+    userId?: number,
+  ) {
+    const { channel, category, duration, workoutLevel } = videoDetails;
+    const limit = 4;
+    const totalVideo = 20;
+    let options: any;
+
+    const channelFollow = await this.getFollowedChannelsByUser(userId);
+    const channelIds = userId ? [...channelFollow, channel.id] : [channel.id];
+
+    options = {
+      categoryId: category.id,
+      channelId: channelIds,
+      workoutLevel: workoutLevel,
+    };
+    let initialVideos = await this.findVideoByOptions([videoId], relations, selectFields, limit, options);
+
+    let results = [...initialVideos];
+    let ignoreIds: number[] = [...results.map((video) => video.id), videoId];
+
+    const limitVideoCategoryChannelDuration = 2 * limit - results.length;
+    options = {
+      categoryId: category.id,
+      channelId: channelIds,
+      duration: duration,
+    };
+    const moreCategoryChannelDuration = await this.findVideoByOptions(
+      ignoreIds,
+      relations,
+      selectFields,
+      limitVideoCategoryChannelDuration,
+      options,
+    );
+    results = results.concat(moreCategoryChannelDuration);
+
+    ignoreIds = [...results.map((video) => video.id), videoId];
+    const limitVideoCategoryChannel = 3 * limit - results.length;
+    options = { categoryId: category.id, channelId: channelIds };
+    const moreCategoryChannel = await this.findVideoByOptions(
+      ignoreIds,
+      relations,
+      selectFields,
+      limitVideoCategoryChannel,
+      options,
+    );
+    results = results.concat(moreCategoryChannel);
+
+    ignoreIds = [...results.map((video) => video.id), videoId];
+    const limitVideoCategory = 4 * limit - results.length;
+    options = { categoryId: category.id };
+    const moreCategoryVideos = await this.findVideoByOptions(
+      ignoreIds,
+      relations,
+      selectFields,
+      limitVideoCategory,
+      options,
+    );
+
+    results = results.concat(moreCategoryVideos);
+
+    ignoreIds = [...results.map((video) => video.id), videoId];
+    options = { channelId: channelIds };
+    const limitVideoChannel = 5 * limit - results.length;
+    const moreChannelVideos = await this.findVideoByOptions(
+      ignoreIds,
+      relations,
+      selectFields,
+      limitVideoChannel,
+      options,
+    );
+
+    results = results.concat(moreChannelVideos);
+
+    ignoreIds = [...results.map((video) => video.id), videoId];
+
+    const limitVideoOther = totalVideo - results.length;
+    if (limitVideoOther > 0) {
+      return await this.videoRepository.find({
+        take: limitVideoOther,
+        where: { id: Not(In(ignoreIds)) },
+        order: {
+          numberOfViews: 'DESC',
+        },
+      });
+    }
+
+    return results;
+  }
+
+  async findVideoByOptions(
+    ignoreIds: number[],
+    relations: any,
+    selectFields: any,
+    limit: number,
+    options: any,
+  ) {
+    const videos = await this.videoRepository.find({
+      where: {
+        channel: options.channelId ? { id: In(options.channelId) } : undefined,
+        category: options.categoryId ? { id: options.categoryId } : undefined,
+        duration: options.duration ? options.duration : undefined,
+        workoutLevel: options.workoutLevel ? options.workoutLevel : undefined,
+        id: Not(In(ignoreIds)),
+      },
+      relations,
+      select: selectFields,
+      take: limit,
+    });
+
+    const videoResponse = videos.map((video) => {
+      const {
+        thumbnails,
+        numberOfComments,
+        numberOfViews,
+        isPublish,
+        shareCount,
+        urlS3,
+        ...dataVideoDetails
+      } = video;
+      const thumbnailURL = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
+      return {
+        ...dataVideoDetails,
+        numberOfViews: +numberOfViews,
+        thumbnailURL,
+      };
+    });
+
+    return videoResponse;
+  }
+
+  async getFollowedChannelsByUser(userId: number): Promise<number[]> {
+    const follows = await this.followRepository.find({
+      where: { user: { id: userId } },
+      relations: ['channel'],
+    });
+
+    return follows.map((follow) => follow.channel?.id);
   }
 }

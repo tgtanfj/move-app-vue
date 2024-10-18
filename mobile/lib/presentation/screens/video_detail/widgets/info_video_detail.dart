@@ -4,17 +4,25 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/data_sources/local/shared_preferences.dart';
+import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
+import 'package:move_app/utils/string_extentions.dart';
+
 import 'package:move_app/presentation/screens/video_detail/widgets/share_video_dialog.dart';
+
+import '../../auth/widgets/dialog_authentication.dart';
 
 class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
   final VoidCallback followButton;
   final VoidCallback giftRepButton;
+  final VoidCallback onTapRate;
+  final VideoModel? video;
   final VoidCallback facebookButton;
   final VoidCallback twitterButton;
   final VoidCallback copyLinkButton;
@@ -27,6 +35,8 @@ class InfoVideoDetail extends StatefulWidget {
     required this.facebookButton,
     required this.twitterButton,
     required this.copyLinkButton,
+    required this.onTapRate,
+    required this.video,
   });
 
   @override
@@ -41,11 +51,10 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
       children: [
         Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Avatar(
-                  imageUrl:
-                      'https://www.1zoom.me/big2/946/289597-frederika.jpg',
+                  imageUrl: widget.video?.channel?.image ?? '',
                   widthAvatar: 48.0,
                   heightAvatar: 48.0,
                   radiusAvatar: 38.0),
@@ -57,20 +66,25 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                     children: [
                       Flexible(
                         child: Text(
-                          'dianeTV',
+                          widget.video?.channel?.name ?? '',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: AppTextStyles.montserratStyle.regular20Black,
                         ),
                       ),
-                      const Badges(),
+                      Badges(
+                        isBlueBadge:
+                            widget.video?.channel?.isBlueBadge ?? false,
+                        isPinkBadge:
+                            widget.video?.channel?.isPinkBadge ?? false,
+                      ),
                     ],
                   ),
                   Row(
                     children: [
                       Flexible(
                         child: Text(
-                          'Just Move • ',
+                          '${widget.video?.categories?.title?.capitalizeFirstLetter()} •',
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: AppTextStyles
@@ -78,6 +92,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                         ),
                       ),
                       StarAndText(
+                        ratings: widget.video?.ratings ?? 0.0,
                         textStyle: AppTextStyles.montserratStyle.bold16Black,
                       ),
                     ],
@@ -89,6 +104,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 onTap: widget.followButton,
                 child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
             PopupMenuButton<String>(
+              color: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(16.0), // Set the border radius here
@@ -99,6 +115,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
               itemBuilder: (BuildContext context) => <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
                   value: Constants.rate,
+                  onTap: widget.onTapRate,
                   child: Row(
                     children: [
                       Expanded(
@@ -121,16 +138,26 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                   child: Text(Constants.share,
                       style: AppTextStyles.montserratStyle.regular16Black),
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ShareVideoDialog(
-                          onFacebookTap: widget.facebookButton,
-                          onTwitterTap: widget.twitterButton,
-                          onCopyLinkTap: widget.copyLinkButton,
-                        );
-                      },
-                    );
+                    String token = SharedPrefer.sharedPrefer.getUserToken();
+                    if (token.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ShareVideoDialog(
+                            onFacebookTap: widget.facebookButton,
+                            onTwitterTap: widget.twitterButton,
+                            onCopyLinkTap: widget.copyLinkButton,
+                          );
+                        },
+                      );
+                    }else{
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const DialogAuthentication();
+                        },
+                      );
+                    }
                   },
                 ),
                 PopupMenuItem<String>(
@@ -150,19 +177,20 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             const SizedBox(
               width: 64.0,
             ),
-            const Flexible(
+            Flexible(
               child: Row(
                 children: [
                   TypeLabel(
                     typeLabel: Constants.intermediate ==
-                            'Intermediate' // TODO: add type label
+                            widget.video?.workoutLevel.capitalizeFirstLetter()
                         ? Constants.interm
-                        : Constants.intermediate,
+                        : widget.video?.workoutLevel.capitalizeFirstLetter() ??
+                            '',
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 6.0,
                   ),
-                  TypeLabel(typeLabel: '<30 mins'), // TODO: add type label
+                  TypeLabel(typeLabel: widget.video?.duration.shorten() ?? ''),
                 ],
               ),
             ),
@@ -198,8 +226,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 width: 12.0,
               ),
               Text(
-                "${Constants.view} dianaTV${Constants.s} ${Constants.channel}",
-                // TODO: add channel name
+                "${Constants.view} ${widget.video?.channel?.name}${Constants.s} ${Constants.channel}",
                 style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
               ),
               const SizedBox(

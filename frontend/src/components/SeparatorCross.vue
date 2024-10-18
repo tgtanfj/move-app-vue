@@ -2,7 +2,7 @@
 const props = defineProps({
   title: {
     type: String,
-    default: "Title"
+    default: 'Title'
   }
 })
 </script>

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 import { Cashout } from './cashout.entity';
 import { Follow } from './follow.entity';
@@ -7,6 +7,7 @@ import { Video } from './video.entity';
 
 @Entity('channels')
 export class Channel extends BaseEntity {
+  @Index()
   @Column({
     type: 'varchar',
   })
@@ -20,6 +21,7 @@ export class Channel extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   image: string;
 
@@ -56,8 +58,18 @@ export class Channel extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfFollowers: number;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  numberOfREPs: number;
 
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })
@@ -71,4 +83,14 @@ export class Channel extends BaseEntity {
 
   @OneToMany(() => Follow, (follow) => follow.channel)
   follows: Follow[];
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
+  })
+  numberOfVideos: number;
 }

@@ -57,10 +57,8 @@ const handleSendMail = async () => {
 }
 
 const openLogin = () => {
-  resetForm()
-  reset()
+  resetFormOnClose()
   emit('openLogin')
-  showError.value = false
 }
 
 const resetFormOnClose = () => {
@@ -111,13 +109,14 @@ const clearErrorAPI = () => {
         <Button
           type="submit"
           :disabled="!isFormValid || isPending || isBanned"
-          :variant="isFormValid ? 'default' : 'disabled'"
+          :variant="!isFormValid || isBanned ? 'disabled' : 'default'"
+          :isLoading="isPending"
           >{{
-            isPending
-              ? 'Sending mail...'
-              : isIdle
-                ? $t('forgot_password.send_link')
-                : $t('forgot_password.resend_link')
+            isIdle
+              ? $t('forgot_password.send_link')
+              : isSuccess
+                ? $t('forgot_password.resend_link')
+                : $t('forgot_password.send_link')
           }}</Button
         >
       </div>

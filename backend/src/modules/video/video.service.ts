@@ -1,42 +1,40 @@
-import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ApiConfigService } from '../../shared/services/api-config.service';
-import { UploadVideoDTO } from './dto/upload-video.dto';
-import { VideoRepository } from './video.repository';
+import { Video } from '@/entities/video.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
-import { CategoryService } from '../category/category.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
-import { CommentService } from '../comment/comment.service';
-import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
-import { ChannelService } from '../channel/channel.service';
-import { PaginationDto } from './dto/request/pagination.dto';
-import { plainToInstance } from 'class-transformer';
+import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
+import { stringToBoolean } from '@/shared/utils/stringToBool.util';
+import { InjectQueue } from '@nestjs/bullmq';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Queue } from 'bullmq';
+import { plainToInstance } from 'class-transformer';
+import * as fs from 'fs';
+import { parseInt } from 'lodash';
+import * as path from 'path';
+import { FindOptionsOrder } from 'typeorm';
+import { ApiConfigService } from '../../shared/services/api-config.service';
+import { CategoryRepository } from '../category/category.repository';
+import { CategoryService } from '../category/category.service';
+import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
+import { ChannelService } from '../channel/channel.service';
+import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
+import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import { EditVideoDTO } from './dto/edit-video.dto';
+import { OptionSharingDTO } from './dto/option-sharing.dto';
+import { PaginationDto } from './dto/request/pagination.dto';
 import { PaginationMetadata } from './dto/response/pagination.meta';
 import { VideoDetail } from './dto/response/video-detail.dto';
-import { CategoryVideoDetailDto } from '../category/dto/response/category-video-detail.dto';
-import { EditVideoDTO } from './dto/edit-video.dto';
-import { CategoryRepository } from '../category/category.repository';
-import { Video } from '@/entities/video.entity';
-import { ThumbnailService } from '../thumbnail/thumbnail.service';
-import { parseInt } from 'lodash';
-import { stringToBoolean } from '@/shared/utils/stringToBool.util';
-import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
-import { OptionSharingDTO } from './dto/option-sharing.dto';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import * as fs from 'fs';
-import * as path from 'path';
-import { getKeyS3 } from '@/shared/utils/get-key-s3.util';
-import { Between, FindOptionsOrder } from 'typeorm';
 import { VideoItemDto } from './dto/response/video-item.dto';
-import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
+import { UploadVideoDTO } from './dto/upload-video.dto';
+import { VideoRepository } from './video.repository';
 
 @Injectable()
 export class VideoService {
-  private readonly videoUploadPath = path.resolve(__dirname, '..', 'uploads', 'videos');
+  private readonly videoUploadPath = path.join(process.cwd(), 'src', 'shared', 'store');
   constructor(
     private apiConfig: ApiConfigService,
     private categoryService: CategoryService,
@@ -46,6 +44,7 @@ export class VideoService {
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
+    @Inject(forwardRef(() => ChannelService))
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
@@ -94,13 +93,9 @@ export class VideoService {
       throw error;
     }
   }
-  async getVideosDashboard(
-    // userId: number,
-    paginationDto: PaginationDto,
-  ): Promise<object> {
+  async getVideosDashboard(userId: number, paginationDto: PaginationDto): Promise<object> {
     try {
-      // const channel = await this.channelService.getChannelByUserId(userId);
-      const channel = await this.channelService.findOne(2); // Hard code get auto channel of Id = 2
+      const channel = await this.channelService.getChannelByUserId(userId);
 
       const [videos, total] = await this.videoRepository.findAndCount(
         channel.id,
@@ -121,15 +116,9 @@ export class VideoService {
 
           videoDetail.datePosted = video.createdAt.toISOString().split('T')[0];
 
-          const [selectedThumbnail, numberOfViews, ratings] = await Promise.all([
-            this.thumbnailService.getSelectedThumbnail(video.id),
-            this.watchingVideoHistoryService.getNumberOfViews(video.id),
-            this.watchingVideoHistoryService.getAverageRating(video.id),
-          ]);
+          const selectedThumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
 
-          videoDetail.thumbnail_url = selectedThumbnail.image;
-          videoDetail.numberOfViews = numberOfViews;
-          videoDetail.ratings = ratings;
+          videoDetail.thumbnail_url = selectedThumbnail?.image;
 
           videoDetail.category = plainToInstance(CategoryVideoDetailDto, video.category, {
             excludeExtraneousValues: true,
@@ -190,11 +179,16 @@ export class VideoService {
         message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
       });
     }
+    // await this.channelService.increaseTotalVideo(foundChannel.id);
     // await this.uploadVideoUrlS3(video.id, urlS3);
-    await this.uploadS3Queue.add('upload', {
-      path: pathVideo,
-      videoId: video.id,
-    });
+    try {
+      await this.uploadS3Queue.add('upload', {
+        path: pathVideo,
+        videoId: video.id,
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
     return video;
   }
 
@@ -333,32 +327,66 @@ export class VideoService {
     }
 
     if (workoutLevel) {
-      if (workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
+      if (workoutLevel in FilterWorkoutLevel && workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
         searchConditions = { ...searchConditions, workoutLevel };
     }
 
-    const order: FindOptionsOrder<Video> = {
+    let order: FindOptionsOrder<Video> = {
       createdAt: 'DESC',
       title: 'ASC',
     };
 
-    const [videos, total] = await this.videoRepository.find(
-      channelId,
-      searchConditions,
-      order,
-      paginationDto,
-    );
+    switch (sortBy) {
+      case SortBy.MOST_RECENT:
+        break;
+      case SortBy.VIEWS_HIGH_TO_LOW:
+        order = {
+          ...order,
+          numberOfViews: 'DESC',
+        };
+        break;
+      case SortBy.VIEWS_LOW_TO_HIGH:
+        order = {
+          ...order,
+          numberOfViews: 'ASC',
+        };
+        break;
+      case SortBy.DURATION_HIGH_TO_LOW:
+        order = {
+          ...order,
+          durationsVideo: 'DESC',
+        };
+        break;
+      case SortBy.DURATION_LOW_TO_HIGH:
+        order = {
+          ...order,
+          durationsVideo: 'ASC',
+        };
+        break;
+      case SortBy.RATINGS_HIGH_TO_LOW:
+        order = {
+          ...order,
+          ratings: 'DESC',
+        };
+        break;
+      case SortBy.RATINGS_LOW_TO_HIGH:
+        order = {
+          ...order,
+          ratings: 'ASC',
+        };
+        break;
+      default:
+        break;
+    }
+
+    const [videos, total] = await this.videoRepository.find(channelId, searchConditions, order);
 
     const videoItems = await Promise.all(
       videos.map(async (video) => {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
-        const [thumbnail, videoLength] = await Promise.all([
-          this.thumbnailService.getSelectedThumbnail(video.id),
-          this.vimeoService.getVideoLength(video.url),
-        ]);
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
         videoItemDto.thumbnailURL = thumbnail.image;
-        videoItemDto.videoLength = videoLength;
 
         videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
           excludeExtraneousValues: true,
@@ -368,32 +396,16 @@ export class VideoService {
           excludeExtraneousValues: true,
         });
 
-        videoItemDto.numberOfViews = fixIntNumberResponse(videoItemDto.numberOfViews);
-        videoItemDto.channel.numberOfFollowers = fixIntNumberResponse(videoItemDto.channel.numberOfFollowers);
+        videoItemDto.videoLength = Math.ceil(video.durationsVideo);
+
+        videoItemDto.numberOfViews = +videoItemDto.numberOfViews;
+        videoItemDto.channel.numberOfFollowers = +videoItemDto.channel.numberOfFollowers;
 
         return videoItemDto;
       }),
-    ).then((videos) => {
-      return videos.sort((video1, video2) => {
-        switch (sortBy) {
-          case SortBy.MOST_RECENT:
-            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-          case SortBy.VIEWS_HIGH_TO_LOW:
-            return video2.numberOfViews - video1.numberOfViews;
-          case SortBy.VIEWS_LOW_TO_HIGH:
-            return video1.numberOfViews - video2.numberOfViews;
-          case SortBy.DURATION_HIGH_TO_LOW:
-            return video2.videoLength - video1.videoLength;
-          case SortBy.DURATION_LOW_TO_HIGH:
-            return video1.videoLength - video2.videoLength;
-          case SortBy.RATINGS_HIGH_TO_LOW:
-            return video2.ratings - video1.ratings;
-          case SortBy.RATINGS_LOW_TO_HIGH:
-            return video1.ratings - video2.ratings;
-          default:
-            return new Date(video2.createdAt).getTime() - new Date(video1.createdAt).getTime();
-        }
-      });
+    ).then((sortedVideos) => {
+      const startIndex = PaginationDto.getSkip(paginationDto.take, paginationDto.page);
+      return sortedVideos.slice(startIndex, startIndex + paginationDto.take);
     });
 
     const totalPages = Math.ceil(total / paginationDto.take);
@@ -402,5 +414,68 @@ export class VideoService {
       videoItems,
       new PaginationMetadata(total, paginationDto.page, paginationDto.take, totalPages),
     );
+  }
+
+  getMax(videos: Video[]) {
+    return {
+      views: Math.max(...videos.map((video) => video.numberOfViews)),
+      rates: Math.max(...videos.map((video) => video.ratings)),
+      comments: Math.max(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  getMin(videos: Video[]) {
+    return {
+      views: Math.min(...videos.map((video) => video.numberOfViews)),
+      rates: Math.min(...videos.map((video) => video.ratings)),
+      comments: Math.min(...videos.map((video) => video.numberOfComments)),
+    };
+  }
+  weightedVideo(video: Video, minValues: any, maxValues: any) {
+    const normalizedViews =
+      (video.numberOfViews - minValues.views) / (maxValues.views - minValues.views || 1);
+    const normalizedRates = (video.ratings - minValues.rates) / (maxValues.rates - minValues.rates || 1);
+    const normalizedComments =
+      (video.numberOfComments - minValues.comments) / (maxValues.comments - minValues.comments || 1);
+
+    // Trọng số cho mỗi tiêu chí
+    const weightViews = 0.45;
+    const weightRates = 0.35;
+    const weightComments = 0.2;
+
+    // Tính điểm tổng cho video
+    const totalScore =
+      normalizedViews * weightViews + normalizedRates * weightRates + normalizedComments * weightComments;
+
+    return { ...video, totalScore };
+  }
+  async sortVideoByPriority() {
+    console.log(this.videoUploadPath);
+    const videos = await this.videoRepository.getVideos();
+    const min = this.getMin(videos);
+    const max = this.getMax(videos);
+    const calVideos = videos.map((video) => {
+      const result = this.weightedVideo(video, min, max);
+      return {
+        result,
+      };
+    });
+    const sortedVideos = calVideos.sort((a: any, b: any) => b.result.totalScore - a.result.totalScore);
+    return sortedVideos;
+  }
+
+  async getVideoDetails(videoId: number, userId?: number) {
+    if (userId) {
+      await this.watchingVideoHistoryService.createOrUpdate(userId, videoId).catch((error) => {
+        throw new NotFoundException(ERRORS_DICTIONARY.NOT_CREATE_VIDEO_HISTORY);
+      });
+    }
+    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
+      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+    });
+    return video;
+  }
+
+  async findChannel(videoId: number): Promise<Video> {
+    return this.videoRepository.findOne(videoId, { channel: true });
   }
 }

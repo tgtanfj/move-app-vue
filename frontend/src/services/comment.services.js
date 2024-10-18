@@ -1,18 +1,14 @@
-import { ADMIN_BASE } from '@constants/api.constant'
 import { apiAxios } from '@helpers/axios.helper'
 
 export const commentServices = {
-  getCommentsByVideoId: async (cursor) => {
+  getCommentsByVideoId: async (cursor, videoId) => {
     try {
-      // let videoIdAPI = videoId ? videoId : 45
-      let videoIdAPI = 45
+      const cursorParams = cursor ? cursor : null
 
-      const cursorParmas = cursor ? cursor : null
-
-      const response = await apiAxios.get(`/comment/${videoIdAPI}/comments`, {
+      const response = await apiAxios.get(`/comment/${videoId}/comments`, {
         params: {
           limit: 30,
-          cursor: cursorParmas
+          cursor: cursorParams
         }
       })
       return response.data
@@ -21,11 +17,11 @@ export const commentServices = {
       throw error
     }
   },
-  postComment: async (content) => {
+  postComment: async (content, videoId) => {
     try {
       const body = {
         content: `${content}`,
-        videoId: 45
+        videoId: +videoId
       }
       const response = await apiAxios.post(`/comment`, body)
       return response.data
@@ -67,6 +63,36 @@ export const commentServices = {
       return response.data
     } catch (error) {
       console.error('Update reaction comment error:', error)
+      throw error
+    }
+  },
+  getRepliesByComment: async (commentId, cursor) => {
+    const limit = 10
+    try {
+      const cursorParams = cursor ? cursor : null
+
+      const response = await apiAxios.get(`/comment/${commentId}/reply`, {
+        params: {
+          limit,
+          cursor: cursorParams
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Get comment error:', error)
+      throw error
+    }
+  },
+  postReply: async (content, commentId) => {
+    try {
+      const body = {
+        content: `${content}`,
+        commentId: +commentId
+      }
+      const response = await apiAxios.post(`/comment`, body)
+      return response.data
+    } catch (error) {
+      console.error('Post reply error:', error)
       throw error
     }
   }

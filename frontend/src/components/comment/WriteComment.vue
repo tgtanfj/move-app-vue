@@ -5,8 +5,14 @@ import { ref } from 'vue'
 import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
 import { commentServices } from '@services/comment.services'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
+import { useAuthStore } from '../../stores/auth'
+import { useOpenLoginStore } from '../../stores/openLogin'
 
 const props = defineProps({
+  videoId: {
+    type: String,
+    required: true
+  },
   me: {
     type: Object,
     required: true
@@ -19,9 +25,13 @@ const props = defineProps({
 
 const emit = defineEmits(['update'])
 
+const authStore = useAuthStore()
+const openLoginStore = useOpenLoginStore()
+
 const isCancelComment = ref(false)
 const isFocused = ref(false)
 const comment = ref('')
+const userAvatar = ref(localStorage.getItem('userAvatar'))
 
 const handleBlur = () => {
   if (!comment.value) {
@@ -41,19 +51,34 @@ const handleCloseEsc = (event) => {
 }
 
 const postCommentVideo = async () => {
-  if (!comment.value) return
-  const data = await commentServices.postComment(comment.value)
-  if (data.message === 'success') {
-    emit('update', data?.data)
-    comment.value = ''
-    isFocused.value = false
+  if (!authStore.accessToken) {
+    openLoginStore.toggleOpenLogin()
   } else {
-    return
+    if (!comment.value) return
+    const data = await commentServices.postComment(comment.value, props.videoId)
+    if (data.message === 'success') {
+      emit('update', data?.data)
+      comment.value = ''
+    } else {
+      return
+    }
   }
 }
 
 const handleClickNo = () => {
   isCancelComment.value = false
+}
+
+const handleFocus = () => {
+  isFocused.value = true
+}
+
+const handleClickInput = () => {
+  if (!authStore.accessToken) {
+    openLoginStore.toggleOpenLogin()
+    isFocused.value = false
+    handleBlur()
+  }
 }
 </script>
 
@@ -61,12 +86,14 @@ const handleClickNo = () => {
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
       <img
-        :src="me?.photoURL ? me?.photoURL : defaultAvatar"
+        :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
         class="w-[40px] h-[40px] rounded-full object-cover"
       />
       <Input
+        :ref="inputRef"
         v-model="comment"
-        @focus="isFocused = true"
+        @click="handleClickInput"
+        @focus="handleFocus"
         @keydown.enter="postCommentVideo"
         @keydown.esc="handleCloseEsc"
         @blur="handleBlur"
@@ -74,7 +101,7 @@ const handleClickNo = () => {
         class="outline-none rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
       />
     </div>
-    <div v-if="comment.length > 0" class="flex items-center justify-end gap-4">
+    <div v-if="isFocused" class="flex items-center justify-end gap-4">
       <Dialog v-model:open="isCancelComment">
         <DialogTrigger aschild>
           <Button class="text-[16px] font-normal" variant="outline">{{

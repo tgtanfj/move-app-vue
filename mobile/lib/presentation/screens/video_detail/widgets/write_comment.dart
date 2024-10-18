@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/data_sources/local/shared_preferences.dart';
+import 'package:move_app/data/models/comment_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/dialog_cancel_comment.dart';
 
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_images.dart';
 import '../../../../config/theme/app_text_styles.dart';
+import '../../auth/widgets/dialog_authentication.dart';
 
 class WriteComment extends StatefulWidget {
   final VoidCallback? onTapCancel;
   final VoidCallback? onTapSend;
   final ValueChanged<String>? onChanged;
   final double? marginLeft;
+  final CommentModel? commentModel;
+  final String? hintText;
+  final bool? isCancelReply;
 
-  const WriteComment({super.key,
+  const WriteComment({
+    super.key,
     this.onTapCancel,
     this.onTapSend,
     this.onChanged,
-    this.marginLeft = 12,});
+    this.marginLeft = 12,
+    this.commentModel,
+    this.hintText,
+    this.isCancelReply = false,
+  });
 
   @override
   State<WriteComment> createState() => _WriteCommentState();
@@ -26,10 +37,26 @@ class WriteComment extends StatefulWidget {
 class _WriteCommentState extends State<WriteComment> {
   bool hasValue = false;
   final TextEditingController controller = TextEditingController();
-
+  final FocusNode focusNode = FocusNode();
+  String avatarUrl = SharedPrefer.sharedPrefer.getUserAvatarUrl();
   @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void clearComment() {
+    controller.clear();
+    focusNode.unfocus();
+    setState(() {
+      hasValue = false;
+    });
+  }
+    @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -43,36 +70,58 @@ class _WriteCommentState extends State<WriteComment> {
                 width: widget.marginLeft,
               ),
               ClipOval(
-                  child: Image.asset(
-                    AppImages.posterVideo.pngAssetPath,
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
-                  )
-              ),
+                  child: avatarUrl == ""
+                      ? Image.asset(
+                          AppImages.defaultAvatar.webpAssetPath,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.network(
+                          avatarUrl,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        )),
               const SizedBox(
                 width: 12,
               ),
               Expanded(
-                child: TextField(
-                  controller: controller,
-                  maxLines: null,
-                  onChanged: (value) {
-                    widget.onChanged?.call(value);
-                    setState(() {
-                      hasValue = value.isNotEmpty;
-                    });
+                child: GestureDetector(
+                  onTap: () {
+                    if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const DialogAuthentication();
+                        },
+                      );
+                    }
                   },
-                  style: AppTextStyles.montserratStyle.regular14Black,
-                  decoration: InputDecoration(
-                    hintText: Constants.writeComment,
-                    hintStyle:
-                    AppTextStyles.montserratStyle.regular14GraniteGray,
-                    enabledBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: const UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
+                  child: AbsorbPointer(
+                    absorbing: SharedPrefer.sharedPrefer.getUserToken().isEmpty,
+                    child: TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      maxLines: null,
+                      onChanged: (value) {
+                        widget.onChanged?.call(value);
+                        setState(() {
+                          hasValue = value.isNotEmpty;
+                        });
+                      },
+                      style: AppTextStyles.montserratStyle.regular14Black,
+                      decoration: InputDecoration(
+                        hintText: widget.hintText ?? Constants.writeComment,
+                        hintStyle:
+                            AppTextStyles.montserratStyle.regular14GraniteGray,
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -96,22 +145,24 @@ class _WriteCommentState extends State<WriteComment> {
                   child: CustomButton(
                     title: Constants.cancel,
                     titleStyle:
-                    AppTextStyles.montserratStyle.regular16TiffanyBlue,
+                        AppTextStyles.montserratStyle.regular16TiffanyBlue,
                     backgroundColor: AppColors.white,
                     borderColor: AppColors.white,
                     onTap: () {
+                      if (widget.isCancelReply == true) {
+                        clearComment();
+                        widget.onTapCancel?.call();
+                        return;
+                      }
                       showDialog(
                         context: context,
                         barrierDismissible: false,
                         builder: (BuildContext context) {
                           return DialogCancelComment(
                             onTapCancel: () {
-                              controller.clear();
                               widget.onTapCancel?.call();
-                              setState(() {
-                                hasValue = false;
-                              });
-                              Navigator.pop(context);
+                              Navigator.of(context).pop();
+                              clearComment();
                             },
                           );
                         },
@@ -124,7 +175,10 @@ class _WriteCommentState extends State<WriteComment> {
                   height: 48,
                   child: CustomButton(
                     title: Constants.send,
-                    onTap: widget.onTapSend,
+                    onTap: () {
+                      widget.onTapSend?.call();
+                      clearComment();
+                    },
                     titleStyle: AppTextStyles.montserratStyle.bold16White,
                     backgroundColor: AppColors.tiffanyBlue,
                   ),

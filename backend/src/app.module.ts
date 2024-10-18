@@ -1,32 +1,36 @@
+import { UserModule } from '@/modules/user/user.module';
+import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config'; // Import the ConfigModule from the correct module
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { DatabaseModule } from './db/database.module';
-import { UserModule } from '@/modules/user/user.module';
+import { JwtService } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
 import { I18nMiddleware } from 'nestjs-i18n';
+import { DatabaseModule } from './db/database.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
+import { CategoryModule } from './modules/category/category.module';
+import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
 import { CountryModule } from './modules/country/country.module';
+import { DeeplinkModule } from './modules/deep-link/deep-link.module';
+import { DonationModule } from './modules/donation/donation.module';
 import { MailModule } from './modules/email/email.module';
+import { FaqsModule } from './modules/faqs/faqs.module';
+import { HomeModule } from './modules/home/home.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { SearchModule } from './modules/search/search.module';
 import { StripeModule } from './modules/stripe/stripe.module';
+import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
+import { VideoTrendModule } from './modules/video-trend/video-trend.module';
+import { VideoModule } from './modules/video/video.module';
+import { WatchingVideoHistoryModule } from './modules/watching-video-history/watching-video-history.module';
 import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
-import { RedisModule } from './shared/services/redis/redis.module';
-import { DeeplinkModule } from './modules/deep-link/deep-link.module';
-import { AwsS3Module } from './modules/aws-s3/aws-s3.module';
-import { JwtService } from '@nestjs/jwt';
-import { VideoModule } from './modules/video/video.module';
-import { CategoryModule } from './modules/category/category.module';
-import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
-import { BullModule } from '@nestjs/bullmq';
 import { ApiConfigService } from './shared/services/api-config.service';
-import { SearchModule } from './modules/search/search.module';
-import { FaqsModule } from './modules/faqs/faqs.module';
-import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
-import { HomeModule } from './modules/home/home.module';
-import { ScheduleModule } from '@nestjs/schedule';
-import { VideoTrendModule } from './modules/video-trend/video-trend.module';
+import { RedisModule } from './shared/services/redis/redis.module';
+import { NotificationModule } from './modules/notification/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -58,7 +62,13 @@ import { VideoTrendModule } from './modules/video-trend/video-trend.module';
           host: apiConfig.getString('REDIS_HOST'),
           port: apiConfig.getNumber('REDIS_PORT'),
           connectTimeout: 200000,
-          password: apiConfig.getString('REDIS_PASSWORD'),
+          defaultJobOptions: {
+            removeOnComplete: true,
+            removeOnFail: true,
+          },
+          settings: {
+            lockDuration: 300000,
+          },
         },
       }),
     }),
@@ -66,6 +76,10 @@ import { VideoTrendModule } from './modules/video-trend/video-trend.module';
     HomeModule,
     ScheduleModule.forRoot(),
     VideoTrendModule,
+    WatchingVideoHistoryModule,
+    PaymentModule,
+    DonationModule,
+    NotificationModule,
   ],
   providers: [
     {

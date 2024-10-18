@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +11,6 @@ import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_bloc.dart';
 import 'package:move_app/presentation/screens/auth/login/bloc/login_state.dart';
 import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
-import 'package:move_app/presentation/screens/home/page/home_body.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../../home/page/home_page.dart';
@@ -26,11 +26,13 @@ class LoginBody extends StatefulWidget {
 
 class _LoginBodyState extends State<LoginBody>
     with AutomaticKeepAliveClientMixin {
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
@@ -38,14 +40,14 @@ class _LoginBodyState extends State<LoginBody>
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
-                (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
         }
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.only(top: 12),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -81,6 +83,7 @@ class _LoginBodyState extends State<LoginBody>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomEditText(
+                              initialValue: state.email,
                               title: Constants.email,
                               maxLength: 255,
                               onChanged: (email) {
@@ -90,6 +93,14 @@ class _LoginBodyState extends State<LoginBody>
                                         password: state.password,
                                       ),
                                     );
+                              },
+                              onLostFocus:  (email) {
+                                context.read<LoginBloc>().add(
+                                  LoginChangeEmailPasswordEvent(
+                                    email: email.trim(),
+                                    password: state.password,
+                                  ),
+                                );
                               },
                               isShowMessage: state.isShowEmailMessage,
                               textStyle: state.isShowEmailMessage
@@ -105,17 +116,21 @@ class _LoginBodyState extends State<LoginBody>
                             ),
                             const SizedBox(height: 12),
                             CustomEditText(
+                              initialValue: state.password,
                               title: Constants.password,
                               isPasswordInput: true,
                               maxLength: 32,
                               onChanged: (password) {
                                 context.read<LoginBloc>().add(
                                       LoginChangeEmailPasswordEvent(
-                                        email: state.email,
+                                        email: state.email.trim(),
                                         password: password,
                                       ),
                                     );
                               },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                              ],
                               isShowMessage: state.isShowPasswordMessage,
                               textStyle: state.isShowPasswordMessage
                                   ? AppTextStyles

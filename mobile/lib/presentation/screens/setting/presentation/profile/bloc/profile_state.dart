@@ -10,6 +10,7 @@ enum ProfileStatus {
   processing,
   success,
   failure,
+  editUserSuccess,
 }
 
 final class ProfileState extends Equatable {
@@ -21,10 +22,8 @@ final class ProfileState extends Equatable {
   final bool isEnableSaveSettings;
   final String messageInputUsername;
   final String messageInputFullName;
-  final String messageInputCity;
   final bool isShowUsernameMessage;
   final bool isShowFullNameMessage;
-  final bool isShowCityMessage;
   final File? imageLocal;
   final String messageSelectDateOfBirth;
   final String messageSelectCountry;
@@ -35,29 +34,26 @@ final class ProfileState extends Equatable {
   final bool isShowStateMessage;
   final bool isShowAvatarMessage;
 
-  const ProfileState({
-    this.status,
-    this.errorMessage,
-    this.user,
-    required this.countryList,
-    required this.stateList,
-    this.isEnableSaveSettings = false,
-    this.messageInputUsername = '',
-    this.messageInputFullName = '',
-    this.messageInputCity = '',
-    this.isShowUsernameMessage = false,
-    this.isShowFullNameMessage = false,
-    this.isShowCityMessage = false,
-    this.imageLocal,
-    this.messageSelectDateOfBirth = '',
-    this.messageSelectCountry = '',
-    this.messageSelectState = '',
-    this.messageUpdateAvatar = '',
-    this.isShowDateOfBirthMessage = false,
-    this.isShowCountryMessage = false,
-    this.isShowStateMessage = false,
-    this.isShowAvatarMessage = false,
-  });
+  const ProfileState(
+      {this.status,
+      this.errorMessage,
+      this.user,
+      required this.countryList,
+      required this.stateList,
+      this.isEnableSaveSettings = false,
+      this.messageInputUsername = '',
+      this.messageInputFullName = '',
+      this.isShowUsernameMessage = false,
+      this.isShowFullNameMessage = false,
+      this.imageLocal,
+      this.messageSelectDateOfBirth = '',
+      this.messageSelectCountry = '',
+      this.messageSelectState = '',
+      this.messageUpdateAvatar = '',
+      this.isShowDateOfBirthMessage = false,
+      this.isShowCountryMessage = false,
+      this.isShowStateMessage = false,
+      this.isShowAvatarMessage = false});
 
   static ProfileState initial() => const ProfileState(
         status: ProfileStatus.initial,
@@ -67,10 +63,8 @@ final class ProfileState extends Equatable {
         isEnableSaveSettings: false,
         messageInputUsername: '',
         messageInputFullName: '',
-        messageInputCity: '',
         isShowUsernameMessage: false,
         isShowFullNameMessage: false,
-        isShowCityMessage: false,
         messageSelectDateOfBirth: '',
         messageSelectCountry: '',
         messageSelectState: '',
@@ -90,10 +84,8 @@ final class ProfileState extends Equatable {
     bool? isEnableSaveSettings,
     String? messageInputUsername,
     String? messageInputFullName,
-    String? messageInputCity,
     bool? isShowUsernameMessage,
     bool? isShowFullNameMessage,
-    bool? isShowCityMessage,
     File? imageLocal,
     String? messageSelectDateOfBirth,
     String? messageSelectCountry,
@@ -103,34 +95,32 @@ final class ProfileState extends Equatable {
     bool? isShowCountryMessage,
     bool? isShowStateMessage,
     bool? isShowUpdateMessage,
+    bool? isShowAvatarMessage,
   }) {
     return ProfileState(
-      status: status ?? this.status,
-      errorMessage: errorMessage ?? this.errorMessage,
-      user: user ?? this.user,
-      countryList: countryList ?? this.countryList,
-      stateList: stateList ?? this.stateList,
-      isEnableSaveSettings: isEnableSaveSettings ?? this.isEnableSaveSettings,
-      messageInputUsername: messageInputUsername ?? this.messageInputUsername,
-      messageInputFullName: messageInputFullName ?? this.messageInputFullName,
-      messageInputCity: messageInputCity ?? this.messageInputCity,
-      isShowUsernameMessage:
-          isShowUsernameMessage ?? this.isShowUsernameMessage,
-      isShowFullNameMessage:
-          isShowFullNameMessage ?? this.isShowFullNameMessage,
-      isShowCityMessage: isShowCityMessage ?? this.isShowCityMessage,
-      imageLocal: imageLocal ?? this.imageLocal,
-      messageSelectDateOfBirth:
-          messageSelectDateOfBirth ?? this.messageSelectDateOfBirth,
-      messageSelectCountry: messageSelectCountry ?? this.messageSelectCountry,
-      messageSelectState: messageSelectState ?? this.messageSelectState,
-      messageUpdateAvatar: messageUpdateAvatar ?? this.messageUpdateAvatar,
-      isShowDateOfBirthMessage:
-          isShowDateOfBirthMessage ?? this.isShowDateOfBirthMessage,
-      isShowCountryMessage: isShowCountryMessage ?? this.isShowCountryMessage,
-      isShowStateMessage: isShowStateMessage ?? this.isShowStateMessage,
-      isShowAvatarMessage: isShowUpdateMessage ?? this.isShowAvatarMessage,
-    );
+        status: status ?? this.status,
+        errorMessage: errorMessage ?? this.errorMessage,
+        user: user ?? this.user,
+        countryList: countryList ?? this.countryList,
+        stateList: stateList ?? this.stateList,
+        isEnableSaveSettings: isEnableSaveSettings ?? this.isEnableSaveSettings,
+        messageInputUsername: messageInputUsername ?? this.messageInputUsername,
+        messageInputFullName: messageInputFullName ?? this.messageInputFullName,
+        isShowUsernameMessage:
+            isShowUsernameMessage ?? this.isShowUsernameMessage,
+        isShowFullNameMessage:
+            isShowFullNameMessage ?? this.isShowFullNameMessage,
+        imageLocal: imageLocal ?? this.imageLocal,
+        messageSelectDateOfBirth:
+            messageSelectDateOfBirth ?? this.messageSelectDateOfBirth,
+        messageSelectCountry: messageSelectCountry ?? this.messageSelectCountry,
+        messageSelectState: messageSelectState ?? this.messageSelectState,
+        messageUpdateAvatar: messageUpdateAvatar ?? this.messageUpdateAvatar,
+        isShowDateOfBirthMessage:
+            isShowDateOfBirthMessage ?? this.isShowDateOfBirthMessage,
+        isShowCountryMessage: isShowCountryMessage ?? this.isShowCountryMessage,
+        isShowStateMessage: isShowStateMessage ?? this.isShowStateMessage,
+        isShowAvatarMessage: isShowAvatarMessage ?? this.isShowAvatarMessage);
   }
 
   @override
@@ -143,10 +133,8 @@ final class ProfileState extends Equatable {
         isEnableSaveSettings,
         messageInputUsername,
         messageInputFullName,
-        messageInputCity,
         isShowUsernameMessage,
         isShowFullNameMessage,
-        isShowCityMessage,
         imageLocal,
         messageSelectDateOfBirth,
         messageSelectCountry,

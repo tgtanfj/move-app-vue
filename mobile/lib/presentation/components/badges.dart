@@ -3,7 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 
 class Badges extends StatelessWidget {
-  const Badges({super.key});
+  final bool isBlueBadge;
+  final bool isPinkBadge;
+
+  const Badges(
+      {super.key, required this.isBlueBadge, required this.isPinkBadge});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +16,15 @@ class Badges extends StatelessWidget {
         const SizedBox(
           width: 3.0,
         ),
-        SvgPicture.asset(AppIcons.blueStick.svgAssetPath),
+        isBlueBadge
+            ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
+            : const SizedBox(),
         const SizedBox(
           width: 3.0,
         ),
-        SvgPicture.asset(AppIcons.starFlower.svgAssetPath),
+        isPinkBadge
+            ? SvgPicture.asset(AppIcons.starFlower.svgAssetPath)
+            : const SizedBox(),
       ],
     );
   }

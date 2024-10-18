@@ -1,5 +1,4 @@
 import { VideoService } from '@/modules/video/video.service';
-import { WatchingVideoHistoryModule } from './../watching-video-history/watching-video-history.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { VideoController } from './video.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,19 +15,20 @@ import { ChannelModule } from '../channel/channel.module';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 import { BullModule } from '@nestjs/bullmq';
 import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
+import { WatchingVideoHistoryModule } from '../watching-video-history/watching-video-history.module';
+import { Follow } from '@/entities/follow.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Video]),
-    UserModule,
+    TypeOrmModule.forFeature([Video, Follow]),
     CategoryModule,
     WatchingVideoHistoryModule,
-    UserModule,
+    forwardRef(() => UserModule),
     forwardRef(() => ChannelModule),
+    forwardRef(() => WatchingVideoHistoryModule),
     ThumbnailModule,
-    BullModule.registerQueue({
+    BullModule.registerQueueAsync({
       name: 'upload-s3',
-      prefix: 'video',
     }),
   ],
   controllers: [VideoController],
@@ -42,6 +42,6 @@ import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
     VimeoService,
     UploadS3Processor,
   ],
-  exports: [VideoService, VideoRepository],
+  exports: [VideoService, VideoRepository, BullModule],
 })
 export class VideoModule {}

@@ -94,7 +94,7 @@ class _ShareVideoDialogState extends State<ShareVideoDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CustomShareButton(
-                        title: Constants.facebook,
+                        title: Constants.facebookOption,
                         iconPath: AppIcons.facebookLogo.svgAssetPath,
                         onCopyTap: widget.onFacebookTap,
                       ),
@@ -102,7 +102,7 @@ class _ShareVideoDialogState extends State<ShareVideoDialog> {
                         width: 24,
                       ),
                       CustomShareButton(
-                        title: Constants.twitter,
+                        title: Constants.twitterOption,
                         iconPath: AppIcons.twitterLogo.svgAssetPath,
                         onCopyTap: widget.onTwitterTap,
                       ),

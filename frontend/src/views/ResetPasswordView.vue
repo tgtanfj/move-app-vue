@@ -7,12 +7,15 @@ import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useResetPassword } from '../services/forgotpassword.services'
+import { useOpenLoginStore } from '../stores/openLogin'
 
 const showError = ref(false)
 const route = useRoute()
 const token = route.params.token
 const mutationResetPassword = useResetPassword()
 const { isPending, isSuccess, isError } = mutationResetPassword
+
+const openLoginStore = useOpenLoginStore()
 
 const isFillAllFields = computed(() => {
   return values.password && values.confirmPassword
@@ -34,6 +37,10 @@ const submit = async () => {
       newPassword: values.password
     })
   }
+}
+
+const handleChangeTab = () => {
+  openLoginStore.toggleOpenLogin()
 }
 </script>
 
@@ -89,9 +96,10 @@ const submit = async () => {
   >
     <div class="text-center mt-6">
       <Button class="w-[60%]">
-        <RouterLink to="/">{{
-          isSuccess ? $t('button.login') : $t('button.back_to_home')
+        <RouterLink v-if="isSuccess" @click="handleChangeTab" to="/">{{
+          $t('button.login')
         }}</RouterLink>
+        <RouterLink v-if="isError" to="/">{{ $t('button.back_to_home') }}</RouterLink>
       </Button>
     </div>
   </BaseCard>

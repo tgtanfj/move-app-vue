@@ -17,9 +17,14 @@ import ForgotPassword from '@components/auth/ForgotPassword.vue'
 import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
 import SignUpModal from '@components/auth/SignUpModal.vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, triggerRef, watch, watchEffect } from 'vue'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
+import { useOpenLoginStore } from '../stores/openLogin'
+import UploadVideo from './upload-video/UploadVideo.vue'
+import Search from './search/Search.vue'
+import { useFollowerStore } from '../stores/follower.store'
 
 const countdown = ref(60)
 const isCounting = ref(false)
@@ -28,7 +33,25 @@ const isOpen = ref(false)
 const openForgotPassword = ref(false)
 const openOTPModal = ref(false)
 const signupInfo = ref('')
+const isInStreamerPage = ref(false)
+const isInResetPWPage = ref(false)
 const authStore = useAuthStore()
+const openLoginStore = useOpenLoginStore()
+const followerStore = useFollowerStore()
+const route = useRoute()
+
+watch(
+  () => route.path,
+  (newValue) => {
+    if (newValue && newValue.includes('/streamer')) {
+      isInStreamerPage.value = true
+    } else isInStreamerPage.value = false
+    if (newValue && newValue.includes('/reset-password')) {
+      isInResetPWPage.value = true
+    } else isInResetPWPage.value = false
+  },
+  { immediate: true }
+)
 
 const isUserLoggedIn = computed(() => !!authStore.accessToken)
 
@@ -60,6 +83,7 @@ const handleVerifySuccess = async (values) => {
   clearInterval(timer)
   isCounting.value = false
   await authStore.loginWithEmail(values)
+  followerStore.getAllFollowers()
 }
 
 const startCountdown = () => {
@@ -78,12 +102,22 @@ const resetCountdown = () => {
   countdown.value = 60
   startCountdown()
 }
+
+watchEffect(() => {
+  if (openLoginStore.isOpenLogin) {
+    isOpen.value = true
+    openLoginStore.toggleOpenLogin()
+  }
+})
 </script>
 
 <template>
   <nav class="w-full bg-black text-white fixed z-50">
-    <div class="flex items-center justify-between px-[40px] py-3">
-      <ul class="flex flex-1 items-center gap-[35px]">
+    <div
+      class="flex items-center px-[40px] py-3"
+      :class="{ 'justify-center': isInResetPWPage, 'justify-between': !isInResetPWPage }"
+    >
+      <ul v-if="!isInResetPWPage" class="flex flex-1 items-center gap-[35px]">
         <li class="font-semibold text-[16px]">Following</li>
         <li class="my-auto">
           <MoreMenuNav />
@@ -98,19 +132,12 @@ const resetCountdown = () => {
         </div>
       </div>
 
-      <div class="flex flex-1 items-center gap-2">
-        <div class="flex flex-1 justify-end">
-          <input
-            type="text"
-            class="w-[63%] max-w-[300px] rounded-[0.5rem_0_0_0.5rem] px-3 font-semibold text-black outline-none"
-            placeholder="Search"
-          />
-          <Button class="w-[44px] rounded-[0_0.5rem_0.5rem_0]">
-            <SearchIcon />
-          </Button>
+      <div v-if="!isInResetPWPage" class="flex flex-1 items-center gap-2">
+        <div v-if="!isInStreamerPage" class="flex flex-1 justify-end">
+          <Search />
         </div>
 
-        <div>
+        <div :class="{ 'ml-auto': isInStreamerPage }">
           <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn">
             <DialogTrigger>
               <Button v-if="authStore.isLoading" variant="default" class="rounded-lg" disabled>
@@ -161,8 +188,11 @@ const resetCountdown = () => {
             </DialogContent>
           </Dialog>
         </div>
+        <div v-if="isInStreamerPage && authStore.accessToken" class="mr-4">
+          <UploadVideo />
+        </div>
         <div>
-          <NavbarLogged v-if="isUserLoggedIn" />
+          <NavbarLogged :isInStreamerPage="isInStreamerPage" v-if="isUserLoggedIn" />
         </div>
 
         <ForgotPassword
@@ -177,7 +207,6 @@ const resetCountdown = () => {
           :countdown="countdown"
           :isCounting="isCounting"
           @verify-success="handleVerifySuccess"
-          @start="startCountdown"
           @reset="resetCountdown"
         />
       </div>

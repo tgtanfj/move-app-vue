@@ -10,9 +10,9 @@ export class PaginationMetadata {
   totalPages: number;
 
   constructor(total?: number, page?: number, take?: number, totalPages?: number) {
-    this.total = fixIntNumberResponse(total);
-    this.page = fixIntNumberResponse(page);
-    this.take = fixIntNumberResponse(take);
-    this.totalPages = fixIntNumberResponse(totalPages);
+    this.total = +total;
+    this.page = +page;
+    this.take = +take;
+    this.totalPages = +totalPages;
   }
 }
