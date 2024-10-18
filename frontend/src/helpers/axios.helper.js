@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ADMIN_BASE } from '../constants/api.constant'
+import { useAuthStore } from '../stores/auth'
 
 // Create an axios instance
 export const apiAxios = axios.create({
@@ -9,7 +10,8 @@ export const apiAxios = axios.create({
 // Add a request interceptor
 apiAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const authStore = useAuthStore()
+    const token = authStore.accessToken || localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }

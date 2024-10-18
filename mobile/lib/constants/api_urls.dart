@@ -12,6 +12,16 @@ class ApiUrls {
   static const String loginGoogle = 'auth/login/google';
   static const String loginFacebook = 'auth/login/facebook';
   static const String faqsEndPoint = 'faqs';
-  static const String commentEndpoint="comment";
-  static const String commentReactionEndPoint="comment-reaction";
+  static const String commentEndpoint = "comment";
+  static const String commentReactionEndPoint = "comment-reaction";
+  static const String rateVideo = 'watching-video-history/rate';
+  static const String searchResultCategory = 'search/categories';
+  static const String searchResultChannel = 'search/channels';
+  static const String searchResultVideo = 'search/videos';
+  static const String suggestionEndpoint = 'search/suggestion';
+  static const String searchHistoryEndpoint = 'search/history';
+  static const String homeTopCategoriesEndPoint = "home/top-categories";
+  static const String homeVideosTrendEndPoint = "home/videos-trend";
+  static const String homeVideosYouMayLikeEndPoint = "home/you-may-like";
+  static const String homeVideosYouMayLikeNoLoginEndPoint = "home/you-may-like-no-login";
 }

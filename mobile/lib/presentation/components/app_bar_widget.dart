@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/search/page/search_result_page.dart';
 
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;
@@ -10,7 +11,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final String? prefixIconPath;
   final String? suffixIconPath;
   final bool isEnableIcon;
-  final VoidCallback? onSearchButtonTap;
 
   const AppBarWidget({
     super.key,
@@ -19,7 +19,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.prefixIconPath,
     this.suffixIconPath,
     this.isEnableIcon = true,
-    this.onSearchButtonTap,
   });
 
   @override
@@ -59,7 +58,11 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         ),
         widget.isEnableIcon
             ? GestureDetector(
-                onTap: widget.onSearchButtonTap,
+                onTap: widget.suffixButton ??
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SearchResultPage())),
                 child: SvgPicture.asset(
                   widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
                   width: 24.0,

@@ -11,10 +11,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <div v-if="props.videoDetail && props.videoDetail.watch_also" class="flex-1 p-4">
+  <div v-if="props.videoDetail && props.videoDetail.watchAlso" class="flex-[0.25] p-4">
     <h3 class="text-sm font-semibold mb-4">{{ $t('video_detail.watch_also') }}</h3>
-    <div class="flex flex-col gap-6">
-      <div v-for="video in props.videoDetail.watch_also" :key="video.id">
+    <div class="flex flex-col gap-7">
+      <div v-for="video in props.videoDetail.watchAlso" :key="video.id">
         <VideoRelate :video="video" />
       </div>
     </div>

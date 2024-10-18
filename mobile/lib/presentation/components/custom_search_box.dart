@@ -16,9 +16,11 @@ class CustomSearchBox extends StatefulWidget implements PreferredSizeWidget {
   final double borderRadius;
   final Function? onSearch;
   final ValueChanged? onSubmitted;
+  final ValueChanged? onValueChanged;
   final TextEditingController? controller;
   final bool autoFocus;
   final FocusNode? focusNode;
+  final bool isSubmitted;
 
   const CustomSearchBox({
     super.key,
@@ -36,6 +38,8 @@ class CustomSearchBox extends StatefulWidget implements PreferredSizeWidget {
     this.controller,
     this.autoFocus = false,
     this.focusNode,
+    this.onValueChanged,
+    this.isSubmitted = false,
   });
 
   @override
@@ -81,6 +85,7 @@ class _CustomSearchBoxState extends State<CustomSearchBox> {
               ),
               textInputAction: TextInputAction.search,
               onSubmitted: widget.onSubmitted,
+              onChanged: widget.onValueChanged,
               keyboardType: widget.textInputType,
               textCapitalization:
                   widget.textCapitalization ?? TextCapitalization.none,

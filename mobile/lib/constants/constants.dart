@@ -124,7 +124,7 @@ class Constants {
   static const String invalidCharacterFullName =
       'Full name must be 8-255 characters';
   static const String invalidSpecialCharacterFullName =
-      'Full name must not include special characters';
+      'Full name must not include special characters and number';
   static const String invalidCharacterUsername =
       'Username must be 4 - 25 characters';
   static const String invalidContainUsername =
@@ -142,7 +142,7 @@ class Constants {
       "You have entered an invalid password";
   static const String invalidDateOfBirth = 'Please select your date of birth';
   static const String invalidAge =
-      'Invalid age. Age must be between 18 and 65 years old';
+      'Invalid age. Age must be between 13 and 65 years old';
   static const String sizeAvatarLimit =
       'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.';
   static const String allowFileType =
@@ -221,4 +221,17 @@ class Constants {
   static const String showMoreReplies = "Show more replies";
   static const String emptyComments = "No comments to  display";
 
+  static const String editedProfileSuccessfully = "Edited profile successfully";
+  static const String rateTheVideo = "Rate the video";
+  static const String rateQuestion =
+      "Tell us what do you think about this session.";
+  static const String rateThanksTitle = "Thank you for your ratings!";
+  static const String rateThanksContent =
+      "The ratings you provided will definitely be helpful for the instructor.";
+  static const String rateNotFound = 'Rate not found.';
+  static const String videoId = 'videoId';
+  static const String rateValue = 'rate';
+  static const String allResultFor = 'All result for';
+  static const String instructors = 'Instructors';
+  static const String videoNotFound = 'Video Not Found';
 }

@@ -13,6 +13,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { CommentReactionModule } from './modules/comment-reaction/comment-reaction.module';
 import { CountryModule } from './modules/country/country.module';
 import { DeeplinkModule } from './modules/deep-link/deep-link.module';
+import { DonationModule } from './modules/donation/donation.module';
 import { MailModule } from './modules/email/email.module';
 import { FaqsModule } from './modules/faqs/faqs.module';
 import { HomeModule } from './modules/home/home.module';
@@ -22,13 +23,14 @@ import { StripeModule } from './modules/stripe/stripe.module';
 import { ThumbnailModule } from './modules/thumbnail/thumbnail.module';
 import { VideoTrendModule } from './modules/video-trend/video-trend.module';
 import { VideoModule } from './modules/video/video.module';
+import { WatchingVideoHistoryModule } from './modules/watching-video-history/watching-video-history.module';
 import { I18nConfigModule } from './shared/configs/i18n.config';
 import { GlobalException } from './shared/exceptions/global.exception';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { LoggingMiddleware } from './shared/middlewares/logging.middleware';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { RedisModule } from './shared/services/redis/redis.module';
-import { WatchingVideoHistoryModule } from './modules/watching-video-history/watching-video-history.module';
+import { NotificationModule } from './modules/notification/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,7 +62,13 @@ import { WatchingVideoHistoryModule } from './modules/watching-video-history/wat
           host: apiConfig.getString('REDIS_HOST'),
           port: apiConfig.getNumber('REDIS_PORT'),
           connectTimeout: 200000,
-          password: apiConfig.getString('REDIS_PASSWORD'),
+          defaultJobOptions: {
+            removeOnComplete: true,
+            removeOnFail: true,
+          },
+          settings: {
+            lockDuration: 300000,
+          },
         },
       }),
     }),
@@ -70,6 +78,8 @@ import { WatchingVideoHistoryModule } from './modules/watching-video-history/wat
     VideoTrendModule,
     WatchingVideoHistoryModule,
     PaymentModule,
+    DonationModule,
+    NotificationModule,
   ],
   providers: [
     {

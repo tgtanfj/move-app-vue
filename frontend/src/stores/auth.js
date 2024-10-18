@@ -14,6 +14,7 @@ import { ADMIN_BASE } from '@constants/api.constant.js'
 export const useAuthStore = defineStore('auth', () => {
   // States
   const user = ref({})
+  const usernameUser = ref(null)
   const errorMsg = ref(null)
   const idToken = ref(null)
   const accessToken = ref(null)
@@ -80,9 +81,23 @@ export const useAuthStore = defineStore('auth', () => {
         throw new Error('Unsupported login method')
       }
 
-      const res = await axios.post(apiEndpoint, { idToken: idToken.value, email: emailFirebase.value })
+      const res = await axios.post(apiEndpoint, {
+        idToken: idToken.value,
+        email: emailFirebase.value
+      })
       accessToken.value = res.data.data.accessToken
       refreshToken.value = res.data.data.refreshToken
+      const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`
+        }
+      })
+
+      if (loginMethodLocal === 'email') {
+        user.value = userInfo.data
+        localStorage.setItem('userInfo', userInfo.data.data.username)
+      }
+      usernameUser.value = userInfo.data.data.username
       localStorage.setItem('token', accessToken.value)
       localStorage.setItem('refreshToken', refreshToken.value)
     } catch (error) {
@@ -103,6 +118,15 @@ export const useAuthStore = defineStore('auth', () => {
       if (data.success) {
         accessToken.value = data.data.accessToken
         refreshToken.value = data.data.refreshToken
+        const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`
+          }
+        })
+
+        user.value = userInfo.data
+        localStorage.setItem('userInfo', userInfo.data.data.username)
+        localStorage.setItem('userAvatar', userInfo.data.data.avatar)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -131,22 +155,26 @@ export const useAuthStore = defineStore('auth', () => {
         const response = await axios.get(`${ADMIN_BASE}/auth/log-out`, config)
         if (response.status === 200) {
           user.value = {}
+          usernameUser.value = null
           idToken.value = null
           accessToken.value = null
           refreshToken.value = null
           localStorage.removeItem('token')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('loginMethod')
+          localStorage.removeItem('userInfo')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
         user.value = {}
+        usernameUser.value = null
         idToken.value = null
         accessToken.value = null
         refreshToken.value = null
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('loginMethod')
+        localStorage.removeItem('userInfo')
       }
     } catch (err) {
       errorMsg.value = err.message
@@ -227,6 +255,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     isLoading,
     emailFirebase,
+    usernameUser,
     // actions
     googleSignIn,
     facebookSignIn,

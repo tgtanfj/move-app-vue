@@ -7,8 +7,10 @@ sealed class VideoDetailEvent extends Equatable {
 }
 
 final class VideoDetailInitialEvent extends VideoDetailEvent {
+  final int videoId;
+  const VideoDetailInitialEvent({required this.videoId});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [videoId];
 }
 
 final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
@@ -21,17 +23,17 @@ final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
 }
 
 final class VideoDetailCommentChangedEvent extends VideoDetailEvent {
-  final String content;
+  final String comment;
 
   const VideoDetailCommentChangedEvent({
-    required this.content,
+    required this.comment,
   });
 
   @override
-  List<Object?> get props => [content];
+  List<Object?> get props => [comment];
 }
 
-final class VideoDetailLoadMoreCommentsEvent extends VideoDetailEvent {
+class VideoDetailLoadMoreCommentsEvent extends VideoDetailEvent {
   final int? lastCommentId;
 
   const VideoDetailLoadMoreCommentsEvent({this.lastCommentId});
@@ -68,6 +70,24 @@ final class VideoDetailDisLikeCommentEvent extends VideoDetailEvent {
 
   @override
   List<Object?> get props => [comment];
+}
+
+class VideoDetailRateEvent extends VideoDetailEvent {
+  final int rating;
+
+  const VideoDetailRateEvent(this.rating);
+
+  @override
+  List<Object> get props => [rating];
+}
+
+class VideoDetailRateSubmitEvent extends VideoDetailEvent {
+  final int rating;
+
+  const VideoDetailRateSubmitEvent(this.rating);
+
+  @override
+  List<Object?> get props => [rating];
 }
 
 final class VideoDetailLoadRepliesCommentEvent extends VideoDetailEvent {

@@ -5,7 +5,7 @@
     <DropdownMenu>
       <DropdownMenuTrigger>
         <img
-          :src="authStore.user?.photoURL || defaultAvatar"
+          :src="authStore.user?.photoURL ?? userAvatar ?? defaultAvatar"
           alt="Avatar"
           width="30"
           height="30"
@@ -18,18 +18,18 @@
           class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <img
-            :src="authStore.user?.photoURL || defaultAvatar"
+            :src="authStore.user?.photoURL ?? userAvatar ?? defaultAvatar"
             alt="Avatar"
             width="40"
             height="40"
             class="rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.user?.displayName || authStore.user?.name || 'Username' }}
+            {{ authStore.usernameUser || authStore.user?.data?.username || storedUserInfo }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink to="/streamer">
+        <RouterLink @click="createChannel" to="/streamer">
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
@@ -101,22 +101,28 @@ import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
+import { videoService } from '@services/video.services'
 
 const props = defineProps({
   isInStreamerPage: {
     type: Boolean,
     required: false
-  },
+  }
 })
 
 const authStore = useAuthStore()
 const router = useRouter()
-
 const showLogoutModal = ref(false)
+const userAvatar = ref(localStorage.getItem('userAvatar'))
+const storedUserInfo = localStorage.getItem('userInfo')
 
 const logOutGoogle = async () => {
   await authStore.logout()
   showLogoutModal.value = false
   router.push('/')
+}
+
+const createChannel = async () => {
+  await videoService.createChannel()
 }
 </script>

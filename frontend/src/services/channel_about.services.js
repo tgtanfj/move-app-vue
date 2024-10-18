@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import { apiAxios } from '../helpers/axios.helper'
 import { useChannelStore } from '../stores/view-channel'
 
-const fetchChannelAbout = async (id) => {
+export const fetchChannelAbout = async (id) => {
   const response = await apiAxios.get(`/channel/${id}/about`)
   return response.data
 }

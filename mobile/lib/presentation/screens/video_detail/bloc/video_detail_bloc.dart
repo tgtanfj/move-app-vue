@@ -1,4 +1,8 @@
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/video_model.dart';
+import 'package:move_app/data/repositories/video_detail_repository.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
 
@@ -7,14 +11,17 @@ import '../../../../data/repositories/comment_repository.dart';
 import '../../../../utils/util_date_time.dart';
 
 class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
-  final commentRepository = CommentRepository();
+  final VideoDetailRepository videoRepository = VideoDetailRepository();
 
+  final commentRepository = CommentRepository();
   VideoDetailBloc() : super(VideoDetailState.initial()) {
     on<VideoDetailInitialEvent>(_onVideoDetailInitialEvent);
     on<VideoDetailSelectQualityEvent>(_onVideoDetailSelectQualityEvent);
     on<VideoDetailCommentChangedEvent>(onVideoDetailCommentChangedEvent);
     on<VideoDetailLoadMoreCommentsEvent>(onVideoDetailLoadMoreCommentEvent);
     on<VideoDetailPostCommentEvent>(onVideoDetailPostCommentEvent);
+    on<VideoDetailRateEvent>(_onVideoDetailRateEvent);
+    on<VideoDetailRateSubmitEvent>(_onVideoDetailRateSubmitEvent);
     on<VideoDetailLikeCommentEvent>(onVideoDetailLikeCommentEvent);
     on<VideoDetailDisLikeCommentEvent>(onVideoDetailDisLikeCommentEvent);
     on<VideoDetailLoadRepliesCommentEvent>(
@@ -28,28 +35,55 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   void _onVideoDetailInitialEvent(
       VideoDetailInitialEvent event, Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(status: VideoDetailStatus.processing));
-    //TODO: Replace the actual of video id instead of 1
-    final result = await commentRepository.getListCommentVideo(1, limit: 30);
-    result.fold((l) {
-      emit(state.copyWith(status: VideoDetailStatus.failure));
-    }, (r) async {
-      final updatedComments = r.map((comment) {
-        return comment.copyWith(
-          createTimeConvert: comment.createdAt?.getTimeDifference(),
-        );
-      }).toList();
 
-      final originalNumOfReplies = {
-        for (var comment in updatedComments) comment.id: comment.numberOfReply
-      };
+    final result = await Future.wait([
+      commentRepository.getListCommentVideo(event.videoId, limit: 30),
+      videoRepository.getRateByVideoId(event.videoId),
+      videoRepository.getVideoDetail(event.videoId),
+    ]);
 
-      final lastCommentId =
-          updatedComments.isNotEmpty ? updatedComments.last.id : null;
-      emit(state.copyWith(
+    final listCommentVideo = result[0] as Either<String, List<CommentModel>>;
+    listCommentVideo.fold(
+          (l) {
+        emit(state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
+      },
+          (comments) async {
+        final updatedComments = comments.map((comment) {
+          return comment.copyWith(
+            createTimeConvert: comment.createdAt?.getTimeDifference(),
+          );
+        }).toList();
+
+        final originalNumOfReplies = {
+          for (var comment in updatedComments) comment.id: comment.numberOfReply,
+        };
+
+        final lastCommentId = updatedComments.isNotEmpty ? updatedComments.last.id : null;
+        emit(state.copyWith(
           listComments: updatedComments,
           lastCommentId: lastCommentId,
           status: VideoDetailStatus.success,
-          originalNumOfReply: originalNumOfReplies));
+          originalNumOfReply: originalNumOfReplies,
+        ));
+      },
+    );
+
+    final getRateResult = result[1] as Either<String, int>;
+    getRateResult.fold((l) {
+      emit(state.copyWith(errorMessage: l));
+    }, (r) {
+      emit(state.copyWith(rateSelected: r));
+    });
+    (result[2] as Either<String, VideoModel>).fold((l) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.failure,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        video: r,
+        isShowVideo: true,
+        status: VideoDetailStatus.success,
+      ));
     });
   }
 
@@ -431,5 +465,23 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       );
     });
     return updatedReplies ?? {};
+  }
+
+  void _onVideoDetailRateEvent(
+      VideoDetailRateEvent event, Emitter<VideoDetailState> emit) {
+    emit(state.copyWith(rateSelected: event.rating));
+  }
+
+  void _onVideoDetailRateSubmitEvent(
+      VideoDetailRateSubmitEvent event, Emitter<VideoDetailState> emit) async {
+    final rateResult = await videoRepository.rateVideo(8, event.rating);
+    rateResult.fold((l) {
+      emit(state.copyWith(errorMessage: l));
+    }, (r) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.rateSuccess,
+        rateSelected: r,
+      ));
+    });
   }
 }

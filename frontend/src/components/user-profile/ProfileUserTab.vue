@@ -26,6 +26,11 @@ import BaseDialog from '../BaseDialog.vue'
 import Loading from '../Loading.vue'
 import ChangePasswordModal from './ChangePasswordModal.vue'
 import UploadAvatarFile from './UploadAvatarFile.vue'
+import { apiAxios } from '@helpers/axios.helper'
+import { t } from '@helpers/i18n.helper'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const selectedDay = ref(null)
 const selectedMonth = ref(null)
@@ -70,26 +75,39 @@ const { values, setValues, errors } = useForm({
 onMounted(async () => {
   try {
     isLoading.value = true
-    const token = localStorage.getItem('token')
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-    const response = await axios.get(`${ADMIN_BASE}/user/profile`, config)
+    const response = await apiAxios.get(`/user/profile`)
+
     if (response.status === 200 && response.data) {
-      userData.value = { ...response.data.data }
+      userData.value = {
+        ...response.data.data,
+        gender: denormalizeGender(response.data.data.gender) || '',
+        state: response.data.data.state || '',
+        country: response.data.data.country || '',
+        dateOfBirth: response.data.data.dateOfBirth || '',
+        fullName: response.data.data.fullName || '',
+        city: response.data.data.city || ''
+      }
       setValues({
         ...response.data.data,
-        gender: denormalizeGender(response.data.data.gender),
-        state: response.data.data.state?.name || ''
+        gender: denormalizeGender(response.data.data.gender) || 'male',
+        state: response.data.data.state?.name || '',
+        country: response.data.data.country?.name || '',
+        fullName: response.data.data.fullName || '',
+        city: response.data.data.city || '',
+        dateOfBirth: response.data.data.dateOfBirth || ''
       })
-      const [year, month, day] = response.data.data.dateOfBirth.split('-')
-      selectedDay.value = day || null
-      selectedMonth.value = month || null
-      selectedYear.value = year || null
+      if (response.data.data.dateOfBirth) {
+        const [year, month, day] = response.data.data.dateOfBirth.split('-')
+        selectedDay.value = day
+        selectedMonth.value = month
+        selectedYear.value = year
+      } else {
+        selectedMonth.value = null
+        selectedDay.value = null
+        selectedYear.value = null
+      }
 
-      gender.value = denormalizeGender(response.data.data.gender)
+      gender.value = denormalizeGender(response.data.data.gender) || 'male'
       selectedCountry.value = response.data.data.country?.name || ''
       selectedState.value = response.data.data.state?.name || ''
       selectedCity.value = response.data.data.city || ''
@@ -103,7 +121,7 @@ onMounted(async () => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get(`${ADMIN_BASE}/countries`)
+    const res = await apiAxios.get(`/countries`)
     if (res.status === 200) {
       countries.value = res.data.data
     } else throw new Error(res.error)
@@ -119,20 +137,24 @@ watch(gender, (newValue) => {
   })
 })
 
-watch(selectedCountry, async (newValue) => {
-  if (countries.value.length > 0) {
-    const temp = countries?.value.filter((item) => item.name === newValue)
-    if (temp[0].name) setValues({ ...values, country: temp[0].name })
-    try {
-      const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
-      if (res.status === 200) {
-        states.value = res.data.data
-      } else throw new Error(res.error)
-    } catch (error) {
-      console.log(error.message)
+watch(
+  selectedCountry,
+  async (newValue) => {
+    if (countries.value.length > 0) {
+      const temp = countries?.value.filter((item) => item.name === newValue)
+      if (temp[0].name) setValues({ ...values, country: temp[0].name })
+      try {
+        const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
+        if (res.status === 200) {
+          states.value = res.data.data
+        } else throw new Error(res.error)
+      } catch (error) {
+        console.log(error.message)
+      }
     }
-  }
-})
+  },
+  { immediate: true }
+)
 
 watch(selectedState, async (newValue) => {
   if (states.value.length > 0) {
@@ -225,7 +247,7 @@ const onSubmit = async () => {
     if (values.fullName !== userData.value.fullName) formData.append('fullName', values.fullName)
     if (values.dateOfBirth !== userData.value.dateOfBirth)
       formData.append('dateOfBirth', values.dateOfBirth)
-    if (normalizeGender(values.gender) !== userData.value.gender)
+    if (values.gender !== userData.value.gender)
       formData.append('gender', normalizeGender(values.gender))
     if (
       (values.country && !userData.value.country) ||
@@ -239,7 +261,6 @@ const onSubmit = async () => {
       formData.append('stateId', stateId)
     }
     if (values.city !== userData.value.city) formData.append('city', values.city)
-
     if (isFormDataEmpty(formData)) {
       isSubmitting.value = false
       return
@@ -261,7 +282,10 @@ const onSubmit = async () => {
             city: values.city,
             gender: normalizeGender(values.gender)
           }
-          toast({ description: 'Editted Profile Successfully', variant: 'successfully' })
+          toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
+          authStore.user.data.username = values.username
+          localStorage.setItem('userInfo', values.username)
+          localStorage.setItem('userAvatar', values.avatar)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })
@@ -320,9 +344,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="username">
             <FormItem>
-              <FormLabel :class="{ 'text-black': !showError && errors.username }">
-                Username
-              </FormLabel>
+              <FormLabel class="!text-black"> Username </FormLabel>
               <FormControl>
                 <Input
                   class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
@@ -330,6 +352,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Username"
                   v-bind="componentField"
+                  v-model.trim="values.username"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -339,7 +362,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="email">
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel class="!text-black">Email</FormLabel>
               <FormControl>
                 <div class="relative">
                   <Input
@@ -358,9 +381,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" name="fullName">
             <FormItem>
-              <FormLabel :class="{ 'text-black': !showError && errors.fullName }">
-                Full Name
-              </FormLabel>
+              <FormLabel class="!text-black"> Full Name </FormLabel>
               <FormControl>
                 <Input
                   class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
@@ -368,6 +389,7 @@ const onErrorMessage = (msg) => {
                   type="text"
                   placeholder="Full name"
                   v-bind="componentField"
+                  v-model.trim="values.fullName"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -388,7 +410,7 @@ const onErrorMessage = (msg) => {
         <div class="flex flex-col gap-1">
           <FormField v-slot="{ componentField }" type="radio" name="gender">
             <FormItem class="space-y-2">
-              <FormLabel :class="{ 'text-black': !showError && errors.gender }"> Gender </FormLabel>
+              <FormLabel class="!text-black"> Gender </FormLabel>
               <FormControl>
                 <RadioGroup
                   class="flex space-x-3"
@@ -476,9 +498,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="country">
               <FormItem>
-                <FormLabel :class="{ 'text-black': !showError && errors.country }">
-                  Country
-                </FormLabel>
+                <FormLabel class="!text-black"> Country </FormLabel>
                 <Select v-bind="componentField" v-model="selectedCountry" @change="onCountryChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.country }">
@@ -504,7 +524,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="state">
               <FormItem>
-                <FormLabel :class="{ 'text-black': !showError && errors.state }"> State </FormLabel>
+                <FormLabel class="!text-black"> State </FormLabel>
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
@@ -533,7 +553,7 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
-                <FormLabel>City</FormLabel>
+                <FormLabel class="!text-black">City</FormLabel>
                 <FormControl>
                   <Input
                     class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
