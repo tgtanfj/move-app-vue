@@ -224,10 +224,8 @@ export class VideoService {
           video.isCommentable = Boolean(dto.isCommentable);
         }
       }
-
       // Log the updated video object for debugging
       console.log('Updated video object:', video);
-
       // Save updated video
       const updatedVideo = await this.videoRepository.save(video);
       if (!updatedVideo) {
@@ -235,7 +233,7 @@ export class VideoService {
           message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
         });
       }
-
+      console.log(updatedVideo);
       return updatedVideo;
     } catch (error) {
       console.error('Error updating video:', error);
@@ -326,10 +324,8 @@ export class VideoService {
       searchConditions = { ...searchConditions, category: { id: categoryId } };
     }
 
-    if (workoutLevel) {
-      if (workoutLevel in FilterWorkoutLevel && workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
-        searchConditions = { ...searchConditions, workoutLevel };
-    }
+    if (workoutLevel && workoutLevel !== FilterWorkoutLevel.ALL_LEVEL)
+      searchConditions = { ...searchConditions, workoutLevel };
 
     let order: FindOptionsOrder<Video> = {
       createdAt: 'DESC',
@@ -386,7 +382,7 @@ export class VideoService {
         const videoItemDto = plainToInstance(VideoItemDto, video, { excludeExtraneousValues: true });
 
         const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
-        videoItemDto.thumbnailURL = thumbnail.image;
+        videoItemDto.thumbnailURL = thumbnail?.image;
 
         videoItemDto.channel = plainToInstance(ChannelItemDto, video.channel, {
           excludeExtraneousValues: true,
