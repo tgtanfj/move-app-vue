@@ -60,6 +60,7 @@ const handleGoogleSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })
       }
@@ -85,6 +86,7 @@ const handleFacebookSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })
       }
@@ -112,9 +114,9 @@ const handleOpenForgotPassword = () => {
 const handlePasswordInput = (event) => {
   const char = event.key
   if (char === ' ') {
-    event.preventDefault();
+    event.preventDefault()
   } else {
-    authStore.errorMsg = '' 
+    authStore.errorMsg = ''
   }
 }
 
@@ -149,7 +151,7 @@ const handleInput = () => {
       @click="formLogin = true"
       v-if="!formLogin"
     >
-    {{ $t('login.email') }}
+      {{ $t('login.email') }}
     </p>
 
     <form @submit.prevent="handleSignIn" v-if="formLogin" class="flex flex-col gap-1" novalidate>

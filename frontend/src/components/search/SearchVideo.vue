@@ -47,14 +47,17 @@ const props = defineProps({
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">
-          <p class="text-[16px] font-bold">{{ video.title }}</p>
+          <p class="text-[16px] font-bold">{{
+              video.title && video.title.length > 30
+                ? `${video.title.slice(0, 30)}...`
+                : video.title
+            }}</p>
         </router-link>
         <div class="flex flex-col items-start justify-start mt-1.5">
           <router-link :to="`/channel/${video.channel.id}`">
             <div class="flex items-center gap-3">
               <p class="text-[#666666] text-[14px]">{{ video.channel.name }}</p>
               <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
-              <PinkBadgeIcon v-if="video.channel.isPinkBadge" />
             </div>
           </router-link>
           <div class="flex gap-1 items-center">

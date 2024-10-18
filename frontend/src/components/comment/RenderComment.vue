@@ -252,7 +252,6 @@ const createReply = async (commentId) => {
             <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
             <div v-if="item.user.channel" class="flex items-center gap-2">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
-              <PinkBadgeIcon v-if="item.user.channel.isPinkBadge" />
             </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
               <YellowRepsIcon />
@@ -410,7 +409,6 @@ const createReply = async (commentId) => {
                     class="flex items-center gap-2"
                   >
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
-                    <PinkBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isPinkBadge" />
                   </div>
                   <div
                     v-if="myReplyPerComment[item.id].totalDonation > 0"
@@ -512,7 +510,6 @@ const createReply = async (commentId) => {
                   <p class="text-[13px] font-bold">{{ reply.user.fullName }}</p>
                   <div v-if="reply.user.channel" class="flex items-center gap-2">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
-                    <PinkBadgeIcon v-if="reply.user.channel.isPinkBadge" />
                   </div>
                   <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
                     <YellowRepsIcon />

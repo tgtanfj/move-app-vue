@@ -87,19 +87,18 @@ export const useAuthStore = defineStore('auth', () => {
       })
       accessToken.value = res.data.data.accessToken
       refreshToken.value = res.data.data.refreshToken
+      localStorage.setItem('token', accessToken.value)
+      localStorage.setItem('refreshToken', refreshToken.value)
       const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken.value}`
         }
       })
-
       if (loginMethodLocal === 'email') {
         user.value = userInfo.data
         // localStorage.setItem('userInfo', userInfo.data.data.username)
       }
       usernameUser.value = userInfo.data.data.username
-      localStorage.setItem('token', accessToken.value)
-      localStorage.setItem('refreshToken', refreshToken.value)
       localStorage.setItem('userInfo', userInfo.data.data.username)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'

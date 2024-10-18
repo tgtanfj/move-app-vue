@@ -55,6 +55,8 @@ watch(
 
 const isUserLoggedIn = computed(() => !!authStore.accessToken)
 
+const defaultTab = computed(() => openLoginStore.isSignUpFromSidebar)
+
 const closeModal = () => {
   isOpen.value = false
 }
@@ -155,7 +157,7 @@ watchEffect(() => {
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription></DialogDescription>
-              <Tabs default-value="login" class="w-full">
+              <Tabs :default-value="defaultTab" class="w-full">
                 <TabsList
                   class="w-full m-auto border-b-[1px] border-[#999999] pb-0 rounded-none mb-3 bg-white"
                 >

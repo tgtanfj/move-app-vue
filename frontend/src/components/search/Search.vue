@@ -114,7 +114,7 @@ const onSubmit = () => {
         class="flex flex-col mb-3 w-full"
         v-if="authStore.accessToken && searchStore.history.length > 0 && searchStore.text === ''"
       >
-        <div v-for="item in searchStore.history" :key="item.id" class="">
+        <div v-for="item in searchStore.history.slice(0, 5)" :key="item.id" class="">
           <div class="flex justify-between hover:bg-gray-100 pr-2 mt-3 py-2 rounded-lg">
             <div class="flex gap-4 items-center pl-2 pr-1">
               <Clock color="#CCCCCC" />
@@ -196,7 +196,6 @@ const onSubmit = () => {
                       {{ item.name }}
                     </p>
                     <BlueBadgeIcon v-if="item.isBlueBadge" />
-                    <PinkBadgeIcon v-if="item.isPinkBadge" />
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider> -->
@@ -206,7 +205,6 @@ const onSubmit = () => {
                 {{ item.name }}
               </p>
               <BlueBadgeIcon v-if="item.isBlueBadge" />
-              <PinkBadgeIcon v-if="item.isPinkBadge" />
             </div>
             <p class="italic text-gray-500 text-base">Instructor</p>
           </div>

@@ -283,7 +283,7 @@ const onSubmit = async () => {
             gender: normalizeGender(values.gender)
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
-          authStore.user.data.username = values.username
+          if (authStore.user.username) authStore.user.username = values.username
           localStorage.setItem('userInfo', values.username)
           localStorage.setItem('userAvatar', values.avatar)
         } else throw new Error(response.error)

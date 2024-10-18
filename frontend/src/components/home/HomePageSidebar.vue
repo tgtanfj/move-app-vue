@@ -40,6 +40,11 @@ onMounted(async () => {
 const toggleSidebar = () => {
   emit('toggleSidebar')
 }
+
+const handleClick = () => {
+  openLoginStore.toggleOpenLogin()
+  openLoginStore.handleClickSignUpFromSidebar()
+}
 </script>
 
 <template>
@@ -73,7 +78,6 @@ const toggleSidebar = () => {
             <div class="flex items-center justify-start gap-2">
               <span v-if="sidebarOpen" class="ml-2 text-sm text-nowrap">{{ channel.name }}</span>
               <BlueBadgeIcon v-if="channel.isBlueBadge && sidebarOpen" />
-              <PinkBadgeIcon v-if="channel.isPinkBadge && sidebarOpen" />
             </div>
             <div v-show="sidebarOpen" class="ml-2">
               <span class="text-sm text-[#666666]"
@@ -103,9 +107,7 @@ const toggleSidebar = () => {
               {{ $t('sidebar.sign_up_title') }}
             </p>
           </div>
-          <Button @click="openLoginStore.toggleOpenLogin()" variant="outline">{{
-            $t('sidebar.sign_up')
-          }}</Button>
+          <Button @click="handleClick" variant="outline">{{ $t('sidebar.sign_up') }}</Button>
         </div>
       </div>
     </div>

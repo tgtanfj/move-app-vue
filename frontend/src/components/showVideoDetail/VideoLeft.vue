@@ -196,7 +196,7 @@ onMounted(() => {
               </p>
             </div>
           </div> </RouterLink
-        >f
+        >
         <Button class="p-4 text-base font-semibold">Gift REPs <ChevronRight /></Button>
       </div>
 

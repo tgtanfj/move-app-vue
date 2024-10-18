@@ -12,11 +12,13 @@ watch(
   () => accessToken,
   async (newValue) => {
     if (newValue) {
+      console.log('new value co')
       const response = await homepageService.getVideoMayYouLikeLoggedIn()
       if (response.message === 'success') {
         videos.value = response?.data
       }
     } else {
+      console.log('new value khong')
       const response = await homepageService.getVideoMayYouLikeNotLogin()
       if (response.message === 'success') {
         videos.value = response?.data
