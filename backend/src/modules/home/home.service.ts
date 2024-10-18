@@ -210,16 +210,31 @@ export class HomeService {
       .getMany();
 
     const rcmVideoIds = rcmVideos.map((video) => video.id);
-
-    const otherVideosQuery = await (await this.queryVideoNotIn(rcmVideoIds, categoryId, selected)).getMany();
-
     let videosForPage1: any[] = [];
-    if (rcmVideos.length < dto.take) {
-      const extraNeeded = dto.take - rcmVideos.length;
-      const extraVideos = otherVideosQuery.slice(0, extraNeeded);
-      videosForPage1 = [...rcmVideos, ...extraVideos];
+    if (rcmVideoIds.length > 0) {
+      const otherVideosQuery = await (
+        await this.queryVideoNotIn(rcmVideoIds, categoryId, selected)
+      ).getMany();
+
+      if (rcmVideos.length < dto.take) {
+        const extraNeeded = dto.take - rcmVideos.length;
+        const extraVideos = otherVideosQuery.slice(0, extraNeeded);
+        videosForPage1 = [...rcmVideos, ...extraVideos];
+      } else {
+        videosForPage1 = rcmVideos;
+      }
     } else {
-      videosForPage1 = rcmVideos;
+      let topViewVideo = await this.videoRepository.find({
+        take: 12,
+        order: {
+          numberOfViews: 'DESC',
+        },
+        relations: {
+          channel: true,
+          category: true,
+        },
+      });
+      videosForPage1 = topViewVideo;
     }
 
     const videosForPage1ID = videosForPage1.map((video) => video.id);
@@ -227,7 +242,6 @@ export class HomeService {
       const update = await Promise.all(
         videosForPage1.map(async (video) => {
           const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
-          console.log(thumbnail);
 
           return {
             ...video,
