@@ -3,8 +3,6 @@ import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/presentation/screens/search/widgets/custom_search_channel.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 
-import '../../view_channel_profile/page/view_channel_profile_page.dart';
-
 class ListChannels extends StatelessWidget {
   final List<ChannelModel> channelList;
 
