@@ -152,15 +152,15 @@ export class CommentRepository {
   }
 
   async create(userId: number, dto: CreateCommentDto) {
-    const { videoId, commentId, ...data } = dto;
+    let { videoId, commentId, ...data } = dto;
     data['video'] = videoId ? { id: videoId } : null;
     data['user'] = { id: userId };
     if (commentId) {
       const parentComment = await this.commentRepository.findOne({
         where: { id: commentId },
-        relations: ['parent'],
+        relations: ['parent', 'video'],
       });
-
+      videoId = parentComment.video.id
       if (parentComment?.parent) {
         throw new BadRequestException('You can only reply one level deep.');
       }
