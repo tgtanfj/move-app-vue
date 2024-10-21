@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+
 import '../../constants/api_urls.dart';
 import '../../constants/constants.dart';
 import '../models/channel_model.dart';

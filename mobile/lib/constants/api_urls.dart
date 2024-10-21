@@ -23,5 +23,7 @@ class ApiUrls {
   static const String homeTopCategoriesEndPoint = "home/top-categories";
   static const String homeVideosTrendEndPoint = "home/videos-trend";
   static const String homeVideosYouMayLikeEndPoint = "home/you-may-like";
-  static const String homeVideosYouMayLikeNoLoginEndPoint = "home/you-may-like-no-login";
+  static const String homeVideosYouMayLikeNoLoginEndPoint =
+      "home/you-may-like-no-login";
+  static const String follow = "follow";
 }
