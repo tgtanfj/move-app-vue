@@ -17,6 +17,7 @@ class VideoModel {
   final CategoryModel? categories;
   final ChannelModel? channel;
   final int? durationsVideo;
+  final bool? isCommentable;
 
   VideoModel({
     this.id,
@@ -34,6 +35,7 @@ class VideoModel {
     this.createdAt,
     this.category,
     this.videoLength,
+    this.isCommentable
   });
 
   VideoModel copyWith({
@@ -52,6 +54,8 @@ class VideoModel {
     DateTime? createdAt,
     CategoryModel? category,
     int? videoLength,
+    bool? isCommentable,
+
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -69,6 +73,7 @@ class VideoModel {
       createdAt: createdAt ?? this.createdAt,
       category: category ?? this.category,
       videoLength: videoLength ?? this.videoLength,
+      isCommentable: isCommentable ?? this.isCommentable
     );
   }
 
@@ -97,6 +102,9 @@ class VideoModel {
       category: json['category'] != null
           ? CategoryModel.fromJson(json['category'])
           : null,
+      isCommentable: (json['isCommentable'] != null && json['isCommentable'] is bool)
+          ? json['isCommentable'] as bool
+          : false,
     );
   }
 }
