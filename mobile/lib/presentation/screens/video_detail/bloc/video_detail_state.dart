@@ -28,16 +28,12 @@ class VideoDetailState extends Equatable {
   final Map<int, bool>? isHiddenInputReply;
   final Map<int?, int?>? originalNumOfReply;
   final bool isShowTemporaryListReply;
-  final String? selectedQuality;
-  final Map<String, String>? videoUrls;
   final int? videoId;
   final String? option;
   final String? twitterLink;
   final String? facebookLink;
-  final bool isCopied;
 
   const VideoDetailState({
-    this.videoUrls,
     this.video,
     this.status,
     this.isShowVideo = false,
@@ -54,17 +50,14 @@ class VideoDetailState extends Equatable {
     this.isHiddenInputReply,
     this.originalNumOfReply,
     this.isShowTemporaryListReply = false,
-    this.selectedQuality,
     this.videoId,
     this.option,
     this.twitterLink,
     this.facebookLink,
-    this.isCopied = false,
   });
 
   static VideoDetailState initial() => const VideoDetailState(
         status: VideoDetailStatus.initial,
-        isCopied: false,
       );
 
   VideoDetailState copyWith({
@@ -84,13 +77,10 @@ class VideoDetailState extends Equatable {
     Map<int, bool>? isHiddenInputReply,
     Map<int?, int?>? originalNumOfReply,
     bool? isShowTemporaryListReply,
-    String? selectedQuality,
-    Map<String, String>? videoUrls,
     int? videoId,
     String? option,
     String? twitterLink,
     String? facebookLink,
-    bool? isCopied,
   }) {
     return VideoDetailState(
       video: video ?? this.video,
@@ -110,12 +100,10 @@ class VideoDetailState extends Equatable {
       originalNumOfReply: originalNumOfReply ?? this.originalNumOfReply,
       isShowTemporaryListReply:
           isShowTemporaryListReply ?? this.isShowTemporaryListReply,
-      videoUrls: videoUrls ?? this.videoUrls,
       videoId: videoId ?? this.videoId,
       option: option ?? this.option,
       twitterLink: twitterLink ?? this.twitterLink,
       facebookLink: facebookLink ?? this.facebookLink,
-      isCopied: isCopied ?? this.isCopied,
     );
   }
 
@@ -137,11 +125,9 @@ class VideoDetailState extends Equatable {
         isHiddenInputReply,
         originalNumOfReply,
         isShowTemporaryListReply,
-        selectedQuality,
         videoId,
         option,
         twitterLink,
         facebookLink,
-        isCopied,
       ];
 }

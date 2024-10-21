@@ -1,16 +1,14 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:move_app/data/models/suggestion_model.dart';
 
 import '../../constants/api_urls.dart';
 import '../../constants/constants.dart';
-import '../models/category_model.dart';
 import '../services/api_service.dart';
 
-class SuggestionRepository{
-  Future<Either<String, SuggestionModel?>> searchSuggestion(String query) async {
+class SuggestionRepository {
+  Future<Either<String, SuggestionModel?>> searchSuggestion(
+      String query) async {
     final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
@@ -18,12 +16,11 @@ class SuggestionRepository{
         ApiUrls.suggestionEndpoint,
         queryParameters: {'q': query},
       );
-      print(response.data);
       if (response.statusCode == 200) {
         final result = parseSuggestion(response.data);
         return Right(result);
       } else {
-        return const Left('cannot load suggestion');
+        return const Left('Cannot load suggestion');
       }
     } catch (e) {
       if (e is DioException) {

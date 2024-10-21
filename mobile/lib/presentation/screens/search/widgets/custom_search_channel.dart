@@ -65,16 +65,20 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
                       : const SizedBox(),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    widget.numberOfFollowers ?? '',
-                    style: AppTextStyles.montserratStyle.regular12Black,
-                  ),
-                  const Text(" "),
-                  Text(Constants.followers, style: AppTextStyles.montserratStyle.regular12Black,)
-                ],
-              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: widget.numberOfFollowers ?? '',
+                      style: AppTextStyles.montserratStyle.regular12Black,
+                    ),
+                    TextSpan(
+                      text: " ${Constants.followers}",
+                      style: AppTextStyles.montserratStyle.regular12Black,
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ],

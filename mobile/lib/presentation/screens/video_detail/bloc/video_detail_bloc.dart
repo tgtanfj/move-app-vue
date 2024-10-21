@@ -17,6 +17,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   final VideoDetailRepository videoRepository = VideoDetailRepository();
 
   final commentRepository = CommentRepository();
+
   VideoDetailBloc() : super(VideoDetailState.initial()) {
     on<VideoDetailInitialEvent>(_onVideoDetailInitialEvent);
     on<VideoDetailSelectQualityEvent>(_onVideoDetailSelectQualityEvent);
@@ -48,10 +49,11 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
     final listCommentVideo = result[0] as Either<String, List<CommentModel>>;
     listCommentVideo.fold(
-          (l) {
-        emit(state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
+      (l) {
+        emit(
+            state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
       },
-          (comments) async {
+      (comments) async {
         final updatedComments = comments.map((comment) {
           return comment.copyWith(
             createTimeConvert: comment.createdAt?.getTimeDifference(),
@@ -59,10 +61,12 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         }).toList();
 
         final originalNumOfReplies = {
-          for (var comment in updatedComments) comment.id: comment.numberOfReply,
+          for (var comment in updatedComments)
+            comment.id: comment.numberOfReply,
         };
 
-        final lastCommentId = updatedComments.isNotEmpty ? updatedComments.last.id : null;
+        final lastCommentId =
+            updatedComments.isNotEmpty ? updatedComments.last.id : null;
         emit(state.copyWith(
           listComments: updatedComments,
           lastCommentId: lastCommentId,
@@ -94,11 +98,11 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   void _onVideoDetailSelectQualityEvent(
       VideoDetailSelectQualityEvent event, Emitter<VideoDetailState> emit) {}
 
-  void _onVideoDetailShareSocialEvent(VideoDetailShareSocialEvent event,
-      Emitter<VideoDetailState> emit) async {
+  void _onVideoDetailShareSocialEvent(
+      VideoDetailShareSocialEvent event, Emitter<VideoDetailState> emit) async {
     final result =
         await shareRepository.sharingVideo(event.videoId, event.option);
-    if(event.option == Constants.twitterOption){
+    if (event.option == Constants.twitterOption) {
       result.fold((l) {
         emit(state.copyWith(
           status: VideoDetailStatus.failure,
@@ -110,7 +114,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
           twitterLink: r,
         ));
       });
-    }else if(event.option == Constants.facebookOption){
+    } else if (event.option == Constants.facebookOption) {
       result.fold((l) {
         emit(state.copyWith(
           status: VideoDetailStatus.failure,
@@ -123,14 +127,15 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         ));
       });
     }
-
   }
 
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,
       Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(status: VideoDetailStatus.processing));
-    final result = await commentRepository.getListCommentVideo(state.video?.id ?? 0,
-        limit: 30, cursor: event.lastCommentId);
+    final result = await commentRepository.getListCommentVideo(
+        state.video?.id ?? 0,
+        limit: 30,
+        cursor: event.lastCommentId);
     result.fold((l) {
       emit(state.copyWith(status: VideoDetailStatus.failure));
     }, (r) {

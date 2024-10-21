@@ -150,7 +150,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                           );
                         },
                       );
-                    }else{
+                    } else {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {

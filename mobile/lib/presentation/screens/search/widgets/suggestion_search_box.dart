@@ -94,12 +94,6 @@ class SuggestionSearchBox extends StatelessWidget {
                 itemCount: suggestionModel?.topVideos?.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Avatar(
-                        imageUrl:
-                            suggestionModel?.topVideos?[index].urlS3 ?? "",
-                        widthAvatar: 40,
-                        heightAvatar: 40,
-                        radiusAvatar: 50),
                     title: Text(suggestionModel?.topVideos?[index].title ?? ""),
                     trailing: Text(
                       Constants.videos,
@@ -120,13 +114,21 @@ class SuggestionSearchBox extends StatelessWidget {
               Icons.search,
               color: AppColors.tiffanyBlue,
             ),
-            title: Row(
-              children: [
-                const Text(Constants.allResultFor),
-                const Text(" "),
-                Text(resultSearchText ?? " "),
-              ],
-            ),
+            title: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: Constants.allResultFor,
+                    style: DefaultTextStyle.of(context).style,
+                  ),
+                  TextSpan(
+                    text: " ${resultSearchText ?? ''}",
+                    style: DefaultTextStyle.of(context).style,
+                  ),
+                ],
+              ),
+            )
+            ,
           )
       ],
     );

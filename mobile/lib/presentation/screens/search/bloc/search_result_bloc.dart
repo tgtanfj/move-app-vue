@@ -306,7 +306,6 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       SearchLoadSuggestionEvent event, Emitter<SearchResultState> emit) async {
     final suggestions =
         await SuggestionRepository().searchSuggestion(event.searchText ?? "");
-    print(suggestions);
     suggestions.fold((l) {
       emit(state.copyWith(
         status: SearchResultStatus.failure,

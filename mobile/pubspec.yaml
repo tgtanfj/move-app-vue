@@ -56,8 +56,6 @@ dependencies:
   app_links: ^6.3.2
   url_launcher: ^6.3.1
   vimeo_player_flutter: ^0.1.0
-  video_player: ^2.9.2
-  chewie: ^1.8.5
 
 dev_dependencies:
   flutter_test:
