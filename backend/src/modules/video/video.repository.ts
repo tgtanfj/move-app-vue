@@ -193,7 +193,7 @@ export class VideoRepository {
       ...dataVideoDetails,
       thumbnailURL,
       numberOfViews: +numberOfViews,
-      channel: { ...channel, isFollowed },
+      channel: { ...channel, isFollowed: userId && isFollowed },
       watchAlso,
     };
   }

@@ -113,7 +113,11 @@ export class PaymentService {
 
     const { channel } = await this.userService.findChannelByUserId(userId);
 
-    if (numberOfREPs < repsNeedToWithDraw || channel.numberOfREPs < repsNeedToWithDraw) {
+    if (
+      numberOfREPs < repsNeedToWithDraw ||
+      channel.numberOfREPs < repsNeedToWithDraw ||
+      channel.numberOfREPs < numberOfREPs
+    ) {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
     }
 

@@ -189,7 +189,7 @@ export class ChannelService {
 
   async setUpPayPal(userId: number, email: string) {
     const channel = await this.getChannelByUserId(userId);
-    this.channelRepository.updateEmailPayPal(channel.id, email);
+    await this.channelRepository.updateEmailPayPal(channel.id, email);
     return await this.getChannelReps(userId);
   }
 }
