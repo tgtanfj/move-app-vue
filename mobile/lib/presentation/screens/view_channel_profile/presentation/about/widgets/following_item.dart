@@ -46,16 +46,16 @@ class FollowingItem extends StatelessWidget {
             children: [
               Text(followingChannel.name ?? '',
                   style: AppTextStyles.montserratStyle.regular20Black),
-              SizedBox(width: followingChannel.isBlueBadge ?? false ? 7 : 0),
-              followingChannel.isBlueBadge ?? false
+              SizedBox(width: followingChannel.isBlueBadge  ? 7 : 0),
+              followingChannel.isBlueBadge
                   ? SvgPicture.asset(
                       AppIcons.blueCheckCircle.svgAssetPath,
                       width: 16,
                       height: 16,
                     )
                   : const SizedBox(),
-              SizedBox(width: followingChannel.isPinkBadge ?? false ? 7 : 0),
-              followingChannel.isPinkBadge ?? false
+              SizedBox(width: followingChannel.isPinkBadge ? 7 : 0),
+              followingChannel.isPinkBadge
                   ? SvgPicture.asset(
                       AppIcons.starFlower.svgAssetPath,
                       width: 16,

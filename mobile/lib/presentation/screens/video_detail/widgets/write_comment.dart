@@ -36,7 +36,7 @@ class WriteComment extends StatefulWidget {
 
 class _WriteCommentState extends State<WriteComment> {
   bool hasValue = false;
-  bool isFocused= false;
+  bool isFocused = false;
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
   String avatarUrl = SharedPrefer.sharedPrefer.getUserAvatarUrl();
@@ -50,6 +50,7 @@ class _WriteCommentState extends State<WriteComment> {
       });
     });
   }
+
   @override
   void dispose() {
     controller.dispose();
@@ -62,12 +63,14 @@ class _WriteCommentState extends State<WriteComment> {
     focusNode.unfocus();
     setState(() {
       hasValue = false;
+      isFocused = false;
     });
   }
-    @override
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Material(
@@ -114,7 +117,8 @@ class _WriteCommentState extends State<WriteComment> {
                       }
                     },
                     child: AbsorbPointer(
-                      absorbing: SharedPrefer.sharedPrefer.getUserToken().isEmpty,
+                      absorbing:
+                          SharedPrefer.sharedPrefer.getUserToken().isEmpty,
                       child: TextField(
                         controller: controller,
                         focusNode: focusNode,
@@ -128,13 +132,14 @@ class _WriteCommentState extends State<WriteComment> {
                         style: AppTextStyles.montserratStyle.regular14Black,
                         decoration: InputDecoration(
                           hintText: widget.hintText ?? Constants.writeComment,
-                          hintStyle:
-                              AppTextStyles.montserratStyle.regular14GraniteGray,
+                          hintStyle: AppTextStyles
+                              .montserratStyle.regular14GraniteGray,
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.grey),
                           ),
                           focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.tiffanyBlue),
+                            borderSide:
+                                BorderSide(color: AppColors.tiffanyBlue),
                           ),
                         ),
                       ),
@@ -191,7 +196,9 @@ class _WriteCommentState extends State<WriteComment> {
                     child: CustomButton(
                       title: Constants.send,
                       onTap: () {
-                        widget.onTapSend?.call();
+                        if (hasValue) {
+                          widget.onTapSend?.call();
+                        }
                         clearComment();
                       },
                       titleStyle: AppTextStyles.montserratStyle.bold16White,
