@@ -69,4 +69,10 @@ export class ChannelRepository {
   async editChannel(channelId: number, dto: Partial<Channel>) {
     return await this.channelRepository.update(channelId, dto);
   }
+
+  async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult> {
+    return await this.channelRepository.update(channelId, {
+      emailPayPal,
+    });
+  }
 }
