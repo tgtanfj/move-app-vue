@@ -54,5 +54,4 @@ export class ThumbnailService {
       await this.thumbnailRepository.updateThumbnail(selectedThumbnail);
     }
   }
-
 }

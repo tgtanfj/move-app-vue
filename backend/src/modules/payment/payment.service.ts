@@ -14,6 +14,7 @@ import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import PaymentDto, { RepsPackageDto } from './dto/response/payment.dto';
 import { WithDrawDto } from './dto/withdraw.dto';
 import { PayPalService } from './paypal.service';
+import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
 
@@ -28,6 +29,7 @@ export class PaymentService {
     private readonly paypalService: PayPalService,
     private readonly redisService: RedisService,
     private readonly configService: ApiConfigService,
+    private readonly cashOutRepository: CashOutRepository,
   ) {}
 
   async listRepsPackage() {
@@ -115,12 +117,23 @@ export class PaymentService {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
     }
 
+    if (withDrawDto.isSave) {
+      this.channelService.updateEmailPayPal(channel.id, email);
+    }
+
     const amountWithDraw = numberOfREPs * withDrawRate;
     const repsAfterWithDraw = +channel.numberOfREPs - numberOfREPs;
+    const emailReceiveREPs = channel.emailPayPal ? channel.emailPayPal : email;
 
-    this.channelService.updateREPs(channel.id, repsAfterWithDraw);
+    try {
+      this.channelService.updateREPs(channel.id, repsAfterWithDraw);
 
-    this.paypalService.createPayout(email, amountWithDraw);
+      this.paypalService.createPayout(emailReceiveREPs, amountWithDraw);
+
+      this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
 
     if (!timesWithdrawPerDay) {
       await this.redisService.setValue(`times_withdraw_per_day_${userId}`, 1, expireTimeWithdrawPerDay);
@@ -135,5 +148,7 @@ export class PaymentService {
         expireTimeWithdrawPerWeek,
       );
     }
+
+    return await this.channelService.getChannelReps(userId);
   }
 }
