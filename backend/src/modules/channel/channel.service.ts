@@ -184,6 +184,6 @@ export class ChannelService {
   }
 
   async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult> {
-    return this.updateEmailPayPal(channelId, emailPayPal);
+    return await this.channelRepository.updateEmailPayPal(channelId, emailPayPal);
   }
 }
