@@ -234,6 +234,7 @@ class Constants {
   static const String allResultFor = 'All result for';
   static const String instructors = 'Instructors';
   static const String videoNotFound = 'Video Not Found';
+  static const String channelId = 'channelId';
   static const String seeMore = "See More";
   static const String seeLess = "See Less";
   static const String linkCopied = "Link copied!";

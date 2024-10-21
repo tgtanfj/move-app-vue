@@ -19,13 +19,11 @@ export class UploadS3Processor extends WorkerHost {
           const s3url = await this.s3.uploadVideoFromPath(job.data.path);
           const updateVideo = await this.videoService.uploadVideoUrlS3(job.data.videoId, s3url);
           if (!s3url || !updateVideo) {
-            return false
+            return false;
           }
-          return true
+          return true;
         } catch (error) {
           console.log('error process', error);
-          
-          
         } finally {
           fs.unlinkSync(job.data.path);
         }

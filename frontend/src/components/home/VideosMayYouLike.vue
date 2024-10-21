@@ -3,13 +3,14 @@ import { homepageService } from '@services/homepage.services'
 import { ref, watch } from 'vue'
 import VideoMayLike from './VideoMayLike.vue'
 import VideoSkeleton from './VideoSkeleton.vue'
+import { useAuthStore } from '../../stores/auth'
 
 const videos = ref([])
 
-const accessToken = localStorage.getItem('token')
+const authStore = useAuthStore()
 
 watch(
-  () => accessToken,
+  () => authStore.accessToken,
   async (newValue) => {
     if (newValue) {
       const response = await homepageService.getVideoMayYouLikeLoggedIn()

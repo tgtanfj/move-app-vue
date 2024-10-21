@@ -1,7 +1,6 @@
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
-import 'package:move_app/presentation/components/list_categories.dart';
 
 class SearchResultModel {
   final String? type;

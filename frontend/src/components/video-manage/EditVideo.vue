@@ -11,6 +11,7 @@ import {
   SelectValue
 } from '@/common/ui/select'
 import { Textarea } from '@/common/ui/textarea'
+import { Label } from '@/common/ui/label'
 import { Input } from '@/common/ui/input'
 import { cn } from '@utils/shadcn.util'
 import { Pen } from 'lucide-vue-next'
@@ -97,14 +98,22 @@ const handleEditVideo = async () => {
   try {
     const res = await axios.get(`${ADMIN_BASE}/video/${props.videoInfoSelected}/details`)
     videoDataEditing.value = res.data.data
-    console.log(videoDataEditing.value)
 
     title.value = videoDataEditing.value.title
+    charCountTitle.value = title.value.length
     thumbnail.value = videoDataEditing.value.thumbnailURL
     category.value = String(videoDataEditing.value.category.id)
     workoutLevel.value = capitalizeFirstLetter(videoDataEditing.value.workoutLevel)
     duration.value = convertDuration(videoDataEditing.value.duration)
-    tags.value = videoDataEditing.value.keywords
+    if (
+      videoDataEditing.value.keywords !== 'null' &&
+      videoDataEditing.value.keywords !== 'undefined'
+    ) {
+      tags.value = videoDataEditing.value.keywords
+    } else {
+      tags.value = ''
+    }
+    charCount.value = tags.value.length
     isCommentable.value = String(videoDataEditing.value.isCommentable)
     images.value = [videoDataEditing.value.thumbnailURL]
     imagesSelected.value = videoDataEditing.value.thumbnailURL
@@ -278,6 +287,7 @@ const thirdButton = async (tab) => {
               ? 'advanced'
               : 'unknown'
 
+      uploadLoading.value = true
       const formData = new FormData()
       formData.append('title', title.value)
       formData.append('categoryId', Number(category.value))
@@ -294,6 +304,7 @@ const thirdButton = async (tab) => {
       if (response) {
         toast({ description: 'Edit successfully', variant: 'successfully' })
         isOpenUploadVideoDetails.value = false
+        uploadLoading.value = false
         resetField()
       }
     }
@@ -439,7 +450,6 @@ const onDialogClose = (isOpen) => {
                       @click="selectFilesThumbnail"
                     >
                       <div class="flex flex-col items-center justify-center">
-                        <VideoIcon />
                         <p class="text-[12px]">{{ $t('upload_video.upload_thumbnail') }}</p>
                       </div>
                     </div>
@@ -462,7 +472,6 @@ const onDialogClose = (isOpen) => {
                         :src="typeof image === 'string' ? image : ''"
                         alt="Thumbnail"
                       />
-                      <ImageLoading v-if="images.length <= 0" class="mt-[33px]" />
                     </div>
                   </div>
 

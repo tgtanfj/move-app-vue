@@ -11,17 +11,16 @@ class CustomSearchChannel extends StatefulWidget {
   final String? numberOfFollowers;
   final bool isBlueBadge;
   final bool isPinkBadge;
-  final VoidCallback? onTap;
+  final VoidCallback? onChannelTap;
 
-  const CustomSearchChannel({
-    super.key,
-    this.imageUrl,
-    this.name,
-    this.numberOfFollowers,
-    this.isBlueBadge = false,
-    this.isPinkBadge = false,
-    this.onTap,
-  });
+  const CustomSearchChannel(
+      {super.key,
+      this.imageUrl,
+      this.name,
+      this.numberOfFollowers,
+      this.isBlueBadge = false,
+      this.isPinkBadge = false,
+      this.onChannelTap});
 
   @override
   State<CustomSearchChannel> createState() => _CustomSearchChannelState();
@@ -31,7 +30,7 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: widget.onChannelTap,
       child: Row(
         children: [
           Avatar(

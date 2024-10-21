@@ -1,20 +1,19 @@
-import 'package:move_app/data/models/following_channel_model.dart';
 import 'package:move_app/data/models/social_network_model.dart';
 
 class ChannelModel {
-  final int id;
+  final int? id;
   final String? name;
   final String? bio;
   final String? image;
   final bool isBlueBadge;
   final bool isPinkBadge;
   final List<SocialNetworkModel>? socialLinks;
-  final bool? isFollowed;
-  final List<FollowingChannelModel>? followingChannels;
   final int? numberOfFollowers;
+  final bool? isFollowed;
+  final List<ChannelModel>? followingChannels;
 
-  ChannelModel({  
-    required this.id,  
+  ChannelModel({
+    this.id,
     this.name,
     this.bio,
     this.image,
@@ -27,6 +26,7 @@ class ChannelModel {
   });
 
   ChannelModel copyWith({
+    int? id,
     String? name,
     String? bio,
     String? image,
@@ -34,19 +34,20 @@ class ChannelModel {
     bool? isPinkBadge,
     List<SocialNetworkModel>? socialLinks,
     bool? isFollowed,
-    List<FollowingChannelModel>? followingChannels,
+    List<ChannelModel>? followingChannels,
     int? numberOfFollowers,
   }) {
     return ChannelModel(
-      id: id,
+      id: id ?? this.id,
       name: name ?? this.name,
       bio: bio ?? this.bio,
       image: image ?? this.image,
       isBlueBadge: isBlueBadge ?? this.isBlueBadge,
       isPinkBadge: isPinkBadge ?? this.isPinkBadge,
       socialLinks: socialLinks ?? this.socialLinks,
+      numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers,
       followingChannels: followingChannels ?? this.followingChannels,
-      numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers
+      isFollowed: isFollowed ?? this.isFollowed,
     );
   }
 
@@ -61,11 +62,12 @@ class ChannelModel {
       socialLinks: (json['socialLinks'] as List<dynamic>?)
           ?.map((e) => SocialNetworkModel.fromJson(e))
           .toList(),
-      followingChannels: (json['followingChannels'] as List<dynamic>?)
-          ?.map((e) => FollowingChannelModel.fromJson(e))
-          .toList(),
       numberOfFollowers:
-      json['numberOfFollowers'] is int? ? json['numberOfFollowers'] : 0,
+          json['numberOfFollowers'] is num? ? json['numberOfFollowers'] : 0,
+      followingChannels: (json['followingChannels'] as List<dynamic>?)
+          ?.map((e) => ChannelModel.fromJson(e))
+          .toList(),
+      isFollowed: json['isFollowed'] is bool? ? json['isFollowed'] : false,
     );
   }
 }

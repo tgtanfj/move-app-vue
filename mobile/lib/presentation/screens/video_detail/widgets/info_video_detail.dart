@@ -23,6 +23,7 @@ class InfoVideoDetail extends StatefulWidget {
   final VoidCallback giftRepButton;
   final VoidCallback onTapRate;
   final VideoModel? video;
+  final bool? isFollowed;
   final VoidCallback facebookButton;
   final VoidCallback twitterButton;
   final VoidCallback copyLinkButton;
@@ -37,6 +38,7 @@ class InfoVideoDetail extends StatefulWidget {
     required this.copyLinkButton,
     required this.onTapRate,
     required this.video,
+    this.isFollowed,
   });
 
   @override
@@ -102,7 +104,9 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             ),
             GestureDetector(
                 onTap: widget.followButton,
-                child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
+                child: SvgPicture.asset(widget.isFollowed ?? false
+                    ? AppIcons.fillHeart.svgAssetPath
+                    : AppIcons.heart.svgAssetPath)),
             PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(

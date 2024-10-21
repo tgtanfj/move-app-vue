@@ -1,7 +1,6 @@
 import { Channel } from '@/entities/channel.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { UpdateResult } from 'typeorm';
@@ -13,8 +12,6 @@ import { ChannelRepository } from './channel.repository';
 import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { ChannelItemDto } from './dto/response/channel-item.dto';
 import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
-import { MailDTO } from '@/shared/interfaces/mail.dto';
-import { getTemplateBlueBadge } from '../email/templates/template-blue-badge';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 
 @Injectable()
@@ -152,6 +149,7 @@ export class ChannelService {
   }
 
   async getUserByChannel(channelId: number) {}
+
   async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
     return this.channelRepository.updateREPs(channelId, numberOfREPs);
   }
@@ -171,8 +169,10 @@ export class ChannelService {
 
   async getChannelReps(userId: number) {
     const channel = await this.getChannelByUserId(userId);
-    const repValueInUSD = channel.numberOfREPs * 0.006;
-    return { numberOfREPs: repValueInUSD };
+    return {
+      numberOfREPs: channel.numberOfREPs,
+      emailPayPal: channel.emailPayPal,
+    };
   }
 
   async createChannel(userId: number, dto: any) {
@@ -181,5 +181,15 @@ export class ChannelService {
 
   async editChannel(channelId: number, dto: Partial<Channel>) {
     return await this.channelRepository.editChannel(channelId, dto);
+  }
+
+  async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult> {
+    return await this.channelRepository.updateEmailPayPal(channelId, emailPayPal);
+  }
+
+  async setUpPayPal(userId: number, email: string) {
+    const channel = await this.getChannelByUserId(userId);
+    this.channelRepository.updateEmailPayPal(channel.id, email);
+    return await this.getChannelReps(userId);
   }
 }

@@ -129,10 +129,20 @@ final class VideoDetailHideInputReplyEvent extends VideoDetailEvent {
   final int commentId;
   final bool isShowInput;
 
-  const VideoDetailHideInputReplyEvent( {required this.commentId, required this.isShowInput});
+  const VideoDetailHideInputReplyEvent(
+      {required this.commentId, required this.isShowInput});
 
   @override
   List<Object?> get props => [commentId, isShowInput];
+}
+
+class VideoDetailFollowChannelEvent extends VideoDetailEvent {
+  final int channelId;
+
+  const VideoDetailFollowChannelEvent(this.channelId);
+
+  @override
+  List<Object?> get props => [channelId];
 }
 
 final class VideoDetailShareSocialEvent extends VideoDetailEvent {

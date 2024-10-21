@@ -11,8 +11,13 @@ enum ViewChannelProfileStatus {
 final class ViewChannelProfileState extends Equatable {
   final ViewChannelProfileStatus? status;
   final ChannelModel? channel;
+  final String? errorMessage;
 
-  const ViewChannelProfileState({this.status, this.channel});
+  const ViewChannelProfileState({
+    this.status,
+    this.channel,
+    this.errorMessage,
+  });
 
   static ViewChannelProfileState initial() => const ViewChannelProfileState(
         status: ViewChannelProfileStatus.initial,
@@ -21,10 +26,12 @@ final class ViewChannelProfileState extends Equatable {
   ViewChannelProfileState copyWith({
     ViewChannelProfileStatus? status,
     ChannelModel? channel,
+    String? errorMessage,
   }) {
     return ViewChannelProfileState(
       status: status ?? this.status,
       channel: channel ?? this.channel,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
@@ -32,5 +39,6 @@ final class ViewChannelProfileState extends Equatable {
   List<Object?> get props => [
         status,
         channel,
+        errorMessage,
       ];
 }

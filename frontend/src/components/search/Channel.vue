@@ -29,7 +29,6 @@ const props = defineProps({
       <router-link class="flex items-center justify-start mb-1" :to="`/channel/${channel.id}`">
         <h6 class="mr-7 text-2xl">{{ channel.name }}</h6>
         <BlueBadgeIcon v-if="channel.isBlueBadge" />
-        <PinkBadgeIcon v-if="channel.isPinkBadge" />
       </router-link>
       <p class="text-gray-400 text-xl">
         {{ channel.numberOfFollowers }} {{ $t('search.followers') }}

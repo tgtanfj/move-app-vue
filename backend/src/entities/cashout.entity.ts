@@ -5,9 +5,10 @@ import { Channel } from './channel.entity';
 @Entity('cashouts')
 export class Cashout extends BaseEntity {
   @Column({
-    type: 'varchar',
+    type: 'bigint',
+    default: 0,
   })
-  numberOfREPs: string;
+  numberOfREPs: number;
 
   @ManyToOne(() => Channel, (channel) => channel.cashouts)
   channel: Channel;
