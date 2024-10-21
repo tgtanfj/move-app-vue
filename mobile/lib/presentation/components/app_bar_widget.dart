@@ -50,7 +50,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
             : const SizedBox(),
         Expanded(
           child: GestureDetector(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.home),
+            onTap: () => Navigator.pushNamedAndRemoveUntil(
+                context, AppRoutes.home, (route) => false),
             child: SvgPicture.asset(
               AppIcons.moveWhiteTextLogo.svgAssetPath,
             ),

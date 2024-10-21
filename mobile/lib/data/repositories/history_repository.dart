@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:move_app/data/models/search_history_model.dart';
@@ -22,7 +20,6 @@ class HistoryRepository {
       if (response.statusCode == 200) {
         final result = parseSearchHistory(response.data);
         return Right(result);
-
       } else {
         return const Left("Cannot load search history");
       }
@@ -44,8 +41,8 @@ class HistoryRepository {
   List<SearchHistoryModel>? parseSearchHistory(
       Map<String, dynamic> responseBody) {
     final parsed = ((responseBody['data']['histories'] is List)
-        ? responseBody['data']['histories']
-        : [])
+            ? responseBody['data']['histories']
+            : [])
         .cast<Map<String, dynamic>>();
 
     return parsed

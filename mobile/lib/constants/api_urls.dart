@@ -13,6 +13,7 @@ class ApiUrls {
   static const String loginFacebook = 'auth/login/facebook';
   static const String faqsEndPoint = 'faqs';
   static const String sharingVideoEndPoint = 'video/social-sharing/';
+  static const String categoryEndpoint = 'category';
   static const String commentEndpoint = "comment";
   static const String commentReactionEndPoint = "comment-reaction";
   static const String rateVideo = 'watching-video-history/rate';

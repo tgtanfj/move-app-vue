@@ -3,18 +3,20 @@ import 'package:move_app/data/models/channel_model.dart';
 
 class VideoModel {
   final int? id;
+  final String? thumbnailURL;
+  final int? numberOfViews;
+  final int? videoLength;
   final String? title;
+  final double? ratings;
   final String? workoutLevel;
   final String? duration;
+  final DateTime? createdAt;
+  final CategoryModel? category;
   final String? url;
-  final int? numberOfViews;
-  final double? ratings;
   final String? urlS3;
   final CategoryModel? categories;
   final ChannelModel? channel;
-  final String? thumbnailURL;
   final int? durationsVideo;
-  final DateTime? createdAt;
 
   VideoModel({
     this.id,
@@ -30,6 +32,8 @@ class VideoModel {
     this.thumbnailURL,
     this.durationsVideo,
     this.createdAt,
+    this.category,
+    this.videoLength,
   });
 
   VideoModel copyWith({
@@ -46,6 +50,8 @@ class VideoModel {
     String? thumbnailURL,
     int? durationsVideo,
     DateTime? createdAt,
+    CategoryModel? category,
+    int? videoLength,
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -61,6 +67,8 @@ class VideoModel {
       thumbnailURL: thumbnailURL ?? this.thumbnailURL,
       durationsVideo: durationsVideo ?? this.durationsVideo,
       createdAt: createdAt ?? this.createdAt,
+      category: category ?? this.category,
+      videoLength: videoLength ?? this.videoLength,
     );
   }
 
@@ -84,6 +92,10 @@ class VideoModel {
           (json['durationsVideo'] is num) ? json['durationsVideo'].toInt() : 0,
       createdAt: (json['createdAt'] is String)
           ? DateTime.parse(json['createdAt'])
+          : null,
+      videoLength: json['videoLength'] is int ? json['videoLength'] : 0,
+      category: json['category'] != null
+          ? CategoryModel.fromJson(json['category'])
           : null,
     );
   }

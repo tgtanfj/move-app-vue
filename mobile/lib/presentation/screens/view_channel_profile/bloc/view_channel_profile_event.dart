@@ -1,3 +1,4 @@
+
 sealed class ViewChannelProfileEvent {
   const ViewChannelProfileEvent();
 }

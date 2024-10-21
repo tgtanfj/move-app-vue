@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/repositories/view_channel_profile_repository.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
@@ -17,12 +18,17 @@ class ViewChannelProfileBloc
 
   void _onChannelInitialEvent(ViewChannelProfileInitialEvent event,
       Emitter<ViewChannelProfileState> emit) async {
-    emit(state.copyWith(status: ViewChannelProfileStatus.processing));
-    final result =
+    emit(state.copyWith(
+      status: ViewChannelProfileStatus.processing,
+      channelId: event.idChannel,
+    ));
+    
+    final channelResult =
         await channelRepository.getViewChannelProfileAbout(event.idChannel);
-    result.fold((l) {
+
+    channelResult.fold((failure) {
       emit(state.copyWith(status: ViewChannelProfileStatus.failure));
-    }, (r) {
+    }, (r) async {
       emit(state.copyWith(
         status: ViewChannelProfileStatus.success,
         channel: r.copyWith(id: event.idChannel),
