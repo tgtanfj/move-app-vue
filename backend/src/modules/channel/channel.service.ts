@@ -186,4 +186,10 @@ export class ChannelService {
   async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult> {
     return await this.channelRepository.updateEmailPayPal(channelId, emailPayPal);
   }
+
+  async setUpPayPal(userId: number, email: string) {
+    const channel = await this.getChannelByUserId(userId);
+    this.channelRepository.updateEmailPayPal(channel.id, email);
+    return await this.getChannelReps(userId);
+  }
 }
