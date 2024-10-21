@@ -17,7 +17,6 @@ import 'package:move_app/presentation/screens/home/widgets/horizontal_divider.da
 import 'package:move_app/presentation/screens/setting/presentation/profile/page/profile_body.dart';
 import 'package:move_app/utils/string_extentions.dart';
 
-
 class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
 
@@ -56,8 +55,7 @@ class _HomeBodyState extends State<HomeBody> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(Constants.featured,
-                            style:
-                                AppTextStyles.montserratStyle.bold20black),
+                            style: AppTextStyles.montserratStyle.bold20black),
                         Image.asset(
                           AppImages.headline.webpAssetPath,
                           width: width * 0.5,
@@ -71,8 +69,7 @@ class _HomeBodyState extends State<HomeBody> {
                   ),
                   state.isShowListVideoTrend
                       ? Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 20.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: SlideShowVideosFeature(
                             listVideo: state.listTrendVideo,
                           ))
@@ -111,8 +108,8 @@ class _HomeBodyState extends State<HomeBody> {
                   Container(
                     height: MediaQuery.of(context).size.height * 0.4,
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: ListCategories(
-                        listCategories: state.listTopCategory),
+                    child:
+                        ListCategories(listCategories: state.listTopCategory),
                   ),
                   const SizedBox(
                     height: 12.0,

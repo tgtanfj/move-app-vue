@@ -26,4 +26,9 @@ class ApiUrls {
   static const String homeVideosYouMayLikeNoLoginEndPoint =
       "home/you-may-like-no-login";
   static const String follow = "follow";
+  static const String  homeCategoriesNoLoginEndPoint = "home/categories-no-login/";
+  static const String  homeCategoriesLoginEndPoint = "home/categories/";
+
+  
+
 }

@@ -5,6 +5,7 @@ import 'package:move_app/presentation/screens/forgot_password/page/forgot_passwo
 import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_page.dart';
 import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
+import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
 import 'package:move_app/presentation/screens/view_FAQs/page/view_FAQs_page.dart';
 
 class AppRoutes {
@@ -17,6 +18,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String routeCategory = '/category';
   static const String routeSearch = '/search';
+  static const String routeCategoryResult = '/category-result';
 
   static getInitialRoute() {
     return '/';
@@ -32,7 +34,7 @@ class AppRoutes {
       routeForgotPassword: (BuildContext context) => const ForgotPasswordPage(),
       routeCreateNewPassword: (BuildContext context) =>
           const CreateNewPasswordPage(),
-      routeCategory: (BuildContext context) => const CategoryPage()
+      routeCategory: (BuildContext context) => const CategoryPage(),
     };
   }
 }
