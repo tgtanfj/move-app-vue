@@ -3,11 +3,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { AttachPaymentMethodDto } from './dto/attach-payment-method.dto';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly i18n: I18nService,
+  ) {
     this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY'), {
       apiVersion: '2024-06-20',
     });
@@ -48,7 +52,7 @@ export class StripeService {
       })
       .catch((err) => {
         console.log(err);
-        throw new BadRequestException(ERRORS_DICTIONARY.ADD_PAYMENT_METHOD_FAIL);
+        throw new BadRequestException(this.i18n.t('exceptions.payment.ADD_PAYMENT_METHOD_FAIL'));
       });
   }
 
@@ -57,7 +61,7 @@ export class StripeService {
 
     await this.stripe.paymentMethods.detach(paymentMethodId).catch((err) => {
       console.log(err);
-      throw new BadRequestException(ERRORS_DICTIONARY.DETACH_PAYMENT_METHOD_FAIL);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.DETACH_PAYMENT_METHOD_FAIL'));
     });
   }
 

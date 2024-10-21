@@ -9,16 +9,16 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import * as mime from 'mime-types';
 
+import { Upload } from '@aws-sdk/lib-storage';
+import * as fs from 'fs';
+import { I18nService } from 'nestjs-i18n';
+import * as path from 'path';
 import type { IFile } from '../interfaces/file.interface';
 import { GeneratorProvider } from '../providers/generator.provider';
+import { getKeyS3 } from '../utils/get-key-s3.util';
+import { validateAvatarFile } from '../utils/validate-avatar.utils';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
-import { createWriteStream } from 'fs';
-import { validateAvatarFile } from '../utils/validate-avatar.utils';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Upload } from '@aws-sdk/lib-storage';
-import { getKeyS3 } from '../utils/get-key-s3.util';
 @Injectable()
 export class AwsS3Service {
   private readonly s3Client: S3Client;
@@ -30,6 +30,7 @@ export class AwsS3Service {
   constructor(
     public configService: ApiConfigService,
     public generatorService: GeneratorService,
+    private readonly i18n: I18nService,
   ) {
     const s3Config = this.configService.awsS3Config;
 
@@ -69,7 +70,7 @@ export class AwsS3Service {
   }
 
   async uploadAvatar(file: IFile): Promise<string> {
-    await validateAvatarFile(file);
+    await validateAvatarFile(file, this.i18n);
     return await this.uploadImage(file);
   }
 

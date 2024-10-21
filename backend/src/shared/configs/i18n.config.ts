@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { I18nModule } from 'nestjs-i18n';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { join } from 'path';
 
 @Module({
@@ -13,12 +13,7 @@ import { join } from 'path';
           watch: true,
         },
       }),
-      // resolvers: [
-      //   { use: QueryResolver, options: ['lang'] },
-      //   new HeaderResolver(['x-custom-lang']),
-      //   new CookieResolver(),
-      //   AcceptLanguageResolver,
-      // ],
+      resolvers: [new AcceptLanguageResolver()],
       inject: [ConfigService],
     }),
   ],

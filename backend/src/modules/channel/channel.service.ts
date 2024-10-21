@@ -1,8 +1,8 @@
 import { Channel } from '@/entities/channel.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { FindOptionsRelations, UpdateResult } from 'typeorm';
 import { EmailService } from '../email/email.service';
 import { FollowService } from '../follow/follow.service';
@@ -22,17 +22,18 @@ export class ChannelService {
     private readonly videoService: VideoService,
     private readonly emailService: EmailService,
     private readonly apiConfig: ApiConfigService,
+    private readonly i18n: I18nService,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
     return await this.channelRepository.getChannelByUserId(userId).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL_OF_THIS_USER);
+      throw new BadRequestException(this.i18n.t('exceptions.social.NOT_FOUND_ANY_CHANNEL_OF_THIS_USER'));
     });
   }
 
   async findOne(channelId: number, relations?: FindOptionsRelations<Channel>): Promise<Channel> {
     return await this.channelRepository.findOne(channelId, relations).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+      throw new BadRequestException(this.i18n.t('exceptions.social.NOT_FOUND_ANY_CHANNEL'));
     });
   }
 
@@ -48,7 +49,7 @@ export class ChannelService {
     },
   ): Promise<object> {
     await this.channelRepository.findOne(channelId).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+      throw new BadRequestException(this.i18n.t('exceptions.social.NOT_FOUND_ANY_CHANNEL'));
     });
 
     return await this.videoService.getChannelVideos(
@@ -64,7 +65,7 @@ export class ChannelService {
 
   async getChannelProfile(channelId: number, userId: number = null) {
     const channel = await this.channelRepository.findOne(channelId, { user: true }).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
+      throw new BadRequestException(this.i18n.t('exceptions.social.NOT_FOUND_ANY_CHANNEL'));
     });
 
     const channelProfileDto: ChannelProfileDto = plainToInstance(ChannelProfileDto, channel, {

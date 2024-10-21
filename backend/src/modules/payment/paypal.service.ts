@@ -1,13 +1,16 @@
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class PayPalService {
   private accessToken: string;
 
-  constructor(private readonly configService: ApiConfigService) {}
+  constructor(
+    private readonly configService: ApiConfigService,
+    private readonly i18n: I18nService,
+  ) {}
 
   // Method to get the access token using client credentials
   private async getAccessToken() {
@@ -31,7 +34,7 @@ export class PayPalService {
       return this.accessToken;
     } catch (error) {
       console.error('Error fetching PayPal access token:', error);
-      throw new InternalServerErrorException('Error fetching PayPal access token');
+      throw new InternalServerErrorException(this.i18n.t('exceptions.paypal.CANT_GET_ACCESS_TOKEN'));
     }
   }
 
@@ -69,7 +72,7 @@ export class PayPalService {
       return response.data;
     } catch (error) {
       console.error('Error creating payout:', error.response?.data || error);
-      throw new InternalServerErrorException('Payout failed');
+      throw new InternalServerErrorException(this.i18n.t('exceptions.paypal.WITHDRAW_FAILED'));
     }
   }
 }
