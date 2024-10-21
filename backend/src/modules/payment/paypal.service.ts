@@ -72,5 +72,4 @@ export class PayPalService {
       throw new InternalServerErrorException('Payout failed');
     }
   }
-
 }
