@@ -26,7 +26,6 @@ class LoginBody extends StatefulWidget {
 
 class _LoginBodyState extends State<LoginBody>
     with AutomaticKeepAliveClientMixin {
-
   @override
   bool get wantKeepAlive => true;
 
@@ -94,13 +93,13 @@ class _LoginBodyState extends State<LoginBody>
                                       ),
                                     );
                               },
-                              onLostFocus:  (email) {
+                              onLostFocus: (email) {
                                 context.read<LoginBloc>().add(
-                                  LoginChangeEmailPasswordEvent(
-                                    email: email.trim(),
-                                    password: state.password,
-                                  ),
-                                );
+                                      LoginChangeEmailPasswordEvent(
+                                        email: email.trim(),
+                                        password: state.password,
+                                      ),
+                                    );
                               },
                               isShowMessage: state.isShowEmailMessage,
                               textStyle: state.isShowEmailMessage

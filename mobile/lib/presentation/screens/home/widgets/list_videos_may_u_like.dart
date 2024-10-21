@@ -29,6 +29,7 @@ class _ListVideosMayULikeState extends State<ListVideosMayULike> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: VideoPoster(
+                    isDurationText: true,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(

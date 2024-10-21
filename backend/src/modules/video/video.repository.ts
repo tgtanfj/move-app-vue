@@ -193,7 +193,7 @@ export class VideoRepository {
       ...dataVideoDetails,
       thumbnailURL,
       numberOfViews: +numberOfViews,
-      channel: { ...channel, isFollowed },
+      channel: { ...channel, isFollowed: userId && isFollowed },
       watchAlso,
     };
   }
@@ -280,13 +280,33 @@ export class VideoRepository {
 
     const limitVideoOther = totalVideo - results.length;
     if (limitVideoOther > 0) {
-      return await this.videoRepository.find({
+      const videoOthers = await this.videoRepository.find({
         take: limitVideoOther,
+        relations,
+        select: selectFields,
         where: { id: Not(In(ignoreIds)) },
         order: {
           numberOfViews: 'DESC',
         },
       });
+      const videoOtherResponse = videoOthers.map((video) => {
+        const {
+          thumbnails,
+          numberOfComments,
+          numberOfViews,
+          isPublish,
+          shareCount,
+          urlS3,
+          ...dataVideoDetails
+        } = video;
+        const thumbnailURL = video.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
+        return {
+          ...dataVideoDetails,
+          numberOfViews: +numberOfViews,
+          thumbnailURL,
+        };
+      });
+      results = results.concat(videoOtherResponse);
     }
 
     return results;

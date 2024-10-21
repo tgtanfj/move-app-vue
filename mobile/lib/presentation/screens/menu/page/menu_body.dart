@@ -8,7 +8,6 @@ import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_state.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_had_login.dart';
-
 import 'package:move_app/presentation/screens/menu/page/menu_not_login.dart';
 
 class MenuBody extends StatefulWidget {

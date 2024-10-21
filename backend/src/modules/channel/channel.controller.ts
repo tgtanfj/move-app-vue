@@ -1,12 +1,13 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Query, UseGuards } from '@nestjs/common';
-import { ChannelService } from './channel.service';
-import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/shared/guards';
-import { User } from '@/shared/decorators/user.decorator';
 import { Public } from '@/shared/decorators/public.decorator';
-import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { User } from '@/shared/decorators/user.decorator';
+import { JwtAuthGuard } from '@/shared/guards';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ChannelService } from './channel.service';
 import { EditChannelDto } from './dto/request/edit-channel.dto';
+import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import { SetUpPayPalDto } from './dto/request/set-up-paypal.dto';
+import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -19,7 +20,6 @@ export class ChannelController {
   @ApiQuery({ name: 'sort-by', enum: SortBy, required: false })
   @ApiQuery({ name: 'take', type: Number, required: false })
   @ApiQuery({ name: 'page', type: Number, required: false })
-  @ApiBearerAuth('jwt')
   @Public()
   @UseGuards(JwtAuthGuard)
   @Get('/:id/videos')
@@ -52,7 +52,6 @@ export class ChannelController {
     );
   }
 
-  @ApiBearerAuth('jwt')
   @Get('/:id/about')
   @Public()
   @UseGuards(JwtAuthGuard)
@@ -72,14 +71,12 @@ export class ChannelController {
     return await this.channelService.getChannelSetting(user.id);
   }
 
-  @ApiBearerAuth('jwt')
   @Get('/get-reps')
   @UseGuards(JwtAuthGuard)
   async getReps(@User() user?) {
     return await this.channelService.getChannelReps(user.id);
   }
 
-  @ApiBearerAuth('jwt')
   @Get('')
   @UseGuards(JwtAuthGuard)
   async create(@User() user?) {
@@ -87,10 +84,15 @@ export class ChannelController {
     return await this.channelService.createChannel(user.id, dto);
   }
 
-  @ApiBearerAuth('jwt')
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   async editChannel(@Param('id') id: number, @Body() dto: EditChannelDto) {
     return await this.channelService.editChannel(id, dto);
+  }
+
+  @Post('set-up-paypal')
+  @UseGuards(JwtAuthGuard)
+  async setUpPayPal(@User() user, @Body() setUpPayPalDto: SetUpPayPalDto) {
+    return await this.channelService.setUpPayPal(user.id, setUpPayPalDto.emailPayPal);
   }
 }

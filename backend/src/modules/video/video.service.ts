@@ -257,7 +257,7 @@ export class VideoService {
         const url = (await this.videoRepository.findOne(videoId, {}, { withDeleted: true })).url;
         if (!url) return;
 
-        // await this.vimeoService.delete(url);
+        await this.vimeoService.delete(url);
       } catch (error) {
         return;
       }
