@@ -4,23 +4,26 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+
 import '../../config/theme/app_images.dart';
 
 class VideoPoster extends StatelessWidget {
   final double? height;
-  final bool isLargePoster;
+  final bool isViewText;
+  final bool isDurationText;
   final String? image;
   final String? numberOfViews;
-  final String duration;
-  final VoidCallback onTap;
+  final String? duration;
+  final VoidCallback? onTap;
   const VideoPoster({
     super.key,
-    this.isLargePoster = false,
+    this.isViewText = false,
     this.height,
     this.image,
     this.numberOfViews,
     required this.duration,
-    required this.onTap,
+    this.onTap,
+    this.isDurationText = false,
   });
 
   @override
@@ -30,7 +33,7 @@ class VideoPoster extends StatelessWidget {
       child: Stack(children: [
         Positioned(
           child: Image.network(
-            image ?? '',
+            image ?? "https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg",
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width - 40.0,
             height: height,
@@ -69,7 +72,7 @@ class VideoPoster extends StatelessWidget {
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
                   const Text(" "),
-                  isLargePoster
+                  isViewText
                       ? Text(
                           Constants.views,
                           style: AppTextStyles.montserratStyle.bold12White,
@@ -83,9 +86,8 @@ class VideoPoster extends StatelessWidget {
             ]),
           ),
         ),
-        isLargePoster
-            ? const SizedBox()
-            : Positioned(
+        isDurationText
+            ? Positioned(
                 right: 8.0,
                 bottom: 8.0,
                 child: Container(
@@ -96,11 +98,12 @@ class VideoPoster extends StatelessWidget {
                     color: AppColors.black,
                   ),
                   child: Text(
-                    duration,
+                    duration ?? '',
                     style: AppTextStyles.montserratStyle.bold12White,
                   ),
                 ),
               )
+            : const SizedBox(),
       ]),
     );
   }

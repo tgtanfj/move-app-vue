@@ -15,13 +15,13 @@ class VideoFeatureDescription extends StatefulWidget {
   final ChannelModel? channelModel;
   final VideoModel? videoModel;
   final CategoryModel? category;
-  final VoidCallback onTapToVideoDetail;
+  final VoidCallback? onTapToVideoDetail;
   const VideoFeatureDescription({
     super.key,
     this.channelModel,
     this.videoModel,
     this.category,
-    required this.onTapToVideoDetail,
+    this.onTapToVideoDetail,
   });
 
   @override
@@ -132,7 +132,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
             const SizedBox(
               width: 9.0,
             ),
-            TypeLabel(typeLabel: widget.videoModel?.duration ?? ""),
+            TypeLabel(typeLabel: widget.videoModel?.duration.shorten() ?? ""),
           ],
         )
       ],

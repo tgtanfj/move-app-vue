@@ -21,6 +21,7 @@ enum AppIcons {
   addVideo,
   closeWhite,
   faqs,
+  filterList,
   like,
   likeFiled,
   dislike,

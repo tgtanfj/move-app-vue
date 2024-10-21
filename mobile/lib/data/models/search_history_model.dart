@@ -1,9 +1,9 @@
-import 'package:move_app/data/models/channel_model.dart';
-
 class SearchHistoryModel {
   final String? content;
 
-  SearchHistoryModel({this.content,});
+  SearchHistoryModel({
+    this.content,
+  });
 
   SearchHistoryModel copyWith({
     String? content,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/data/models/video_model.dart';
-import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
+import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
@@ -44,7 +44,7 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
                   ),
                 ),
                 height: height * 0.21,
-                isLargePoster: true,
+                isViewText: true,
                 image: widget.listVideo[index].thumbnailURL ?? '',
                 numberOfViews: widget.listVideo[index].numberOfViews
                         ?.toCompactViewCount() ??
