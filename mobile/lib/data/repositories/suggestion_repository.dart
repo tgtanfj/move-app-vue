@@ -1,16 +1,14 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:move_app/data/models/suggestion_model.dart';
 
 import '../../constants/api_urls.dart';
 import '../../constants/constants.dart';
-import '../models/category_model.dart';
 import '../services/api_service.dart';
 
-class SuggestionRepository{
-  Future<Either<String, SuggestionModel?>> searchSuggestion(String query) async {
+class SuggestionRepository {
+  Future<Either<String, SuggestionModel?>> searchSuggestion(
+      String query) async {
     final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(

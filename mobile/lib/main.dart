@@ -101,7 +101,6 @@ class _MyAppState extends State<MyApp> {
       },
       initialRoute: AppRoutes.getInitialRoute(),
       routes: AppRoutes.getRoutes(),
-      // home: ViewChannelProfilePage(idChannel: 2),
     );
   }
 }

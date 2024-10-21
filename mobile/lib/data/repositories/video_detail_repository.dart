@@ -31,7 +31,6 @@ class VideoDetailRepository {
   }
 
   Future<Either<String, int>> rateVideo(int videoId, int rate) async {
-    videoId = 22;
     try {
       final response = await apiService.request(
         APIRequestMethod.patch,

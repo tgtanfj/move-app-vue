@@ -20,6 +20,7 @@ import '../../../../data/models/comment_model.dart';
 import '../../../components/custom_button.dart';
 import '../../../components/thanks_rating_dialog.dart';
 import '../../auth/widgets/dialog_authentication.dart';
+import '../../view_channel_profile/page/view_channel_profile_page.dart';
 import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
@@ -330,7 +331,15 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           height: height * 0.2,
           child: InfoVideoDetail(
             video: state.video,
-            viewChanelButton: () {},
+            viewChanelButton: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewChannelProfilePage(
+                      idChannel: state.video?.channel?.id ?? 0),
+                ),
+              );
+            },
             isFollowed: state.video?.channel?.isFollowed,
             followButton: () {
               if (token.isEmpty) {

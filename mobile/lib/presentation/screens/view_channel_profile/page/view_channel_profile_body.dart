@@ -36,7 +36,6 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
           : EasyLoading.dismiss();
     }, child: BlocBuilder<ViewChannelProfileBloc, ViewChannelProfileState>(
             builder: (context, state) {
-      print('------${state.channel?.isFollowed}');
       return Scaffold(
         appBar: const AppBarWidget(),
         backgroundColor: AppColors.white,
