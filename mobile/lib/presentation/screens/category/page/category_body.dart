@@ -65,11 +65,11 @@ class _CategoryBodyState extends State<CategoryBody> {
                       childAspectRatio: 0.68,
                     ),
                     padding: const EdgeInsets.all(10),
-                    itemCount: dummyCategories.length,
+                    itemCount: state.listCategory.length,
                     itemBuilder: (context, index) {
                       return Center(
                         child: CategoryItem(
-                          categoryModel: dummyCategories[index],
+                          categoryModel: state.listCategory[index],
                         ),
                       );
                     },

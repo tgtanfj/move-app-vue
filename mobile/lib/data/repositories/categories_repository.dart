@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -8,17 +6,18 @@ import '../../constants/constants.dart';
 import '../models/category_model.dart';
 import '../services/api_service.dart';
 
-class CategoriesRepository{
+class CategoriesRepository {
   final ApiService apiService = ApiService();
 
-  Future<Either<String, List<CategoryModel>>> searchCategory(String query, int page) async {
+  Future<Either<String, List<CategoryModel>>> searchCategory(
+      String query, int page) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultCategory,
         queryParameters: {'q': query, 'limit': 1, 'page': page},
       );
-     if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final result = parseSearchResultCategory(response.data);
         return Right(result);
       } else {
@@ -39,10 +38,9 @@ class CategoriesRepository{
     }
   }
 
-  List<CategoryModel> parseSearchResultCategory(Map<String, dynamic> responseBody) {
-    final parsed = ((responseBody['data'] is List)
-        ? responseBody['data']
-        : [])
+  List<CategoryModel> parseSearchResultCategory(
+      Map<String, dynamic> responseBody) {
+    final parsed = ((responseBody['data'] is List) ? responseBody['data'] : [])
         .cast<Map<String, dynamic>>();
 
     return parsed
@@ -50,7 +48,8 @@ class CategoriesRepository{
         .toList();
   }
 
-  Future<Either<String, int?>> getTotalCategoriesPages(String query, int page) async {
+  Future<Either<String, int?>> getTotalCategoriesPages(
+      String query, int page) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
@@ -88,7 +87,7 @@ class CategoriesRepository{
       if (response.data != null) {
         List<dynamic> categoriesJson = response.data['data'] as List<dynamic>;
         var categories =
-        categoriesJson.map((json) => CategoryModel.fromJson(json)).toList();
+            categoriesJson.map((json) => CategoryModel.fromJson(json)).toList();
         return Right(categories);
       } else {
         return const Right([]);
@@ -97,6 +96,7 @@ class CategoriesRepository{
       return Left(e.toString());
     }
   }
+
   Future<Either<String, List<CategoryModel>>> getCategories() async {
     try {
       final response = await apiService.request(
@@ -110,6 +110,25 @@ class CategoriesRepository{
         return Right(categories);
       } else {
         return const Left(Constants.categoryNotFound);
+      }
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
+
+  Future<Either<String, List<CategoryModel>>> getListCategoryAll() async {
+    try {
+      final response = await ApiService().request(
+        APIRequestMethod.get,
+        ApiUrls.homeCategoriesEndPoint,
+      );
+      if (response.data != null) {
+        List<dynamic> categoriesJson = response.data['data'] as List<dynamic>;
+        var categories =
+            categoriesJson.map((json) => CategoryModel.fromJson(json)).toList();
+        return Right(categories);
+      } else {
+        return const Right([]);
       }
     } catch (e) {
       return Left(e.toString());
