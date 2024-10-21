@@ -17,14 +17,15 @@ import { BuyREPsDto } from './dto/buy-reps.dto';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import { WithDrawDto } from './dto/withdraw.dto';
 import { PaymentService } from './payment.service';
-import { PayPalService } from './paypal.service';
+import { UserService } from '../user/user.service';
 
 @Controller('payment')
 @ApiTags('Payment')
 @ApiBearerAuth('jwt')
 @UseGuards(JwtAuthGuard)
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService,
+  ) {}
 
   @Get('list-reps-package')
   @HttpCode(HttpStatus.OK)
@@ -54,4 +55,5 @@ export class PaymentController {
   async createPayout(@User() user, @Body() withDrawDto: WithDrawDto) {
     return await this.paymentService.withDraw(user.id, withDrawDto);
   }
+
 }
