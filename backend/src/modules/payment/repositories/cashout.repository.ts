@@ -17,6 +17,6 @@ export class CashOutRepository {
       },
       numberOfREPs,
     });
-    return this.cashOutRepository.save(cashOutCreated);
+    return await this.cashOutRepository.save(cashOutCreated);
   }
 }
