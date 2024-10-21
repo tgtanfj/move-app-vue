@@ -148,7 +148,7 @@ export class ChannelService {
     return await this.channelRepository.updateChannel(channel);
   }
 
-  async getUserByChannel(channelId: number) { }
+  async getUserByChannel(channelId: number) {}
 
   async updateREPs(channelId: number, numberOfREPs: number): Promise<UpdateResult> {
     return this.channelRepository.updateREPs(channelId, numberOfREPs);
@@ -183,7 +183,7 @@ export class ChannelService {
     return await this.channelRepository.editChannel(channelId, dto);
   }
 
-  async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult>{
+  async updateEmailPayPal(channelId: number, emailPayPal: string): Promise<UpdateResult> {
     return this.updateEmailPayPal(channelId, emailPayPal);
   }
 }
