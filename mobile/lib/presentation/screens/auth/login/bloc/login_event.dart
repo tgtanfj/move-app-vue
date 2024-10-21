@@ -25,9 +25,9 @@ final class LoginChangeEmailPasswordEvent extends LoginEvent {
 
   @override
   List<Object?> get props => [
-    email,
-    password,
-  ];
+        email,
+        password,
+      ];
 }
 
 final class LoginWithGoogleEvent extends LoginEvent {
@@ -43,5 +43,4 @@ final class LoginWithFacebookEvent extends LoginEvent {
 final class LoginWithEmailPasswordEvent extends LoginEvent {
   @override
   List<Object?> get props => [];
-
 }

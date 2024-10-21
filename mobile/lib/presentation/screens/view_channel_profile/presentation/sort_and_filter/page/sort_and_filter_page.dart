@@ -10,11 +10,13 @@ class SortAndFilterPage extends StatelessWidget {
   final WorkoutLevelType? selectedLevel;
   final CategoryModel? selectedCategory;
   final SortAndFilterType? selectedSortBy;
+  final int? channelId;
   const SortAndFilterPage({
     super.key,
     required this.selectedLevel,
     required this.selectedCategory,
     required this.selectedSortBy,
+    required this.channelId,
   });
 
   @override
@@ -25,6 +27,7 @@ class SortAndFilterPage extends StatelessWidget {
           selectedLevel: selectedLevel,
           selectedCategory: selectedCategory,
           selectedSortBy: selectedSortBy,
+          channelId: channelId,
         )),
       child: SortAndFilterBody(
         initialLevel: selectedLevel?.value,

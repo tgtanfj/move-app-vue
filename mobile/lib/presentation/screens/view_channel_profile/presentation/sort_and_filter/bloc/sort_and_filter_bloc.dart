@@ -24,6 +24,7 @@ class SortAndFilterBloc extends Bloc<SortAndFilterEvent, SortAndFilterState> {
       selectedCategory: event.selectedCategory,
       selectedLevel: event.selectedLevel,
       selectedSortBy: event.selectedSortBy,
+      channelId: event.channelId,
     ));
 
     add(const FetchSortFilterDataEvent());
@@ -85,9 +86,8 @@ class SortAndFilterBloc extends Bloc<SortAndFilterEvent, SortAndFilterState> {
         : state.selectedLevel.value;
     final categoryId = state.selectedCategory?.id;
     final sortBy = state.selectedSortBy.value;
-
     final videosResult = await videoRepository.getViewChannelProfileVideos(
-      2,
+      state.channelId ?? 0,
       page: state.currentPage,
       workoutLevel: workoutLevel,
       categoryId: categoryId,

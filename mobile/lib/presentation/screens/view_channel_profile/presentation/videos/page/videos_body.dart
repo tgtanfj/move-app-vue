@@ -64,6 +64,7 @@ class _VideosBodyState extends State<VideosBody>
                     context.read<VideosBloc>().state.selectedCategory;
                 final selectedSortBy =
                     context.read<VideosBloc>().state.selectedSortBy;
+                final channelId = context.read<VideosBloc>().state.channelId;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -71,6 +72,7 @@ class _VideosBodyState extends State<VideosBody>
                       selectedLevel: selectedLevel,
                       selectedCategory: selectedCategoryId,
                       selectedSortBy: selectedSortBy,
+                      channelId: channelId,
                     ),
                   ),
                 ).then((onValue) {
@@ -92,63 +94,65 @@ class _VideosBodyState extends State<VideosBody>
               child: BlocBuilder<VideosBloc, VideosState>(
                 builder: (context, state) {
                   if (state.status == VideosStatus.failure) {
-                    return const Center(child: Text('Failed to load videos'));
+                    return const Center(
+                        child: Text(Constants.failedToLoadVideos));
                   }
                   if (state.videos.isEmpty) {
                     return Center(
                       child: Text(
                           '${state.channel?.name ?? 'No'} has not uploaded any videos yet.'),
                     );
-                  }
-
-                  return LazyLoadScrollView(
-                    onEndOfPage: () {
-                      context.read<VideosBloc>().add(LoadMoreVideosEvent());
-                    },
-                    child: ListView.builder(
-                      itemCount: state.isLoading ?? false
-                          ? (state.videos.length + 1)
-                          : state.videos.length,
-                      itemBuilder: (context, index) {
-                        if (index == state.videos.length) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-
-                        final video = state.videos[index];
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: VideoPoster(
-                                height: height * 0.22,
-                                isLargePoster: false,
-                                image: video.thumbnailURL,
-                                duration:
-                                    video.videoLength?.toDurationFormat() ??
-                                        '00:00',
-                                numberOfViews:
-                                    video.numberOfViews?.toCompactViewCount(),
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            VideoFeatureDescription(
-                              channelModel: video.channel,
-                              category: video.category,
-                              videoModel: video,
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        );
+                  } else {
+                    return LazyLoadScrollView(
+                      onEndOfPage: () {
+                        context.read<VideosBloc>().add(LoadMoreVideosEvent());
                       },
-                    ),
-                  );
+                      child: ListView.builder(
+                        itemCount: state.isLoading ?? false
+                            ? (state.videos.length + 1)
+                            : state.videos.length,
+                        itemBuilder: (context, index) {
+                          if (index == state.videos.length) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
+                          final video = state.videos[index];
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: VideoPoster(
+                                  height: height * 0.22,
+                                  isViewText: true,
+                                  isDurationText: true,
+                                  image: video.thumbnailURL,
+                                  duration:
+                                      video.videoLength?.toDurationFormat() ??
+                                          '00:00',
+                                  numberOfViews:
+                                      video.numberOfViews?.toCompactViewCount(),
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              VideoFeatureDescription(
+                                channelModel: video.channel,
+                                category: video.category,
+                                videoModel: video,
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  }
                 },
               ),
             ),

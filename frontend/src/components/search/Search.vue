@@ -2,14 +2,12 @@
 import SearchIcon from '@assets/icons/SearchIcon.vue'
 import { Button } from '@common/ui/button'
 import { Clock, Search, X } from 'lucide-vue-next'
-import { handleError, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useSearchStore } from '../../stores/search'
-import { apiAxios } from '@helpers/axios.helper'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
 
 const searchStore = useSearchStore()
 const router = useRouter()
@@ -182,27 +180,10 @@ const onSubmit = () => {
           >
             <div class="flex items-center" @click="redirectTo('channel', item.id)">
               <img :src="item.image" alt="item.name" class="w-[60px] h-[60px] rounded-full" />
-              <!-- <TooltipProvider :delayDuration="300">
-                <Tooltip>
-                  <TooltipTrigger>
-                    <p
-                      class="text-base font-medium text-black capitalize ml-4 mr-1 max-w-[155px] overflow-hidden text-ellipsis whitespace-nowrap"
-                    >
-                      {{ item.name }}
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    <p class="text-base font-medium text-black capitalize ml-4 mr-1">
-                      {{ item.name }}
-                    </p>
-                    <BlueBadgeIcon v-if="item.isBlueBadge" />
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider> -->
-              <p
-                class="text-base font-medium text-black capitalize ml-4 mr-1 max-w-[160px] overflow-hidden whitespace-nowrap"
-              >
-                {{ item.name }}
+              <p class="text-base font-medium text-black capitalize ml-4 mr-1">
+                {{
+                  item.name && item.name.length > 10 ? item.name.slice(0, 10) + '...' : item.name
+                }}
               </p>
               <BlueBadgeIcon v-if="item.isBlueBadge" />
             </div>
@@ -223,9 +204,13 @@ const onSubmit = () => {
             class="flex items-center justify-between gap-5"
           >
             <div class="flex items-center" @click="redirectTo('video', item.id)">
-              <img :src="item.thumbnail_url" alt="" class="w-[60px] h-[50px]" />
-              <p class="text-base font-medium text-black capitalize ml-4">
-                {{ item.title }}
+              <img
+                :src="item.thumbnail"
+                :alt="item.title"
+                class="w-[60px] h-[50px] cursor-pointer"
+              />
+              <p class="text-base font-medium text-black capitalize ml-4 cursor-pointer">
+                {{ item?.title.length > 20 ? item.title.slice(0, 20) + '...' : item.title }}
               </p>
             </div>
             <p class="italic text-gray-500 text-base">Video</p>

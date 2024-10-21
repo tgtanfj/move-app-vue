@@ -112,19 +112,16 @@ export const useVideoStore = defineStore('video', () => {
       })
       
       if (res.status === 200) {
-        const updatedVideo = res.data.data
+        const updatedVideo = res.data.data;
+        const index = videos.value.findIndex((video) => video.id === videoId);
 
-        const index = videos.value.findIndex((video) => video.id === videoId)
-
-        // if (index !== -1) {
-        //   videos.value[index] = updatedVideo
-        // }
         if (index !== -1) {
-          const currentVideo = videos.value[index]
-          if (!updatedVideo.thumbnail) {
-            updatedVideo.thumbnail = currentVideo.thumbnail
-          }
-          videos.value[index] = { ...currentVideo, ...updatedVideo }
+            const currentVideo = videos.value[index];
+            const newThumbnail = updatedVideo.thumbnails && updatedVideo.thumbnails.length > 0
+                ? updatedVideo.thumbnails[0].image 
+                : currentVideo.thumbnail;
+
+            videos.value[index] = { ...currentVideo, ...updatedVideo, thumbnail_url: newThumbnail };
         }
       }
       return res
@@ -133,9 +130,9 @@ export const useVideoStore = defineStore('video', () => {
     } catch (error) {
       console.error('Error updating video:', error)
     }
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
   }
 
 

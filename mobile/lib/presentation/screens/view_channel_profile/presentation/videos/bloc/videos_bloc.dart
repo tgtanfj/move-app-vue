@@ -14,9 +14,9 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
 
   void _onVideosInitialEvent(
       VideosInitialEvent event, Emitter<VideosState> emit) async {
-    emit(state.copyWith(status: VideosStatus.processing));
-
-    final videosResult = await videoRepository.getViewChannelProfileVideos(2,
+    emit(state.copyWith(status: VideosStatus.processing, channelId: event.channelId));
+    final videosResult = await videoRepository.getViewChannelProfileVideos(
+        state.channelId ?? 0,
         page: state.currentPage);
 
     videosResult.fold((videoFailure) {
@@ -34,7 +34,8 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
       LoadMoreVideosEvent event, Emitter<VideosState> emit) async {
     emit(state.copyWith(isLoading: true));
 
-    final videosResult = await videoRepository.getViewChannelProfileVideos(2,
+    final videosResult = await videoRepository.getViewChannelProfileVideos(
+        state.channelId ?? 0,
         page: state.currentPage + 1);
     videosResult.fold(
       (failure) {
@@ -60,7 +61,8 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
 
   void _onVideoSortedAndFiledEvent(
       VideoSortedAndFiledEvent event, Emitter<VideosState> emit) async {
-    final videosResult = await videoRepository.getViewChannelProfileVideos(2,
+    final videosResult = await videoRepository.getViewChannelProfileVideos(
+        state.channelId ?? 0,
         page: 1,
         categoryId: event.selectedCategory?.id,
         workoutLevel: event.selectedLevel.value,

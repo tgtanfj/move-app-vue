@@ -16,17 +16,20 @@ final class VideosState extends Equatable {
   final int currentPage;
   final String? errorMessage;
   final bool? isLoading;
+  final int? channelId;
 
-  const VideosState(
-      {this.status,
-      this.channel,
-      this.videos = const [],
-      this.selectedLevel ,
-      this.selectedCategory,
-      this.selectedSortBy ,
-      this.currentPage = 1,
-      this.errorMessage,
-      this.isLoading});
+  const VideosState({
+    this.status,
+    this.channel,
+    this.videos = const [],
+    this.selectedLevel,
+    this.selectedCategory,
+    this.selectedSortBy,
+    this.currentPage = 1,
+    this.errorMessage,
+    this.isLoading,
+    this.channelId,
+  });
 
   static VideosState initial() => const VideosState(
         status: VideosStatus.initial,
@@ -37,11 +40,12 @@ final class VideosState extends Equatable {
       ChannelModel? channel,
       List<VideoModel>? videos,
       int? currentPage,
-       WorkoutLevelType? selectedLevel,
-   CategoryModel? selectedCategory,
-   SortAndFilterType? selectedSortBy,
+      WorkoutLevelType? selectedLevel,
+      CategoryModel? selectedCategory,
+      SortAndFilterType? selectedSortBy,
       String? errorMessage,
-      bool? isLoading}) {
+      bool? isLoading,
+      int? channelId}) {
     return VideosState(
       status: status ?? this.status,
       channel: channel ?? this.channel,
@@ -52,6 +56,7 @@ final class VideosState extends Equatable {
       selectedLevel: selectedLevel ?? this.selectedLevel,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       selectedSortBy: selectedSortBy ?? this.selectedSortBy,
+      channelId: channelId ?? this.channelId,
     );
   }
 
@@ -65,6 +70,7 @@ final class VideosState extends Equatable {
         errorMessage,
         selectedLevel,
         selectedCategory,
-        selectedSortBy
+        selectedSortBy,
+        channelId
       ];
 }

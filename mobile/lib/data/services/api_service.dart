@@ -57,7 +57,7 @@ class ApiService {
           break;
         case APIRequestMethod.delete:
           response = await dio.delete<T>(path,
-              queryParameters: queryParameters, options: options);
+              data: data, queryParameters: queryParameters, options: options);
           break;
         case APIRequestMethod.patch:
           response = await dio.patch<T>(path, data: data, options: options);

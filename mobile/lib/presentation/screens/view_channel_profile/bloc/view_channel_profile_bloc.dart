@@ -12,20 +12,26 @@ class ViewChannelProfileBloc
     on<ViewChannelProfileInitialEvent>(_onChannelInitialEvent);
     on<ViewChannelProfileFollowingItemSelectEvent>(
         _onViewChannelProfileFollowingItemSelectEvent);
+    on<ViewChannelProfileFollowChannelEvent>(
+        _onViewChannelProfileFollowChannelEvent);
   }
 
   void _onChannelInitialEvent(ViewChannelProfileInitialEvent event,
       Emitter<ViewChannelProfileState> emit) async {
-    emit(state.copyWith(status: ViewChannelProfileStatus.processing));
-
-    final channelResult = await channelRepository.getViewChannelProfileAbout(2);
+    emit(state.copyWith(
+      status: ViewChannelProfileStatus.processing,
+      channelId: event.idChannel,
+    ));
+    
+    final channelResult =
+        await channelRepository.getViewChannelProfileAbout(event.idChannel);
 
     channelResult.fold((failure) {
       emit(state.copyWith(status: ViewChannelProfileStatus.failure));
-    }, (channel) async {
+    }, (r) async {
       emit(state.copyWith(
         status: ViewChannelProfileStatus.success,
-        channel: channel,
+        channel: r.copyWith(id: event.idChannel),
       ));
     });
   }
@@ -40,8 +46,44 @@ class ViewChannelProfileBloc
       emit(state.copyWith(status: ViewChannelProfileStatus.failure));
     }, (r) {
       emit(state.copyWith(
+        status: ViewChannelProfileStatus.success,
         channel: r,
       ));
     });
+  }
+
+  void _onViewChannelProfileFollowChannelEvent(
+      ViewChannelProfileFollowChannelEvent event,
+      Emitter<ViewChannelProfileState> emit) async {
+    emit(state.copyWith(status: ViewChannelProfileStatus.processing));
+    if (state.channel?.isFollowed == true) {
+      final result =
+          await channelRepository.unFollowChannel(state.channel?.id ?? 0);
+      result.fold((l) {
+        emit(state.copyWith(
+          status: ViewChannelProfileStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          status: ViewChannelProfileStatus.success,
+          channel: state.channel?.copyWith(isFollowed: false),
+        ));
+      });
+    } else {
+      final result =
+          await channelRepository.followChannel(state.channel?.id ?? 0);
+      result.fold((l) {
+        emit(state.copyWith(
+          status: ViewChannelProfileStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          status: ViewChannelProfileStatus.success,
+          channel: state.channel?.copyWith(isFollowed: true),
+        ));
+      });
+    }
   }
 }

@@ -7,14 +7,18 @@ import 'package:move_app/presentation/screens/view_channel_profile/presentation/
 
 class VideosPage extends StatelessWidget {
   final List<VideoModel>? videos;
-  const VideosPage({super.key, this.videos});
+  final int channelId;
+  const VideosPage({super.key, this.videos, this.channelId = 0});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VideosBloc>(
-      create: (context) => VideosBloc()..add(VideosInitialEvent()),
-      child: VideosBody(videos: videos), 
+      create: (context) {
+        final bloc = VideosBloc();
+        bloc.add(VideosInitialEvent(channelId: channelId ));
+        return bloc;
+      },
+      child: VideosBody(videos: videos),
     );
   }
 }
-

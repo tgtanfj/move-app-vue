@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
-
 import 'package:move_app/constants/key_screen.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
@@ -17,11 +16,11 @@ import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../constants/constants.dart';
 import '../../../../data/data_sources/local/shared_preferences.dart';
-
-import '../../../components/thanks_rating_dialog.dart';
-import '../../auth/widgets/dialog_authentication.dart';
 import '../../../../data/models/comment_model.dart';
 import '../../../components/custom_button.dart';
+import '../../../components/thanks_rating_dialog.dart';
+import '../../auth/widgets/dialog_authentication.dart';
+import '../../view_channel_profile/page/view_channel_profile_page.dart';
 import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
@@ -318,7 +317,11 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     );
   }
 
-  Widget buildInfoVideoPart(double height, VideoDetailState state) {
+  Widget buildInfoVideoPart(
+    double height,
+    VideoDetailState state,
+  ) {
+    String token = SharedPrefer.sharedPrefer.getUserToken();
     return Column(
       children: [
         const SizedBox(
@@ -328,11 +331,32 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           height: height * 0.2,
           child: InfoVideoDetail(
             video: state.video,
-            viewChanelButton: () {},
-            followButton: () {},
+            viewChanelButton: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewChannelProfilePage(
+                      idChannel: state.video?.channel?.id ?? 0),
+                ),
+              );
+            },
+            isFollowed: state.video?.channel?.isFollowed,
+            followButton: () {
+              if (token.isEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const DialogAuthentication();
+                  },
+                );
+              } else {
+                context.read<VideoDetailBloc>().add(
+                    VideoDetailFollowChannelEvent(
+                        state.video?.channel?.id ?? 0));
+              }
+            },
             giftRepButton: () {},
             onTapRate: () {
-              String token = SharedPrefer.sharedPrefer.getUserToken();
               if (token.isEmpty) {
                 showDialog(
                   context: context,

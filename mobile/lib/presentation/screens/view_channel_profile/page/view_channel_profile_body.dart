@@ -14,7 +14,9 @@ import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_cha
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/page/videos_page.dart';
 
+import '../../../../data/data_sources/local/shared_preferences.dart';
 import '../../../../data/services/launch_service.dart';
+import '../../auth/widgets/dialog_authentication.dart';
 import '../presentation/about/page/about_page.dart';
 
 class ViewChannelProfileBody extends StatefulWidget {
@@ -27,6 +29,7 @@ class ViewChannelProfileBody extends StatefulWidget {
 class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
   @override
   Widget build(BuildContext context) {
+    String token = SharedPrefer.sharedPrefer.getUserToken();
     return BlocListener<ViewChannelProfileBloc, ViewChannelProfileState>(
         listener: (context, state) {
       state.status == ViewChannelProfileStatus.processing
@@ -34,6 +37,9 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
           : EasyLoading.dismiss();
     }, child: BlocBuilder<ViewChannelProfileBloc, ViewChannelProfileState>(
             builder: (context, state) {
+      if (state.channelId == null) {
+        return const SizedBox();
+      }
       return Scaffold(
         appBar: const AppBarWidget(),
         backgroundColor: AppColors.white,
@@ -99,7 +105,7 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${state.channel?.numberOfFollowed ?? 0} ${Constants.followers}',
+                          '${state.channel?.numberOfFollowers ?? 0} ${Constants.followers}',
                           style: AppTextStyles
                               .montserratStyle.regular14graniteGray,
                         ),
@@ -108,12 +114,29 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: SvgPicture.asset(
-                      state.channel?.isFollowed ?? false
-                          ? AppIcons.fillHeart.svgAssetPath
-                          : AppIcons.heart.svgAssetPath,
-                      width: 20,
-                      height: 18,
+                    child: InkWell(
+                      splashFactory: NoSplash.splashFactory,
+                      onTap: () {
+                        if (token.isEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const DialogAuthentication();
+                            },
+                          );
+                        } else {
+                          context.read<ViewChannelProfileBloc>().add(
+                              ViewChannelProfileFollowChannelEvent(
+                                  state.channel?.id ?? 0));
+                        }
+                      },
+                      child: SvgPicture.asset(
+                        state.channel?.isFollowed ?? false
+                            ? AppIcons.fillHeart.svgAssetPath
+                            : AppIcons.heart.svgAssetPath,
+                        width: 20,
+                        height: 18,
+                      ),
                     ),
                   )
                 ],
@@ -126,6 +149,7 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                 tabsWithViews: {
                   Constants.videos: VideosPage(
                     videos: state.videos,
+                    channelId: state.channelId ?? 0,
                   ),
                   Constants.about: AboutPage(
                     channelName: state.channel?.name,

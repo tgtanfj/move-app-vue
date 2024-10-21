@@ -38,7 +38,7 @@ class ListSearchResultVideo extends StatelessWidget {
                     videoList?[index].durationsVideo?.toDurationFormat() ??
                         '00:00',
                 height: MediaQuery.of(context).size.height * 0.21,
-                isLargePoster: true,
+                isViewText: true,
                 image: videoList?[index].urlS3,
                 numberOfViews: videoList?[index].numberOfViews.toString(),
               ),

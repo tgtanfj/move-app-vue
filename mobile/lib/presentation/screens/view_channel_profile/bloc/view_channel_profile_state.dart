@@ -18,7 +18,7 @@ final class ViewChannelProfileState extends Equatable {
   final bool hasReachedMax;
   final String? errorMessage;
   final bool? isLoading;
-
+  final int? channelId;
   const ViewChannelProfileState(
       {this.status,
       this.channel,
@@ -26,29 +26,32 @@ final class ViewChannelProfileState extends Equatable {
       this.currentPage = 1,
       this.hasReachedMax = false,
       this.errorMessage,
-      this.isLoading});
+      this.isLoading,
+      this.channelId});
 
   static ViewChannelProfileState initial() => const ViewChannelProfileState(
         status: ViewChannelProfileStatus.initial,
       );
 
-  ViewChannelProfileState copyWith(
-      {ViewChannelProfileStatus? status,
-      ChannelModel? channel,
-      List<VideoModel>? videos,
-      int? currentPage,
-      bool? hasReachedMax,
-      String? errorMessage,
-      bool? isLoading}) {
+  ViewChannelProfileState copyWith({
+    ViewChannelProfileStatus? status,
+    ChannelModel? channel,
+    List<VideoModel>? videos,
+    int? currentPage,
+    bool? hasReachedMax,
+    String? errorMessage,
+    bool? isLoading,
+    int? channelId,
+  }) {
     return ViewChannelProfileState(
-      status: status ?? this.status,
-      channel: channel ?? this.channel,
-      videos: videos ?? this.videos,
-      currentPage: currentPage ?? this.currentPage,
-      isLoading: isLoading ?? this.isLoading,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
+        status: status ?? this.status,
+        channel: channel ?? this.channel,
+        videos: videos ?? this.videos,
+        currentPage: currentPage ?? this.currentPage,
+        isLoading: isLoading ?? this.isLoading,
+        hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+        errorMessage: errorMessage ?? this.errorMessage,
+        channelId: channelId ?? this.channelId);
   }
 
   @override
@@ -59,6 +62,7 @@ final class ViewChannelProfileState extends Equatable {
         currentPage,
         isLoading,
         hasReachedMax,
-        errorMessage
+        errorMessage,
+        channelId
       ];
 }

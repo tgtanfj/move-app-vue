@@ -10,20 +10,23 @@ abstract class SortAndFilterEvent extends Equatable {
 }
 
 class SortAndFilterInitialEvent extends SortAndFilterEvent {
-    final WorkoutLevelType? selectedLevel;
+  final WorkoutLevelType? selectedLevel;
   final CategoryModel? selectedCategory;
   final SortAndFilterType? selectedSortBy;
+  final int? channelId;
 
   const SortAndFilterInitialEvent(
-      {this.selectedLevel ,
-      this.selectedCategory, 
-      this.selectedSortBy });
+      {this.selectedLevel,
+      this.selectedCategory,
+      this.selectedSortBy,
+      this.channelId});
 
   @override
   List<Object> get props => [
         selectedLevel ?? 0,
         selectedCategory ?? 0,
-        selectedSortBy ?? 0
+        selectedSortBy ?? 0,
+        channelId ?? 0
       ];
 }
 

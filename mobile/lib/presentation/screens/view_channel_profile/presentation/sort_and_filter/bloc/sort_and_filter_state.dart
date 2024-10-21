@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 
@@ -11,26 +12,26 @@ enum WorkoutLevelType {
   String get title {
     switch (this) {
       case WorkoutLevelType.allLevels:
-        return 'All Levels';
+        return Constants.allLevels;
       case WorkoutLevelType.beginner:
-        return 'Beginner';
+        return Constants.beginner;
       case WorkoutLevelType.intermediate:
-        return 'Intermediate';
+        return Constants.intermediate;
       case WorkoutLevelType.advanced:
-        return 'Advanced';
+        return Constants.advanced;
     }
   }
 
   String get value {
     switch (this) {
       case WorkoutLevelType.allLevels:
-        return 'all-level';
+        return Constants.allLevelsValue;
       case WorkoutLevelType.beginner:
-        return 'beginner';
+        return Constants.beginnerValue;
       case WorkoutLevelType.intermediate:
-        return 'intermediate';
+        return Constants.intermediateValue;
       case WorkoutLevelType.advanced:
-        return 'advanced';
+        return Constants.advancedValue;
     }
   }
 }
@@ -47,38 +48,38 @@ enum SortAndFilterType {
   String get title {
     switch (this) {
       case SortAndFilterType.mostRecent:
-        return 'Most Recent';
+        return Constants.mostRecent;
       case SortAndFilterType.viewsHighToLow:
-        return 'Views (High to Low)';
+        return Constants.viewsHighToLow;
       case SortAndFilterType.viewsLowToHigh:
-        return 'Views (Low to High)';
+        return Constants.viewsLowToHigh;
       case SortAndFilterType.durationHighToLow:
-        return 'Duration (High to Low)';
+        return Constants.durationHighToLow;
       case SortAndFilterType.durationLowToHigh:
-        return 'Duration (Low to High)';
+        return Constants.durationLowToHigh;
       case SortAndFilterType.ratingsHighToLow:
-        return 'Ratings (High to Low)';
+        return Constants.ratingsHighToLow;
       case SortAndFilterType.ratingsLowToHigh:
-        return 'Ratings (Low to High)';
+        return Constants.ratingsLowToHigh;
     }
   }
 
   String get value {
     switch (this) {
       case SortAndFilterType.mostRecent:
-        return 'most-recent';
+        return Constants.mostRecentValue;
       case SortAndFilterType.viewsHighToLow:
-        return 'views-high-to-low';
+        return Constants.viewsHighToLowValue;
       case SortAndFilterType.viewsLowToHigh:
-        return 'views-low-to-high';
+        return Constants.viewsLowToHighValue;
       case SortAndFilterType.durationHighToLow:
-        return 'duration-high-to-low';
+        return Constants.durationHighToLowValue;
       case SortAndFilterType.durationLowToHigh:
-        return 'duration-low-to-high';
+        return Constants.durationLowToHighValue;
       case SortAndFilterType.ratingsHighToLow:
-        return 'ratings-high-to-low';
+        return Constants.ratingsHighToLowValue;
       case SortAndFilterType.ratingsLowToHigh:
-        return 'ratings-low-to-high';
+        return Constants.ratingsLowToHighValue;
     }
   }
 }
@@ -98,6 +99,7 @@ class SortAndFilterState extends Equatable {
   final WorkoutLevelType selectedLevel;
   final CategoryModel? selectedCategory;
   final SortAndFilterType selectedSortBy;
+  final int? channelId;
   final int currentPage;
 
   const SortAndFilterState({
@@ -105,9 +107,10 @@ class SortAndFilterState extends Equatable {
     this.videoModel,
     this.categories = const [],
     this.selectedLevel = WorkoutLevelType.allLevels,
-    this.selectedCategory ,
+    this.selectedCategory,
     this.selectedSortBy = SortAndFilterType.mostRecent,
     this.currentPage = 1,
+    this.channelId,
   });
 
   @override
@@ -118,29 +121,30 @@ class SortAndFilterState extends Equatable {
         selectedCategory,
         selectedSortBy,
         videoModel,
-        currentPage
+        currentPage,
+        channelId
       ];
 
   static SortAndFilterState initialState() =>
       const SortAndFilterState(status: SortAndFilterStatus.initial);
 
-  SortAndFilterState copyWith({
-    SortAndFilterStatus? status,
-    List<VideoModel>? videoModel,
-    List<CategoryModel>? categories,
-    WorkoutLevelType? selectedLevel,
-    CategoryModel? selectedCategory,
-    SortAndFilterType? selectedSortBy,
-    int? currentPage,
-  }) {
+  SortAndFilterState copyWith(
+      {SortAndFilterStatus? status,
+      List<VideoModel>? videoModel,
+      List<CategoryModel>? categories,
+      WorkoutLevelType? selectedLevel,
+      CategoryModel? selectedCategory,
+      SortAndFilterType? selectedSortBy,
+      int? currentPage,
+      int? channelId}) {
     return SortAndFilterState(
-      status: status ?? this.status,
-      categories: categories ?? this.categories,
-      selectedLevel: selectedLevel ?? this.selectedLevel,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
-      selectedSortBy: selectedSortBy ?? this.selectedSortBy,
-      videoModel: videoModel ?? this.videoModel,
-      currentPage: currentPage ?? this.currentPage,
-    );
+        status: status ?? this.status,
+        categories: categories ?? this.categories,
+        selectedLevel: selectedLevel ?? this.selectedLevel,
+        selectedCategory: selectedCategory ?? this.selectedCategory,
+        selectedSortBy: selectedSortBy ?? this.selectedSortBy,
+        videoModel: videoModel ?? this.videoModel,
+        currentPage: currentPage ?? this.currentPage,
+        channelId: channelId ?? this.channelId);
   }
 }

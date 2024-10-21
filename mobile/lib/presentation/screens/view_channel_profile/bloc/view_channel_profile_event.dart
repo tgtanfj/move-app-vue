@@ -15,3 +15,10 @@ final class ViewChannelProfileFollowingItemSelectEvent
 
   const ViewChannelProfileFollowingItemSelectEvent(this.followingItemId);
 }
+
+final class ViewChannelProfileFollowChannelEvent
+    extends ViewChannelProfileEvent {
+  final int channelId;
+
+  const ViewChannelProfileFollowChannelEvent(this.channelId);
+}
