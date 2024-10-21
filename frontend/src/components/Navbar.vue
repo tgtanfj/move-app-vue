@@ -103,6 +103,10 @@ const resetCountdown = () => {
   startCountdown()
 }
 
+const onDialogClose = () => {
+  openLoginStore.handleLeaveSignUpFromSidebar()
+}
+
 watchEffect(() => {
   if (openLoginStore.isOpenLogin) {
     isOpen.value = true
@@ -138,7 +142,7 @@ watchEffect(() => {
         </div>
 
         <div :class="{ 'ml-auto': isInStreamerPage }">
-          <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn">
+          <Dialog v-model:open="isOpen" v-if="!isUserLoggedIn" @update:open="onDialogClose">
             <DialogTrigger>
               <Button v-if="authStore.isLoading" variant="default" class="rounded-lg" disabled>
                 Loading...
@@ -155,7 +159,7 @@ watchEffect(() => {
                 </DialogTitle>
               </DialogHeader>
               <DialogDescription></DialogDescription>
-              <Tabs default-value="login" class="w-full">
+              <Tabs :default-value="openLoginStore.isSignUpFromSidebar ? 'signup' : 'login'" class="w-full">
                 <TabsList
                   class="w-full m-auto border-b-[1px] border-[#999999] pb-0 rounded-none mb-3 bg-white"
                 >

@@ -12,10 +12,13 @@ import TwitterIcon from '@assets/icons/TwitterIcon.vue'
 import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
 import { Share2, X } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
+import { useToast } from '../../common/ui/toast'
 
 const route = useRoute()
 const currentUrl = ref(window.location.origin + route.fullPath)
 const isCopied = ref(false)
+
+const { toast } = useToast()
 
 watch(route, (newRoute) => {
   const currentPath = newRoute.fullPath
@@ -23,11 +26,21 @@ watch(route, (newRoute) => {
 })
 
 const shareOnFacebook = () => {
+  if (!navigator.onLine) {
+    toast({ description: 'Network Unavailable', variant: 'destructive' })
+    return
+  }
+
   const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl.value)}`
   window.open(fbShareUrl, '_blank')
 }
 
 const shareOnTwitter = () => {
+  if (!navigator.onLine) {
+    toast({ description: 'Network Unavailable', variant: 'destructive' })
+    return
+  }
+
   const twShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl.value)}`
   window.open(twShareUrl, '_blank')
 }

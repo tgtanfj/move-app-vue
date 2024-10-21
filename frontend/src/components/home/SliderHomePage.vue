@@ -45,16 +45,16 @@ onMounted(async () => {
     @mouseleave="[plugin.reset(), plugin.play()]"
   >
     <CarouselContent>
-      <CarouselItem v-if="videos.length > 0" v-for="(item, index) in videos" :key="index">
+      <CarouselItem v-if="videos?.length > 0" v-for="(item, index) in videos" :key="index">
         <div class="p-1">
           <Card class="mt-5">
             <CardContent
-              @click="router.push(`/video/${item.videoId}`)"
+              @click="router.push(`/video/${item?.videoId}`)"
               class="relative flex p-0 mt-0 pt-0 items-center h-[300px] w-full justify-center rounded-lg overflow-hidden"
             >
               <div class="flex-[0.65] h-full">
                 <img
-                  :src="item.thumbnailURL"
+                  :src="item?.thumbnailURL"
                   class="w-full h-full object-cover cursor-pointer"
                   alt=""
                 />
@@ -62,40 +62,39 @@ onMounted(async () => {
               <div class="flex-[0.35] h-full flex flex-col items-center justify-center gap-2.5">
                 <div class="flex items-start gap-3 w-[80%]">
                   <img
-                    @click.stop="router.push(`/channel/${item.channel.id}`)"
-                    :src="item.channel.image"
+                    @click.stop="router.push(`/channel/${item?.channel?.id}`)"
+                    :src="item?.channel.image"
                     class="w-[56px] h-[56px] rounded-full object-cover cursor-pointer"
                   />
                   <div class="flex items-start flex-col justify-start">
                     <div class="flex gap-2 items-center">
                       <p
-                        @click.stop="router.push(`/channel/${item.channel.id}`)"
+                        @click.stop="router.push(`/channel/${item?.channel?.id}`)"
                         class="text-[16px] cursor-pointer"
                       >
-                        {{ item.channel.name }}
+                        {{ item?.channel?.name }}
                       </p>
-                      <BlueBadgeIcon v-if="item.channel.isBlueBadge" />
-                      <PinkBadgeIcon v-if="item.channel.isPinkBadge" />
+                      <BlueBadgeIcon v-if="item?.channel?.isBlueBadge" />
                     </div>
                     <div class="text-[#666666] text-[14px] flex flex-col">
-                      <p>{{ item.category.title }}</p>
+                      <p>{{ item?.category?.title }}</p>
                     </div>
                     <div class="flex items-center gap-2 mt-1">
                       <Star />
-                      <p class="font-bold text-[14px]">{{ item.ratings }}</p>
+                      <p class="font-bold text-[14px]">{{ item?.ratings }}</p>
                     </div>
                   </div>
                 </div>
                 <div class="flex items-center mt-1 justify-start w-[80%] gap-2">
                   <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
-                    {{ item.workoutLevel }}
+                    {{ item?.workoutLevel }}
                   </div>
                   <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
-                    {{ detectDuration(item.duration) }}
+                    {{ detectDuration(item?.duration) }}
                   </div>
                 </div>
                 <div class="w-[80%] text-[14px] text-[#666666] mt-2">
-                  {{ item.title }}
+                  {{ item?.title }}
                 </div>
               </div>
               <div
@@ -103,7 +102,7 @@ onMounted(async () => {
               >
                 <EyeIcon />
                 <p>
-                  {{ item.numberOfViews ? formatViews(item.numberOfViews) : '0 view' }}
+                  {{ item?.numberOfViews ? formatViews(item?.numberOfViews) : '0 view' }}
                 </p>
               </div>
             </CardContent>

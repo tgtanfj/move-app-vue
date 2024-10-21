@@ -3,8 +3,9 @@ import VideoMayLike from '@components/home/VideoMayLike.vue'
 import VideoSkeleton from '@components/home/VideoSkeleton.vue'
 import SeparatorCross from '@components/SeparatorCross.vue'
 import { homepageService } from '@services/homepage.services'
+import { useAuthStore } from '../../stores/auth'
 import { formatUrlToCategoryTitle } from '@utils/formatCategoryTitle.util'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -16,14 +17,16 @@ const isLoading = ref(false)
 const hasMoreVideos = ref(true)
 const page = ref(1)
 
-const accessToken = localStorage.getItem('token')
+const authStore = useAuthStore()
+
+const accessToken = ref(localStorage.getItem('token'))
 
 onMounted(async () => {
-  if (accessToken) {
-    handleGetVideosLoggedIn()
-  } else {
-    handleGetVideosNoLogin()
-  }
+  // if (accessToken.value) {
+  //   handleGetVideosLoggedIn()
+  // } else {
+  //   handleGetVideosNoLogin()
+  // }
   window.addEventListener('scroll', handleScroll)
 })
 
@@ -77,6 +80,20 @@ const handleGetVideosNoLogin = async () => {
   }
 }
 
+watch(
+  () => authStore.accessToken || accessToken.value,
+  async (newValue) => {
+    if (newValue) {
+      await handleGetVideosLoggedIn()
+    } else {
+      await handleGetVideosNoLogin()
+    }
+  },
+  {
+    immediate: true
+  }
+)
+
 const handleScroll = () => {
   const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 10
   if (bottomReached && !isLoading.value) {
@@ -94,9 +111,11 @@ const handleScroll = () => {
     <div class="w-full h-full">
       <div class="w-[90%] h-full p-6">
         <SeparatorCross :title="categoryTitle" />
-        <div v-if="videos" class="grid grid-cols-4 gap-8 mt-4">
-          <div v-for="(item, index) in videos" :key="index">
-            <VideoMayLike :video="item" />
+        <div class="@container">
+          <div v-if="videos" class="grid grid-cols-3 gap-8 mt-4  @[1100px]:grid-cols-4">
+            <div v-for="(item, index) in videos" :key="index">
+              <VideoMayLike :video="item" />
+            </div>
           </div>
         </div>
         <div v-if="!videos" class="grid grid-cols-4 gap-8 mt-4">

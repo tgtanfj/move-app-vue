@@ -90,7 +90,6 @@ const handleClickInput = () => {
         class="w-[40px] h-[40px] rounded-full object-cover"
       />
       <Input
-        :ref="inputRef"
         v-model="comment"
         @click="handleClickInput"
         @focus="handleFocus"

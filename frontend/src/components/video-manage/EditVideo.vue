@@ -1,7 +1,7 @@
 <script setup>
-import { Pen } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '@/common/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogTrigger, DialogTitle } from '@/common/ui/dialog'
+import { Tabs, TabsList } from '@/common/ui/tabs'
+import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -10,41 +10,55 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
-import { Tabs, TabsList } from '@/common/ui/tabs'
-import { Label } from '@/common/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/common/ui/radio-group'
 import { Textarea } from '@/common/ui/textarea'
-import { Button } from '@/common/ui/button'
+import { Label } from '@/common/ui/label'
 import { Input } from '@/common/ui/input'
 import { cn } from '@utils/shadcn.util'
-import Loading from '../Loading.vue'
-import VideoIcon from '@assets/icons/videoIcon.vue'
-import { useVideoStore } from '../../stores/videoManage'
-import { validImageTypes, WORKOUTLEVEL, DURATIONTYPE } from '@constants/upload-video.constant'
+import { Pen } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { DURATIONTYPE, validImageTypes, WORKOUTLEVEL } from '@constants/upload-video.constant'
+import Loading from '@components/Loading.vue'
+import Button from '@common/ui/button/Button.vue'
+import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
 import axios from 'axios'
 import { ADMIN_BASE } from '@constants/api.constant'
-import { REGEX_UPLOADVIDE_TEXTAREA } from '@constants/regex.constant'
+import { useVideoStore } from '../../stores/videoManage'
+import { useToast } from '../../common/ui/toast'
 
 const props = defineProps({
   videoInfoSelected: {
-    type: Object,
+    type: Number,
     required: true
   }
 })
 
+const { toast } = useToast()
 const videoStore = useVideoStore()
-const videoDataEdit = ref({})
+const videoDataEditing = ref({})
 const isOpenUploadVideoDetails = ref(false)
+const isEditSuccess = ref(false)
 
-const uploading = ref(false)
-const progress = ref(0)
+const title = ref('')
+const thumbnail = ref('')
+const category = ref(null)
+const workoutLevel = ref('')
+const duration = ref('')
+const tags = ref('')
+const isCommentable = ref(null)
+
+const categories = ref([])
 const images = ref([])
-const imagesSelected = ref(null)
-const imageSelectedFile = ref(null)
 const fileInputThumb = ref(null)
+const imagesSelected = ref(null)
 const uploadLoading = ref(null)
+const imageSelectedFile = ref(null)
 
-const validateSizeTypeErr = ref('')
+const tabChange = ref('details')
+const charCount = ref(0)
+const charLimit = 500
+const charCountTitle = ref(0)
+const charLimitTitle = 100
+
 const titleErr = ref('')
 const thumbnailErr = ref('')
 const categoryErr = ref('')
@@ -52,46 +66,9 @@ const workoutLevelErr = ref('')
 const durationErr = ref('')
 const isCommentableErr = ref('')
 const thumbnailTypeValidationErr = ref('')
-const isEditSuccess = ref(false)
 
 const nullFirstTab = ref(false)
 const nullSecondTab = ref(false)
-
-const tabChange = ref('details')
-const charCount = ref(0)
-const charLimit = 500
-
-const title = computed(() => videoDataEdit.value.title)
-const thumbnail = computed(() => videoDataEdit.value.thumbnail_url)
-const category = computed(() => videoDataEdit.value.category.id)
-const displayWorkoutLevel = computed(() => capitalizeFirstLetter(videoDataEdit.value.workoutLevel))
-const displayDurationLevel = computed(() => convertDuration(videoDataEdit.value.duration))
-const keywords = computed(() => videoDataEdit.value.keywords)
-const isCommentable = ref(videoDataEdit.value.isCommentable)
-const categories = ref([])
-
-watch(
-  () => props.videoInfoSelected,
-  (newValue) => {
-    if (newValue) {
-      videoDataEdit.value = { ...newValue }
-      isCommentable.value = newValue.isCommentable
-    }
-  },
-  { immediate: true }
-)
-
-watch(title, (newValue) => {
-  if (newValue) titleErr.value = ''
-})
-
-watch(category, (newValue) => {
-  if (newValue) categoryErr.value = ''
-})
-
-watch(isCommentable, (newValue) => {
-  if (newValue) isCommentableErr.value = ''
-})
 
 const getListCategories = async () => {
   try {
@@ -102,70 +79,57 @@ const getListCategories = async () => {
   }
 }
 
-const handleEditVideo = () => {
-  videoDataEdit.value = { ...props.videoInfoSelected }
-  videoStore.videoId = props.videoInfoSelected.id
-  getListCategories()
-}
-
 const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-const convertDuration = (durationLong) => {
-  switch (durationLong) {
-    case 'less than 30 minutes':
-      return '30 mins'
-    case 'less than 1 hours':
-      return '< 1 hour'
-    case 'more than 1 hours':
-      return '> 1 hour'
-    default:
-      return durationLong
+const convertDuration = (duration) => {
+  if (duration === 'less than 30 minutes') {
+    return '30 mins'
+  } else if (duration === 'less than 1 hours') {
+    return '< 1 hour'
+  } else if (duration === 'more than 1 hours') {
+    return '> 1 hour'
   }
+  return duration
 }
 
-const resetField = () => {
-  title.value = ''
-  imagesSelected.value = ''
-  keywords.value = ''
-  category.value = ''
-  isCommentable.value = videoDataEdit.value.isCommentable
-  tabChange.value = 'details'
-  images.value = []
-  imagesSelected.value = []
-  validateSizeTypeErr.value = ''
-  titleErr.value = ''
-  thumbnailErr.value = ''
-  categoryErr.value = ''
-  workoutLevelErr.value = ''
-  durationErr.value = ''
-  isCommentableErr.value = ''
-  uploadLoading.value = null
-  uploading.value = null
-  nullFirstTab.value = false
-  nullSecondTab.value = false
-  thumbnailTypeValidationErr.value = ''
-  isEditSuccess.value = false
-}
+const handleEditVideo = async () => {
+  try {
+    const res = await axios.get(`${ADMIN_BASE}/video/${props.videoInfoSelected}/details`)
+    videoDataEditing.value = res.data.data
 
-const onDialogClose = (isOpen) => {
-  if (!isOpen) {
-    resetField()
-    images.value.forEach((image) => {
-      if (typeof image === 'string' && image.startsWith('blob:')) {
-        URL.revokeObjectURL(image)
-      }
-    })
-  }
-  if (isOpen) {
-    images.value.push(videoDataEdit.value.thumbnail_url)
-    imagesSelected.value = videoDataEdit.value.thumbnail_url
+    title.value = videoDataEditing.value.title
+    charCountTitle.value = title.value.length
+    thumbnail.value = videoDataEditing.value.thumbnailURL
+    category.value = String(videoDataEditing.value.category.id)
+    workoutLevel.value = capitalizeFirstLetter(videoDataEditing.value.workoutLevel)
+    duration.value = convertDuration(videoDataEditing.value.duration)
+    if (
+      videoDataEditing.value.keywords !== 'null' &&
+      videoDataEditing.value.keywords !== 'undefined'
+    ) {
+      tags.value = videoDataEditing.value.keywords
+    } else {
+      tags.value = ''
+    }
+    charCount.value = tags.value.length
+    isCommentable.value = String(videoDataEditing.value.isCommentable)
+    images.value = [videoDataEditing.value.thumbnailURL]
+    imagesSelected.value = videoDataEditing.value.thumbnailURL
+    await getListCategories()
+  } catch (error) {
+    console.log(error)
   }
 }
 
 const changeTab = (newTab) => {
   tabChange.value = newTab
+}
+
+const handleTitleInput = (inputValue) => {
+  title.value = inputValue
+  charCountTitle.value = title.value.length
 }
 
 const handleInput = (inputValue) => {
@@ -175,8 +139,8 @@ const handleInput = (inputValue) => {
       validInput += char
     }
   }
-  keywords.value = validInput
-  charCount.value = keywords.value.length
+  tags.value = validInput
+  charCount.value = tags.value.length
 }
 
 const selectFilesThumbnail = () => {
@@ -190,12 +154,35 @@ const changeSelectedImage = (image) => {
 
 const changeWorkoutLevel = (level) => {
   workoutLevelErr.value = ''
-  videoDataEdit.value.workoutLevel = level
+  workoutLevel.value = level
 }
 
 const changeDuration = (value) => {
   durationErr.value = ''
-  videoDataEdit.value.duration = value
+  duration.value = value
+}
+
+const resetField = () => {
+  title.value = ''
+  imagesSelected.value = ''
+  tags.value = ''
+  duration.value = ''
+  workoutLevel.value = ''
+  category.value = ''
+  isCommentable.value = null
+  tabChange.value = 'details'
+  images.value = []
+  imagesSelected.value = []
+  titleErr.value = ''
+  thumbnailErr.value = ''
+  categoryErr.value = ''
+  workoutLevelErr.value = ''
+  durationErr.value = ''
+  isCommentableErr.value = ''
+  uploadLoading.value = null
+  nullFirstTab.value = false
+  nullSecondTab.value = false
+  thumbnailTypeValidationErr.value = ''
 }
 
 const handleThumbnailUpload = (event) => {
@@ -252,19 +239,19 @@ const secondButton = (tab) => {
   if (!category.value) {
     categoryErr.value = 'Please select a category'
   }
-  if (!displayDurationLevel.value) {
+  if (!duration.value) {
     durationErr.value = 'Please select a duration'
   }
-  if (!displayWorkoutLevel.value) {
+  if (!workoutLevel.value) {
     workoutLevelErr.value = 'Please select a level'
   }
-  if (category.value && displayDurationLevel.value && displayWorkoutLevel.value) {
+  if (category.value && duration.value && workoutLevel.value) {
     changeTab(tab)
   }
 }
 
 const thirdButton = async (tab) => {
-  if (!isCommentable.value) isCommentableErr.value = 'Please select comment setting'
+  if (!isCommentable.value) isCommentableErr.value = 'Please select comment settings'
   if (isCommentable.value) {
     if (!title.value || !imagesSelected.value) {
       nullFirstTab.value = true
@@ -273,62 +260,81 @@ const thirdButton = async (tab) => {
     } else {
       nullFirstTab.value = false
     }
-    if (!category.value || !displayWorkoutLevel.value || !displayDurationLevel.value) {
+    if (!category.value || !workoutLevel.value || !duration.value) {
       nullSecondTab.value = true
       if (!category.value) categoryErr.value = 'Please select a category'
-      if (!displayWorkoutLevel.value) workoutLevelErr.value = 'Please select a level'
-      if (!displayDurationLevel.value) durationErr.value = 'Please select a duration'
+      if (!workoutLevel.value) workoutLevelErr.value = 'Please select a workout level'
+      if (!duration.value) durationErr.value = 'Please select a duration'
     } else {
       nullSecondTab.value = false
     }
     if (!nullFirstTab.value && !nullSecondTab.value) {
       const durationText =
-        displayDurationLevel.value === '30 mins'
+        duration.value === '30 mins'
           ? 'less than 30 minutes'
-          : displayDurationLevel.value === '< 1 hour'
+          : duration.value === '< 1 hour'
             ? 'less than 1 hours'
-            : displayDurationLevel.value === '> 1 hour'
+            : duration.value === '> 1 hour'
               ? 'more than 1 hours'
               : 'unknown'
+
       const workoutLevelText =
-        displayWorkoutLevel.value === 'Beginner'
+        workoutLevel.value === 'Beginner'
           ? 'beginner'
-          : displayWorkoutLevel.value === 'Intermediate'
+          : workoutLevel.value === 'Intermediate'
             ? 'intermediate'
-            : displayWorkoutLevel.value === 'Advanced'
+            : workoutLevel.value === 'Advanced'
               ? 'advanced'
               : 'unknown'
 
+      uploadLoading.value = true
       const formData = new FormData()
-      // formData.append('thumbnail', imageSelectedFile.value)
       formData.append('title', title.value)
-      formData.append('categoryId', category.value)
+      formData.append('categoryId', Number(category.value))
+      if (imageSelectedFile.value) {
+        formData.append('thumbnail', imageSelectedFile.value)
+      }
       formData.append('workoutLevel', workoutLevelText)
       formData.append('duration', durationText)
-      formData.append('keywords', keywords.value)
-      formData.append('isCommentable', isCommentable.value === 'true' ? true : false)
+      formData.append('keywords', tags.value)
+      formData.append('isCommentable', String(isCommentable.value))
 
-      const response = await videoStore.updateDetailVideo(formData)
+      const response = await videoStore.updateDetailVideo(formData, props.videoInfoSelected)
 
-      if (response && response.statusCode === 200) {
-        props.videoInfoSelected.title = title.value
-        isEditSuccess.value = true
+      if (response) {
+        toast({ description: 'Edit successfully', variant: 'successfully' })
+        isOpenUploadVideoDetails.value = false
+        uploadLoading.value = false
+        resetField()
       }
     }
+  }
+}
+
+const onDialogClose = (isOpen) => {
+  if (!isOpen) {
+    resetField()
+  }
+
+  if (isOpen) {
+    images.value.push(videoDataEditing.value.thumbnailURL)
+    imagesSelected.value = videoDataEditing.value.thumbnailURL
   }
 }
 </script>
 
 <template>
   <Dialog v-model:open="isOpenUploadVideoDetails" @update:open="onDialogClose">
+    <!-- @update:open="onDialogClose" -->
     <DialogTrigger>
       <Pen size="20" color="#12BDA3" @click="handleEditVideo" />
     </DialogTrigger>
+
     <DialogContent
       class="m-0 p-0 w-[840px] h-[520px] flex flex-col justify-between overflow-hidden"
     >
-      <div class="m-6 mx-6 relative h-[80%]">
-        <p class="text-[24px] font-bold mb-6">{{ $t('upload_video.video_details') }}</p>
+      <DialogTitle class="my-6 mx-6">
+        <p class="text-[24px] font-bold mb-6">{{ $t('streamer.edit_modal_title') }}</p>
         <div class="w-full">
           <Tabs default-value="details" class="flex" orientation="vertical">
             <TabsList class="flex flex-col items-start w-[150px] ml-0 pl-0 gap-4 mb-auto">
@@ -408,7 +414,7 @@ const thirdButton = async (tab) => {
             </TabsList>
             <div class="w-full mt-1">
               <div v-show="tabChange === 'details'" class="flex flex-col w-full gap-4">
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 relative">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.video_title') }}</p>
                     <div v-if="titleErr !== ''" class="text-destructive text-sm italic">
@@ -416,11 +422,18 @@ const thirdButton = async (tab) => {
                     </div>
                   </div>
                   <Input
-                    v-model="videoDataEdit.title"
+                    v-model="title"
+                    @input="(e) => handleTitleInput(e.target.value)"
                     maxlength="100"
                     placeholder="Add a title"
                     class="w-full"
                   />
+                  <span
+                    class="absolute top-[65px] right-0 ml-auto text-lightGray text-[14px] font-light"
+                    :class="{ 'text-red-500': charCountTitle > charLimitTitle }"
+                  >
+                    {{ charCountTitle }} / {{ charLimitTitle }} characters
+                  </span>
                 </div>
                 <div class="flex items-center gap-2 relative">
                   <div class="flex flex-col gap-1">
@@ -437,7 +450,6 @@ const thirdButton = async (tab) => {
                       @click="selectFilesThumbnail"
                     >
                       <div class="flex flex-col items-center justify-center">
-                        <VideoIcon />
                         <p class="text-[12px]">{{ $t('upload_video.upload_thumbnail') }}</p>
                       </div>
                     </div>
@@ -457,7 +469,7 @@ const thirdButton = async (tab) => {
                           'mt-[33px]': images.length <= 2
                         }"
                         @click="changeSelectedImage(image)"
-                        :src="image"
+                        :src="typeof image === 'string' ? image : ''"
                         alt="Thumbnail"
                       />
                     </div>
@@ -465,13 +477,13 @@ const thirdButton = async (tab) => {
 
                   <div
                     v-if="thumbnailErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-sm text-destructive italic"
+                    class="absolute top-[19px] left-[147px] text-destructive text-sm italic"
                   >
                     {{ thumbnailErr }}
                   </div>
                   <div
                     v-if="thumbnailTypeValidationErr !== ''"
-                    class="absolute top-[19px] left-[147px] text-destructive text-sm italic"
+                    class="absolute top-[19px] left-[147px] text-destructive italic"
                   >
                     {{ thumbnailTypeValidationErr }}
                   </div>
@@ -481,17 +493,23 @@ const thirdButton = async (tab) => {
                 <div class="space-y-1">
                   <div class="flex items-center gap-4">
                     <p class="text-[16px]">{{ $t('upload_video.category') }}</p>
-                    <div v-if="categoryErr !== ''" class="text-destructive text-sm italic">
+                    <div v-if="categoryErr !== ''" class="text-destructive italic text-sm">
                       {{ categoryErr }}
                     </div>
                   </div>
-                  <Select v-model="videoDataEdit.category.id">
+                  <Select v-model="category">
                     <SelectTrigger class="w-[330px] h-[40px] rounded-lg border-primary">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectGroup v-if="categories" v-for="cate in categories" :key="cate.id">
-                        <SelectItem v-if="cate" :value="cate.id">{{ cate.title }}</SelectItem>
+                      <SelectGroup v-if="categories.length > 0">
+                        <SelectItem
+                          v-for="cate in categories"
+                          :key="cate.id"
+                          :value="String(cate.id)"
+                        >
+                          {{ cate.title }}
+                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -500,7 +518,10 @@ const thirdButton = async (tab) => {
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2">
                       <p class="text-[16px]">{{ $t('upload_video.workout_level') }}</p>
-                      <div v-if="workoutLevelErr !== ''" class="text-destructive text-sm italic">
+                      <div
+                        v-if="workoutLevelErr !== ''"
+                        class="text-destructive ml-2 text-sm italic"
+                      >
                         {{ workoutLevelErr }}
                       </div>
                     </div>
@@ -511,8 +532,8 @@ const thirdButton = async (tab) => {
                         @click="changeWorkoutLevel(item.title)"
                         class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer"
                         :class="{
-                          'bg-primary text-white': item.title === displayWorkoutLevel, // Beginner !== beginner
-                          'bg-[#EEEEEE] text-black': item.title !== displayWorkoutLevel
+                          'bg-primary text-white': item.title === workoutLevel,
+                          'bg-[#EEEEEE] text-black': item.title !== workoutLevel
                         }"
                       >
                         <p class="text-[11px] font-bold">{{ item.title }}</p>
@@ -533,8 +554,8 @@ const thirdButton = async (tab) => {
                         @click="changeDuration(item.title)"
                         class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer"
                         :class="{
-                          'bg-primary text-white': item.title === displayDurationLevel, // < 30mins === less than 30 mins
-                          'bg-[#EEEEEE] text-black': item.title !== displayDurationLevel
+                          'bg-primary text-white': item.title === duration,
+                          'bg-[#EEEEEE] text-black': item.title !== duration
                         }"
                       >
                         <p class="text-[11px] font-bold">{{ item.title }}</p>
@@ -554,7 +575,7 @@ const thirdButton = async (tab) => {
                   </p>
                   <div>
                     <Textarea
-                      v-model="videoDataEdit.keywords"
+                      v-model="tags"
                       @input="(e) => handleInput(e.target.value)"
                       class="h-[120px] resize-none"
                       placeholder="Add tags"
@@ -601,19 +622,12 @@ const thirdButton = async (tab) => {
             </div>
           </Tabs>
         </div>
-        <p
-          v-if="isEditSuccess"
-          class="text-primary text-xl font-semibold absolute bottom-[-20px] right-1"
-        >
-          Edit successfully
-        </p>
-      </div>
-
+      </DialogTitle>
       <DialogFooter
         class="border-2 h-[70px] border-t-[#CCCCCC] !flex !items-center !justify-between w-full"
       >
         <div class="ml-6">
-          <UploadVideoProgress :progress="progress" :isSuccess="progress === 100" />
+          <!-- <UploadVideoProgress :progress="progress" :isSuccess="progress === 100" /> -->
         </div>
         <div v-show="tabChange === 'details'">
           <Button
@@ -647,7 +661,7 @@ const thirdButton = async (tab) => {
             :disabled="uploadLoading"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
-            <span class="font-bold" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>
+            <span class="font-bold" v-if="!uploadLoading">{{ $t('streamer.save') }}</span>
             <Loading v-if="uploadLoading" />
           </Button>
         </div>

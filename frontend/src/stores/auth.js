@@ -87,19 +87,19 @@ export const useAuthStore = defineStore('auth', () => {
       })
       accessToken.value = res.data.data.accessToken
       refreshToken.value = res.data.data.refreshToken
+      localStorage.setItem('token', accessToken.value)
+      localStorage.setItem('refreshToken', refreshToken.value)
       const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken.value}`
         }
       })
-
       if (loginMethodLocal === 'email') {
         user.value = userInfo.data
-        localStorage.setItem('userInfo', userInfo.data.data.username)
+        // localStorage.setItem('userInfo', userInfo.data.data.username)
       }
       usernameUser.value = userInfo.data.data.username
-      localStorage.setItem('token', accessToken.value)
-      localStorage.setItem('refreshToken', refreshToken.value)
+      localStorage.setItem('userInfo', userInfo.data.data.username)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
       console.error('Error during token submission:', error)
@@ -124,9 +124,11 @@ export const useAuthStore = defineStore('auth', () => {
           }
         })
 
-        user.value = userInfo.data
+        user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
-        localStorage.setItem('userAvatar', userInfo.data.data.avatar)
+        if (userInfo.data.data.avatar !== null) {
+          localStorage.setItem('userAvatar', userInfo.data.data.avatar)
+        }
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -163,6 +165,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('loginMethod')
           localStorage.removeItem('userInfo')
+          localStorage.removeItem('userAvatar')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -175,6 +178,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('loginMethod')
         localStorage.removeItem('userInfo')
+        localStorage.removeItem('userAvatar')
       }
     } catch (err) {
       errorMsg.value = err.message
@@ -210,7 +214,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Lifecycle hooks (onMounted)
-  onMounted(() => {
+  onMounted(async () => {
     // Check status login
     isLoading.value = true
     const tokenLocal = localStorage.getItem('token')
@@ -219,6 +223,18 @@ export const useAuthStore = defineStore('auth', () => {
     if (tokenLocal && loginMethodLocal === 'email') {
       accessToken.value = tokenLocal
       isLoading.value = false
+
+      try {
+        const userInfo = await axios.get(`${ADMIN_BASE}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken.value}`
+          }
+        })
+
+        user.value = userInfo.data.data
+      } catch (error) {
+        console.error("Error get profile: ", error)
+      }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {

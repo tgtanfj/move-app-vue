@@ -276,5 +276,16 @@
     "share": "share",
     "not_upload_video": "{name} has not uploaded any videos yet.",
     "all_videos": "All videos"
+  },
+  "payment_history": {
+    "payment_method": "Payment method",
+    "payment_history": "Payment history",
+    "start_date": "Start date",
+    "end_date": "End date",
+    "date": "Date",
+    "time": "Time",
+    "product_name": "Product name",
+    "no_payment": "No payment history found",
+    "no_purchased": "You have not purchased any REPs during this period of time."
   }
 }

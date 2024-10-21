@@ -171,7 +171,7 @@ export class ChannelService {
 
   async getChannelReps(userId: number) {
     const channel = await this.getChannelByUserId(userId);
-    const repValueInUSD = channel.numberOfREPs * 0.006;
+    const repValueInUSD = channel.numberOfREPs;
     return { numberOfREPs: repValueInUSD };
   }
 

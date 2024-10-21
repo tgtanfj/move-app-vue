@@ -16,20 +16,29 @@
               <TableHead>{{ $t('streamer.rating') }}</TableHead>
               <TableHead></TableHead>
             </template>
-            <div v-else class="flex">
-              <TableHead
-                class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
-                @click="showConfirmModal = true"
-              >
-                <Trash size="16" stroke-width="2.5" />{{ $t('streamer.delete') }}
+            <template v-else>
+              <TableHead class="flex items-center gap-3">
+                <div
+                  colspan="12"
+                  class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
+                  @click="showConfirmModal = true"
+                >
+                  <Trash size="16" stroke-width="2.5" />{{ $t('streamer.delete') }}
+                </div>
+                <div
+                  class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
+                  @click="handleDownloadVideoList"
+                >
+                  <ArrowDownToLine size="16" stroke-width="2.5" />{{ $t('streamer.download') }}
+                </div>
               </TableHead>
-              <TableHead
-                class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
-                @click="handleDownloadVideoList"
-              >
-                <ArrowDownToLine size="16" stroke-width="2.5" />{{ $t('streamer.download') }}
-              </TableHead>
-            </div>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+            </template>
           </TableRow>
         </TableHeader>
         <TableBody class="text-base">
