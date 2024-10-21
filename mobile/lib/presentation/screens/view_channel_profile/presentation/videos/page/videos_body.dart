@@ -20,6 +20,8 @@ import 'package:move_app/presentation/screens/view_channel_profile/presentation/
 import 'package:move_app/utils/util_number_format.dart';
 import 'package:tuple/tuple.dart';
 
+import '../../../../video_detail/page/video_detail_page.dart';
+
 class VideosBody extends StatefulWidget {
   final ChannelModel? channelModel;
   final List<VideoModel>? videos;
@@ -127,7 +129,14 @@ class _VideosBodyState extends State<VideosBody>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: () {},
+                                onTap:  () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => VideoDetailPage(
+                                      videoId: state.videos[index].id ?? 0,
+                                    ),
+                                  ),
+                                ),
                                 child: VideoPoster(
                                   height: height * 0.22,
                                   isViewText: true,

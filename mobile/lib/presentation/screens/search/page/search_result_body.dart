@@ -256,10 +256,8 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                         ),
                                         const SizedBox(height: 16),
                                         ListSearchResultVideo(
-                                          tapToVideoDetail: () {},
                                           videoList: state.videoList,
                                           channelList: state.channelList,
-                                          onTap: () {},
                                         ),
                                         const SizedBox(height: 16),
                                       ],
