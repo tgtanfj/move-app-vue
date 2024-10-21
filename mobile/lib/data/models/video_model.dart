@@ -15,6 +15,7 @@ class VideoModel {
   final String? thumbnailURL;
   final int? durationsVideo;
   final DateTime? createdAt;
+  final bool? isCommentable;
 
   VideoModel({
     this.id,
@@ -30,6 +31,7 @@ class VideoModel {
     this.thumbnailURL,
     this.durationsVideo,
     this.createdAt,
+    this.isCommentable
   });
 
   VideoModel copyWith({
@@ -46,6 +48,8 @@ class VideoModel {
     String? thumbnailURL,
     int? durationsVideo,
     DateTime? createdAt,
+    bool? isCommentable,
+
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -61,6 +65,7 @@ class VideoModel {
       thumbnailURL: thumbnailURL ?? this.thumbnailURL,
       durationsVideo: durationsVideo ?? this.durationsVideo,
       createdAt: createdAt ?? this.createdAt,
+      isCommentable: isCommentable ?? this.isCommentable
     );
   }
 
@@ -85,6 +90,9 @@ class VideoModel {
       createdAt: (json['createdAt'] is String)
           ? DateTime.parse(json['createdAt'])
           : null,
+      isCommentable: (json['isCommentable'] != null && json['isCommentable'] is bool)
+          ? json['isCommentable'] as bool
+          : false,
     );
   }
 }

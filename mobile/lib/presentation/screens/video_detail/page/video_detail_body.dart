@@ -112,198 +112,247 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     : const SizedBox(),
                 if (state.listComments?.isEmpty ?? true) ...[
                   buildInfoVideoPart(height, state),
-                  buildWriteCommentPart(context, state),
-                  Center(
-                    child: Text(
-                      Constants.emptyComments,
-                      style: AppTextStyles.montserratStyle.regular14GraniteGray,
+                  if (state.video?.isCommentable == false)
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        child: Text(
+                          Constants.isCommentable,
+                          style: AppTextStyles
+                              .montserratStyle.regular14GraniteGray,
+                        ),
+                      ),
+                    )
+                  else ...[
+                    buildWriteCommentPart(context, state),
+                    Center(
+                      child: Text(
+                        Constants.emptyComments ,
+                        style:
+                            AppTextStyles.montserratStyle.regular14GraniteGray,
+                      ),
                     ),
-                  )
+                  ],
                 ],
                 Expanded(
-                  child: ListView.separated(
-                    controller: _scrollController,
-                    shrinkWrap: true,
-                    itemCount: state.listComments?.length ?? 0,
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final CommentModel? commentModel =
-                          state.listComments?[index];
-                      final replies = state.replies?[commentModel?.id] ?? [];
-                      final isHideRepliesForCurrentComment =
-                          state.isHiddenListReply?[commentModel?.id] ?? false;
-                      return Column(
-                        children: [
-                          if (index == 0) ...[
+                  child: (state.video?.isCommentable == false &&
+                          state.listComments?.isNotEmpty == true)
+                      ? Wrap(
+                          children: [
                             buildInfoVideoPart(height, state),
-                            buildWriteCommentPart(context, state),
+                            Center(
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 16),
+                                child: Text(
+                                  Constants.isCommentable,
+                                  style: AppTextStyles
+                                      .montserratStyle.regular14GraniteGray,
+                                ),
+                              ),
+                            )
                           ],
-                          ItemComment(
-                            commentModel: commentModel,
-                            onTapLike: () {
-                              _handleCommentReaction(context, commentModel,
-                                  isLike: true);
-                            },
-                            onTapDislike: () {
-                              _handleCommentReaction(context, commentModel,
-                                  isLike: false);
-                            },
-                            isHideReplies: isHideRepliesForCurrentComment,
-                            widgetHideListReplies: Visibility(
-                              visible: isHideRepliesForCurrentComment,
-                              child: CustomButton(
-                                title:
-                                    "Hide ${commentModel?.numberOfReply} Replies",
-                                titleStyle: AppTextStyles
-                                    .montserratStyle.bold16tiffanyBlue,
-                                prefix: Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: SvgPicture.asset(
-                                      AppIcons.arrowUpTiffany.svgAssetPath),
-                                ),
-                                isExpanded: false,
-                                onTap: () {
-                                  if (commentModel?.id != null) {
-                                    final updatedIsRepliesHiddenMap = {
-                                      ...?state.isHiddenListReply,
-                                      commentModel!.id!: false,
-                                    };
-                                    context.read<VideoDetailBloc>().add(
-                                          VideoDetailHideRepliesCommentEvent(
-                                              isHiddenListReplies:
-                                                  updatedIsRepliesHiddenMap,
-                                              commentId: commentModel.id ?? 0),
+                        )
+                      : ListView.separated(
+                          controller: _scrollController,
+                          shrinkWrap: true,
+                          itemCount: state.listComments?.length ?? 0,
+                          separatorBuilder: (BuildContext context, int index) =>
+                              const Divider(),
+                          itemBuilder: (BuildContext context, int index) {
+                            final CommentModel? commentModel =
+                                state.listComments?[index];
+                            final replies =
+                                state.replies?[commentModel?.id] ?? [];
+                            final isHideRepliesForCurrentComment =
+                                state.isHiddenListReply?[commentModel?.id] ??
+                                    false;
+                            return Column(
+                              children: [
+                                if (index == 0) ...[
+                                  buildInfoVideoPart(height, state),
+                                  buildWriteCommentPart(context, state),
+                                ],
+                                ItemComment(
+                                  commentModel: commentModel,
+                                  onTapLike: () {
+                                    _handleCommentReaction(
+                                        context, commentModel,
+                                        isLike: true);
+                                  },
+                                  onTapDislike: () {
+                                    _handleCommentReaction(
+                                        context, commentModel,
+                                        isLike: false);
+                                  },
+                                  isHideReplies: isHideRepliesForCurrentComment,
+                                  widgetHideListReplies: Visibility(
+                                    visible: isHideRepliesForCurrentComment,
+                                    child: CustomButton(
+                                      title:
+                                          "Hide ${commentModel?.numberOfReply} Replies",
+                                      titleStyle: AppTextStyles
+                                          .montserratStyle.bold16tiffanyBlue,
+                                      prefix: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12),
+                                        child: SvgPicture.asset(AppIcons
+                                            .arrowUpTiffany.svgAssetPath),
+                                      ),
+                                      isExpanded: false,
+                                      onTap: () {
+                                        if (commentModel?.id != null) {
+                                          final updatedIsRepliesHiddenMap = {
+                                            ...?state.isHiddenListReply,
+                                            commentModel!.id!: false,
+                                          };
+                                          context.read<VideoDetailBloc>().add(
+                                                VideoDetailHideRepliesCommentEvent(
+                                                    isHiddenListReplies:
+                                                        updatedIsRepliesHiddenMap,
+                                                    commentId:
+                                                        commentModel.id ?? 0),
+                                              );
+                                        }
+                                      },
+                                      borderColor: AppColors.white,
+                                      padding: const EdgeInsets.only(top: 12),
+                                      mainAxisSize: MainAxisSize.min,
+                                    ),
+                                  ),
+                                  widgetListReplies: Visibility(
+                                    visible: isHideRepliesForCurrentComment ||
+                                        state.isShowTemporaryListReply,
+                                    child: ListView.separated(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (BuildContext context,
+                                          int replyIndex) {
+                                        final replyCommentModel =
+                                            replies[replyIndex];
+                                        return ItemComment(
+                                          commentModel: replyCommentModel,
+                                          isShowReplyButton: false,
+                                          onTapLike: () {
+                                            _handleCommentReaction(
+                                                context, replyCommentModel,
+                                                isLike: true);
+                                          },
+                                          onTapDislike: () {
+                                            _handleCommentReaction(
+                                                context, replyCommentModel,
+                                                isLike: false);
+                                          },
                                         );
-                                  }
-                                },
-                                borderColor: AppColors.white,
-                                padding: const EdgeInsets.only(top: 12),
-                                mainAxisSize: MainAxisSize.min,
-                              ),
-                            ),
-                            widgetListReplies: Visibility(
-                              visible: isHideRepliesForCurrentComment ||
-                                  state.isShowTemporaryListReply,
-                              child: ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder:
-                                    (BuildContext context, int replyIndex) {
-                                  final replyCommentModel = replies[replyIndex];
-                                  return ItemComment(
-                                    commentModel: replyCommentModel,
-                                    isShowReplyButton: false,
-                                    onTapLike: () {
-                                      _handleCommentReaction(
-                                          context, replyCommentModel,
-                                          isLike: true);
-                                    },
-                                    onTapDislike: () {
-                                      _handleCommentReaction(
-                                          context, replyCommentModel,
-                                          isLike: false);
-                                    },
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int replyIndex) =>
-                                        const Divider(),
-                                itemCount: replies.length,
-                              ),
-                            ),
-                            onTapShowInputReply: () {
-                              if (SharedPrefer.sharedPrefer
-                                  .getUserToken()
-                                  .isEmpty) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      const DialogAuthentication(),
-                                );
-                              } else {
-                                context.read<VideoDetailBloc>().add(
-                                      VideoDetailHideInputReplyEvent(
-                                          commentId: commentModel?.id ?? 0,
-                                          isShowInput: true),
-                                    );
-                              }
-                            },
-                            isShowTemporaryListReply:
-                                state.isShowTemporaryListReply,
-                            originalNumOfReply: state
-                                .originalNumOfReply?[commentModel?.id ?? 0],
-                            widgetReplyInput: Visibility(
-                              visible:
-                                  state.isHiddenInputReply?[commentModel?.id] ??
-                                      false,
-                              child: WriteComment(
-                                isCancelReply: true,
-                                onChanged: (value) {
-                                  context.read<VideoDetailBloc>().add(
-                                      VideoDetailReplyChangedEvent(
-                                          content: value));
-                                },
-                                onTapCancel: () {
-                                  context.read<VideoDetailBloc>().add(
-                                      VideoDetailHideInputReplyEvent(
-                                          commentId: commentModel?.id ?? 0,
-                                          isShowInput: false));
-                                },
-                                onTapSend: () {
-                                  context.read<VideoDetailBloc>().add(
-                                      VideoDetailPostCommentEvent(
-                                          content: state.inputReply ?? "",
-                                          commentId: commentModel?.id));
+                                      },
+                                      separatorBuilder: (BuildContext context,
+                                              int replyIndex) =>
+                                          const Divider(),
+                                      itemCount: replies.length,
+                                    ),
+                                  ),
+                                  onTapShowInputReply: () {
+                                    if (SharedPrefer.sharedPrefer
+                                        .getUserToken()
+                                        .isEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            const DialogAuthentication(),
+                                      );
+                                    } else {
+                                      context.read<VideoDetailBloc>().add(
+                                            VideoDetailHideInputReplyEvent(
+                                                commentId:
+                                                    commentModel?.id ?? 0,
+                                                isShowInput: true),
+                                          );
+                                    }
+                                  },
+                                  isShowTemporaryListReply:
+                                      state.isShowTemporaryListReply,
+                                  originalNumOfReply: state.originalNumOfReply?[
+                                      commentModel?.id ?? 0],
+                                  widgetReplyInput: Visibility(
+                                    visible: state.isHiddenInputReply?[
+                                            commentModel?.id] ??
+                                        false,
+                                    child: WriteComment(
+                                      isCancelReply: true,
+                                      onChanged: (value) {
+                                        context.read<VideoDetailBloc>().add(
+                                            VideoDetailReplyChangedEvent(
+                                                content: value));
+                                      },
+                                      onTapCancel: () {
+                                        context.read<VideoDetailBloc>().add(
+                                            VideoDetailHideInputReplyEvent(
+                                                commentId:
+                                                    commentModel?.id ?? 0,
+                                                isShowInput: false));
+                                      },
+                                      onTapSend: () {
+                                        context.read<VideoDetailBloc>().add(
+                                            VideoDetailPostCommentEvent(
+                                                content: state.inputReply ?? "",
+                                                commentId: commentModel?.id));
 
-                                  context.read<VideoDetailBloc>().add(
-                                      VideoDetailHideInputReplyEvent(
-                                          commentId: commentModel?.id ?? 0,
-                                          isShowInput: false));
-                                },
-                              ),
-                            ),
-                            widgetShowListReplies: Visibility(
-                              visible: ((state.originalNumOfReply?[
-                                                  commentModel?.id ?? 0] ??
-                                              0) >
-                                          replies.length &&
-                                      (commentModel?.numberOfReply ?? 0) > 0) ||
-                                  (!isHideRepliesForCurrentComment &&
-                                      (commentModel?.numberOfReply ?? 0) > 0),
-                              child: CustomButton(
-                                title: isHideRepliesForCurrentComment
-                                    ? Constants.showMoreReplies
-                                    : "Show ${commentModel?.numberOfReply} Replies",
-                                titleStyle: AppTextStyles
-                                    .montserratStyle.bold16tiffanyBlue,
-                                prefix: Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: SvgPicture.asset(
-                                      AppIcons.arrowDownTiffany.svgAssetPath),
+                                        context.read<VideoDetailBloc>().add(
+                                            VideoDetailHideInputReplyEvent(
+                                                commentId:
+                                                    commentModel?.id ?? 0,
+                                                isShowInput: false));
+                                      },
+                                    ),
+                                  ),
+                                  widgetShowListReplies: Visibility(
+                                    visible: ((state.originalNumOfReply?[
+                                                        commentModel?.id ??
+                                                            0] ??
+                                                    0) >
+                                                replies.length &&
+                                            (commentModel?.numberOfReply ?? 0) >
+                                                0) ||
+                                        (!isHideRepliesForCurrentComment &&
+                                            (commentModel?.numberOfReply ?? 0) >
+                                                0),
+                                    child: CustomButton(
+                                      title: isHideRepliesForCurrentComment
+                                          ? Constants.showMoreReplies
+                                          : "Show ${commentModel?.numberOfReply} Replies",
+                                      titleStyle: AppTextStyles
+                                          .montserratStyle.bold16tiffanyBlue,
+                                      prefix: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 12),
+                                        child: SvgPicture.asset(AppIcons
+                                            .arrowDownTiffany.svgAssetPath),
+                                      ),
+                                      isExpanded: false,
+                                      onTap: () {
+                                        final currentReplies =
+                                            state.replies?[commentModel?.id] ??
+                                                [];
+                                        final lastIdReply =
+                                            currentReplies.isNotEmpty
+                                                ? currentReplies.last.id
+                                                : null;
+                                        context.read<VideoDetailBloc>().add(
+                                            VideoDetailLoadRepliesCommentEvent(
+                                                commentId:
+                                                    commentModel?.id ?? 0,
+                                                lastIdReply: lastIdReply ?? 0));
+                                      },
+                                      borderColor: AppColors.white,
+                                      padding: const EdgeInsets.only(top: 12),
+                                      mainAxisSize: MainAxisSize.min,
+                                    ),
+                                  ),
                                 ),
-                                isExpanded: false,
-                                onTap: () {
-                                  final currentReplies =
-                                      state.replies?[commentModel?.id] ?? [];
-                                  final lastIdReply = currentReplies.isNotEmpty
-                                      ? currentReplies.last.id
-                                      : null;
-                                  context.read<VideoDetailBloc>().add(
-                                      VideoDetailLoadRepliesCommentEvent(
-                                          commentId: commentModel?.id ?? 0,
-                                          lastIdReply: lastIdReply ?? 0));
-                                },
-                                borderColor: AppColors.white,
-                                padding: const EdgeInsets.only(top: 12),
-                                mainAxisSize: MainAxisSize.min,
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                              ],
+                            );
+                          },
+                        ),
                 ),
                 if (state.status == VideoDetailStatus.processing)
                   Center(
