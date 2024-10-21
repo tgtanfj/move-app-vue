@@ -17,7 +17,6 @@ import { BuyREPsDto } from './dto/buy-reps.dto';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import { WithDrawDto } from './dto/withdraw.dto';
 import { PaymentService } from './payment.service';
-import { PayPalService } from './paypal.service';
 
 @Controller('payment')
 @ApiTags('Payment')

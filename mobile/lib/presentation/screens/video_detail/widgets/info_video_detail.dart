@@ -4,6 +4,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
@@ -12,6 +13,9 @@ import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
 import 'package:move_app/utils/string_extentions.dart';
 
+import 'package:move_app/presentation/screens/video_detail/widgets/share_video_dialog.dart';
+
+import '../../auth/widgets/dialog_authentication.dart';
 
 class InfoVideoDetail extends StatefulWidget {
   final VoidCallback viewChanelButton;
@@ -19,13 +23,22 @@ class InfoVideoDetail extends StatefulWidget {
   final VoidCallback giftRepButton;
   final VoidCallback onTapRate;
   final VideoModel? video;
+  final bool? isFollowed;
+  final VoidCallback facebookButton;
+  final VoidCallback twitterButton;
+  final VoidCallback copyLinkButton;
+
   const InfoVideoDetail({
     super.key,
     required this.viewChanelButton,
     required this.followButton,
     required this.giftRepButton,
+    required this.facebookButton,
+    required this.twitterButton,
+    required this.copyLinkButton,
     required this.onTapRate,
     required this.video,
+    this.isFollowed,
   });
 
   @override
@@ -91,7 +104,9 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             ),
             GestureDetector(
                 onTap: widget.followButton,
-                child: SvgPicture.asset(AppIcons.heartTiffany.svgAssetPath)),
+                child: SvgPicture.asset(widget.isFollowed ?? false
+                    ? AppIcons.fillHeart.svgAssetPath
+                    : AppIcons.heart.svgAssetPath)),
             PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -126,6 +141,28 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                   value: Constants.share,
                   child: Text(Constants.share,
                       style: AppTextStyles.montserratStyle.regular16Black),
+                  onTap: () {
+                    String token = SharedPrefer.sharedPrefer.getUserToken();
+                    if (token.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ShareVideoDialog(
+                            onFacebookTap: widget.facebookButton,
+                            onTwitterTap: widget.twitterButton,
+                            onCopyLinkTap: widget.copyLinkButton,
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const DialogAuthentication();
+                        },
+                      );
+                    }
+                  },
                 ),
                 PopupMenuItem<String>(
                   value: Constants.reportVideo,

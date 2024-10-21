@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -9,9 +7,10 @@ import '../models/category_model.dart';
 import '../services/api_service.dart';
 
 class CategoriesRepository {
+  final ApiService apiService = ApiService();
+
   Future<Either<String, List<CategoryModel>>> searchCategory(
       String query, int page) async {
-    final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
@@ -51,7 +50,6 @@ class CategoriesRepository {
 
   Future<Either<String, int?>> getTotalCategoriesPages(
       String query, int page) async {
-    final ApiService apiService = ApiService();
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
@@ -93,6 +91,25 @@ class CategoriesRepository {
         return Right(categories);
       } else {
         return const Right([]);
+      }
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
+
+  Future<Either<String, List<CategoryModel>>> getCategories() async {
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.get,
+        ApiUrls.categoryEndpoint,
+      );
+      if (response.data != null) {
+        final categories = (response.data['data'] as List)
+            .map((json) => CategoryModel.fromJson(json))
+            .toList();
+        return Right(categories);
+      } else {
+        return const Left(Constants.categoryNotFound);
       }
     } catch (e) {
       return Left(e.toString());

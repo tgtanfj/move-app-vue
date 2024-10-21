@@ -71,6 +71,12 @@ export class Channel extends BaseEntity {
   })
   numberOfREPs: number;
 
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  emailPayPal: string;
+
   @OneToOne(() => User, (user) => user.channel)
   @JoinColumn({ name: 'userId' })
   user: User;

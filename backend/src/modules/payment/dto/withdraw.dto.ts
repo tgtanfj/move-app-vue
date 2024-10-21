@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class WithDrawDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
   @ApiProperty({
     example: 'sb-xxzoh33299105@personal.example.com',
@@ -15,4 +15,11 @@ export class WithDrawDto {
     example: 100,
   })
   numberOfREPs: number;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    example: true,
+  })
+  isSave: true;
 }

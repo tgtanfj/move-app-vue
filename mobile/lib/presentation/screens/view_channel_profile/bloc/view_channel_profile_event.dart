@@ -1,3 +1,4 @@
+
 sealed class ViewChannelProfileEvent {
   const ViewChannelProfileEvent();
 }
@@ -13,4 +14,11 @@ final class ViewChannelProfileFollowingItemSelectEvent
   final int followingItemId;
 
   const ViewChannelProfileFollowingItemSelectEvent(this.followingItemId);
+}
+
+final class ViewChannelProfileFollowChannelEvent
+    extends ViewChannelProfileEvent {
+  final int channelId;
+
+  const ViewChannelProfileFollowChannelEvent(this.channelId);
 }

@@ -27,14 +27,16 @@ class SuggestionModel {
 
   factory SuggestionModel.fromJson(Map<String, dynamic> json) {
     return SuggestionModel(
-      topCategory: CategoryModel.fromJson(json['topCategory']),
-      topInstructors: (json['topInstructors'] is List)
-          ? (json['topInstructors'] as List<dynamic>)
+      topCategory: json['topCategory'] != null
+          ? CategoryModel.fromJson(json['topCategory'])
+          : CategoryModel(title: " "),
+      topInstructors: (json['topInstructors'] is List?)
+          ? (json['topInstructors'] as List?)
               ?.map((e) => ChannelModel.fromJson(e))
               .toList()
           : [],
-      topVideos: (json['topVideos'] is List)
-          ? (json['topVideos'] as List<dynamic>)
+      topVideos: (json['topVideos'] is List?)
+          ? (json['topVideos'] as List?)
               ?.map((e) => VideoModel.fromJson(e))
               .toList()
           : [],

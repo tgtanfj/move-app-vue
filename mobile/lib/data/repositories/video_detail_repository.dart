@@ -21,6 +21,11 @@ class VideoDetailRepository {
         return const Left(Constants.rateNotFound);
       }
     } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }
@@ -48,6 +53,11 @@ class VideoDetailRepository {
         return const Left(Constants.rateNotFound);
       }
     } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }

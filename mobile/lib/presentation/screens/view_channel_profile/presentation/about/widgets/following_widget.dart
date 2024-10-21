@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:move_app/data/models/following_channel_model.dart';
+import 'package:move_app/data/models/channel_model.dart';
 
 import 'following_item.dart';
 
 class FollowingWidget extends StatelessWidget {
-  final List<FollowingChannelModel> followingChannels;
+  final List<ChannelModel> followingChannels;
   final Function(int)? onTapFollowingChannel;
 
   const FollowingWidget(
