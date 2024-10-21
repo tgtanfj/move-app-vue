@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/presentation/screens/search/widgets/custom_search_channel.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 
 import '../../view_channel_profile/page/view_channel_profile_page.dart';
 
@@ -27,10 +28,12 @@ class ListChannels extends StatelessWidget {
               ),
             );
           },
-          imageUrl: channelList[index].image,
-          name: channelList[index].name,
-          numberOfFollowers: channelList[index].numberOfFollowers.toString(),
-          isBlueBadge: channelList[index].isBlueBadge,
+              imageUrl: channelList[index].image,
+              name: channelList[index].name,
+              numberOfFollowers:
+              channelList[index].numberOfFollowers.toString(),
+              isBlueBadge: channelList[index].isBlueBadge,
+              isPinkBadge: channelList[index].isPinkBadge,
         ));
       },
       separatorBuilder: (BuildContext context, int index) {

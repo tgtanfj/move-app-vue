@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/constants/key_screen.dart';
+import 'package:move_app/data/services/launch_url_service.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
@@ -382,6 +384,25 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   }
                 });
               }
+            },
+            facebookButton: () {
+              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
+                  videoId: state.video?.id ?? 0,
+                  option: Constants.facebookOption));
+              if(state.facebookLink != null && state.facebookLink!.isNotEmpty){
+                openExternalApplication(state.facebookLink ?? "");
+              }
+            },
+            twitterButton: () {
+              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
+                  videoId: state.video?.id ?? 0,
+                  option: Constants.twitterOption));
+              if(state.twitterLink != null && state.twitterLink!.isNotEmpty){
+                openExternalApplication(state.twitterLink ?? "");
+              }
+            },
+            copyLinkButton: () {
+              Clipboard.setData(ClipboardData(text: state.video?.url ?? ""));
             },
           ),
         ),

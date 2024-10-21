@@ -262,4 +262,11 @@ class Constants {
   static const String ratingsHighToLowValue = 'ratings-high-to-low';
   static const String ratingsLowToHighValue = 'ratings-low-to-high';
   static const String failedToLoadVideos = 'Failed to load videos';
+  static const String seeMore = "See More";
+  static const String seeLess = "See Less";
+  static const String linkCopied = "Link copied!";
+  static const String shareVia = "Share Via";
+  static const String copyLink = "Copy link";
+  static const String facebookOption = "Facebook";
+  static const String twitterOption = "Twitter";
 }

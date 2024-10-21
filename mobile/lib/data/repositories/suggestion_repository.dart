@@ -20,7 +20,7 @@ class SuggestionRepository {
         final result = parseSuggestion(response.data);
         return Right(result);
       } else {
-        return const Left('cannot load suggestion');
+        return const Left('Cannot load suggestion');
       }
     } catch (e) {
       if (e is DioException) {

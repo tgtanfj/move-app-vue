@@ -13,6 +13,7 @@ import 'package:move_app/presentation/screens/search/widgets/list_channels.dart'
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_categories.dart';
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_video.dart';
 import 'package:move_app/presentation/screens/search/widgets/search_history_widgets.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_icons.dart';

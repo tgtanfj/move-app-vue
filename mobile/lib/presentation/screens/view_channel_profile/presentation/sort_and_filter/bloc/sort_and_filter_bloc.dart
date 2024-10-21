@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/data/models/category_model.dart';
-import 'package:move_app/data/repositories/category_repository.dart';
+import 'package:move_app/data/repositories/categories_repository.dart';
 import 'package:move_app/data/repositories/view_channel_profile_repository.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/bloc/sort_and_filter_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/bloc/sort_and_filter_state.dart';
 
 class SortAndFilterBloc extends Bloc<SortAndFilterEvent, SortAndFilterState> {
-  final categoryRepository = CategoryRepository();
+  final categoryRepository = CategoriesRepository();
   final videoRepository = ViewChannelProfileRepository();
 
   SortAndFilterBloc() : super(SortAndFilterState.initialState()) {
