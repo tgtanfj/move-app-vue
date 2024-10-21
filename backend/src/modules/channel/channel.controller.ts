@@ -93,6 +93,6 @@ export class ChannelController {
   @Post('set-up-paypal')
   @UseGuards(JwtAuthGuard)
   async setUpPayPal(@User() user, @Body() setUpPayPalDto: SetUpPayPalDto) {
-    return this.channelService.setUpPayPal(user.id, setUpPayPalDto.emailPayPal);
+    return await this.channelService.setUpPayPal(user.id, setUpPayPalDto.emailPayPal);
   }
 }
