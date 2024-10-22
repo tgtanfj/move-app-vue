@@ -192,4 +192,18 @@ export class ChannelService {
     await this.channelRepository.updateEmailPayPal(channel.id, email);
     return await this.getChannelReps(userId);
   }
+
+  async overViewAnalytic(userId: number) {
+    const { id, numberOfFollowers, numberOfREPs } = await this.channelRepository.getChannelByUserId(userId);
+    const totalView = await this.videoService.getTotalViewOfChannel(id);
+    const avgTime = null;
+    const lastVideo = await this.videoService.getLastVideoOfChannel(id);
+    return {
+      numberOfFollowers,
+      numberOfREPs,
+      totalView,
+      avgTime,
+      lastVideo,
+    };
+  }
 }

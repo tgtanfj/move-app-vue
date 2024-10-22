@@ -33,6 +33,7 @@ import { DeleteVideosDto } from './dto/request/delete-videos.dto';
 import { ThumbnailsValidationPipe } from '@/shared/pipes/thumbnail-validation.pipe';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { Public } from '@/shared/decorators/public.decorator';
+import { DetailVideoAnalyticDTO } from './dto/request/detail-video-analytic.dto';
 
 @ApiTags('Video')
 @ApiBearerAuth('jwt')
@@ -120,8 +121,28 @@ export class VideoController {
     return await this.videoService.downloadVideo(videoId);
   }
 
-  @Get()
-  async test() {
-    return await this.videoService.sortVideoByPriority();
+  @UseGuards(JwtAuthGuard)
+  @Get('analytic/:videoId')
+  async overviewVideoAnalytic(
+    @Param('videoId') videoId: number,
+    @User() user,
+    @Query() query: DetailVideoAnalyticDTO,
+  ) {
+    // return await this.videoService.sortVideoByPriority();
+    return await this.videoService.overviewVideoAnalytic(videoId, user.id, query.option);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('analytic/graphic/:videoId')
+  async demoGraphicVideoAnalytic(
+    @Param('videoId') videoId: number,
+    @User() user,
+    @Query() query: DetailVideoAnalyticDTO,
+  ) {
+    // return await this.videoService.sortVideoByPriority();
+    const time = new Date();
+    time.setDate(time.getDate() - 100);
+    const timeFomat = time.toISOString().split('T')[0];
+    return await this.videoService.graphicGender(videoId, timeFomat);
   }
 }

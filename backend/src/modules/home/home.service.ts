@@ -226,6 +226,11 @@ export class HomeService {
     } else {
       let topViewVideo = await this.videoRepository.find({
         take: 12,
+        where: {
+          category: {
+            id:categoryId
+          }
+        },
         order: {
           numberOfViews: 'DESC',
         },
