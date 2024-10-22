@@ -9,6 +9,7 @@ import { UserModule } from '../user/user.module';
 import { VideoModule } from '../video/video.module';
 import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Donation } from '@/entities/donation.entity';
     JwtModule,
     UserModule,
     VideoModule,
+    NotificationModule,
   ],
   controllers: [CommentController],
   providers: [CommentService, CommentRepository],
