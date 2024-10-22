@@ -33,7 +33,21 @@ export class CommentRepository {
   async getOneWithVideo(id: number): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: { id: id },
-      relations: { video: true, parent: true },
+      relations: { video: true, parent: true, user: true },
+      select: {
+        id: true,
+        numberOfReply: true,
+        numberOfLike: true,
+        parent: { id: true, numberOfReply: true },
+        video: {
+          id: true,
+          title: true,
+          numberOfComments: true,
+        },
+        user: {
+          id: true,
+        },
+      },
     });
   }
 

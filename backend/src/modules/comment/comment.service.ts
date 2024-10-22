@@ -54,16 +54,18 @@ export class CommentService {
         videoId = comment.video.id;
         const reply = await this.commentRepository.create(userId, dto);
 
-        dataNotification = {
-          sender: userInfo,
-          content: `${NOTIFICATION_MESSAGE.REPLY_COMMENT_NOTIFICATION} ' ${comment.content} ' on your video`,
-          videoId: videoId,
-          videoTitle: comment.video.title,
-          commentId: comment.id,
-          commentContent: comment.content,
-          replyId: reply.id,
-        };
-        await this.notificationService.sendOneToOneNotification(ownerVideo.channel.user.id, dataNotification);
+        if (userInfo.id !== comment.user.id) {
+          dataNotification = {
+            sender: userInfo,
+            content: `${NOTIFICATION_MESSAGE.REPLY_COMMENT_NOTIFICATION} ' ${comment.content} ' on your video`,
+            videoId: videoId,
+            videoTitle: comment.video.title,
+            commentId: comment.id,
+            commentContent: comment.content,
+            replyId: reply.id,
+          };
+          await this.notificationService.sendOneToOneNotification(comment.user.id, dataNotification);
+        }
 
         return reply;
       }
@@ -74,14 +76,16 @@ export class CommentService {
       }
       const comment = await this.commentRepository.create(userId, dto);
 
-      dataNotification = {
-        sender: userInfo,
-        content: NOTIFICATION_MESSAGE.COMMENT_NOTIFICATION,
-        videoId: video.id,
-        videoTitle: video.title,
-        commentId: comment.id,
-      };
-      await this.notificationService.sendOneToOneNotification(ownerVideo.channel.user.id, dataNotification);
+      if (userInfo.id !== ownerVideo.channel.user.id) {
+        dataNotification = {
+          sender: userInfo,
+          content: NOTIFICATION_MESSAGE.COMMENT_NOTIFICATION,
+          videoId: video.id,
+          videoTitle: video.title,
+          commentId: comment.id,
+        };
+        await this.notificationService.sendOneToOneNotification(ownerVideo.channel.user.id, dataNotification);
+      }
 
       video.numberOfComments++;
       await this.videoRepository.save(video);
