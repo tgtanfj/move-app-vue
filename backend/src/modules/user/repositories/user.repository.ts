@@ -28,7 +28,7 @@ export class UserRepository {
   }
 
   async findAll(relations?: FindOptionsRelations<User>): Promise<User[]> {
-    return this.userRepository.find({
+    return await this.userRepository.find({
       relations,
     });
   }
