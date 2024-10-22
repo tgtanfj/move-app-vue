@@ -42,10 +42,9 @@ export class StripeService {
   async attachPaymentMethod(customerId: string, addPaymentMethod: AttachPaymentMethodDto) {
     const { paymentMethodId } = addPaymentMethod;
 
-    await this.stripe.setupIntents
-      .create({
+    await this.stripe.paymentMethods
+      .attach(paymentMethodId, {
         customer: customerId,
-        payment_method: paymentMethodId,
       })
       .catch((err) => {
         console.log(err);
