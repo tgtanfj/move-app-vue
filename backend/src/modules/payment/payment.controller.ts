@@ -1,5 +1,8 @@
+import { Role } from '@/entities/enums/role.enum';
+import { Roles } from '@/shared/decorators/roles.decorator';
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards';
+import { RolesGuard } from '@/shared/guards/roles.guard';
 import { validateDate } from '@/shared/utils/validate-date.util';
 import {
   BadRequestException,
@@ -52,5 +55,19 @@ export class PaymentController {
   @Post('withdraw')
   async createPayout(@User() user, @Body() withDrawDto: WithDrawDto) {
     return await this.paymentService.withDraw(user.id, withDrawDto);
+  }
+
+  @Get('/admin/payment-histories')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async getAllPaymentHistories() {
+    return await this.paymentService.findAllPaymentHistories();
+  }
+
+  @Get('/admin/cashout-histories')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async getAllCashOutHistories() {
+    return await this.paymentService.getAllCashOutHistories();
   }
 }
