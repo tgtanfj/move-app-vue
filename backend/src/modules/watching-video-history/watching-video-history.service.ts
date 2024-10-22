@@ -34,6 +34,6 @@ export class WatchingVideoHistoryService {
   }
 
   async getRatingAvgOfVideo(videoId: number, time: Date) {
-    return await this.watchingVideoHistoryRepository.avgRatingVideoByTime(videoId,time)
+    return await this.watchingVideoHistoryRepository.avgRatingVideoByTime(videoId, time);
   }
 }

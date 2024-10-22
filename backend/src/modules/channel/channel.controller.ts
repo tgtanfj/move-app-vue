@@ -99,6 +99,6 @@ export class ChannelController {
   @Get('overview')
   @UseGuards(JwtAuthGuard)
   async overviewChannel(@User() user) {
-    return await this.channelService.overViewAnalytic(user.id)
+    return await this.channelService.overViewAnalytic(user.id);
   }
 }

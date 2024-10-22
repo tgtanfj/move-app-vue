@@ -81,7 +81,7 @@ import { ViewModule } from './modules/view/view.module';
     PaymentModule,
     DonationModule,
     NotificationModule,
-    ViewModule
+    ViewModule,
   ],
   providers: [
     {

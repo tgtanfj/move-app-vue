@@ -11,6 +11,6 @@ export class ViewRepository {
         id: videoId,
       },
     });
-    return sum
+    return sum;
   }
 }

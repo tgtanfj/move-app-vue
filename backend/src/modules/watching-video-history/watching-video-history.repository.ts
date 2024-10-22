@@ -48,7 +48,7 @@ export class WatchingVideoHistoryRepository {
   async avgRatingVideoByTime(videoId: number, time: Date) {
     const result = await this.watchingVideoHistoryRepository.average('rate', {
       video: {
-        id:videoId
+        id: videoId,
       },
       createdAt: MoreThanOrEqual(time),
     });

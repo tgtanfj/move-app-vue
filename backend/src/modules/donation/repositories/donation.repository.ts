@@ -33,15 +33,15 @@ export class DonationRepository {
     //   },
     //   giftPackage: {},
     // });
-     const result = await this.donationRepository 
-       .createQueryBuilder('donation')
-       .select('donation.videoId', 'videoId')
-       .addSelect('SUM(giftPackage.numberOfREPs)', 'totalREPs')
-       .leftJoin('gift-packages', 'giftPackage', 'giftPackage.id = donation.giftPackageId')
-       .where('donation.videoId = :videoId', { videoId })
-       .groupBy('donation.videoId')
-       .getRawOne(); // Trả về kết quả tổng hợp
+    const result = await this.donationRepository
+      .createQueryBuilder('donation')
+      .select('donation.videoId', 'videoId')
+      .addSelect('SUM(giftPackage.numberOfREPs)', 'totalREPs')
+      .leftJoin('gift-packages', 'giftPackage', 'giftPackage.id = donation.giftPackageId')
+      .where('donation.videoId = :videoId', { videoId })
+      .groupBy('donation.videoId')
+      .getRawOne(); // Trả về kết quả tổng hợp
 
-     return result;
+    return result;
   }
 }

@@ -20,6 +20,6 @@ export enum ShowBy {
   LAST_7_DAYS = 'last-7-days',
   LAST_30_DAYS = 'last-30-days',
   LAST_90_DAYS = 'last-90-days',
-  ONE_YEAR_AGO='one-year-ago'
+  ONE_YEAR_AGO = 'one-year-ago',
 }
 export class FilterVideoChannelDto {}

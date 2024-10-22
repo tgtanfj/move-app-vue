@@ -228,8 +228,8 @@ export class HomeService {
         take: 12,
         where: {
           category: {
-            id:categoryId
-          }
+            id: categoryId,
+          },
         },
         order: {
           numberOfViews: 'DESC',
