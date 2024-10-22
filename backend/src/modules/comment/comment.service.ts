@@ -9,7 +9,7 @@ import { VideoRepository } from '../video/video.repository';
 import { NotificationService } from '../notification/notification.service';
 import { CommonNotificationDto } from '../notification/dto/common-notification.dto';
 import { UserInfoDto } from '../user/dto/user-info.dto';
-import { NOTIFICATION_MESSAGE } from '@/shared/constraints/notification-message.constraint';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 
 @Injectable()
 export class CommentService {
@@ -57,7 +57,7 @@ export class CommentService {
         if (userInfo.id !== comment.user.id) {
           dataNotification = {
             sender: userInfo,
-            content: `${NOTIFICATION_MESSAGE.REPLY_COMMENT_NOTIFICATION} ' ${comment.content} ' on your video`,
+            type: NOTIFICATION_TYPE.REPLY,
             videoId: videoId,
             videoTitle: comment.video.title,
             commentId: comment.id,
@@ -79,7 +79,7 @@ export class CommentService {
       if (userInfo.id !== ownerVideo.channel.user.id) {
         dataNotification = {
           sender: userInfo,
-          content: NOTIFICATION_MESSAGE.COMMENT_NOTIFICATION,
+          type: NOTIFICATION_TYPE.COMMENT,
           videoId: video.id,
           videoTitle: video.title,
           commentId: comment.id,
@@ -91,6 +91,8 @@ export class CommentService {
       await this.videoRepository.save(video);
       return comment;
     } catch (error) {
+      console.log(error);
+
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT);
     }
   }

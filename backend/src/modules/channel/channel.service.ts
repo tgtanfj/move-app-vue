@@ -3,7 +3,7 @@ import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constra
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { UpdateResult } from 'typeorm';
+import { FindOptionsRelations, UpdateResult } from 'typeorm';
 import { EmailService } from '../email/email.service';
 import { FollowService } from '../follow/follow.service';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
@@ -30,8 +30,8 @@ export class ChannelService {
     });
   }
 
-  async findOne(channelId: number): Promise<Channel> {
-    return await this.channelRepository.findOne(channelId).catch((error) => {
+  async findOne(channelId: number, relations?: FindOptionsRelations<Channel>): Promise<Channel> {
+    return await this.channelRepository.findOne(channelId, relations).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
   }

@@ -8,6 +8,7 @@ import * as admin from 'firebase-admin';
 import { db } from '@/shared/firebase/firebase.config';
 import { CommonNotificationDto } from './dto/common-notification.dto';
 import { SystemNotificationDto } from './dto/system-notification.dto';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 @Injectable()
 export class NotificationService {
   async sendNotification({ token, title, body, icon }: NotificationDto) {
@@ -94,5 +95,27 @@ export class NotificationService {
       promises.push(notificationRef.set({ data, isRead: false, timestamp: Date.now() }));
     });
     await Promise.all(promises);
+  }
+
+  async checkNotificationExistsAntiSpam(userId: number, senderId: number) {
+    const notificationsRef = db.ref(`notifications/${userId}`);
+    const snapshot = await notificationsRef.get();
+
+    if (!snapshot.exists()) {
+      return false;
+    }
+
+    const notifications = snapshot.val();
+
+    for (const notificationId in notifications) {
+      const notification = notifications[notificationId];
+      const type = notification.data?.type;
+      const sender = notification.data?.sender;
+      if ((type === NOTIFICATION_TYPE.FOLLOW || type === NOTIFICATION_TYPE.LIKE) && sender.id === senderId) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,5 @@
 import { UserInfoDto } from '@/modules/user/dto/user-info.dto';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
@@ -10,22 +11,22 @@ export class CommonNotificationDto {
   sender: UserInfoDto;
 
   @ApiProperty({
-    description: 'content notification',
+    description: 'type notification',
   })
   @IsNotEmpty()
-  content: string;
+  type: NOTIFICATION_TYPE;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'id video',
   })
-  @IsNotEmpty()
-  videoId: number;
+  @IsOptional()
+  videoId?: number;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'video title',
   })
-  @IsNotEmpty()
-  videoTitle: string;
+  @IsOptional()
+  videoTitle?: string;
 
   @ApiPropertyOptional({
     description: 'id comment',
