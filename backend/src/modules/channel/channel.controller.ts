@@ -95,4 +95,10 @@ export class ChannelController {
   async setUpPayPal(@User() user, @Body() setUpPayPalDto: SetUpPayPalDto) {
     return await this.channelService.setUpPayPal(user.id, setUpPayPalDto.emailPayPal);
   }
+
+  @Get('overview')
+  @UseGuards(JwtAuthGuard)
+  async overviewChannel(@User() user) {
+    return await this.channelService.overViewAnalytic(user.id);
+  }
 }

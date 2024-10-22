@@ -7,6 +7,7 @@ import {
   FindOptionsRelations,
   FindOptionsWhere,
   In,
+  MoreThanOrEqual,
   Not,
   Repository,
 } from 'typeorm';
@@ -16,6 +17,7 @@ import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { Follow } from '@/entities/follow.entity';
 import { Channel } from '@/entities/channel.entity';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class VideoRepository {
@@ -360,5 +362,102 @@ export class VideoRepository {
     });
 
     return follows.map((follow) => follow.channel?.id);
+  }
+
+  async overviewAnalyticVideo(videoId: number, time: string) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('v.views', 'view')
+      .leftJoin('v.donations', 'donation')
+      .innerJoin('v.category', 'category')
+      .where('v.id = :videoId', { videoId: videoId })
+      .andWhere('donation.createdAt >= :timeDonation', { timeDonation: time })
+      .andWhere('view.viewDate >= :timeView', { timeView: time })
+      .select(['v.id', 'v.title', 'category.title', 'v.ratings', 'v.shareCount'])
+      .addSelect('sum(view."totalView")', 'numberOfViews')
+      .getRawOne();
+    return result;
+  }
+
+  async getNumberOfRepByTime(videoId: number, time: string) {
+    const sum = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('donations', 'd', 'v.id = d.videoId')
+      .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
+      .select('SUM(g."numberOfREPs")', 'totalREPs')
+      .where('v.id = :videoId', { videoId })
+      .andWhere('d."createdAt" >= :time', { time })
+      .getRawOne();
+
+    return sum;
+  }
+
+  async getVideoViewersByAgeGroups(videoId: number, time: string) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('users', 'u', 'wvh.userId = u.id')
+      .select([
+        `CASE 
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 18 AND 24 THEN '18 - 24'
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 25 AND 34 THEN '25 - 34'
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 35 AND 44 THEN '35 - 44'
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 45 AND 54 THEN '45 - 54'
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 55 AND 64 THEN '55 - 64'
+        WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) > 64 THEN '64 above'
+        ELSE 'Unknown' 
+      END AS age_group`,
+        'COUNT(u.id) AS total_count',
+      ])
+      .where('v.id = :videoId', { videoId })
+      .andWhere('wvh.createdAt >= :time', { time: time })
+      .groupBy('age_group')
+      .getRawMany();
+
+    return result;
+  }
+
+  async getVideoViewersByGenderGroups(videoId: number, time: string) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('users', 'u', 'wvh.userId = u.id')
+      .select([
+        `CASE 
+        WHEN u.gender = 'M' THEN 'Male'
+        WHEN u.gender = 'F' THEN 'Female'
+        WHEN u.gender = 'O' THEN 'Other'
+        ELSE 'Unknown' 
+      END AS gender_group`,
+        'COUNT(u.id) AS total_count',
+        'COUNT(DISTINCT u.id) OVER() AS total_user',
+      ])
+      .addSelect('')
+      .where('v.id = :videoId', { videoId })
+      .andWhere('wvh.createdAt >= :time', { time })
+      .groupBy('gender_group')
+      .getRawMany();
+
+    return result;
+  }
+
+  async getTotalViewOfChannel(channelId: number) {
+    const result = await this.videoRepository.sum('numberOfViews', {
+      channel: {
+        id: channelId,
+      },
+    });
+    return result;
+  }
+
+  async getLastVideoOfChannel(channelId: number) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .where('v.channelId = :channelId', { channelId: channelId })
+      .select(['v.id', 'v.title', 'v.ratings', 'v.numberOfViews'])
+      .orderBy('v.createdAt', 'DESC')
+      .take(1)
+      .getOne();
+    return result;
   }
 }
