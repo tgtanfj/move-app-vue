@@ -34,7 +34,7 @@ export class PaymentService {
 
   async listRepsPackage() {
     try {
-      return this.repsPackageRepository.listRepsPackage();
+      return await this.repsPackageRepository.listRepsPackage();
     } catch (error) {
       console.error(error);
     }

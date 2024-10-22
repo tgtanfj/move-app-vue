@@ -20,6 +20,9 @@ import { UserProfile } from './dto/response/user-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IFile } from '@/shared/interfaces/file.interface';
+import { Role } from '@/entities/enums/role.enum';
+import { Roles } from '@/shared/decorators/roles.decorator';
+import { RolesGuard } from '@/shared/guards/roles.guard';
 
 @ApiTags('user')
 @ApiBearerAuth('jwt')
@@ -44,5 +47,15 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async updateUser(@User() user, @UploadedFile() file: IFile, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.updateUser(user.id, updateUserDto, file);
+  }
+
+  @Get('/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async getAll() {
+    return await this.userService.findAll({
+      country: true,
+      state: true,
+    });
   }
 }
