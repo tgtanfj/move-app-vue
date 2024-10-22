@@ -10,7 +10,7 @@ export class WatchingVideoHistoryRepository {
 
   async averageRateByVideoId(videoId: number): Promise<number> {
     const averageRate = await this.watchingVideoHistoryRepository.average('rate', { video: { id: videoId } });
-    return averageRate;
+    return parseFloat(averageRate.toFixed(1));
   }
 
   async createOrUpdate(userId: number, videoId: number) {

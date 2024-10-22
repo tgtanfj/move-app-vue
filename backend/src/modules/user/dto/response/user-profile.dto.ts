@@ -34,6 +34,9 @@ export class UserProfile {
   readonly city: string;
 
   @Expose()
+  readonly role: string;
+
+  @Expose()
   isBlueBadge: boolean = false;
 
   @Expose()

@@ -7,7 +7,7 @@ import { IFile } from '@/shared/interfaces/file.interface';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, FindOptionsRelations, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
 import { CountryService } from '../country/country.service';
@@ -35,8 +35,8 @@ export class UserService {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.findAll().catch((error) => {
+  async findAll(relations?: FindOptionsRelations<User>): Promise<User[]> {
+    return await this.userRepository.findAll(relations).catch((error) => {
       throw new BadRequestException(error.message);
     });
   }
