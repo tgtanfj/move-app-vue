@@ -1,5 +1,4 @@
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { firebaseAdmin } from '@/shared/firebase/firebase.config';
 import { infoLoginSocial } from '@/shared/interfaces/login-social.interface';
 import { MailDTO } from '@/shared/interfaces/mail.dto';
@@ -9,6 +8,8 @@ import { getField } from '@/shared/utils/get-field.util';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as admin from 'firebase-admin';
+import { I18nService } from 'nestjs-i18n';
 import { authenticator } from 'otplib';
 import { EmailService } from '../email/email.service';
 import { getTemplateReset } from '../email/templates/get-template';
@@ -16,7 +17,6 @@ import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { ChangePasswordDTO } from './dto/change-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
-import * as admin from 'firebase-admin';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,6 +27,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ApiConfigService,
     private readonly redisService: RedisService,
+    private readonly i18n: I18nService,
   ) {}
 
   private readonly MAX_ATTEMPTS = 3;
@@ -88,7 +89,7 @@ export class AuthService {
         expiresIn: this.apiConfigService.getString('RESET_PASSWORD_TOKEN_EXPIRATION_TIME'),
       });
     } catch (error) {
-      throw new Error(ERRORS_DICTIONARY.GENERATE_TOKEN_FAIL);
+      throw new Error(this.i18n.t('exceptions.token.GENERATE_TOKEN_FAIL'));
     }
   }
 
@@ -105,13 +106,13 @@ export class AuthService {
       const update = await this.userService.updatePassword(hash, payload.userId);
       if (!update) {
         throw new BadRequestException({
-          message: ERRORS_DICTIONARY.UPDATE_PASSWORD_FAIL,
+          message: this.i18n.t('exceptions.account.UPDATE_PASSWORD_FAIL'),
         });
       }
       return getField(user, ['email', 'password']);
     } catch (error) {
       throw new ForbiddenException({
-        message: ERRORS_DICTIONARY.AUTHORIZE_ERROR,
+        message: this.i18n.t('exceptions.authorization.AUTHORIZE_ERROR'),
       });
     }
   }
@@ -125,15 +126,15 @@ export class AuthService {
       account.oldPassword && (await bcrypt.compare(newPassword, account.oldPassword));
 
     if (account.type !== TypeAccount.NORMAL) {
-      throw new BadRequestException(ERRORS_DICTIONARY.WRONG_METHOD);
+      throw new BadRequestException(this.i18n.t('exceptions.account.WRONG_METHOD'));
     }
 
     if (!isCorrectPass) {
-      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_INCORRECT);
+      throw new BadRequestException(this.i18n.t('exceptions.account.PASSWORD_INCORRECT'));
     }
 
     if (isDuplicateOldPass || isDuplicatePass) {
-      throw new BadRequestException(ERRORS_DICTIONARY.PASSWORD_RESTRICTION);
+      throw new BadRequestException(this.i18n.t('exceptions.account.EMAIL_EXISTED'));
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -152,7 +153,7 @@ export class AuthService {
     const account = user?.account;
 
     if (account && account.type !== type) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TRY_ANOTHER_LOGIN_METHOD);
+      throw new BadRequestException(this.i18n.t('exceptions.social.TRY_ANOTHER_LOGIN_METHOD'));
     }
 
     if (!account) {
@@ -254,7 +255,7 @@ export class AuthService {
     const existUser = await this.userService.findOneByEmail(email);
 
     if (existUser) {
-      throw new BadRequestException(ERRORS_DICTIONARY.EMAIL_EXISTED);
+      throw new BadRequestException(this.i18n.t('exceptions.users.EMAIL_EXISTED'));
     }
 
     const otp = await this.generateOtp(email);
@@ -268,11 +269,11 @@ export class AuthService {
     const cachedOtp = await this.redisService.getValue<string>(`otp_${email}`);
 
     if (cachedOtp) {
-      throw new BadRequestException(ERRORS_DICTIONARY.WAIT_ONE_MINUTE);
+      throw new BadRequestException(this.i18n.t('exceptions.auth.WAIT_ONE_MINUTE'));
     }
 
     if (isLocked) {
-      throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
+      throw new BadRequestException(this.i18n.t('exceptions.auth.OTP_WRONG_MANY_TIMES'));
     }
 
     const secret = authenticator.generateSecret();
@@ -294,7 +295,7 @@ export class AuthService {
     const isLocked = await this.redisService.getValue<number>(`account_locked_${email}`);
 
     if (isLocked) {
-      throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
+      throw new BadRequestException(this.i18n.t('exceptions.auth.OTP_WRONG_MANY_TIMES'));
     }
 
     if (cachedOtp === otp) {
@@ -309,10 +310,10 @@ export class AuthService {
       if (attempts + 1 >= this.MAX_ATTEMPTS) {
         await this.redisService.setValue(`account_locked_${email}`, true, this.LOCKOUT_TIME);
 
-        throw new BadRequestException(ERRORS_DICTIONARY.OTP_WRONG_MANY_TIMES);
+        throw new BadRequestException(this.i18n.t('exceptions.auth.OTP_WRONG_MANY_TIMES'));
       }
 
-      throw new BadRequestException(ERRORS_DICTIONARY.INVALID_OTP);
+      throw new BadRequestException(this.i18n.t('exceptions.auth.INVALID_OTP'));
     }
   }
 }

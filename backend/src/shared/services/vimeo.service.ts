@@ -1,13 +1,17 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ApiConfigService } from './api-config.service';
 import axios from 'axios';
+import { I18nService } from 'nestjs-i18n';
 import { ERRORS_DICTIONARY } from '../constraints/error-dictionary.constraint';
+import { ApiConfigService } from './api-config.service';
 
 @Injectable()
 export class VimeoService {
   private readonly accessToken: string;
   private readonly apiUrl: string;
-  constructor(public configService: ApiConfigService) {
+  constructor(
+    public configService: ApiConfigService,
+    private readonly i18n: I18nService,
+  ) {
     const { accessTokenVimeo, apiUrlVimeo } = this.configService.vimeoConfig;
     this.accessToken = accessTokenVimeo;
     this.apiUrl = apiUrlVimeo;
@@ -54,7 +58,7 @@ export class VimeoService {
       return response.data;
     } catch (error) {
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
       });
     }
   }
@@ -70,7 +74,7 @@ export class VimeoService {
       return response.status;
     } catch (error) {
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
       });
     }
   }
@@ -87,7 +91,7 @@ export class VimeoService {
       return response.data.duration;
     } catch (error) {
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
       });
     }
   }

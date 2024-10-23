@@ -1,0 +1,79 @@
+{
+  "users": {
+    "EMAIL_EXISTED": "Email đã tồn tại trong hệ thống. Vui lòng chọn Email khác.",
+    "USER_NOT_FOUND": "Không tìm thấy người dùng."
+  },
+  "auth": {
+    "WAIT_ONE_MINUTE": "Vui lòng chờ 1 phút để gửi lại mã.",
+    "INVALID_OTP": "Mã không chính xác. Vui lòng thử lại.",
+    "OTP_WRONG_MANY_TIMES": "Bạn đã nhập mã OTP sai quá nhiều lần. Tài khoản của bạn đã bị khóa trong 10 phút. Vui lòng thử lại sau."
+  },
+  "classValidator": {
+    "VALIDATION_ERROR": "Lỗi xác thực."
+  },
+  "authorization": {
+    "AUTHORIZE_ERROR": "Bạn không có quyền truy cập.",
+    "TOKEN_ERROR": "Token không hợp lệ.",
+    "RESET_PASSWORD_FAIL": "Đặt lại mật khẩu thất bại.",
+    "LOGIN_FAILED": "Email hoặc password không hợp lệ"
+  },
+  "user": {
+    "NOT_FOUND_ANY_USER": "Không tìm thấy người dùng nào.",
+    "SIZE_AVATAR_ERROR": "Kích thước tệp vượt quá giới hạn tối đa là 5MB. Vui lòng chọn tệp nhỏ hơn và thử lại.",
+    "ALLOWED_FILE_TYPES": "Định dạng tệp không hợp lệ. Chỉ cho phép JPG, PNG và GIF.",
+    "DIMENSIONS_AVATAR_ERROR": "Kích thước hình ảnh phải nằm trong khoảng từ 100x100 đến 2000x2000.",
+    "NOT_FOUND_ANY_COUNTRY": "Không tìm thấy quốc gia nào.",
+    "INVALID_STATE": "Tình trạng không hợp lệ."
+  },
+  "token": {
+    "GENERATE_TOKEN_FAIL": "Tạo token thất bại.",
+    "VERIFY_TOKEN_FAIL": "Token không hợp lệ."
+  },
+  "account": {
+    "NOT_FOUND_ACCOUNT": "Không tìm thấy tài khoản.",
+    "UPDATE_PASSWORD_FAIL": "Cập nhật mật khẩu thất bại.",
+    "PASSWORD_RESTRICTION": "Mật khẩu mới của bạn không được giống bất kỳ mật khẩu nào trong hai mật khẩu gần nhất. Vui lòng chọn mật khẩu khác.",
+    "PASSWORD_INCORRECT": "Bạn đã nhập mật khẩu không hợp lệ.",
+    "WRONG_METHOD": "Phương thức của bạn không thể thay đổi mật khẩu."
+  },
+  "social": {
+    "TRY_ANOTHER_LOGIN_METHOD": "Một tài khoản với email này đã tồn tại bằng phương thức đăng nhập khác. Vui lòng sử dụng phương thức gốc để đăng nhập.",
+    "NOT_FOUND_ANY_CHANNEL_OF_THIS_USER": "Không tìm thấy kênh nào của người dùng này.",
+    "NOT_FOUND_ANY_CHANNEL": "Không tìm thấy kênh nào."
+  },
+  "video": {
+    "UPLOAD_THUMBNAIL_FAIL": "Độ phân giải hình thu nhỏ phải tối thiểu là 1280x720 pixel.",
+    "UPLOAD_VIDEO_FAIL": "Tải video thất bại.",
+    "NOT_FOUND_VIDEO": "Không tìm thấy video.",
+    "UPDATE_VIDEO_FAIL": "Cập nhật video thất bại."
+  },
+  "category": {
+    "NOT_FOUND_CATEGORY": "Không tìm thấy danh mục.",
+    "CAN_NOT_DELETE_VIDEOS": "Không thể xóa video."
+  },
+  "comment": {
+    "NOT_FOUND_COMMENT": "Không tìm thấy bình luận.",
+    "NOT_UPDATE_COMMENT": "Không thể cập nhật bình luận.",
+    "NOT_CREATE_COMMENT": "Không thể tạo bình luận.",
+    "NOT_DELETE_COMMENT": "Không thể xóa bình luận.",
+    "NOT_FOUND_COMMENT_REACTION": "Không tìm thấy phản ứng bình luận.",
+    "NOT_UPDATE_COMMENT_REACTION": "Không thể cập nhật phản ứng bình luận.",
+    "NOT_CREATE_COMMENT_REACTION": "Không thể tạo phản ứng bình luận.",
+    "NOT_DELETE_COMMENT_REACTION": "Không thể xóa phản ứng bình luận."
+  },
+  "payment": {
+    "ADD_PAYMENT_METHOD_FAIL": "Thêm phương thức thanh toán thất bại.",
+    "DETACH_PAYMENT_METHOD_FAIL": "Xóa phương thức thanh toán thất bại.",
+    "NOT_ENOUGH_REPS": "Số dư không đủ.",
+    "ONLY_ONE_WITHDRAW_PER_DAY": "Bạn chỉ có thể thực hiện một lần rút tiền mỗi ngày.",
+    "ONLY_THREE_WITHDRAW_PER_WEEK": "Bạn chỉ có thể thực hiện ba lần rút tiền mỗi tuần."
+  },
+  "date": {
+    "START_DATE_AFTER_END_DATE": "Ngày bắt đầu phải trước ngày kết thúc.",
+    "START_DATE_AFTER_CURRENT_DATE": "Ngày bắt đầu phải sau ngày hiện tại.",
+    "END_DATE_AFTER_CURRENT_DATE": "Ngày kết thúc phải sau ngày hiện tại."
+  },
+  "videoHistory": {
+    "NOT_CREATE_VIDEO_HISTORY": "Không thể tạo lịch sử video."
+  }
+}

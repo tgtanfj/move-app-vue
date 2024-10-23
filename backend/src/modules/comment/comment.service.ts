@@ -1,15 +1,15 @@
+import { Comment } from '@/entities/comment.entity';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
+import { UpdateResult } from 'typeorm';
+import { CommonNotificationDto } from '../notification/dto/common-notification.dto';
+import { NotificationService } from '../notification/notification.service';
+import { UserInfoDto } from '../user/dto/user-info.dto';
+import { VideoRepository } from '../video/video.repository';
 import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { UpdateResult } from 'typeorm';
-import { Comment } from '@/entities/comment.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { VideoRepository } from '../video/video.repository';
-import { NotificationService } from '../notification/notification.service';
-import { CommonNotificationDto } from '../notification/dto/common-notification.dto';
-import { UserInfoDto } from '../user/dto/user-info.dto';
-import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 
 @Injectable()
 export class CommentService {
@@ -17,6 +17,7 @@ export class CommentService {
     private readonly commentRepository: CommentRepository,
     private readonly videoRepository: VideoRepository,
     private readonly notificationService: NotificationService,
+    private readonly i18n: I18nService,
   ) {}
 
   async getNumberOfComments(videoId: number): Promise<number> {
@@ -72,7 +73,7 @@ export class CommentService {
 
       const video = await this.videoRepository.findOne(videoId);
       if (!video) {
-        throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+        throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
       }
       const comment = await this.commentRepository.create(userId, dto);
 
@@ -93,13 +94,13 @@ export class CommentService {
     } catch (error) {
       console.log(error);
 
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
     }
   }
 
   async update(commentId: number, dto: UpdateCommentDto): Promise<UpdateResult> {
     return await this.commentRepository.update(commentId, dto).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_UPDATE_COMMENT);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_UPDATE_COMMENT'));
     });
   }
 
@@ -121,7 +122,7 @@ export class CommentService {
 
       await this.commentRepository.delete(id);
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT'));
     }
   }
 }
