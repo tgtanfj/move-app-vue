@@ -271,4 +271,6 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String loginToWebsite ="Please log in to the website to view this notice!";
+  static const String okay = "Okay";
 }

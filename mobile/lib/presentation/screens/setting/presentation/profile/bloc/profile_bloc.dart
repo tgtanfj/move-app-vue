@@ -83,7 +83,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileCountrySelectEvent event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final result = await stateRepository.getStateList(event.countryId);
     result.fold((l) {
       emit(state.copyWith(status: ProfileStatus.failure));
@@ -107,7 +106,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileStateSelectEvent event,
     Emitter<ProfileState> emit,
   ) {
-    emit(state.copyWith(status: ProfileStatus.processing));
     final updateUser = state.user?.copyWith(
         state: state.stateList.firstWhere(
       (e) => e.id == event.stateId,

@@ -23,13 +23,12 @@ class CreateNewPasswordBody extends StatefulWidget {
     this.token,
     required this.forgotPasswordRepository,
   });
+
   @override
   State<CreateNewPasswordBody> createState() => _CreateNewPasswordBodyState();
 }
 
 class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
-
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -60,7 +59,8 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
           double screenWidth = MediaQuery.of(context).size.width - 40;
           return Scaffold(
             appBar: const AppBarWidget(
-              isEnableIcon: false,
+              isEnablePrefixIcon: false,
+              isEnableSuffixIcon: false,
             ),
             backgroundColor: AppColors.white,
             body: Padding(
@@ -108,7 +108,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                             CustomEditText(
                               initialValue: state.newPassword,
                               title: Constants.newPassword,
-                              inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                              ],
                               isPasswordInput: true,
                               maxLength: 32,
                               borderColor: state.isShowValidationError &&
@@ -129,7 +131,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                             CustomEditText(
                               initialValue: state.confirmNewPassword,
                               title: Constants.confirmNewPassword,
-                              inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                              ],
                               maxLength: 32,
                               borderColor: state.isShowValidationError &&
                                       (!state.isPasswordValid ||
