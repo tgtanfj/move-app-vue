@@ -31,7 +31,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      exceptionFactory: async (errors: ValidationError[]) =>
+      exceptionFactory: (errors: ValidationError[]) =>
         new BadRequestException({
           message: ERRORS_DICTIONARY.VALIDATION_ERROR,
           details: errors.map((error) => Object.values(error.constraints)).flat(),
