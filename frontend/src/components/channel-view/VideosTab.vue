@@ -33,7 +33,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (!isLoadingVideos.value && videosData.value) {
     const newVideos = videosData.value.data
-    if (newVideos.length < 6) {
+    if (newVideos.length < 12) {
       hasMoreVideos.value = false
     }
 
@@ -107,7 +107,7 @@ onUnmounted(() => {
       <CustomSelection label="sort by" :listItems="SORT_BY" @update:value="handleSelectSortBy" />
     </div>
   </div>
-  <VideoSkeleton v-if="isLoadingVideos && page === 1" />
+  <VideoSkeleton v-if="isLoadingVideos && page === 1" class="mt-5"/>
   <div v-else class="@container">
     <div v-if="videos.length > 0" class="grid grid-cols-3 gap-6 mt-4 @[1100px]:grid-cols-4">
       <div v-for="item in videos" :key="item">

@@ -105,17 +105,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             height: 20.0,
           ),
           ContentMenu(
-            followingButton: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const Column(
-                            children: [
-                              ItemComment(),
-                              WriteComment(),
-                            ],
-                          )));
-            },
+            followingButton: () {},
             browseButton: () {},
             walletButton: () {},
             settingButton: () {

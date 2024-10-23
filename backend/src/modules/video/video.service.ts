@@ -3,15 +3,22 @@ import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constra
 import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 import { InjectQueue } from '@nestjs/bullmq';
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { plainToInstance } from 'class-transformer';
 import * as fs from 'fs';
 import { parseInt } from 'lodash';
+import { I18nService } from 'nestjs-i18n';
 import * as path from 'path';
 import { FindOptionsOrder } from 'typeorm';
 import { ApiConfigService } from '../../shared/services/api-config.service';
@@ -22,7 +29,7 @@ import { ChannelService } from '../channel/channel.service';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
-import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import { FilterWorkoutLevel, ShowBy, SortBy } from './../channel/dto/request/filter-video-channel.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { PaginationDto } from './dto/request/pagination.dto';
@@ -32,6 +39,10 @@ import { VideoItemDto } from './dto/response/video-item.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
 import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
+import { ViewService } from '../view/view.service';
+import { DonationService } from '../donation/donation.service';
+import { channel } from 'diagnostics_channel';
+import { OverviewVideoResponseDto } from './dto/response/overview-video-response.dto';
 
 @Injectable()
 export class VideoService {
@@ -41,7 +52,6 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
-    private thumbnailRepository: ThumbnailRepository,
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
@@ -49,6 +59,9 @@ export class VideoService {
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
+    private readonly viewService: ViewService,
+    // private readonly donationService: DonationService,
+    private readonly i18n: I18nService,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
       fs.mkdirSync(this.videoUploadPath, { recursive: true });
@@ -60,7 +73,7 @@ export class VideoService {
       const videoURL = await this.videoRepository.findVideoUrlById(videoId);
       if (!videoURL) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
       return videoURL;
@@ -73,7 +86,7 @@ export class VideoService {
       const videoURL = await this.videoRepository.findVideoUrlById(videoId);
       if (!videoURL) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
       let shareUrl: string;
@@ -169,7 +182,7 @@ export class VideoService {
     const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
     if (!video) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+        message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
     const selected = parseInt(dto.selectedThumbnail);
@@ -177,7 +190,7 @@ export class VideoService {
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
     if (!newThumb) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+        message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
     // await this.channelService.increaseTotalVideo(foundChannel.id);
@@ -198,7 +211,7 @@ export class VideoService {
       const video = await this.videoRepository.findVideoById(videoId);
       if (!video) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
 
@@ -206,7 +219,7 @@ export class VideoService {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
         if (!category) {
           throw new NotFoundException({
-            message: ERRORS_DICTIONARY.NOT_FOUND_CATEGORY,
+            message: this.i18n.t('exceptions.category.NOT_FOUND_CATEGORY'),
           });
         }
         video.category = category;
@@ -231,9 +244,10 @@ export class VideoService {
       }
 
       const updatedVideo = await this.videoRepository.save(video);
+
       if (!updatedVideo) {
         throw new BadRequestException({
-          message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
+          message: this.i18n.t('exceptions.video.UPDATE_VIDEO_FAIL'),
         });
       }
 
@@ -249,7 +263,7 @@ export class VideoService {
 
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.deleteVideos(videoIds).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+      throw new BadRequestException(this.i18n.t('exceptions.category.CAN_NOT_DELETE_VIDEOS'));
     });
 
     videoIds.forEach(async (videoId) => {
@@ -288,7 +302,7 @@ export class VideoService {
     const foundVideo = await this.videoRepository.findVideoById(videoId);
     if (!foundVideo) {
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
       });
     }
     return foundVideo;
@@ -468,16 +482,119 @@ export class VideoService {
   async getVideoDetails(videoId: number, userId?: number) {
     if (userId) {
       await this.watchingVideoHistoryService.createOrUpdate(userId, videoId).catch((error) => {
-        throw new NotFoundException(ERRORS_DICTIONARY.NOT_CREATE_VIDEO_HISTORY);
+        throw new NotFoundException(this.i18n.t('exceptions.videoHistory.NOT_CREATE_VIDEO_HISTORY'));
       });
     }
     const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+      throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
     });
     return video;
   }
 
   async findChannel(videoId: number): Promise<Video> {
     return this.videoRepository.findOne(videoId, { channel: true });
+  }
+
+  async overviewVideoAnalytic(videoId: number, userId: number, showby?: ShowBy) {
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
+    const foundVideo = await this.videoRepository.findOne(videoId, {
+      channel: true,
+      category: true,
+    });
+    if (foundChannel.id !== foundVideo.channel.id) {
+      throw new ForbiddenException();
+    }
+
+    const response = plainToInstance(OverviewVideoResponseDto, foundVideo, {
+      excludeExtraneousValues: true,
+    });
+    const thumbnail = await this.thumbnailService.getSelectedThumbnail(foundVideo.id);
+    response.category = foundVideo.category.title;
+    response.thumbnail = thumbnail.image;
+
+    if (showby === ShowBy.ALL_TIME || !showby) {
+      const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, '1970-01-01');
+      response.numberOfReps = totalREPs;
+      response.rating = foundVideo.ratings;
+      response.numberOfViews = foundVideo.numberOfViews;
+      return response;
+    }
+
+    const time = new Date();
+    switch (showby) {
+      case ShowBy.LAST_7_DAYS:
+        time.setDate(time.getDate() - 7);
+        break;
+      case ShowBy.LAST_30_DAYS:
+        time.setDate(time.getDate() - 30);
+      case ShowBy.LAST_90_DAYS:
+        time.setDate(time.getDate() - 90);
+      default:
+        break;
+    }
+
+    const timeFomat = time.toISOString().split('T')[0];
+    const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, timeFomat);
+    const view = await this.viewService.getTotalViewInOnTime(time, videoId);
+    const rating = await this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time);
+    response.numberOfReps = totalREPs;
+    response.numberOfViews = view;
+    response.rating = rating;
+
+    return response;
+  }
+
+  async graphicAgeAnalyticVideo(videoId: number, time: string) {
+    return await this.videoRepository.getVideoViewersByAgeGroups(videoId, time);
+  }
+
+  async graphicGender(videoId: number, time: string) {
+    const result = await this.videoRepository.getVideoViewersByGenderGroups(videoId, time);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_count, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_count / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async getTotalViewOfChannel(channelId: number) {
+    return await this.videoRepository.getTotalViewOfChannel(channelId);
+  }
+
+  async getLastVideoOfChannel(channelId: number) {
+    const result = await this.videoRepository.getLastVideoOfChannel(channelId);
+    if (!result) {
+      return null;
+    }
+    const numberOfReps = await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01');
+    const { image } = await this.thumbnailService.getSelectedThumbnail(result.id);
+
+    return {
+      ...result,
+      ...numberOfReps,
+      image,
+    };
+  }
+
+  async getAll() {
+    return await this.videoRepository.findAll({ channel: true }).then(async (videos) => {
+      return await Promise.all(
+        videos.map(async (video) => {
+          const thumbnailURL = (await this.thumbnailService.getSelectedThumbnail(video.id))?.image;
+
+          return {
+            ...video,
+            thumbnail: thumbnailURL,
+          };
+        }),
+      );
+    });
   }
 }

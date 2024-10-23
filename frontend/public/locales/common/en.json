@@ -1,7 +1,10 @@
 {
   "common": {
     "hello_world": "Hello World!",
-    "no_data": "No data available"
+    "no_data": "No data available",
+    "show": "Show",
+    "display_range_record": "{to} - {from} of {total} results",
+    "display_single_record": "{num} of {num} result"
   },
   "streamer": {
     "home": "Home",
@@ -287,5 +290,46 @@
     "product_name": "Product name",
     "no_payment": "No payment history found",
     "no_purchased": "You have not purchased any REPs during this period of time."
+  },
+  "cashout": {
+    "total_reps_earned": "Total REPs earned",
+    "reps": "REPs",
+    "estimated_value": "Estimated value",
+    "you_need": "You need to earn at least",
+    "2500_reps": "2500 REPs",
+    "to_withdraw": "to withdraw",
+    "setup": "Setup PayPal information",
+    "edit": "Edit PayPal information",
+    "no_paypal": "No PayPal information available",
+    "paypal_transfer": "Paypal transfer to",
+    "withdraw": "Withdraw",
+    "remaining_amount" : "Remaining amount:",
+    "withdraw_value": "Withdraw value",
+    "withdraw_all": "Withdraw all",
+    "processing_payment":"Processing payment",
+    "your_payment": "Your payment of",
+    "is_being": "is being processed. Please allow 7 working days to receive your payment.",
+    "note": "Note: The amount receive may vary due to the exchange rate & bank charges.",
+    "close": "Close",
+    "enter_email": "Enter email address",
+    "email_address": "Email address",
+    "by": "By submitting PayPal information you acknowledge that you have read, understood and agree to be bound by MOVE’s",
+    "end_user": "End User License Agreement",
+    "privacy": "Privacy Policy",
+    "and" : "and",
+    "refund": "Refund Policy",
+    "next": "Next",
+    "back": "Back"
+  },
+  "channel_settings": {
+    "channel": "Channel",
+    "notifications": "Notifications",
+    "channel_settings": "Channel Settings",
+    "bio": "Bio",
+    "optionals":"(Optional)",
+    "tell_us": "Tell us a little bit about yourself.",
+    "characters": "characters",
+    "add" :"Add social links to display on your channel.",
+    "save": "Save settings"
   }
 }

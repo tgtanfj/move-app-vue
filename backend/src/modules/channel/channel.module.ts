@@ -12,9 +12,16 @@ import { VideoModule } from '../video/video.module';
 import { FollowService } from '../follow/follow.service';
 import { EmailService } from '../email/email.service';
 import { User } from '@/entities/user.entity';
+import { DonationModule } from '../donation/donation.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel]), FollowModule, forwardRef(() => UserModule), VideoModule],
+  imports: [
+    TypeOrmModule.forFeature([Channel]),
+    FollowModule,
+    forwardRef(() => UserModule),
+    VideoModule,
+    forwardRef(() => DonationModule),
+  ],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelRepository, JwtService, EmailService],
   exports: [ChannelService, ChannelRepository],

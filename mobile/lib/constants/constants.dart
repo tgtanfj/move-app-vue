@@ -272,6 +272,9 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String loginToWebsite =
+      "Please log in to the website to view this notice!";
+  static const String okay = "Okay";
   static const String buyREP = 'Buy REP\$';
   static const String rep = 'REP\$';
   static const String us = 'US\$';
@@ -298,7 +301,6 @@ class Constants {
   static const String processingPayment = 'Processing your payment…';
   static const String orderSuccess = 'Order success';
   static const String orderFailed = 'Order failed';
-  static const String okay = 'Okay';
   static const String yourPurchaseOf = 'Your purchase of';
   static const String isSuccessful = 'is successful!';
   static const String isNotSuccessful = 'is not successful!';

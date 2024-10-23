@@ -100,6 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       usernameUser.value = userInfo.data.data.username
       localStorage.setItem('userInfo', userInfo.data.data.username)
+      localStorage.setItem('userEmail', userInfo.data.data.email)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
       console.error('Error during token submission:', error)
@@ -126,6 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
+        localStorage.setItem('userEmail', userInfo.data.data.email)
         if (userInfo.data.data.avatar !== null) {
           localStorage.setItem('userAvatar', userInfo.data.data.avatar)
         }
@@ -166,6 +168,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('loginMethod')
           localStorage.removeItem('userInfo')
           localStorage.removeItem('userAvatar')
+          localStorage.removeItem('userEmail')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -179,6 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('loginMethod')
         localStorage.removeItem('userInfo')
         localStorage.removeItem('userAvatar')
+        localStorage.removeItem('userEmail')
       }
     } catch (err) {
       errorMsg.value = err.message
@@ -233,7 +237,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         user.value = userInfo.data.data
       } catch (error) {
-        console.error("Error get profile: ", error)
+        console.error('Error get profile: ', error)
       }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

@@ -1,3 +1,6 @@
+import { Public } from '@/shared/decorators/public.decorator';
+import { User } from '@/shared/decorators/user.decorator';
+import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -5,34 +8,30 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
-  ParseArrayPipe,
   ParseIntPipe,
   Patch,
   Post,
   Put,
   Query,
-  Res,
   UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
-import { VideoService } from './video.service';
-import { PaginationDto } from './dto/request/pagination.dto';
-import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
-import { UploadVideoDTO } from './dto/upload-video.dto';
-import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { User } from '@/shared/decorators/user.decorator';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
-import { DeleteVideosDto } from './dto/request/delete-videos.dto';
-import { ThumbnailsValidationPipe } from '@/shared/pipes/thumbnail-validation.pipe';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
-import { Public } from '@/shared/decorators/public.decorator';
+import { DeleteVideosDto } from './dto/request/delete-videos.dto';
+import { DetailVideoAnalyticDTO } from './dto/request/detail-video-analytic.dto';
+import { PaginationDto } from './dto/request/pagination.dto';
+import { UploadVideoDTO } from './dto/upload-video.dto';
+import { VideoService } from './video.service';
+import { RolesGuard } from '@/shared/guards/roles.guard';
+import { Role } from '@/entities/enums/role.enum';
+import { Roles } from '@/shared/decorators/roles.decorator';
 
 @ApiTags('Video')
 @ApiBearerAuth('jwt')
@@ -110,6 +109,13 @@ export class VideoController {
     return await this.videoService.getVideoDetails(videoId, userId);
   }
 
+  @Get('/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async getVideosAdmin() {
+    return await this.videoService.getAll();
+  }
+
   @Get(':videoId')
   async getUrlVideo(@Param('videoId') videoId: number) {
     return await this.videoService.sharingVideoUrlByNativeId(videoId);
@@ -120,8 +126,28 @@ export class VideoController {
     return await this.videoService.downloadVideo(videoId);
   }
 
-  @Get()
-  async test() {
-    return await this.videoService.sortVideoByPriority();
+  @UseGuards(JwtAuthGuard)
+  @Get('analytic/:videoId')
+  async overviewVideoAnalytic(
+    @Param('videoId') videoId: number,
+    @User() user,
+    @Query() query: DetailVideoAnalyticDTO,
+  ) {
+    // return await this.videoService.sortVideoByPriority();
+    return await this.videoService.overviewVideoAnalytic(videoId, user.id, query.option);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('analytic/graphic/:videoId')
+  async demoGraphicVideoAnalytic(
+    @Param('videoId') videoId: number,
+    @User() user,
+    @Query() query: DetailVideoAnalyticDTO,
+  ) {
+    // return await this.videoService.sortVideoByPriority();
+    const time = new Date();
+    time.setDate(time.getDate() - 100);
+    const timeFomat = time.toISOString().split('T')[0];
+    return await this.videoService.graphicGender(videoId, timeFomat);
   }
 }

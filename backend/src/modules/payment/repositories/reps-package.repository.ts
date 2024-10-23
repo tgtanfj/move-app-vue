@@ -11,11 +11,11 @@ export class RepsPackageRepository {
   ) {}
 
   async listRepsPackage() {
-    return this.repsPackageRepository.find();
+    return await this.repsPackageRepository.find();
   }
 
   async findOneRepPackage(repPackageId: number): Promise<RepsPackage> {
-    return this.repsPackageRepository.findOneByOrFail({
+    return await this.repsPackageRepository.findOneByOrFail({
       id: repPackageId,
     });
   }

@@ -1,6 +1,6 @@
 <script setup>
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@common/ui/table'
-import { formatDateLong, formatTime } from '../../utils/convertDate.util';
+import { formatDateLong, formatTime } from '../../utils/convertDate.util'
 
 const props = defineProps({
   payments: {
@@ -19,7 +19,7 @@ const props = defineProps({
       </TableRow>
     </TableHeader>
     <TableBody v-if="payments.length > 0">
-      <TableRow v-for="payment in payments" :key="payment">
+      <TableRow v-for="payment in payments" :key="payment" class="hover:bg-[#EDFFFC]">
         <TableCell> {{ formatDateLong(payment.createdAt.split('T')[0]) }} </TableCell>
         <TableCell>{{ formatTime(payment.createdAt) }}</TableCell>
         <TableCell class="font-semibold text-center"

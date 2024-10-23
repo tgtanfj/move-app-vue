@@ -207,7 +207,10 @@ const toggleReplyContent = (replyId) => {
 
 const showReplyInput = async (commentId) => {
   if (!checkIsAuth()) return
-  replyInputId.value = replyInputId.value === commentId ? null : commentId
+  if (replyInputId.value === commentId) {
+    return
+  }
+  replyInputId.value = commentId
   replyData.value = ''
 }
 
@@ -249,7 +252,7 @@ const createReply = async (commentId) => {
         <div class="flex flex-col gap-1 w-full">
           <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
-            <p class="text-[13px] font-bold">{{ item.user.fullName }}</p>
+            <p class="text-[13px] font-bold">{{ item.user.username }}</p>
             <div v-if="item.user.channel" class="flex items-center gap-2">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
             </div>
@@ -342,26 +345,9 @@ const createReply = async (commentId) => {
             v-if="isFocused && replyInputId === item.id"
             class="flex items-center justify-end gap-4"
           >
-            <Dialog v-model:open="isCancelComment">
-              <DialogTrigger aschild>
-                <Button class="text-[16px] font-normal" variant="outline">{{
-                  $t('comment.cancel')
-                }}</Button>
-              </DialogTrigger>
-              <DialogContent class="w-[400px] p-4">
-                <p class="text-2xl font-bold">{{ $t('comment.cancel_reservation') }}</p>
-                <p>{{ $t('comment.are_you_sure') }}</p>
-                <div class="w-full flex items-center justify-center gap-4 mt-4">
-                  <Button
-                    @click="isCancelComment = false"
-                    class="w-24 font-normal"
-                    variant="outline"
-                    >{{ $t('comment.no') }}</Button
-                  >
-                  <Button @click="cancelComment" class="w-24">{{ $t('comment.yes') }}</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Button @click="cancelComment" class="text-[16px] font-normal" variant="outline">{{
+              $t('comment.cancel')
+            }}</Button>
             <Button @click="createReply(item.id)" class="w-[104px] text-[16px]">{{
               $t('comment.send')
             }}</Button>
@@ -400,9 +386,13 @@ const createReply = async (commentId) => {
                 class="object-cover w-[40px] h-[40px] rounded-full"
               />
               <div class="flex flex-col gap-1">
+                <RepsSenderIcon
+                  class="mb-1"
+                  v-if="myReplyPerComment[item.id].totalDonation !== 0"
+                />
                 <div class="flex items-center gap-3">
                   <p class="text-[13px] font-bold">
-                    {{ myReplyPerComment[item.id].user.fullName }}
+                    {{ myReplyPerComment[item.id].user.username }}
                   </p>
                   <div
                     v-if="myReplyPerComment[item.id].user.channel"
@@ -506,8 +496,9 @@ const createReply = async (commentId) => {
             >
               <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
               <div class="flex flex-col gap-1">
+                <RepsSenderIcon class="mb-1" v-if="reply.totalDonation !== 0" />
                 <div class="flex items-center gap-3">
-                  <p class="text-[13px] font-bold">{{ reply.user.fullName }}</p>
+                  <p class="text-[13px] font-bold">{{ reply.user.username }}</p>
                   <div v-if="reply.user.channel" class="flex items-center gap-2">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                   </div>

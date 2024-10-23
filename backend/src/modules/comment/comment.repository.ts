@@ -2,7 +2,7 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import { FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -26,14 +26,34 @@ export class CommentRepository {
     });
   }
 
-  async getOne(id: number): Promise<Comment> {
-    return await this.commentRepository.findOneBy({ id: id });
+  async getOne(id: number, relations?: FindOptionsRelations<Comment>): Promise<Comment> {
+    return await this.commentRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations,
+    });
   }
 
   async getOneWithVideo(id: number): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: { id: id },
-      relations: { video: true, parent: true },
+      relations: { video: true, parent: true, user: true },
+      select: {
+        id: true,
+        content: true,
+        numberOfReply: true,
+        numberOfLike: true,
+        parent: { id: true, numberOfReply: true },
+        video: {
+          id: true,
+          title: true,
+          numberOfComments: true,
+        },
+        user: {
+          id: true,
+        },
+      },
     });
   }
 
