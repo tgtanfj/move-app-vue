@@ -52,7 +52,6 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
-    private thumbnailRepository: ThumbnailRepository,
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
@@ -582,5 +581,20 @@ export class VideoService {
       ...numberOfReps,
       image,
     };
+  }
+
+  async getAll() {
+    return await this.videoRepository.findAll({ channel: true }).then(async (videos) => {
+      return await Promise.all(
+        videos.map(async (video) => {
+          const thumbnailURL = (await this.thumbnailService.getSelectedThumbnail(video.id))?.image;
+
+          return {
+            ...video,
+            thumbnail: thumbnailURL,
+          };
+        }),
+      );
+    });
   }
 }

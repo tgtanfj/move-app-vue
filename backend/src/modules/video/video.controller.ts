@@ -29,6 +29,9 @@ import { DetailVideoAnalyticDTO } from './dto/request/detail-video-analytic.dto'
 import { PaginationDto } from './dto/request/pagination.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoService } from './video.service';
+import { RolesGuard } from '@/shared/guards/roles.guard';
+import { Role } from '@/entities/enums/role.enum';
+import { Roles } from '@/shared/decorators/roles.decorator';
 
 @ApiTags('Video')
 @ApiBearerAuth('jwt')
@@ -104,6 +107,13 @@ export class VideoController {
   async getVideoDetails(@Param('videoId') videoId: number, @User() user?) {
     const userId = user ? user.id : undefined;
     return await this.videoService.getVideoDetails(videoId, userId);
+  }
+
+  @Get('/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async getVideosAdmin() {
+    return await this.videoService.getAll();
   }
 
   @Get(':videoId')
