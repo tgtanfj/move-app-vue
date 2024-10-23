@@ -67,7 +67,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       ),
                       Positioned(
                         top: 13,
-                        right: -0,
+                        right: 0,
                         child: Visibility(
                             visible: widget.prefixIconPath == null &&
                                 widget.isShowNotificationDot,
@@ -121,7 +121,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                       ),
                       Positioned(
                         top: 13,
-                        right: -0,
+                        right: 0,
                         child: Visibility(
                             visible: widget.prefixIconPath != null &&
                                 widget.isShowNotificationDot,
