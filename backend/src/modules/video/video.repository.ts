@@ -189,6 +189,7 @@ export class VideoRepository {
     const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
     const channelIds = await this.getFollowedChannelsByUser(userId);
     const isFollowed = !!channelIds.find((id) => id == videoDetails.channel.id);
+
     return {
       ...dataVideoDetails,
       thumbnailURL,
