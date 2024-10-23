@@ -3,7 +3,7 @@ import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constra
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { UpdateResult } from 'typeorm';
+import { FindOptionsRelations, UpdateResult } from 'typeorm';
 import { EmailService } from '../email/email.service';
 import { FollowService } from '../follow/follow.service';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
@@ -30,8 +30,8 @@ export class ChannelService {
     });
   }
 
-  async findOne(channelId: number): Promise<Channel> {
-    return await this.channelRepository.findOne(channelId).catch((error) => {
+  async findOne(channelId: number, relations?: FindOptionsRelations<Channel>): Promise<Channel> {
+    return await this.channelRepository.findOne(channelId, relations).catch((error) => {
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_FOUND_ANY_CHANNEL);
     });
   }
@@ -71,9 +71,6 @@ export class ChannelService {
       excludeExtraneousValues: true,
     });
 
-    let isFollowed = null;
-    if (userId) isFollowed = await this.followService.isFollowed(userId, channelId);
-
     const [followingChannels, socialLinks] = await Promise.all([
       this.followService
         .getFollowingChannels(channel.user.id, 4, { channel: true })
@@ -93,7 +90,13 @@ export class ChannelService {
       this.getSocialLinks(channel.facebookLink, channel.youtubeLink, channel.instagramLink),
     ]);
 
-    channelProfileDto.isFollowed = isFollowed;
+    channelProfileDto.canFollow = null;
+    channelProfileDto.isFollowed = null;
+
+    if (userId) {
+      channelProfileDto.canFollow = !(channel.user.id === userId);
+      channelProfileDto.isFollowed = await this.followService.isFollowed(userId, channelId);
+    }
     channelProfileDto.numberOfFollowers = +channelProfileDto.numberOfFollowers;
     channelProfileDto.followingChannels = followingChannels;
     channelProfileDto.socialLinks = socialLinks;
@@ -191,5 +194,19 @@ export class ChannelService {
     const channel = await this.getChannelByUserId(userId);
     await this.channelRepository.updateEmailPayPal(channel.id, email);
     return await this.getChannelReps(userId);
+  }
+
+  async overViewAnalytic(userId: number) {
+    const { id, numberOfFollowers, numberOfREPs } = await this.channelRepository.getChannelByUserId(userId);
+    const totalView = await this.videoService.getTotalViewOfChannel(id);
+    const avgTime = null;
+    const lastVideo = await this.videoService.getLastVideoOfChannel(id);
+    return {
+      numberOfFollowers,
+      numberOfREPs,
+      totalView,
+      avgTime,
+      lastVideo,
+    };
   }
 }

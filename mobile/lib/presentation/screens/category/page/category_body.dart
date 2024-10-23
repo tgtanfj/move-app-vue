@@ -5,7 +5,6 @@ import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/constants/key_screen.dart';
-import 'package:move_app/data/data_sources/dummy_data.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/category_item.dart';
 import 'package:move_app/presentation/screens/category/bloc/category_bloc.dart';
@@ -65,11 +64,11 @@ class _CategoryBodyState extends State<CategoryBody> {
                       childAspectRatio: 0.68,
                     ),
                     padding: const EdgeInsets.all(10),
-                    itemCount: dummyCategories.length,
+                    itemCount: state.listCategory.length,
                     itemBuilder: (context, index) {
                       return Center(
                         child: CategoryItem(
-                          categoryModel: dummyCategories[index],
+                          categoryModel: state.listCategory[index],
                         ),
                       );
                     },

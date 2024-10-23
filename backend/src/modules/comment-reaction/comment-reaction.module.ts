@@ -7,9 +7,16 @@ import { CommentReactionController } from './comment-reaction.controller';
 import { CommentReactionService } from './comment-reaction.service';
 import { CommentReactionRepository } from './comment-reaction.repository';
 import { CommentModule } from '../comment/comment.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CommentReaction]), JwtModule, UserModule, CommentModule],
+  imports: [
+    TypeOrmModule.forFeature([CommentReaction]),
+    JwtModule,
+    UserModule,
+    CommentModule,
+    NotificationModule,
+  ],
   controllers: [CommentReactionController],
   providers: [CommentReactionService, CommentReactionRepository],
   exports: [CommentReactionService, CommentReactionRepository],

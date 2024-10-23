@@ -20,5 +20,6 @@ import { GiftPackageRepository } from './repositories/gift-package.repository';
   ],
   controllers: [DonationController],
   providers: [DonationService, DonationRepository, GiftPackageRepository, JwtService],
+  exports: [DonationService, DonationRepository, GiftPackageRepository],
 })
 export class DonationModule {}

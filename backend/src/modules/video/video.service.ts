@@ -7,7 +7,14 @@ import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 import { InjectQueue } from '@nestjs/bullmq';
-import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { plainToInstance } from 'class-transformer';
 import * as fs from 'fs';
@@ -22,7 +29,7 @@ import { ChannelService } from '../channel/channel.service';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
-import { FilterWorkoutLevel, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import { FilterWorkoutLevel, ShowBy, SortBy } from './../channel/dto/request/filter-video-channel.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { PaginationDto } from './dto/request/pagination.dto';
@@ -32,6 +39,10 @@ import { VideoItemDto } from './dto/response/video-item.dto';
 import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
 import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
+import { ViewService } from '../view/view.service';
+import { DonationService } from '../donation/donation.service';
+import { channel } from 'diagnostics_channel';
+import { OverviewVideoResponseDto } from './dto/response/overview-video-response.dto';
 
 @Injectable()
 export class VideoService {
@@ -49,6 +60,8 @@ export class VideoService {
     private readonly channelService: ChannelService,
     private readonly thumbnailService: ThumbnailService,
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
+    private readonly viewService: ViewService,
+    // private readonly donationService: DonationService,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
       fs.mkdirSync(this.videoUploadPath, { recursive: true });
@@ -479,5 +492,93 @@ export class VideoService {
 
   async findChannel(videoId: number): Promise<Video> {
     return this.videoRepository.findOne(videoId, { channel: true });
+  }
+
+  async overviewVideoAnalytic(videoId: number, userId: number, showby?: ShowBy) {
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
+    const foundVideo = await this.videoRepository.findOne(videoId, {
+      channel: true,
+      category: true,
+    });
+    if (foundChannel.id !== foundVideo.channel.id) {
+      throw new ForbiddenException();
+    }
+
+    const response = plainToInstance(OverviewVideoResponseDto, foundVideo, {
+      excludeExtraneousValues: true,
+    });
+    const thumbnail = await this.thumbnailService.getSelectedThumbnail(foundVideo.id);
+    response.category = foundVideo.category.title;
+    response.thumbnail = thumbnail.image;
+
+    if (showby === ShowBy.ALL_TIME || !showby) {
+      const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, '1970-01-01');
+      response.numberOfReps = totalREPs;
+      response.rating = foundVideo.ratings;
+      response.numberOfViews = foundVideo.numberOfViews;
+      return response;
+    }
+
+    const time = new Date();
+    switch (showby) {
+      case ShowBy.LAST_7_DAYS:
+        time.setDate(time.getDate() - 7);
+        break;
+      case ShowBy.LAST_30_DAYS:
+        time.setDate(time.getDate() - 30);
+      case ShowBy.LAST_90_DAYS:
+        time.setDate(time.getDate() - 90);
+      default:
+        break;
+    }
+
+    const timeFomat = time.toISOString().split('T')[0];
+    const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, timeFomat);
+    const view = await this.viewService.getTotalViewInOnTime(time, videoId);
+    const rating = await this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time);
+    response.numberOfReps = totalREPs;
+    response.numberOfViews = view;
+    response.rating = rating;
+
+    return response;
+  }
+
+  async graphicAgeAnalyticVideo(videoId: number, time: string) {
+    return await this.videoRepository.getVideoViewersByAgeGroups(videoId, time);
+  }
+
+  async graphicGender(videoId: number, time: string) {
+    const result = await this.videoRepository.getVideoViewersByGenderGroups(videoId, time);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_count, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_count / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async getTotalViewOfChannel(channelId: number) {
+    return await this.videoRepository.getTotalViewOfChannel(channelId);
+  }
+
+  async getLastVideoOfChannel(channelId: number) {
+    const result = await this.videoRepository.getLastVideoOfChannel(channelId);
+    if (!result) {
+      return null;
+    }
+    const numberOfReps = await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01');
+    const { image } = await this.thumbnailService.getSelectedThumbnail(result.id);
+
+    return {
+      ...result,
+      ...numberOfReps,
+      image,
+    };
   }
 }

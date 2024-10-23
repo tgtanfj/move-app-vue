@@ -100,6 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       usernameUser.value = userInfo.data.data.username
       localStorage.setItem('userInfo', userInfo.data.data.username)
+      localStorage.setItem('userEmail', userInfo.data.data.email)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
       console.error('Error during token submission:', error)
@@ -126,6 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
+        localStorage.setItem('userEmail', userInfo.data.data.email)
         if (userInfo.data.data.avatar !== null) {
           localStorage.setItem('userAvatar', userInfo.data.data.avatar)
         }
