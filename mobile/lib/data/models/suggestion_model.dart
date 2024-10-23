@@ -1,11 +1,12 @@
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
+import 'package:move_app/data/models/top_video_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 
 class SuggestionModel {
   final CategoryModel? topCategory;
   final List<ChannelModel>? topInstructors;
-  final List<VideoModel>? topVideos;
+  final List<TopVideoModel>? topVideos;
 
   SuggestionModel({
     this.topCategory,
@@ -16,7 +17,7 @@ class SuggestionModel {
   SuggestionModel copyWith({
     CategoryModel? topCategory,
     List<ChannelModel>? topInstructors,
-    List<VideoModel>? topVideos,
+    List<TopVideoModel>? topVideos,
   }) {
     return SuggestionModel(
       topCategory: topCategory ?? this.topCategory,
@@ -37,7 +38,7 @@ class SuggestionModel {
           : [],
       topVideos: (json['topVideos'] is List?)
           ? (json['topVideos'] as List?)
-              ?.map((e) => VideoModel.fromJson(e))
+              ?.map((e) => TopVideoModel.fromJson(e))
               .toList()
           : [],
     );

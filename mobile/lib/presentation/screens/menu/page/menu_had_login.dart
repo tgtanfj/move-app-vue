@@ -12,6 +12,7 @@ import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/item_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
 
 import '../../../components/logout_dialog.dart';
 
@@ -24,6 +25,7 @@ class MenuHadLogin extends StatefulWidget {
   final String userName;
   final bool isBlueBadge;
   final bool isPinkBadge;
+
   const MenuHadLogin({
     super.key,
     required this.logoutSuccessEvent,
@@ -117,7 +119,10 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                           )));
             },
             browseButton: () {},
-            walletButton: () {},
+            walletButton: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const WalletBody()));
+            },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },

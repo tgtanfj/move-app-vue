@@ -5,6 +5,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/suggestion_model.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 
 import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_images.dart';
@@ -39,14 +40,25 @@ class SuggestionSearchBox extends StatelessWidget {
                     );
                   },
                 ),
-                title: Text(suggestionModel?.topCategory?.title ?? ""),
+                title: Text(
+                  suggestionModel?.topCategory?.title ?? "",
+                  style: AppTextStyles.montserratStyle.regular14Black,
+                ),
                 trailing: Text(
                   Constants.categories,
                   style: AppTextStyles.montserratStyle.regular12Black.copyWith(
                     fontStyle: FontStyle.italic,
                   ),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => VideoDetailPage(
+                              videoId:
+                              suggestionModel?.topCategory?.id ??
+                                  0)));
+                },
               )
             : const SizedBox(),
         (suggestionModel?.topInstructors != null)
@@ -64,13 +76,19 @@ class SuggestionSearchBox extends StatelessWidget {
                     title: Row(
                       children: [
                         Text(
-                            suggestionModel?.topInstructors?[index].name ?? ""),
-                        const Text(" "),
+                          suggestionModel?.topInstructors?[index].name ?? "",
+                          style: AppTextStyles.montserratStyle.regular14Black,
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
                         (suggestionModel?.topInstructors?[index].isBlueBadge ??
                                 false)
                             ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
                             : const SizedBox(),
-                        const Text(" "),
+                        const SizedBox(
+                          width: 4,
+                        ),
                         (suggestionModel?.topInstructors?[index].isPinkBadge ??
                                 false)
                             ? SvgPicture.asset(AppIcons.starFlower.svgAssetPath)
@@ -84,7 +102,15 @@ class SuggestionSearchBox extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoDetailPage(
+                                  videoId:
+                                  suggestionModel?.topInstructors?[index].id ??
+                                      0)));
+                    },
                   );
                 })
             : const SizedBox(),
@@ -94,7 +120,15 @@ class SuggestionSearchBox extends StatelessWidget {
                 itemCount: suggestionModel?.topVideos?.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(suggestionModel?.topVideos?[index].title ?? ""),
+                    leading: Avatar(
+                        imageUrl: suggestionModel?.topVideos?[index].url ?? "",
+                        widthAvatar: 40,
+                        heightAvatar: 40,
+                        radiusAvatar: 50),
+                    title: Text(
+                      suggestionModel?.topVideos?[index].title ?? "",
+                      style: AppTextStyles.montserratStyle.regular14Black,
+                    ),
                     trailing: Text(
                       Constants.videos,
                       style:
@@ -102,7 +136,15 @@ class SuggestionSearchBox extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoDetailPage(
+                                  videoId:
+                                      suggestionModel?.topVideos?[index].id ??
+                                          0)));
+                    },
                   );
                 })
             : const SizedBox(),
@@ -127,8 +169,7 @@ class SuggestionSearchBox extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-            ,
+            ),
           )
       ],
     );

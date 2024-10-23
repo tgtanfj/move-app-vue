@@ -269,4 +269,11 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String paymentMethod = "Payment Method";
+  static const String paymentHistory = "Payment History";
+  static const String date = "DATE";
+  static const String productName = "PRODUCT NAME";
+  static const String qty = "QTY";
+  static const String startDate = "START DATE";
+  static const String endDate = "END DATE";
 }
