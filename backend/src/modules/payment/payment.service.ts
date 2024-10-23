@@ -166,6 +166,6 @@ export class PaymentService {
   }
 
   async getAllCashOutHistories() {
-    return this.cashOutRepository.getAllCashOutHistory({ channel: true });
+    return this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
   }
 }
