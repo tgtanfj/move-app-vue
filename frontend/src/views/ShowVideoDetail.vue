@@ -2,25 +2,33 @@
 import VideoLeft from '@components/showVideoDetail/VideoLeft.vue'
 import VideoRight from '@components/showVideoDetail/VideoRight.vue'
 import axios from 'axios'
-import { ref, watchEffect } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Skeleton } from '@common/ui/skeleton'
 import VideoSkeleton from '../components/home/VideoSkeleton.vue'
 import Button from '@common/ui/button/Button.vue'
 import { ADMIN_BASE } from '@constants/api.constant'
+import { useAuthStore } from '../stores/auth'
+import { apiAxios } from '@helpers/axios.helper'
 
 const route = useRoute()
 const router = useRouter()
 const videoDetail = ref(null)
 const isLoading = ref(true)
 const isNotFoundVideo = ref(false)
+const authStore = useAuthStore()
 
-const getVideoDetailById = async (videoId) => {
-  isLoading.value = true
-  isNotFoundVideo.value = false
+const getVideoDetailById = async (videoId, token) => {
   try {
-    const res = await axios.get(`${ADMIN_BASE}/video/${videoId}/details`)
-    const dataVideo = res.data.data
+    isLoading.value = true
+    isNotFoundVideo.value = false
+    let result = null
+    if (!token) {
+      result = await axios.get(`${ADMIN_BASE}/video/${videoId}/details`)
+    } else {
+      result = await apiAxios.get(`/video/${videoId}/details`)
+    }
+    const dataVideo = result.data.data
     if (dataVideo.url) {
       const vimeoId = dataVideo.url.split('/').pop()
       const vimeoPlayerUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=1&title=0&byline=0&portrait=0&badge=0`
@@ -39,12 +47,18 @@ const goBackHome = () => {
   router.push('/')
 }
 
-watchEffect(() => {
-  const videoId = route.params.id
-  if (videoId) {
-    getVideoDetailById(videoId)
-  }
-})
+watch(
+  [() => route.params.id, () => authStore.accessToken],
+  async (newValue) => {
+    const [videoId, token] = newValue
+    if (token) {
+      getVideoDetailById(videoId, token)
+    } else {
+      getVideoDetailById(videoId, null)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>

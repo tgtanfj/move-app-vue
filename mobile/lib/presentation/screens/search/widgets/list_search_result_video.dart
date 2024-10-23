@@ -5,19 +5,16 @@ import 'package:move_app/presentation/components/video_poster.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
 import '../../home/widgets/video_feature_description.dart';
+import '../../video_detail/page/video_detail_page.dart';
 
 class ListSearchResultVideo extends StatelessWidget {
   final List<VideoModel>? videoList;
   final List<ChannelModel>? channelList;
-  final Function? onTap;
-  final VoidCallback tapToVideoDetail;
 
   const ListSearchResultVideo({
     super.key,
     required this.videoList,
     required this.channelList,
-    required this.tapToVideoDetail,
-    this.onTap,
   });
 
   @override
@@ -27,30 +24,41 @@ class ListSearchResultVideo extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: videoList?.length ?? 0,
       itemBuilder: (BuildContext context, int index) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width - 40.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              VideoPoster(
-                onTap: tapToVideoDetail,
-                duration:
-                    videoList?[index].durationsVideo?.toDurationFormat() ??
-                        '00:00',
-                height: MediaQuery.of(context).size.height * 0.21,
-                isViewText: true,
-                image: videoList?[index].urlS3,
-                numberOfViews: videoList?[index].numberOfViews.toString(),
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VideoDetailPage(
+                  videoId: videoList?[index].id ?? 0,
+                ),
               ),
-              const SizedBox(
-                height: 4.0,
-              ),
-              VideoFeatureDescription(
-                onTapToVideoDetail: () => onTap,
-                videoModel: videoList?[index],
-                channelModel: videoList?[index].channel,
-              ),
-            ],
+            );
+          },
+          child: Container(
+            color: Colors.white,
+            width: MediaQuery.of(context).size.width - 40.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                VideoPoster(
+                  duration:
+                      videoList?[index].durationsVideo?.toDurationFormat() ??
+                          '00:00',
+                  height: MediaQuery.of(context).size.height * 0.21,
+                  isViewText: true,
+                  image: videoList?[index].urlS3,
+                  numberOfViews: videoList?[index].numberOfViews.toString(),
+                ),
+                const SizedBox(
+                  height: 4.0,
+                ),
+                VideoFeatureDescription(
+                  videoModel: videoList?[index],
+                  channelModel: videoList?[index].channel,
+                ),
+              ],
+            ),
           ),
         );
       },

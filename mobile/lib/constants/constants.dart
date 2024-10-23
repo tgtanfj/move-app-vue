@@ -199,10 +199,10 @@ class Constants {
   static const String cancel = "Cancel";
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
-  static const String readMore = "...Read More";
-  static const String readLess = "Read Less";
-  static const String cancelComment = "Cancel Comment?";
-  static const String areUSure = "Are you sure to cancel this comment?";
+  static const String readMore = "Read More";
+  static const String readLess = "Show Less";
+  static const String cancelComment = "Cancel Reservation?";
+  static const String areUSure = "Are you sure you want to cancel this reservation?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
   static const String writeReply = "Write a reply";
@@ -239,6 +239,8 @@ class Constants {
   static const String allResultFor = 'All result for';
   static const String instructors = 'Instructors';
   static const String videoNotFound = 'Video Not Found';
+  static const String isCommentable = "Comments feature has been disabled.";
+
   static const String channelId = 'channelId';
   static const String allLevels = 'All Levels';
   static const String beginner = 'Beginner';
@@ -269,6 +271,8 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String loginToWebsite ="Please log in to the website to view this notice!";
+  static const String okay = "Okay";
   static const String paymentMethod = "Payment Method";
   static const String paymentHistory = "Payment History";
   static const String date = "DATE";

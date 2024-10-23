@@ -81,6 +81,8 @@ export class AuthController {
 
     const userId = req.user.id;
 
+    console.log(await this.authService.checkPasswordExpired(userId));
+
     return await this.authService.login(userId, ip, userAgent);
   }
 

@@ -17,6 +17,8 @@ import { BullModule } from '@nestjs/bullmq';
 import { UploadS3Processor } from '@/shared/queues/uploadS3.processor';
 import { WatchingVideoHistoryModule } from '../watching-video-history/watching-video-history.module';
 import { Follow } from '@/entities/follow.entity';
+import { ViewModule } from '../view/view.module';
+import { DonationModule } from '../donation/donation.module';
 
 @Module({
   imports: [
@@ -30,6 +32,9 @@ import { Follow } from '@/entities/follow.entity';
     BullModule.registerQueueAsync({
       name: 'upload-s3',
     }),
+    ViewModule,
+    forwardRef(() => DonationModule),
+    // DonationModule
   ],
   controllers: [VideoController],
   providers: [

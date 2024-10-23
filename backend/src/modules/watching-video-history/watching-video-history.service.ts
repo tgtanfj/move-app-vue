@@ -32,4 +32,8 @@ export class WatchingVideoHistoryService {
   async getMyRate(userId: number, videoId: number) {
     return await this.watchingVideoHistoryRepository.getMyRate(userId, videoId);
   }
+
+  async getRatingAvgOfVideo(videoId: number, time: Date) {
+    return await this.watchingVideoHistoryRepository.avgRatingVideoByTime(videoId, time);
+  }
 }

@@ -1,10 +1,10 @@
 import { User } from '@/entities/user.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
@@ -30,11 +30,13 @@ export class PaymentService {
     private readonly redisService: RedisService,
     private readonly configService: ApiConfigService,
     private readonly cashOutRepository: CashOutRepository,
+
+    private readonly i18n: I18nService,
   ) {}
 
   async listRepsPackage() {
     try {
-      return this.repsPackageRepository.listRepsPackage();
+      return await this.repsPackageRepository.listRepsPackage();
     } catch (error) {
       console.error(error);
     }
@@ -104,11 +106,11 @@ export class PaymentService {
     );
 
     if (timesWithdrawPerDay) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_ONE_WITHDRAW_PER_DAY);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_ONE_WITHDRAW_PER_DAY'));
     }
 
     if (timesWithdrawPerWeek >= 3) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_THREE_WITHDRAW_PER_WEEK);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_THREE_WITHDRAW_PER_WEEK'));
     }
 
     const { channel } = await this.userService.findChannelByUserId(userId);
@@ -118,7 +120,7 @@ export class PaymentService {
       channel.numberOfREPs < repsNeedToWithDraw ||
       channel.numberOfREPs < numberOfREPs
     ) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.NOT_ENOUGH_REPS'));
     }
 
     if (withDrawDto.isSave) {

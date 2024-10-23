@@ -1,7 +1,7 @@
 import { User } from '@/entities/user.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { I18nService } from 'nestjs-i18n';
 import { Equal, FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../../auth/dto/signup-social.dto';
@@ -12,6 +12,7 @@ export class UserRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly i18n: I18nService,
   ) {}
 
   async findOne(id: number, relations: FindOptionsRelations<User> = null): Promise<User> {
@@ -22,13 +23,15 @@ export class UserRepository {
       relations: relations,
     });
 
-    if (!foundUser) throw new Error(ERRORS_DICTIONARY.NOT_FOUND_ANY_USER);
+    if (!foundUser) throw new Error(this.i18n.t('exceptions.user.NOT_FOUND_ANY_USER'));
 
     return foundUser;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(relations?: FindOptionsRelations<User>): Promise<User[]> {
+    return await this.userRepository.find({
+      relations,
+    });
   }
 
   async findOneByEmail(email: string): Promise<User> {
@@ -73,7 +76,7 @@ export class UserRepository {
     });
     if (!foundUser)
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.USER_NOT_FOUND,
+        message: this.i18n.t('exceptions.users.EMAIL_EXISTED'),
         email,
       });
     return foundUser;

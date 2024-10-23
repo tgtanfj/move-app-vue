@@ -12,6 +12,7 @@ import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/bloc/sort_and_filter_state.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/page/sort_and_filter_page.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/bloc/videos_bloc.dart';
@@ -23,8 +24,8 @@ import 'package:tuple/tuple.dart';
 class VideosBody extends StatefulWidget {
   final ChannelModel? channelModel;
   final List<VideoModel>? videos;
-  const VideosBody({super.key, this.channelModel, this.videos});
 
+  const VideosBody({super.key, this.channelModel, this.videos});
   @override
   State<VideosBody> createState() => _VideosBodyState();
 }
@@ -127,7 +128,16 @@ class _VideosBodyState extends State<VideosBody>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoDetailPage(
+                                        videoId: video.id ?? 0,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: VideoPoster(
                                   height: height * 0.22,
                                   isViewText: true,
@@ -142,6 +152,14 @@ class _VideosBodyState extends State<VideosBody>
                               ),
                               const SizedBox(height: 4.0),
                               VideoFeatureDescription(
+                                onTapToVideoDetail: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => VideoDetailPage(
+                                      videoId: video.id ?? 0,
+                                    ),
+                                  ),
+                                ),
                                 channelModel: video.channel,
                                 category: video.category,
                                 videoModel: video,
