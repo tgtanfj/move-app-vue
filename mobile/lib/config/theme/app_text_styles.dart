@@ -135,4 +135,8 @@ class MontserratStyles {
       customMontserratStyle(24, AppColors.black, AppFontWeight.bold.weight);
   final regular16DarkSilver = customMontserratStyle(
       16, AppColors.darkSilver, AppFontWeight.regular.weight);
+  final bold16DarkSilver = customMontserratStyle(
+      16, AppColors.darkSilver, AppFontWeight.bold.weight);
+  final regular16ChineseSilver = customMontserratStyle(
+      16, AppColors.chineseSilver, AppFontWeight.regular.weight);
 }
