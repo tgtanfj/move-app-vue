@@ -142,7 +142,6 @@ export class AuthService {
     await this.userService.updateAccount(account.id, {
       oldPassword: account.password,
       password: newPasswordHash,
-      dateUpdatePassword: new Date(),
     });
   }
 
@@ -325,18 +324,14 @@ export class AuthService {
       await this.userService.findOne(userId, {
         account: true,
       })
-    ).account.dateUpdatePassword;
+    ).account.updatedAt;
 
-    if (dateChangePassword) {
-      const passwordExpirationDays = this.apiConfigService.getNumber('PASSWORD_EXPIRED_DAY');
+    const passwordExpirationDays = this.apiConfigService.getNumber('PASSWORD_EXPIRED_DAYS');
 
-      const timeDiff = currentDate.getTime() - new Date(dateChangePassword).getTime();
+    const timeDiff = currentDate.getTime() - new Date(dateChangePassword).getTime();
 
-      const daysSincePasswordChange = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const daysSincePasswordChange = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-      return daysSincePasswordChange > passwordExpirationDays;
-    }
-
-    return false;
+    return daysSincePasswordChange > passwordExpirationDays;
   }
 }

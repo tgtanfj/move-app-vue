@@ -18,12 +18,6 @@ export class Account extends BaseEntity {
   oldPassword: string;
 
   @Column({
-    type: 'timestamp with time zone',
-    nullable: true,
-  })
-  dateUpdatePassword: Date;
-
-  @Column({
     type: 'enum',
     enum: TypeAccount,
     default: TypeAccount.NORMAL,
