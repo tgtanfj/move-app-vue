@@ -320,5 +320,16 @@
     "refund": "Refund Policy",
     "next": "Next",
     "back": "Back"
+  },
+  "channel_settings": {
+    "channel": "Channel",
+    "notifications": "Notifications",
+    "channel_settings": "Channel Settings",
+    "bio": "Bio",
+    "optionals":"(Optional)",
+    "tell_us": "Tell us a little bit about yourself.",
+    "characters": "characters",
+    "add" :"Add social links to display on your channel.",
+    "save": "Save settings"
   }
 }
