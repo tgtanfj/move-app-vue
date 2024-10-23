@@ -71,9 +71,6 @@ export class ChannelService {
       excludeExtraneousValues: true,
     });
 
-    let isFollowed = null;
-    if (userId) isFollowed = await this.followService.isFollowed(userId, channelId);
-
     const [followingChannels, socialLinks] = await Promise.all([
       this.followService
         .getFollowingChannels(channel.user.id, 4, { channel: true })
@@ -93,7 +90,13 @@ export class ChannelService {
       this.getSocialLinks(channel.facebookLink, channel.youtubeLink, channel.instagramLink),
     ]);
 
-    channelProfileDto.isFollowed = isFollowed;
+    channelProfileDto.canFollow = null;
+    channelProfileDto.isFollowed = null;
+
+    if (userId) {
+      channelProfileDto.canFollow = !(channel.user.id === userId);
+      channelProfileDto.isFollowed = await this.followService.isFollowed(userId, channelId);
+    }
     channelProfileDto.numberOfFollowers = +channelProfileDto.numberOfFollowers;
     channelProfileDto.followingChannels = followingChannels;
     channelProfileDto.socialLinks = socialLinks;
