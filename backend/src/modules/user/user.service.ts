@@ -30,8 +30,8 @@ export class UserService {
     private readonly i18n: I18nService,
   ) {}
 
-  async findOne(id: number): Promise<User> {
-    return await this.userRepository.findOne(id).catch((error) => {
+  async findOne(id: number, relations?: FindOptionsRelations<User>): Promise<User> {
+    return await this.userRepository.findOne(id, relations).catch((error) => {
       throw new NotFoundException(error.message);
     });
   }
