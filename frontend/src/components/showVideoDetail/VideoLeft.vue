@@ -19,6 +19,7 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import Rating from './Rating.vue'
 import { useFollowerStore } from '../../stores/follower.store'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({
   videoDetail: {
@@ -195,7 +196,8 @@ onMounted(() => {
                 {{ channelInfo.name }}
               </h3>
               <p class="text-gray-500 font-medium">
-                {{ numFollower }} {{ getFollowerText(numFollower) }}
+                {{ numFollower ? formatFollowers(numFollower) : 0 }}
+                {{ getFollowerText(numFollower) }}
               </p>
             </div>
           </div>

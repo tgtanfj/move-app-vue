@@ -37,7 +37,6 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   const closeResultBox = () => {
-    text.value = ''
     showResultBox.value = false
     results.value = {}
   }

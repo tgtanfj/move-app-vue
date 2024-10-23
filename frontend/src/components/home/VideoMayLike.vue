@@ -60,7 +60,7 @@ const router = useRouter()
             >
               {{ video?.channel?.name }}
             </p>
-            <span class="flex gap-2 ml-2">
+            <span class="flex gap-2">
               <BlueBadgeIcon v-if="video?.channel?.isBlueBadge" />
             </span>
           </div>
