@@ -142,6 +142,7 @@ export class AuthService {
     await this.userService.updateAccount(account.id, {
       oldPassword: account.password,
       password: newPasswordHash,
+      dateUpdatePassword: new Date(),
     });
   }
 
@@ -315,5 +316,27 @@ export class AuthService {
 
       throw new BadRequestException(this.i18n.t('exceptions.auth.INVALID_OTP'));
     }
+  }
+
+  async checkPasswordExpired(userId: number) {
+    const currentDate = new Date();
+
+    const dateChangePassword = (
+      await this.userService.findOne(userId, {
+        account: true,
+      })
+    ).account.dateUpdatePassword;
+
+    if (dateChangePassword) {
+      const passwordExpirationDays = this.apiConfigService.getNumber('PASSWORD_EXPIRED_DAY');
+
+      const timeDiff = currentDate.getTime() - new Date(dateChangePassword).getTime();
+
+      const daysSincePasswordChange = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+      return daysSincePasswordChange > passwordExpirationDays;
+    }
+
+    return false;
   }
 }

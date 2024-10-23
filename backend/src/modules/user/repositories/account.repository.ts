@@ -17,6 +17,7 @@ export class AccountRepository {
         id: userId,
       },
       password,
+      dateUpdatePassword: new Date(),
     });
     return await this.accountRepository.save(accountCreated);
   }
