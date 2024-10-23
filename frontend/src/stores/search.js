@@ -194,7 +194,7 @@ export const useSearchStore = defineStore('search', () => {
         }
       })
       if (res.status === 200 && res.data.data.length > 0) {
-        searchResults.value.channels = [...res.data.data]
+        searchResults.value.channels.data = [...res.data.data]
       }
     } catch (error) {
       console.log(error.message)

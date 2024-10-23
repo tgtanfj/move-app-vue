@@ -34,6 +34,7 @@ const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
+const canFollow = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
 
@@ -43,6 +44,7 @@ onMounted(async () => {
     channelInfo.value = res.data
     isFollowed.value = channelInfo.value.isFollowed
     numFollower.value = channelInfo.value.numberOfFollowers
+    canFollow.value = channelInfo.value.canFollow
   }
 })
 
@@ -166,6 +168,7 @@ onMounted(() => {
           <div
             class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
             @click="handleFollow"
+            v-if="canFollow !== false"
           >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
             <HeartFilled v-show="isFollowed" />

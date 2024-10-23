@@ -30,7 +30,7 @@
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink @click="createChannel" to="/streamer">
+        <RouterLink @click="createChannel" to="/streamer/videos">
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
