@@ -7,7 +7,6 @@ import {
   FindOptionsRelations,
   FindOptionsWhere,
   In,
-  MoreThanOrEqual,
   Not,
   Repository,
 } from 'typeorm';
@@ -17,7 +16,6 @@ import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { Follow } from '@/entities/follow.entity';
 import { Channel } from '@/entities/channel.entity';
-import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class VideoRepository {
@@ -459,5 +457,22 @@ export class VideoRepository {
       .take(1)
       .getOne();
     return result;
+  }
+  async getOwnerVideo(videoId: number) {
+    return await this.videoRepository.findOne({
+      where: { id: videoId },
+      relations: ['channel', 'channel.user'],
+      select: {
+        id: true,
+        channel: {
+          id: true,
+          user: {
+            id: true,
+            avatar: true,
+            username: true,
+          },
+        },
+      },
+    });
   }
 }

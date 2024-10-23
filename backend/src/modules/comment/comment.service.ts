@@ -6,12 +6,17 @@ import { UpdateResult } from 'typeorm';
 import { Comment } from '@/entities/comment.entity';
 import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { VideoRepository } from '../video/video.repository';
+import { NotificationService } from '../notification/notification.service';
+import { CommonNotificationDto } from '../notification/dto/common-notification.dto';
+import { UserInfoDto } from '../user/dto/user-info.dto';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 
 @Injectable()
 export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
     private readonly videoRepository: VideoRepository,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async getNumberOfComments(videoId: number): Promise<number> {
@@ -34,28 +39,60 @@ export class CommentService {
     return await this.commentRepository.getAll();
   }
 
-  async create(userId: number, dto: CreateCommentDto) {
+  async create(userInfo: UserInfoDto, dto: CreateCommentDto) {
     try {
+      const userId = userInfo.id;
       let videoId: number;
+      let dataNotification: CommonNotificationDto;
+
       dto.videoId && (videoId = dto.videoId);
+      const ownerVideo = await this.videoRepository.getOwnerVideo(videoId);
 
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
         await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
         videoId = comment.video.id;
+        const reply = await this.commentRepository.create(userId, dto);
+
+        if (userInfo.id !== comment.user.id) {
+          dataNotification = {
+            sender: userInfo,
+            type: NOTIFICATION_TYPE.REPLY,
+            videoId: videoId,
+            videoTitle: comment.video.title,
+            commentId: comment.id,
+            commentContent: comment.content,
+            replyId: reply.id,
+          };
+          await this.notificationService.sendOneToOneNotification(comment.user.id, dataNotification);
+        }
+
+        return reply;
       }
 
-      const comment = await this.commentRepository.create(userId, dto);
       const video = await this.videoRepository.findOne(videoId);
-
       if (!video) {
         throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
+      }
+      const comment = await this.commentRepository.create(userId, dto);
+
+      if (userInfo.id !== ownerVideo.channel.user.id) {
+        dataNotification = {
+          sender: userInfo,
+          type: NOTIFICATION_TYPE.COMMENT,
+          videoId: video.id,
+          videoTitle: video.title,
+          commentId: comment.id,
+        };
+        await this.notificationService.sendOneToOneNotification(ownerVideo.channel.user.id, dataNotification);
       }
 
       video.numberOfComments++;
       await this.videoRepository.save(video);
       return comment;
     } catch (error) {
+      console.log(error);
+
       throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT);
     }
   }

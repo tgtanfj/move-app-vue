@@ -2,6 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { NotificationService } from './notification.service';
 import { MultipleDeviceNotificationDto, TopicNotificationDto } from './dto/send-notification.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { NotificationOneToOneDto } from './dto/notification-one-to-one.dto';
+import { NotificationOneToManyDto } from './dto/notification-one-to-many.dto';
+import { NotificationOneToAllDto } from './dto/notification-one-to-all.dto';
 @ApiTags('notification')
 @Controller('notification')
 export class NotificationController {
@@ -44,5 +47,23 @@ export class NotificationController {
       body: body.body,
       icon: body.icon,
     });
+  }
+
+  @Post('one-to-one')
+  async sendOneToOne(@Body() body: NotificationOneToOneDto) {
+    await this.notificationService.sendOneToOneNotification(body.userId, body.data);
+    return { success: true };
+  }
+
+  @Post('one-to-many')
+  async sendOneToMany(@Body() body: NotificationOneToManyDto) {
+    await this.notificationService.sendOneToManyNotifications(body.userIds, body.data);
+    return { success: true };
+  }
+
+  @Post('broadcast')
+  async sendBroadcast(@Body() body: NotificationOneToAllDto) {
+    await this.notificationService.sendBroadcastNotification(body.data);
+    return { success: true };
   }
 }
