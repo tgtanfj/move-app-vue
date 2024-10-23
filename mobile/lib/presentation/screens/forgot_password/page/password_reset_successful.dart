@@ -13,7 +13,10 @@ class PasswordResetSuccessful extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width - 40;
     return Scaffold(
-      appBar: const AppBarWidget(isEnableIcon: false,),
+      appBar: const AppBarWidget(
+        isEnablePrefixIcon: false,
+        isEnableSuffixIcon: false,
+      ),
       backgroundColor: AppColors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),

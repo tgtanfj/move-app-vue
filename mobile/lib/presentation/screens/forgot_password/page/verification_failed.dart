@@ -30,7 +30,8 @@ class _VerificationFailedState extends State<VerificationFailed> {
         double screenWidth = MediaQuery.of(context).size.width - 40;
         return Scaffold(
           appBar: const AppBarWidget(
-            isEnableIcon: false,
+            isEnablePrefixIcon: false,
+            isEnableSuffixIcon: false,
           ),
           backgroundColor: AppColors.white,
           body: Padding(

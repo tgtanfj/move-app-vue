@@ -10,7 +10,13 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? suffixButton;
   final String? prefixIconPath;
   final String? suffixIconPath;
-  final bool isEnableIcon;
+  final bool isShowNotificationDot;
+  final bool isEnableSuffixIcon;
+  final bool isEnablePrefixIcon;
+  final String? title;
+  final TextStyle? titleStyle;
+  final TextAlign? titleAlign;
+  final EdgeInsetsGeometry? paddingTitle;
 
   const AppBarWidget({
     super.key,
@@ -18,7 +24,13 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.suffixButton,
     this.prefixIconPath,
     this.suffixIconPath,
-    this.isEnableIcon = true,
+    this.isShowNotificationDot = false,
+    this.isEnableSuffixIcon = true,
+    this.isEnablePrefixIcon = true,
+    this.title,
+    this.titleStyle,
+    this.paddingTitle,
+    this.titleAlign,
   });
 
   @override
@@ -37,37 +49,90 @@ class _AppBarWidgetState extends State<AppBarWidget> {
         const SizedBox(
           width: 20.0,
         ),
-        widget.isEnableIcon
+        widget.isEnablePrefixIcon
             ? GestureDetector(
                 onTap: widget.prefixButton ??
                     () => Navigator.pushNamed(context, AppRoutes.routeMenu),
-                child: SvgPicture.asset(
-                  widget.prefixIconPath ?? AppIcons.drawer.svgAssetPath,
-                  height: 18.0,
-                  width: 27.0,
+                child: SizedBox(
+                  width: 35,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SvgPicture.asset(
+                          widget.prefixIconPath ?? AppIcons.drawer.svgAssetPath,
+                          height: 18.0,
+                          width: 27.0,
+                        ),
+                      ),
+                      Positioned(
+                        top: 13,
+                        right: -0,
+                        child: Visibility(
+                            visible: widget.prefixIconPath == null &&
+                                widget.isShowNotificationDot,
+                            child: SvgPicture.asset(
+                              AppIcons.redDot.svgAssetPath,
+                              height: 16,
+                              width: 16,
+                            )),
+                      )
+                    ],
+                  ),
                 ),
               )
             : const SizedBox(),
         Expanded(
-          child: GestureDetector(
-            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                context, AppRoutes.home, (route) => false),
-            child: SvgPicture.asset(
-              AppIcons.moveWhiteTextLogo.svgAssetPath,
-            ),
-          ),
+          child: widget.title != null
+              ? Padding(
+                  padding: widget.paddingTitle ?? EdgeInsets.zero,
+                  child: Text(
+                    widget.title ?? "",
+                    style: widget.titleStyle,
+                    textAlign: widget.titleAlign,
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () => Navigator.pushNamedAndRemoveUntil(
+                      context, AppRoutes.home, (route) => false),
+                  child: SvgPicture.asset(
+                    AppIcons.moveWhiteTextLogo.svgAssetPath,
+                  ),
+                ),
         ),
-        widget.isEnableIcon
+        widget.isEnableSuffixIcon
             ? GestureDetector(
                 onTap: widget.suffixButton ??
                     () => Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const SearchResultPage())),
-                child: SvgPicture.asset(
-                  widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
-                  width: 24.0,
-                  height: 24.0,
+                child: SizedBox(
+                  width: 32,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: SvgPicture.asset(
+                          widget.suffixIconPath ?? AppIcons.search.svgAssetPath,
+                          width: 24.0,
+                          height: 24.0,
+                        ),
+                      ),
+                      Positioned(
+                        top: 13,
+                        right: -0,
+                        child: Visibility(
+                            visible: widget.prefixIconPath != null &&
+                                widget.isShowNotificationDot,
+                            child: SvgPicture.asset(
+                              AppIcons.redDot.svgAssetPath,
+                              height: 16,
+                              width: 16,
+                            )),
+                      )
+                    ],
+                  ),
                 ),
               )
             : const SizedBox(),
