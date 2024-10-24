@@ -6,6 +6,7 @@ import 'package:move_app/presentation/screens/home/page/home_page.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_page.dart';
 import 'package:move_app/presentation/screens/notification/page/notification_page.dart';
 import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
+import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
 import 'package:move_app/presentation/screens/view_FAQs/page/view_FAQs_page.dart';
 
 class AppRoutes {
@@ -19,6 +20,7 @@ class AppRoutes {
   static const String routeCategory = '/category';
   static const String routeSearch = '/search';
   static const String routeNotification = '/notification';
+  static const String routeCategoryResult = '/category-result';
 
   static getInitialRoute() {
     return '/';
