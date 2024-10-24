@@ -11,6 +11,7 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/buy_rep/page/buy_rep_page.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
 
 import '../../../components/logout_dialog.dart';
 
@@ -113,7 +114,10 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
           ContentMenu(
             followingButton: () {},
             browseButton: () {},
-            walletButton: () {},
+            walletButton: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const WalletBody()));
+            },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },

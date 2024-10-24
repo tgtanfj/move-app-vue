@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
+import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
-
-import '../../home/widgets/video_feature_description.dart';
-import '../../video_detail/page/video_detail_page.dart';
 
 class ListSearchResultVideo extends StatelessWidget {
   final List<VideoModel>? videoList;

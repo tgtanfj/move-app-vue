@@ -319,4 +319,11 @@ class Constants {
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
   static const String back = 'Back';
+  static const String paymentMethod = "Payment Method";
+  static const String paymentHistory = "Payment History";
+  static const String date = "DATE";
+  static const String productName = "PRODUCT NAME";
+  static const String startDate = "START DATE";
+  static const String endDate = "END DATE";
+  static const String time = "TIME";
 }

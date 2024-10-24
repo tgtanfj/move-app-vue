@@ -16,7 +16,7 @@ class SuggestionRepository {
         ApiUrls.suggestionEndpoint,
         queryParameters: {'q': query},
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200  && response.data != null) {
         final result = parseSuggestion(response.data);
         return Right(result);
       } else {
