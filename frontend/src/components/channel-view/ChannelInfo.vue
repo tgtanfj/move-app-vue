@@ -6,6 +6,7 @@ import { useChannelStore } from '../../stores/view-channel'
 import { getFollowerText } from '../../utils/follower.util'
 import ChannelActions from './ChannelActions.vue'
 import { ref } from 'vue'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const channelStore = useChannelStore()
 const { image, numberOfFollowers, name, isBlueBadge, isPinkBadge } = channelStore.channelInfo
@@ -25,10 +26,11 @@ const handleDecrease = () => {
       <div>
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>
-          <span class="flex gap-2 ml-3">
-            <BlueBadgeIcon v-if="isBlueBadge" /></span>
+          <span class="flex gap-2 ml-3"> <BlueBadgeIcon v-if="isBlueBadge" /></span>
         </div>
-        <span class="text-sm">{{ numFollower }} {{ getFollowerText(numFollower) }}</span>
+        <span class="text-sm"
+          >{{ formatFollowers(numFollower) }} {{ getFollowerText(numFollower) }}</span
+        >
       </div>
     </div>
     <ChannelActions @increaseFollower="handleIncrease" @decreaseFollower="handleDecrease" />

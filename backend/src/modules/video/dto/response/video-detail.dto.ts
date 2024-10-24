@@ -36,4 +36,7 @@ export class VideoDetail {
 
   @Expose()
   ratings: number;
+
+  @Expose()
+  canFollow: boolean | null;
 }

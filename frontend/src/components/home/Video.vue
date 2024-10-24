@@ -5,7 +5,6 @@ import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { useRouter } from 'vue-router'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
 import { detectDuration, detectWorkoutLevel } from '../../utils/uploadVideo.util'
 
@@ -20,7 +19,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-full">
     <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
       <img
         class="object-cover w-full h-[170px] cursor-pointer"
@@ -33,18 +32,18 @@ const router = useRouter()
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 view' }}
+          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 views' }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
         <p class="font-bold">{{ convertToTimeFormat(video.videoLength) }}</p>
       </div>
     </div>
-    <div class="flex items-start mt-2">
+    <div class="flex items-start mt-2 flex-1">
       <img class="w-[32px] h-[32px] rounded-full" :src="video.channel.image" />
-      <div class="ml-3">
+      <div class="ml-3 h-full flex flex-col">
         <p class="text-[16px] font-bold line-clamp-2">{{ video.title }}</p>
-        <div class="flex flex-col items-start justify-start mt-1.5">
+        <div class="flex flex-col items-start justify-start mt-auto">
           <div class="flex items-center gap-3">
             <p
               class="text-[#666666] text-[14px] cursor-pointer"
@@ -73,7 +72,7 @@ const router = useRouter()
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto mt-[5px] pl-1">
+      <div class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px]" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>

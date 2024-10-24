@@ -14,7 +14,8 @@ export class FollowController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async follow(@User() user, @Body() dto: CreateFollowDto) {
-    return await this.followService.save(user.id, dto.channelId);
+    const userInfo = { id: user.id, avatar: user.avatar, username: user.username };
+    return await this.followService.save(userInfo, dto.channelId);
   }
 
   @ApiBearerAuth('jwt')

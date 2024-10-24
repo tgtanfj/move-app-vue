@@ -4,7 +4,7 @@
       <Loading />
     </div>
     <template v-if="!videoStore.isLoading && videoStore.videos">
-      <h2 class="text-2xl m-7 font-bold">{{ $t('streamer.videos') }}</h2>
+      <h2 class="text-title-size mx-7 mt-24 font-bold">{{ $t('streamer.videos') }}</h2>
       <div class="mt-4 ml-5" v-if="videoStore.videos.length !== 0">
         <Table :list="videoStore.videos" />
         <div class="flex justify-between items-center mt-5">
@@ -71,27 +71,20 @@
 
 <script setup>
 import Button from '@common/ui/button/Button.vue'
-import Table from '@components/streamer-videos/Table.vue'
-import { ChevronLeft, ChevronRight, FileVideo2 } from 'lucide-vue-next'
+import { Pagination, PaginationList, PaginationListItem } from '@common/ui/pagination'
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '@common/ui/select'
-import {
-  Pagination,
-  PaginationList,
-  PaginationListItem,
-  PaginationNext,
-  PaginationPrev
-} from '@common/ui/pagination'
 import Loading from '@components/Loading.vue'
-import { ref, watch, onMounted } from 'vue'
-import { useVideoStore } from '../stores/videoManage'
+import Table from '@components/streamer-videos/Table.vue'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { onMounted, ref, watch } from 'vue'
+import { useVideoStore } from '../../stores/videoManage'
 
 const videoStore = useVideoStore()
 

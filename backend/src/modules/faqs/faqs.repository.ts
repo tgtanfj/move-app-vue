@@ -1,21 +1,25 @@
 import { FAQs } from '@/entities/faq.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { I18nService } from 'nestjs-i18n';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class FaqsRepository {
-  constructor(@InjectRepository(FAQs) private readonly faqsRepository: Repository<FAQs>) {}
+  constructor(
+    @InjectRepository(FAQs) private readonly faqsRepository: Repository<FAQs>,
+    private readonly i18n: I18nService,
+  ) {}
   // Create a new FAQ
   async create(faq: Partial<FAQs>): Promise<FAQs> {
     const count = await this.faqsRepository.count();
     if (count >= 30) {
-      throw new Error('Cannot create more than 30 FAQs');
+      throw new Error(this.i18n.t('exceptions.faqs.CANNOT_CREATE_MORE_THAN_30_QUESTION'));
     }
 
     const existingFaq = await this.faqsRepository.findOne({ where: { question: faq.question } });
     if (existingFaq) {
-      throw new Error('A FAQ with this question already exists');
+      throw new Error(this.i18n.t('exceptions.faqs.QUESTIONS_EXISTS'));
     }
     const newFaq = this.faqsRepository.create(faq);
     return this.faqsRepository.save(newFaq);

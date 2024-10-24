@@ -1,17 +1,20 @@
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class JwtRefreshGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private readonly i18n: I18nService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+      throw new BadRequestException(this.i18n.t('exceptions.authorization.TOKEN_ERROR'));
     }
 
     try {

@@ -1,7 +1,10 @@
 {
   "common": {
     "hello_world": "Hello World!",
-    "no_data": "No data available"
+    "no_data": "No data available",
+    "show": "Show",
+    "display_range_record": "{to} - {from} of {total} results",
+    "display_single_record": "{num} of {num} result"
   },
   "streamer": {
     "home": "Home",
@@ -56,6 +59,26 @@
     "disable": "Disable",
     "save": "Save"
   },
+  "streamer_analysis": {
+    "video_analytics": "Video analytics",
+    "videos": "Videos",
+    "details": "Details",
+    "views": "Views",
+    "avg_view_time": "Avg. view time",
+    "ratings": "Ratings",
+    "reps": "REPs received",
+    "viewer_gifted": "Viewer gifted",
+    "overview": "Overview",
+    "video_summary": "Video summary",
+    "latest_analytics": "Latest analytics",
+    "total_followers": "Total followers",
+    "total_REPs_earned": "Total REPs earned",
+    "total_video_views": "Total video views",
+    "average_view_time": "Average view time",
+    "latest_video": "Latest video",
+    "total_views": "Total views",
+    "total_REPs_received": "Total REPs received"
+  },
   "change_password": {
     "title": "Change password",
     "desc": "Please enter your old and new password. Make sure your password is alphanumeric with at least 8 characters.",
@@ -90,7 +113,8 @@
     "cancel": "Cancel",
     "submit": "Submit",
     "loading": "Loading...",
-    "rate": "Rate"
+    "rate": "Rate",
+    "go_to_video_analysis": "Go to video analytics"
   },
   "label": {
     "password": "Password",
@@ -300,10 +324,10 @@
     "no_paypal": "No PayPal information available",
     "paypal_transfer": "Paypal transfer to",
     "withdraw": "Withdraw",
-    "remaining_amount" : "Remaining amount:",
+    "remaining_amount": "Remaining amount:",
     "withdraw_value": "Withdraw value",
     "withdraw_all": "Withdraw all",
-    "processing_payment":"Processing payment",
+    "processing_payment": "Processing payment",
     "your_payment": "Your payment of",
     "is_being": "is being processed. Please allow 7 working days to receive your payment.",
     "note": "Note: The amount receive may vary due to the exchange rate & bank charges.",
@@ -313,9 +337,20 @@
     "by": "By submitting PayPal information you acknowledge that you have read, understood and agree to be bound by MOVE’s",
     "end_user": "End User License Agreement",
     "privacy": "Privacy Policy",
-    "and" : "and",
+    "and": "and",
     "refund": "Refund Policy",
     "next": "Next",
     "back": "Back"
+  },
+  "channel_settings": {
+    "channel": "Channel",
+    "notifications": "Notifications",
+    "channel_settings": "Channel Settings",
+    "bio": "Bio",
+    "optionals":"(Optional)",
+    "tell_us": "Tell us a little bit about yourself.",
+    "characters": "characters",
+    "add" :"Add social links to display on your channel.",
+    "save": "Save settings"
   }
 }

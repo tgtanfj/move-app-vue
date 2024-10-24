@@ -1,15 +1,13 @@
 <script setup>
 import Categories from '@components/home/Categories.vue'
-import { useSearchStore } from '../stores/search'
+import Loading from '@components/Loading.vue'
+import Channel from '@components/search/Channel.vue'
+import NoResult from '@components/search/NoResult.vue'
+import SearchVideo from '@components/search/SearchVideo.vue'
+import SeparatorCross from '@components/SeparatorCross.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import Channel from '@components/search/Channel.vue'
-import Video from '@components/home/Video.vue'
-import SeparatorCross from '@components/SeparatorCross.vue'
-import { ChevronsLeft, ChevronsRight } from 'lucide-vue-next'
-import Loading from '@components/Loading.vue'
-import SearchVideo from '@components/search/SearchVideo.vue'
-import NoResult from '@components/search/NoResult.vue'
+import { useSearchStore } from '../stores/search'
 
 const searchStore = useSearchStore()
 
@@ -97,6 +95,12 @@ const handleBackChannels = () => {
   searchStore.loadMoreChannels(previousPage, searchQuery.value)
   currentChannelPage.value = previousPage
 }
+
+const gridClass = computed(() => {
+  const itemCount = searchStore.searchResults.video?.data.length || 0
+  const rows = Math.ceil(itemCount / 2) // Calculate the number of rows (2 items per row)
+  return `grid grid-cols-2 grid-rows-${rows}`
+})
 </script>
 <template>
   <div :style="{ height: 'calc(100vh - 56px)' }">
@@ -172,7 +176,7 @@ const handleBackChannels = () => {
                   @click="handleLoadMoreChannels"
                   :class="{
                     hidden:
-                      currentCategoryPage >=
+                      currentChannelPage >=
                       searchStore.searchResults.channels?.metadata?.totalPages
                   }"
                 >
@@ -180,7 +184,7 @@ const handleBackChannels = () => {
                 </p>
               </div>
             </div>
-            <div class="grid grid-cols-2 grid-rows-4">
+            <div :class="gridClass">
               <Channel
                 v-for="channel in searchStore.searchResults.channels?.data"
                 :key="channel.name"
@@ -197,12 +201,14 @@ const handleBackChannels = () => {
             v-if="searchStore.searchResults.videos?.data.length > 0"
           >
             <h2 class="text-xl font-bold mb-3">{{ $t('search.videos') }}</h2>
-            <div class="grid grid-cols-3 grid-rows-1 gap-5">
-              <SearchVideo
-                v-for="video in searchStore.searchResults.videos?.data"
-                :video="video"
-                :key="video.id"
-              />
+            <div class="@container">
+              <div class="grid grid-cols-3 grid-rows-1 gap-5 @[1100px]:grid-cols-4">
+                <SearchVideo
+                  v-for="video in searchStore.searchResults.videos?.data"
+                  :video="video"
+                  :key="video.id"
+                />
+              </div>
             </div>
             <div
               class="w-full flex mt-6 mb-2 justify-center"

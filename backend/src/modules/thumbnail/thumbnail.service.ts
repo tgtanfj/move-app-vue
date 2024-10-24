@@ -1,9 +1,9 @@
+import { Thumbnail } from '@/entities/thumbnail.entity';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 import { ThumbnailRepository } from './thumbnail.repository';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
-import { Thumbnail } from '@/entities/thumbnail.entity';
 
 @Injectable()
 export class ThumbnailService {
@@ -11,6 +11,7 @@ export class ThumbnailService {
     private apiConfig: ApiConfigService,
     private s3: AwsS3Service,
     private thumbnailRepository: ThumbnailRepository,
+    private readonly i18n: I18nService,
   ) {}
 
   async saveThumbnails(files: Array<Express.Multer.File>, selected: number, videoId: number) {
@@ -23,7 +24,7 @@ export class ThumbnailService {
             .then(() => {})
             .catch((error) => {
               throw new BadRequestException({
-                message: ERRORS_DICTIONARY.UPLOAD_THUMBNAIL_FAIL,
+                message: this.i18n.t('exceptions.video.UPLOAD_THUMBNAIL_FAIL'),
               });
             });
         } else {

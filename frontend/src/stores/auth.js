@@ -168,6 +168,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('loginMethod')
           localStorage.removeItem('userInfo')
           localStorage.removeItem('userAvatar')
+          localStorage.removeItem('userEmail')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -181,6 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('loginMethod')
         localStorage.removeItem('userInfo')
         localStorage.removeItem('userAvatar')
+        localStorage.removeItem('userEmail')
       }
     } catch (err) {
       errorMsg.value = err.message
@@ -235,7 +237,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         user.value = userInfo.data.data
       } catch (error) {
-        console.error("Error get profile: ", error)
+        console.error('Error get profile: ', error)
       }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
