@@ -21,8 +21,6 @@ export default function WithdrawListingPage({}: TUsersListingPage) {
     })
   });
 
-  console.log(result);
-
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
