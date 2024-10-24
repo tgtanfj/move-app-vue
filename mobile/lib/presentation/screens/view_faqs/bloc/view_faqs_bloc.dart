@@ -7,6 +7,7 @@ class ViewFaqsBloc extends Bloc<ViewFaqsEvent, ViewFaqsState> {
   ViewFaqsBloc() : super(ViewFaqsState.initialState()) {
     on<ViewFaqsInitialEvent>(_onViewFaqsInitialEvent);
     on<FetchFaqsEvent>(_onFetchFaqsEvent);
+    on<ViewFaqsClickEvent>(_onViewFaqsClickEvent);
   }
 
   Future<void> _onFetchFaqsEvent(
@@ -22,4 +23,17 @@ class ViewFaqsBloc extends Bloc<ViewFaqsEvent, ViewFaqsState> {
 
   void _onViewFaqsInitialEvent(
       ViewFaqsInitialEvent event, Emitter<ViewFaqsState> emit) {}
+
+  void _onViewFaqsClickEvent(
+      ViewFaqsClickEvent event, Emitter<ViewFaqsState> emit) {
+    final isExpanded = state.isExpanded ?? {};
+    final isCurrentExpanded = isExpanded[event.faqId] ?? false;
+
+    emit(state.copyWith(
+      isExpanded: {
+        ...isExpanded, 
+        event.faqId: !isCurrentExpanded, 
+      },
+    ));
+  }
 }

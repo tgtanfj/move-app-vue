@@ -529,7 +529,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailFollowChannelEvent(VideoDetailFollowChannelEvent event,
       Emitter<VideoDetailState> emit) async {
-    emit(state.copyWith(status: VideoDetailStatus.processing));
     if (state.video?.channel?.isFollowed == true) {
       final result = await viewChannelRepository
           .unFollowChannel(state.video?.channel?.id ?? 0);
