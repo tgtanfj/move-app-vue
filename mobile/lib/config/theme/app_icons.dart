@@ -51,9 +51,7 @@ enum AppIcons {
   arrowWhiteLeft,
   rateStar,
   rateStarFill,
-  copied,
-  question,
-  visa,
+  copied
 }
 
 extension AppIconsExtension on AppIcons {

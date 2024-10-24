@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 import { object, ref, string } from 'yup'
 import {
+  REGEX_CARD_HOLDER_NAME,
   REGEX_EMAIL,
   REGEX_STRONG_PASSWORD,
   REGEX_USERNAME_CODE
@@ -91,3 +92,12 @@ export const userProfileSchema = yup.object().shape({
 })
 
 export const searchSchema = yup.string().max(255)
+
+export const walletSchema = yup.object().shape({
+  cardholderName: yup
+    .string()
+    .trim()
+    .required(t('user_profile.field_required'))
+    .matches(/^[A-Za-z\s]+$/, t('wallet.no_special_characters'))
+    .min(2, t('wallet.cardholder_name_4_50_long'))
+})

@@ -9,6 +9,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_tile.dart';
 import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_bloc.dart';
+import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_event.dart';
 import 'package:move_app/presentation/screens/view_faqs/bloc/view_faqs_state.dart';
 
 class ViewFAQsBody extends StatefulWidget {
@@ -57,6 +58,13 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
                           shrinkWrap: true,
                           itemCount: faqs.length,
                           itemBuilder: (context, index) => CustomTile(
+                            isExpanded:
+                                state.isExpanded?[faqs[index].id] ?? false,
+                            onTap: () {
+                              context.read<ViewFaqsBloc>().add(
+                                  ViewFaqsClickEvent(
+                                      faqId: faqs[index].id ?? 0));
+                            },
                             title: faqs[index].question ?? '',
                             titleStyle:
                                 AppTextStyles.montserratStyle.bold16black,
@@ -75,28 +83,6 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
               return const SizedBox();
             },
           ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: RichText(
-              text: TextSpan(
-                text: Constants.cantFindAnAnswer,
-                style: AppTextStyles.montserratStyle.regular14Black,
-                children: [
-                  TextSpan(
-                    text: Constants.contactUs,
-                    style: AppTextStyles.montserratStyle.regular14TiffanyBlue
-                        .copyWith(decoration: TextDecoration.underline),
-                  ),
-                  TextSpan(
-                    text: Constants.hereAndWeWillAddress,
-                    style: AppTextStyles.montserratStyle.regular14Black,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 52),
         ],
       ),
     );

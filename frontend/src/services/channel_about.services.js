@@ -17,14 +17,15 @@ export const useChannelAbout = (id) => {
 }
 
 const fetchVideos = async (id, level, sortBy, category, page) => {
+  const TAKE = 12
   let response
   if (category != 0) {
     response = await apiAxios.get(
-      `/channel/${id}/videos?workout-level=${level}&sort-by=${sortBy}&categoryId=${category}&page=${page}`
+      `/channel/${id}/videos?workout-level=${level}&sort-by=${sortBy}&categoryId=${category}&page=${page}&take=${TAKE}`
     )
   } else {
     response = await apiAxios.get(
-      `/channel/${id}/videos?workout-level=${level}&sort-by=${sortBy}&page=${page}`
+      `/channel/${id}/videos?workout-level=${level}&sort-by=${sortBy}&page=${page}&take=${TAKE}`
     )
   }
   return response.data

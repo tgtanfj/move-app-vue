@@ -274,19 +274,4 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
-  static const String noPaymentMethod = 'No payment method setup';
-  static const String youDoNotHaveSavedPayment =
-      'You do not have any saved payment information.';
-  static const String setUpPaymentMethod = 'Setup payment method';
-  static const String yourPaymentMethod = '  Your payment method';
-  static const String paymentDetails = 'Payment details';
-  static const String cardholderName = 'Cardholder Name';
-  static const String cardNumber = 'Card Number';
-  static const String expiryDate = 'Expiry Date';
-  static const String cvv = 'CVV2/CVC2';
-  static const String bySubmittingPayment =
-      'By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s ';
-  static const String endUserLicense =
-      'End User License Agreement, Privacy Policy ';
-  static const String refunPolicy = 'Refund Policy.';
 }

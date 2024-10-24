@@ -12,7 +12,9 @@ final class ViewFaqsState extends Equatable {
   final ViewFaqsStatus? status;
   final List<FaqModel>? faqs;
   final String? errorMessage;
-  const ViewFaqsState({this.status, this.faqs, this.errorMessage});
+  final Map<int, bool>? isExpanded;
+  const ViewFaqsState(
+      {this.status, this.faqs, this.errorMessage, this.isExpanded});
 
   static ViewFaqsState initialState() => const ViewFaqsState(
         status: ViewFaqsStatus.initial,
@@ -22,14 +24,16 @@ final class ViewFaqsState extends Equatable {
     ViewFaqsStatus? status,
     List<FaqModel>? faqs,
     String? errorMessage,
+    Map<int, bool>? isExpanded,
   }) {
     return ViewFaqsState(
       status: status ?? this.status,
       faqs: faqs ?? this.faqs,
       errorMessage: errorMessage ?? this.errorMessage,
+      isExpanded: isExpanded ?? this.isExpanded,
     );
   }
 
   @override
-  List<Object?> get props => [status, faqs, errorMessage];
+  List<Object?> get props => [status, faqs, errorMessage, isExpanded];
 }

@@ -29,6 +29,8 @@ class CustomEditText extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final String? initialValue;
   final Function(String)? onLostFocus;
+  final String? hintText;
+  final TextStyle? hintStyle;
 
   const CustomEditText({
     super.key,
@@ -57,6 +59,8 @@ class CustomEditText extends StatefulWidget {
     this.onSubmitted,
     this.initialValue,
     this.onLostFocus,
+    this.hintText,
+    this.hintStyle,
   });
 
   @override
@@ -141,6 +145,9 @@ class _CustomEditTextState extends State<CustomEditText> {
               if (widget.inputFormatters != null) ...widget.inputFormatters!,
             ],
             decoration: InputDecoration(
+              hintText: widget.hintText,
+              hintStyle: widget.hintStyle ??
+                  AppTextStyles.montserratStyle.regular16ChineseSilver,
               counterText: "",
               fillColor: widget.enable == false
                   ? AppColors.cultured

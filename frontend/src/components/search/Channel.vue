@@ -1,6 +1,7 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({
   channel: {
@@ -31,7 +32,7 @@ const props = defineProps({
         <BlueBadgeIcon v-if="channel.isBlueBadge" />
       </router-link>
       <p class="text-gray-400 text-xl">
-        {{ channel.numberOfFollowers }} {{ $t('search.followers') }}
+        {{ formatFollowers(channel.numberOfFollowers) }} {{ $t('search.followers') }}
       </p>
     </div>
   </div>

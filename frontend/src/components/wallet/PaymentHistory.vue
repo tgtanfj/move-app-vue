@@ -1,44 +1,106 @@
 <script setup lang="ts">
 import { Button } from '@common/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
-import { ref, watchEffect } from 'vue'
+import { reactive, ref, watchEffect } from 'vue'
 import { PAGINATION } from '../../constants/pagination.constant'
 import { usePaymentHistory } from '../../services/paymenthistory.services'
+import { formatDateShort } from '../../utils/convertDate.util'
 import CustomSelection from '../channel-view/CustomSelection.vue'
 import PaymentHistoryCalendar from './PaymentHistoryCalendar.vue'
 import PaymentHistoryTable from './PaymentHistoryTable.vue'
 
 const payments = ref([])
 const total = ref()
-const { data, isLoading } = usePaymentHistory()
+const totalPages = ref()
+const currentPage = ref(1)
+const take = ref(10)
+const today = new Date()
+today.setDate(today.getDate() - 30)
+const startDate = ref(formatDateShort(today))
+const endDate = ref(formatDateShort(new Date()))
+const display_range = reactive({
+  to: 1,
+  from: 1
+})
+
+const { data, isLoading, refetch } = usePaymentHistory(startDate, endDate, take, currentPage)
+
 watchEffect(() => {
   if (!isLoading.value && data.value) {
     total.value = data?.value.meta.total
+    totalPages.value = data?.value.meta.totalPages
     payments.value = data.value.data
   }
 })
+
+watchEffect(() => {
+  display_range.to = (currentPage.value - 1) * take.value + 1
+  display_range.from = currentPage.value * take.value
+  if (display_range.from > total.value) {
+    display_range.from = total.value
+  }
+})
+
+const handleDateRangeChange = (start, end) => {
+  startDate.value = start
+  endDate.value = end
+  take.value = 10
+  currentPage.value = 1
+  refetch()
+}
+
+const handlePrevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+    refetch()
+  }
+}
+const handleNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+    refetch()
+  }
+}
+
+const handleTakeChange = (val) => {
+  currentPage.value = 1
+  take.value = Number(val)
+  refetch()
+}
 </script>
 
 <template>
   <div class="flex gap-6 justify-end">
-    <PaymentHistoryCalendar />
+    <PaymentHistoryCalendar @date-range="handleDateRangeChange" />
   </div>
 
   <PaymentHistoryTable :payments="payments" />
   <div class="flex items-center justify-between mt-5" v-if="payments.length > 0">
-    <div class="w-40">
-      <CustomSelection label="SHOW" :list-items="PAGINATION" />
+    <div class="flex items-center">
+      <p class="uppercase">{{ $t('common.show') }}</p>
+      <CustomSelection :list-items="PAGINATION" @update:value="handleTakeChange" class="w-24" />
     </div>
 
     <div class="flex items-center gap-5">
-      <p>1 - 10 of {{ total }} results</p>
+      <p v-if="payments.length > 1">
+        {{
+          $t('common.display_range_record', {
+            to: display_range.to,
+            from: display_range.from,
+            total
+          })
+        }}
+      </p>
+      <p v-else>
+        {{ $t('common.display_single_record', { num: total }) }}
+      </p>
 
       <div>
-        <Button variant="link" class="pl-2">
-          <ChevronLeft :size="14" />
+        <Button variant="link" class="p-4" @click="handlePrevPage">
+          <ChevronLeft :size="16" class="text-darkGray hover:text-primary" />
         </Button>
-        <Button variant="link" class="pl-2">
-          <ChevronRight :size="14" />
+        <Button variant="link" class="p-4" @click="handleNextPage">
+          <ChevronRight :size="16" class="text-darkGray hover:text-primary" />
         </Button>
       </div>
     </div>

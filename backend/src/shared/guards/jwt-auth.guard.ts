@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ERRORS_DICTIONARY } from '../constraints/error-dictionary.constraint';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { Reflector } from '@nestjs/core';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -18,6 +19,7 @@ export class JwtAuthGuard implements CanActivate {
     private jwtService: JwtService,
     private userService: UserService,
     private reflector: Reflector,
+    private readonly i18n: I18nService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,7 +37,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     if (!token) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+      throw new BadRequestException(this.i18n.t('exceptions.authorization.TOKEN_ERROR'));
     }
 
     try {

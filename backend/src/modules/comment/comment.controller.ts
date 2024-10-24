@@ -16,8 +16,8 @@ export class CommentController {
   @UseGuards(JwtAuthGuard)
   @Post('')
   async createComment(@User() user, @Body() createCommentDto: CreateCommentDto) {
-    const userId = user.id;
-    return await this.commentService.create(userId, createCommentDto);
+    const userInfo = { id: user.id, avatar: user.avatar, username: user.username };
+    return await this.commentService.create(userInfo, createCommentDto);
   }
 
   @Get('all')
@@ -63,4 +63,8 @@ export class CommentController {
   async deleteComment(@Param('id') id: number) {
     return await this.commentService.delete(id);
   }
+
+
+
+
 }

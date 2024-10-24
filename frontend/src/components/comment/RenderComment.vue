@@ -1,5 +1,4 @@
 <script setup>
-import CheckVerifyIcon from '@assets/icons/CheckVerifyIcon.vue'
 import DislikeOffIcon from '@assets/icons/DislikeOffIcon.vue'
 import DislikeOnIcon from '@assets/icons/DislikeOnIcon.vue'
 import LikeOffIcon from '@assets/icons/LikeOffIcon.vue'
@@ -14,12 +13,10 @@ import { ref, watch } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 import { commentServices } from '@services/comment.services'
 import { Input } from '@common/ui/input'
-import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
 import { Button } from '@common/ui/button'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const props = defineProps({
   comments: {
@@ -253,7 +250,7 @@ const createReply = async (commentId) => {
           <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
             <p class="text-[13px] font-bold">{{ item.user.username }}</p>
-            <div v-if="item.user.channel" class="flex items-center gap-2">
+            <div v-if="item.user.channel" class="flex items-center">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
             </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
@@ -396,7 +393,7 @@ const createReply = async (commentId) => {
                   </p>
                   <div
                     v-if="myReplyPerComment[item.id].user.channel"
-                    class="flex items-center gap-2"
+                    class="flex items-center"
                   >
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                   </div>
@@ -499,7 +496,7 @@ const createReply = async (commentId) => {
                 <RepsSenderIcon class="mb-1" v-if="reply.totalDonation !== 0" />
                 <div class="flex items-center gap-3">
                   <p class="text-[13px] font-bold">{{ reply.user.username }}</p>
-                  <div v-if="reply.user.channel" class="flex items-center gap-2">
+                  <div v-if="reply.user.channel" class="flex items-center">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                   </div>
                   <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">

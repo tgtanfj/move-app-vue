@@ -11,6 +11,7 @@ class ChannelModel {
   final int? numberOfFollowers;
   final bool? isFollowed;
   final List<ChannelModel>? followingChannels;
+  final bool? canFollow;
 
   ChannelModel({
     this.id,
@@ -23,6 +24,7 @@ class ChannelModel {
     this.isFollowed,
     this.followingChannels,
     this.numberOfFollowers,
+    this.canFollow,
   });
 
   ChannelModel copyWith({
@@ -36,6 +38,7 @@ class ChannelModel {
     bool? isFollowed,
     List<ChannelModel>? followingChannels,
     int? numberOfFollowers,
+    bool? canFollow,
   }) {
     return ChannelModel(
       id: id ?? this.id,
@@ -48,6 +51,7 @@ class ChannelModel {
       numberOfFollowers: numberOfFollowers ?? this.numberOfFollowers,
       followingChannels: followingChannels ?? this.followingChannels,
       isFollowed: isFollowed ?? this.isFollowed,
+      canFollow: canFollow ?? this.canFollow,
     );
   }
 
@@ -68,6 +72,7 @@ class ChannelModel {
           ?.map((e) => ChannelModel.fromJson(e))
           .toList(),
       isFollowed: json['isFollowed'] is bool? ? json['isFollowed'] : false,
+      canFollow: json['canFollow'] is bool? ? json['canFollow'] : false,
     );
   }
 }

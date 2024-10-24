@@ -22,7 +22,7 @@ class ViewChannelProfileBloc
       status: ViewChannelProfileStatus.processing,
       channelId: event.idChannel,
     ));
-    
+
     final channelResult =
         await channelRepository.getViewChannelProfileAbout(event.idChannel);
 
@@ -47,7 +47,7 @@ class ViewChannelProfileBloc
     }, (r) {
       emit(state.copyWith(
         status: ViewChannelProfileStatus.success,
-        channel: r,
+        channel: r.copyWith(id: event.followingItemId),
       ));
     });
   }

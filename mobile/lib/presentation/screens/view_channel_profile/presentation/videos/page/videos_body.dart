@@ -24,8 +24,8 @@ import 'package:tuple/tuple.dart';
 class VideosBody extends StatefulWidget {
   final ChannelModel? channelModel;
   final List<VideoModel>? videos;
-  const VideosBody({super.key, this.channelModel, this.videos});
 
+  const VideosBody({super.key, this.channelModel, this.videos});
   @override
   State<VideosBody> createState() => _VideosBodyState();
 }
