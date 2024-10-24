@@ -1,3 +1,4 @@
+import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/state_model.dart';
 import 'package:move_app/presentation/screens/setting/presentation/profile/widgets/gender_radio_group.dart';
@@ -23,6 +24,7 @@ class UserModel {
   final String? role;
   final bool? isActive;
   final String? stripeId;
+  final ChannelModel? channel;
 
   UserModel({
     this.id,
@@ -45,6 +47,7 @@ class UserModel {
     this.role,
     this.isActive,
     this.stripeId,
+    this.channel,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -82,6 +85,9 @@ class UserModel {
       role: json['role'] is String ? json['role'] : '',
       isActive: json['isActive'] as bool?,
       stripeId: json['stripeId'] is String ? json['stripeId'] : '',
+      channel: json['channel'] != null
+          ? ChannelModel.fromJson(json['channel'])
+          : null,
     );
   }
 

@@ -128,7 +128,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     buildWriteCommentPart(context, state),
                     Center(
                       child: Text(
-                        Constants.emptyComments ,
+                        Constants.emptyComments,
                         style:
                             AppTextStyles.montserratStyle.regular14GraniteGray,
                       ),
@@ -391,7 +391,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 ),
               );
             },
-            isFollowed: state.video?.channel?.isFollowed,
             followButton: () {
               if (token.isEmpty) {
                 showDialog(
@@ -438,7 +437,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.facebookOption));
-              if(state.facebookLink != null && state.facebookLink!.isNotEmpty){
+              if (state.facebookLink != null &&
+                  state.facebookLink!.isNotEmpty) {
                 openExternalApplication(state.facebookLink ?? "");
               }
             },
@@ -446,7 +446,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.twitterOption));
-              if(state.twitterLink != null && state.twitterLink!.isNotEmpty){
+              if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
                 openExternalApplication(state.twitterLink ?? "");
               }
             },

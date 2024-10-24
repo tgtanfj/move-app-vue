@@ -318,4 +318,5 @@ class Constants {
   static const String change = 'Change';
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
+  static const String back = 'Back';
 }

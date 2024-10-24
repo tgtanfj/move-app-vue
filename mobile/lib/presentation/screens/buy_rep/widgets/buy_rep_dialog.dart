@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/models/rep_model.dart';
-import 'package:move_app/presentation/components/custom_button.dart';
-
-import '../../../../config/theme/app_icons.dart';
-import '../../../../data/data_sources/dummy_data.dart';
+import 'package:move_app/data/data_sources/dummy_data.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/rep_item.dart';
 
 class BuyRepDialog extends StatelessWidget {
-  const BuyRepDialog({super.key});
+  final bool isBack;
+
+  const BuyRepDialog({super.key, this.isBack = false});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -33,6 +33,27 @@ class BuyRepDialog extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    isBack
+                        ? Row(
+                            children: [
+                              InkWell(
+                                onTap: () {},
+                                child: SvgPicture.asset(
+                                  AppIcons.arrowLeft.svgAssetPath,
+                                  width: 10,
+                                  height: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                Constants.back,
+                                style: AppTextStyles
+                                    .montserratStyle.regular14Black,
+                              )
+                            ],
+                          )
+                        : const SizedBox(),
+                    SizedBox(height: isBack ? 10 : 0),
                     Text(
                       Constants.buyREP,
                       style: AppTextStyles.montserratStyle.bold24black,
@@ -44,7 +65,7 @@ class BuyRepDialog extends StatelessWidget {
                         style: AppTextStyles.montserratStyle.regular16Black,
                         children: [
                           TextSpan(
-                            text: 'REP\$',
+                            text: Constants.rep,
                             style: AppTextStyles.montserratStyle.bold16black,
                           ),
                         ],
@@ -73,42 +94,16 @@ class BuyRepDialog extends StatelessWidget {
             ListView.separated(
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return repItem(reps[index], () {});
+                return RepItem(
+                  rep: reps[index],
+                  onRepSelect: () {},
+                );
               },
               separatorBuilder: (context, index) => const Divider(),
               itemCount: reps.length,
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget repItem(RepModel rep, VoidCallback onRepSelect) {
-    return FractionallySizedBox(
-      widthFactor: 1,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            flex: 7,
-            child: Text(
-              '${rep.rep} ${Constants.rep}',
-              style: AppTextStyles.montserratStyle.bold16black,
-            ),
-          ),
-          Flexible(
-            flex: 3,
-            child: CustomButton(
-              onTap: onRepSelect,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              title: '${Constants.us}${rep.price}',
-              titleStyle: AppTextStyles.montserratStyle.bold16White,
-              backgroundColor: AppColors.tiffanyBlue,
-            ),
-          ),
-        ],
       ),
     );
   }

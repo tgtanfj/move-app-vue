@@ -58,6 +58,7 @@ enum AppIcons {
   masterCard,
   question,
   creditCard,
+  arrowLeft,
 }
 
 extension AppIconsExtension on AppIcons {

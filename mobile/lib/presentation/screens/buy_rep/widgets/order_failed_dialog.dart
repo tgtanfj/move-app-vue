@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
-
-import '../../../../config/theme/app_icons.dart';
-import '../../../../config/theme/app_text_styles.dart';
-import '../../../../constants/constants.dart';
-import '../../../components/custom_button.dart';
+import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/config/theme/app_text_styles.dart';
+import 'package:move_app/constants/constants.dart';
+import 'package:move_app/presentation/components/custom_button.dart';
 
 class OrderFailedDialog extends StatelessWidget {
   const OrderFailedDialog({super.key});
@@ -14,7 +13,7 @@ class OrderFailedDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

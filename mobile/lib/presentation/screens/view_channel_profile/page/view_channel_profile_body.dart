@@ -115,29 +115,30 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: InkWell(
-                      splashFactory: NoSplash.splashFactory,
-                      onTap: () {
-                        if (token.isEmpty) {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const DialogAuthentication();
-                            },
-                          );
-                        } else {
-                          context.read<ViewChannelProfileBloc>().add(
-                              ViewChannelProfileFollowChannelEvent(
-                                  state.channel?.id ?? 0));
-                        }
-                      },
-                      child: SvgPicture.asset(
-                        state.channel?.isFollowed ?? false
-                            ? AppIcons.fillHeart.svgAssetPath
-                            : AppIcons.heart.svgAssetPath,
-                        width: 20,
-                        height: 18,
-                      ),
-                    ),
+                        splashFactory: NoSplash.splashFactory,
+                        onTap: () {
+                          if (token.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const DialogAuthentication();
+                              },
+                            );
+                          } else {
+                            context.read<ViewChannelProfileBloc>().add(
+                                ViewChannelProfileFollowChannelEvent(
+                                    state.channel?.id ?? 0));
+                          }
+                        },
+                        child: state.channel?.canFollow ?? false
+                            ? SvgPicture.asset(
+                                state.channel?.isFollowed ?? false
+                                    ? AppIcons.fillHeart.svgAssetPath
+                                    : AppIcons.heart.svgAssetPath,
+                                width: 20,
+                                height: 18,
+                              )
+                            : const SizedBox()),
                   )
                 ],
               ),
