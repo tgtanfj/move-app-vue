@@ -103,7 +103,7 @@ export class NotificationService {
   ) {
     await ref.set({
       data,
-      is_read: false,
+      isRead: false,
       timestamp: Date.now(),
     });
   }
@@ -122,22 +122,23 @@ export class NotificationService {
       const notification = notifications[notificationId];
       const type = notification.data?.type;
       const sender = notification.data?.sender;
-      const follow_milestone = notification.data?.follow_milestone;
-      const view_video_milestone = notification.data?.view_video_milestone;
-      const rep_milestone = notification.data?.rep_milestone;
+      const followMilestone = notification.data?.followMilestone;
+      const viewVideoMilestone = notification.data?.viewVideoMilestone;
+      const repMilestone = notification.data?.repMilestone;
+      const commentId = notification.data?.commentId;
 
-      if (
-        (type === NOTIFICATION_TYPE.FOLLOW || type === NOTIFICATION_TYPE.LIKE) &&
-        !data &&
-        sender.id === senderId
-      ) {
+      if (!data && type === NOTIFICATION_TYPE.FOLLOW && sender.id === senderId) {
+        return true;
+      }
+
+      if (type === NOTIFICATION_TYPE.LIKE && commentId === data) {
         return true;
       }
 
       if (
-        (type === NOTIFICATION_TYPE.FOLLOW_MILESTONE && follow_milestone === data) ||
-        (type === NOTIFICATION_TYPE.VIEW_VIDEO_MILESTONE && view_video_milestone === data) ||
-        (type === NOTIFICATION_TYPE.REP_MILESTONE && rep_milestone === data)
+        (type === NOTIFICATION_TYPE.FOLLOW_MILESTONE && followMilestone === data) ||
+        (type === NOTIFICATION_TYPE.VIEW_VIDEO_MILESTONE && viewVideoMilestone === data) ||
+        (type === NOTIFICATION_TYPE.REP_MILESTONE && repMilestone === data)
       ) {
         return true;
       }
