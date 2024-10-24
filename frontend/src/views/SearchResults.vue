@@ -37,13 +37,13 @@ onBeforeUnmount(() => {
 const loadMore = async (query, page, numberOfVideos) => {
   await searchStore.loadMoreVideos(query, page, numberOfVideos)
   currentVideoPage.value = page
-  if (videoSection.value) {
-    videoSection.value.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-      inline: 'nearest'
-    })
-  }
+  // if (videoSection.value) {
+  //   videoSection.value.scrollIntoView({
+  //     behavior: 'smooth',
+  //     block: 'end',
+  //     inline: 'nearest'
+  //   })
+  // }
 }
 
 const handleScroll = () => {
@@ -176,8 +176,7 @@ const gridClass = computed(() => {
                   @click="handleLoadMoreChannels"
                   :class="{
                     hidden:
-                      currentChannelPage >=
-                      searchStore.searchResults.channels?.metadata?.totalPages
+                      currentChannelPage >= searchStore.searchResults.channels?.metadata?.totalPages
                   }"
                 >
                   Next
