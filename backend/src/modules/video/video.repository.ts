@@ -189,6 +189,7 @@ export class VideoRepository {
     const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
     const channelIds = await this.getFollowedChannelsByUser(userId);
     const isFollowed = !!channelIds.find((id) => id == videoDetails.channel.id);
+
     return {
       ...dataVideoDetails,
       thumbnailURL,
@@ -360,6 +361,15 @@ export class VideoRepository {
     });
 
     return follows.map((follow) => follow.channel?.id);
+  }
+
+  async getUserIdsFollowedByChannelId(channelId: number): Promise<number[]> {
+    const follows = await this.followRepository.find({
+      where: { channel: { id: channelId } },
+      relations: ['user'],
+    });
+
+    return follows.map((follow) => follow.user?.id);
   }
 
   async overviewAnalyticVideo(videoId: number, time: string) {

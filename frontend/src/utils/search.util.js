@@ -1,9 +1,9 @@
 import { ADMIN_BASE } from '@constants/api.constant'
-import { apiAxios } from '@helpers/axios.helper'
+import axios from 'axios'
 
 export const getSearchResults = async (endpoint, query, limit, page) => {
   try {
-    const response = await apiAxios.get(`${ADMIN_BASE}/search/${endpoint}?q=${query}`, {
+    const response = await axios.get(`${ADMIN_BASE}/search/${endpoint}?q=${query}`, {
       params: {
         page,
         limit

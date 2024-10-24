@@ -19,6 +19,7 @@ import { WatchingVideoHistoryModule } from '../watching-video-history/watching-v
 import { Follow } from '@/entities/follow.entity';
 import { ViewModule } from '../view/view.module';
 import { DonationModule } from '../donation/donation.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { DonationModule } from '../donation/donation.module';
     }),
     ViewModule,
     forwardRef(() => DonationModule),
+    NotificationModule,
     // DonationModule
   ],
   controllers: [VideoController],

@@ -565,7 +565,7 @@ const thirdButton = async (tab) => {
                     </div>
                   </div>
                   <Input
-                    v-model="title"
+                    v-model.trim="title"
                     @input="(e) => handleTitleInput(e.target.value)"
                     maxlength="100"
                     placeholder="Add a title"

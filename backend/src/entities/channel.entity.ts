@@ -99,4 +99,10 @@ export class Channel extends BaseEntity {
     },
   })
   numberOfVideos: number;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  totalREPs: number;
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowRight } from 'lucide-vue-next'
+import { ChevronRight } from 'lucide-vue-next'
 import { useCarousel } from './useCarousel'
 import { cn } from '@utils/shadcn.util'
 import { Button } from '@common/ui/button'
@@ -27,7 +27,7 @@ const { orientation, canScrollNext, scrollNext } = useCarousel()
     @click="scrollNext"
   >
     <slot>
-      <ArrowRight class="h-4 w-4 text-black font-bold hover:text-primary" />
+      <ChevronRight class="h-6 w-6 text-black font-bold hover:text-primary" />
     </slot>
   </Button>
 </template>

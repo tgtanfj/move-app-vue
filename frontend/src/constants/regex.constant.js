@@ -13,6 +13,7 @@ export const REGEX_UPLOADVIDE_TEXTAREA = new RegExp(/^[a-zA-Z0-9,\p{L}\p{M} ]*$/
 export const REGEX_CONVERT_CATEGORY_TITLE_TO_URL_FIRST = new RegExp(/\s+/g)
 export const REGEX_CONVERT_CATEGORY_TITLE_TO_URL_SECOND = new RegExp(/[^a-z0-9\-]/g)
 export const REGEX_CONVERT_URL_TO_CATEGORY_TITLE = new RegExp(/-/g)
+export const REGEX_CARD_HOLDER_NAME = new RegExp(/^(?! )[A-Za-z\s]{2,50}(?<! )$/)
 export const REGEX_FACEBOOK_URL = new RegExp(
   /^https?:\/\/(www\.)?facebook\.com(\/[a-zA-Z0-9(\.\?)?]*)?$/
 )

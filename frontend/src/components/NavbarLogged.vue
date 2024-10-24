@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center gap-6 h-full">
-    <p v-if="!isInStreamerPage" class="font-bold text-center text-[16px] text-nowrap">Get REP$</p>
+    <GetRep :isInStreamerPage="isInStreamerPage" />
     <BellIcon />
     <DropdownMenu>
       <DropdownMenuTrigger class="w-[30px] h-[30px]">
@@ -30,7 +30,7 @@
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink @click="createChannel" to="/streamer">
+        <RouterLink @click="createChannel" to="/streamer/videos">
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
@@ -106,6 +106,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
 import { videoService } from '@services/video.services'
+import GetRep from './rep/GetRep.vue'
 
 const props = defineProps({
   isInStreamerPage: {
