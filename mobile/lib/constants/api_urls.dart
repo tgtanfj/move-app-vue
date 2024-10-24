@@ -12,6 +12,8 @@ class ApiUrls {
   static const String loginGoogle = 'auth/login/google';
   static const String loginFacebook = 'auth/login/facebook';
   static const String faqsEndPoint = 'faqs';
+  static const String sharingVideoEndPoint = 'video/social-sharing/';
+  static const String categoryEndpoint = 'category';
   static const String commentEndpoint = "comment";
   static const String commentReactionEndPoint = "comment-reaction";
   static const String rateVideo = 'watching-video-history/rate';
@@ -26,9 +28,8 @@ class ApiUrls {
   static const String homeVideosYouMayLikeNoLoginEndPoint =
       "home/you-may-like-no-login";
   static const String follow = "follow";
-  static const String  homeCategoriesNoLoginEndPoint = "home/categories-no-login/";
-  static const String  homeCategoriesLoginEndPoint = "home/categories/";
-
-  
-
+  static const String homeCategoriesEndPoint = "home/categories";
+  static const String homeCategoriesNoLoginEndPoint =
+      "home/categories-no-login/";
+  static const String homeCategoriesLoginEndPoint = "home/categories/";
 }

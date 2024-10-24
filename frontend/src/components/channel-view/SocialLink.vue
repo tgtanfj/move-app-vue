@@ -21,10 +21,10 @@ const props = defineProps({
         <FacebookBigIcon />
       </span>
       <span v-if="title === 'instagram'">
-        <YoutubeIcon />
+        <InstagramIcon />
       </span>
       <span v-if="title === 'youtube'">
-        <InstagramIcon />
+        <YoutubeIcon />
       </span>
     </a>
   </div>

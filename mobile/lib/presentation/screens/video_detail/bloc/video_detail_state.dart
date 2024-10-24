@@ -28,6 +28,10 @@ class VideoDetailState extends Equatable {
   final Map<int, bool>? isHiddenInputReply;
   final Map<int?, int?>? originalNumOfReply;
   final bool isShowTemporaryListReply;
+  final int? videoId;
+  final String? option;
+  final String? twitterLink;
+  final String? facebookLink;
 
   const VideoDetailState({
     this.video,
@@ -46,6 +50,10 @@ class VideoDetailState extends Equatable {
     this.isHiddenInputReply,
     this.originalNumOfReply,
     this.isShowTemporaryListReply = false,
+    this.videoId,
+    this.option,
+    this.twitterLink,
+    this.facebookLink,
   });
 
   static VideoDetailState initial() => const VideoDetailState(
@@ -69,6 +77,10 @@ class VideoDetailState extends Equatable {
     Map<int, bool>? isHiddenInputReply,
     Map<int?, int?>? originalNumOfReply,
     bool? isShowTemporaryListReply,
+    int? videoId,
+    String? option,
+    String? twitterLink,
+    String? facebookLink,
   }) {
     return VideoDetailState(
       video: video ?? this.video,
@@ -88,6 +100,10 @@ class VideoDetailState extends Equatable {
       originalNumOfReply: originalNumOfReply ?? this.originalNumOfReply,
       isShowTemporaryListReply:
           isShowTemporaryListReply ?? this.isShowTemporaryListReply,
+      videoId: videoId ?? this.videoId,
+      option: option ?? this.option,
+      twitterLink: twitterLink ?? this.twitterLink,
+      facebookLink: facebookLink ?? this.facebookLink,
     );
   }
 
@@ -109,5 +125,9 @@ class VideoDetailState extends Equatable {
         isHiddenInputReply,
         originalNumOfReply,
         isShowTemporaryListReply,
+        videoId,
+        option,
+        twitterLink,
+        facebookLink,
       ];
 }

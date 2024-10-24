@@ -18,7 +18,9 @@ const props = defineProps({
     <div class="flex items-center justify-center flex-col flex-grow">
       <h6 class="font-semibold text-lg text-center">
         {{ $t('search.no_result') }}
-        {{ searchQuery ? searchQuery : searchStore.text ? searchStore.text : '' }}
+        <span v-if="searchQuery">
+          {{ searchQuery.length > 50 ? searchQuery.slice(0, 50) + '...' : searchQuery }}
+        </span>
       </h6>
       <p class="italic">{{ $t('search.try_another_keyword') }}</p>
     </div>

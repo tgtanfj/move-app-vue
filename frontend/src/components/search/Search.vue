@@ -19,7 +19,7 @@ onMounted(() => {
   window.addEventListener('click', handleCloseResultModal)
 })
 onBeforeUnmount(() => {
-  window.addEventListener('click', handleCloseResultModal)
+  window.removeEventListener('click', handleCloseResultModal)
 })
 
 watch(

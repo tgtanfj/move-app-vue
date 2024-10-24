@@ -1,13 +1,13 @@
 <template>
   <div class="flex items-center gap-6 h-full">
-    <p v-if="!isInStreamerPage" class="font-bold text-center text-[16px] text-nowrap">Get REP$</p>
+    <GetRep :isInStreamerPage="isInStreamerPage" />
     <BellIcon />
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger class="w-[30px] h-[30px]">
         <img
-        :src="authStore.user.photoURL || authStore.user.avatar ||  userAvatar || defaultAvatar"
+          :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
           alt="Avatar"
-          class="w-[30px] h-[30px] rounded-full"
+          class="w-[30px] h-[30px] object-cover rounded-full"
         />
       </DropdownMenuTrigger>
 
@@ -16,16 +16,21 @@
           class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <img
-            :src="authStore.user.photoURL || authStore.user.avatar ||  userAvatar || defaultAvatar"
+            :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
             alt="Avatar"
             class="w-[40px] h-[40px] rounded-full"
           />
           <p class="font-semibold text-lg group-hover:text-primary duration-100">
-            {{ authStore.usernameUser || authStore.user.username || authStore.user?.data?.username || storedUserInfo }}
+            {{
+              authStore.usernameUser ||
+              authStore.user.username ||
+              authStore.user?.data?.username ||
+              storedUserInfo
+            }}
           </p>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink @click="createChannel" to="/streamer">
+        <RouterLink @click="createChannel" to="/streamer/videos">
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
@@ -101,6 +106,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
 import { videoService } from '@services/video.services'
+import GetRep from './rep/GetRep.vue'
 
 const props = defineProps({
   isInStreamerPage: {

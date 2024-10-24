@@ -66,7 +66,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
           return Scaffold(
             appBar: CustomSearchBox(
               controller: _controller,
-              padding: const EdgeInsets.only(left: 16),
+              padding: const EdgeInsets.only(left: 16, bottom: 4, top: 4),
               borderRadius: 25,
               autoFocus: true,
               focusNode: _focusNode,
@@ -138,7 +138,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .height *
-                                              0.35,
+                                              0.3,
                                           child: ListSearchResultCategories(
                                             categoryList: state.categoryList,
                                           ),
@@ -255,10 +255,8 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                         ),
                                         const SizedBox(height: 16),
                                         ListSearchResultVideo(
-                                          tapToVideoDetail: () {},
                                           videoList: state.videoList,
                                           channelList: state.channelList,
-                                          onTap: () {},
                                         ),
                                         const SizedBox(height: 16),
                                       ],
@@ -310,11 +308,10 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                         .add(SearchLoadHistoryEvent());
                                   },
                                   onTap: () {
-                                    _controller.text = searchItem.content ?? "";
                                     _focusNode.unfocus();
                                     context.read<SearchResultBloc>().add(
                                         SearchResultInitialEvent(
-                                            searchQuery: _controller.text));
+                                            searchQuery: searchItem.content ));
                                   },
                                 );
                               },

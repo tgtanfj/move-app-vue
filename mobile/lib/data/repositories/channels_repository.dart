@@ -14,7 +14,7 @@ class ChannelsRepository {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultChannel,
-        queryParameters: {'q': query, 'limit': 2, 'page': page},
+        queryParameters: {'q': query, 'limit': 8, 'page': page},
       );
       if (response.statusCode == 200) {
         final result = parseSearchResultChannel(response.data);
@@ -52,7 +52,7 @@ class ChannelsRepository {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultChannel,
-        queryParameters: {'q': query, 'limit': 2, 'page': page},
+        queryParameters: {'q': query, 'limit': 8, 'page': page},
       );
       if (response.statusCode == 200) {
         final result = response.data['meta'];

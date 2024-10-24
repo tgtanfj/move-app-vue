@@ -21,8 +21,10 @@ class UserRepository {
       );
       if (response.data != null) {
         final user = UserModel.fromJson(response.data['data']);
-        await SharedPrefer.sharedPrefer
-            .setAvatarUserUrl(response.data['data']['avatar']);
+        final avatarUrl = response.data['data']['avatar'] as String?;
+        if (avatarUrl != null && avatarUrl.isNotEmpty) {
+          await SharedPrefer.sharedPrefer.setAvatarUserUrl(avatarUrl);
+        }
         return Right(user);
       } else {
         return const Left(Constants.userNotFound);

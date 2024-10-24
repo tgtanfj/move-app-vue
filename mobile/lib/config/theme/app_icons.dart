@@ -21,6 +21,7 @@ enum AppIcons {
   addVideo,
   closeWhite,
   faqs,
+  filterList,
   like,
   likeFiled,
   dislike,
@@ -50,6 +51,14 @@ enum AppIcons {
   arrowWhiteLeft,
   rateStar,
   rateStarFill,
+  copied,
+  redDot,
+  whiteBell,
+  artboardMove,
+  masterCard,
+  question,
+  creditCard,
+  arrowLeft,
 }
 
 extension AppIconsExtension on AppIcons {

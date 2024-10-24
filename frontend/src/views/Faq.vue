@@ -26,7 +26,7 @@ onMounted(async () => {
 
 <template>
   <div class="w-full h-full pt-[56px] pr-[200px]">
-    <Loading v-if="isLoading" />
+    <Loading v-if="isLoading" class="mt-48"/>
     <p v-else-if="err" class="text-red-500 text-xl mt-6">
       {{ err }}
     </p>
@@ -36,12 +36,5 @@ onMounted(async () => {
         <FaqItem :item="item" />
       </div>
     </div>
-    <p class="text-lg my-12">
-      {{ $t('service.cant_find_answer') }}
-      <router-link to="/move/contact" class="text-primary text-lg">{{
-        $t('service.contact_us')
-      }}</router-link>
-      {{ $t('service.address_problem') }}
-    </p>
   </div>
 </template>

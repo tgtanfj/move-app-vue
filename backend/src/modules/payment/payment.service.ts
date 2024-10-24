@@ -1,10 +1,10 @@
 import { User } from '@/entities/user.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
@@ -17,6 +17,8 @@ import { PayPalService } from './paypal.service';
 import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PaymentService {
@@ -30,11 +32,13 @@ export class PaymentService {
     private readonly redisService: RedisService,
     private readonly configService: ApiConfigService,
     private readonly cashOutRepository: CashOutRepository,
+    private readonly notificationService: NotificationService,
+    private readonly i18n: I18nService,
   ) {}
 
   async listRepsPackage() {
     try {
-      return this.repsPackageRepository.listRepsPackage();
+      return await this.repsPackageRepository.listRepsPackage();
     } catch (error) {
       console.error(error);
     }
@@ -50,6 +54,13 @@ export class PaymentService {
     const repsOfUser = repPackage.numberOfREPs + Number(user.numberOfREPs);
 
     await this.userService.updateREPs(user.id, repsOfUser);
+
+    const dataNotification = {
+      sender: 'system',
+      type: NOTIFICATION_TYPE.PURCHASE,
+      purchase: +repPackage.numberOfREPs,
+    };
+    await this.notificationService.sendOneToOneNotification(user.id, dataNotification);
 
     this.paymentRepository.createPaymentHistory(user.id, repPackage.id);
   }
@@ -104,17 +115,21 @@ export class PaymentService {
     );
 
     if (timesWithdrawPerDay) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_ONE_WITHDRAW_PER_DAY);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_ONE_WITHDRAW_PER_DAY'));
     }
 
     if (timesWithdrawPerWeek >= 3) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_THREE_WITHDRAW_PER_WEEK);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_THREE_WITHDRAW_PER_WEEK'));
     }
 
     const { channel } = await this.userService.findChannelByUserId(userId);
 
-    if (numberOfREPs < repsNeedToWithDraw || channel.numberOfREPs < repsNeedToWithDraw) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
+    if (
+      numberOfREPs < repsNeedToWithDraw ||
+      channel.numberOfREPs < repsNeedToWithDraw ||
+      channel.numberOfREPs < numberOfREPs
+    ) {
+      throw new BadRequestException(this.i18n.t('exceptions.payment.NOT_ENOUGH_REPS'));
     }
 
     if (withDrawDto.isSave) {
@@ -131,6 +146,13 @@ export class PaymentService {
       this.paypalService.createPayout(emailReceiveREPs, amountWithDraw);
 
       this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs);
+
+      const dataNotification = {
+        sender: 'system',
+        type: NOTIFICATION_TYPE.CASHOUT,
+        cashout: +amountWithDraw,
+      };
+      await this.notificationService.sendOneToOneNotification(userId, dataNotification);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -150,5 +172,16 @@ export class PaymentService {
     }
 
     return await this.channelService.getChannelReps(userId);
+  }
+
+  async findAllPaymentHistories() {
+    return await this.paymentRepository.findAllPaymentHistories({
+      user: true,
+      repsPackage: true,
+    });
+  }
+
+  async getAllCashOutHistories() {
+    return await this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
   }
 }

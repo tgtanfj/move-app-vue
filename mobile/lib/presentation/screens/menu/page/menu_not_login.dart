@@ -35,7 +35,14 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
           ContentMenu(
             followingButton: () {},
             browseButton: () {},
-            walletButton: () {},
+            walletButton: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogAuthentication();
+                },
+              );
+            },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },

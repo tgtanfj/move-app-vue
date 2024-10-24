@@ -20,6 +20,7 @@ export class DonationController {
   @Post()
   @HttpCode(HttpStatus.OK)
   async donation(@User() user, @Body() donationDto: DonationDto) {
-    return await this.donationService.donation(user.id, donationDto);
+    const userInfo = { id: user.id, avatar: user.avatar, username: user.username };
+    return await this.donationService.donation(userInfo, donationDto);
   }
 }

@@ -6,6 +6,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/presentation/screens/videos_category/bloc/videos_category_bloc.dart';
 import 'package:move_app/presentation/screens/videos_category/bloc/videos_category_event.dart';
 import 'package:move_app/presentation/screens/videos_category/bloc/videos_category_state.dart';
@@ -74,7 +75,8 @@ class _VideosCategoryBodyState extends State<VideosCategoryBody> {
                                   image: state
                                       .listVideoCategory?[index].thumbnailURL,
                                   height: height * 0.21,
-                                  isLargePoster: true,
+                                  isViewText: true,
+                                  isDurationText: true,
                                   duration: state.listVideoCategory?[index]
                                           .durationsVideo
                                           ?.toDurationFormat() ??
@@ -82,13 +84,31 @@ class _VideosCategoryBodyState extends State<VideosCategoryBody> {
                                   numberOfViews: state
                                       .listVideoCategory?[index].numberOfViews
                                       ?.toCompactViewCount(),
-                                  onTap: () {},
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoDetailPage(
+                                        videoId: state
+                                                .listVideoCategory?[index].id ??
+                                            0,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(
                                   height: 4.0,
                                 ),
                                 VideoFeatureDescription(
-                                  onTapToVideoDetail: () {},
+                                  onTapToVideoDetail: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoDetailPage(
+                                        videoId: state
+                                                .listVideoCategory?[index].id ??
+                                            0,
+                                      ),
+                                    ),
+                                  ),
                                   videoModel: state.listVideoCategory?[index],
                                   channelModel:
                                       state.listVideoCategory?[index].channel,

@@ -1,7 +1,6 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import EyeIcon from '@assets/icons/EyeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { convertToTimeFormat } from '@utils/formatVideoLength.util'
@@ -15,7 +14,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <div class="flex flex-col cursor-pointer shadow-md border-gray-50 border-[.1px] p-5 rounded-sm">
+  <div class="flex flex-col cursor-pointer">
     <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
       <router-link :to="`/video/${video.id}`">
         <img
@@ -29,11 +28,11 @@ const props = defineProps({
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews }}
+          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 views' }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
-        <p class="font-bold">{{ convertToTimeFormat(video.durationsVideo) || '0:00' }}</p>
+        <p class="font-bold">{{ convertToTimeFormat(video.durationsVideo) }}</p>
       </div>
     </div>
     <div class="flex items-start mt-2">
@@ -84,7 +83,7 @@ const props = defineProps({
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto">
+      <div class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px] mr-1" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>

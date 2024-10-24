@@ -5,12 +5,12 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { ArrowRightFromLine } from 'lucide-vue-next'
 import { ArrowLeft } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import FollowedChannelsSkeleton from './FollowedChannelsSkeleton.vue'
 import { getFollowerText } from '@utils/follower.util'
 import { useRouter } from 'vue-router'
 import { useFollowerStore } from '../../stores/follower.store'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({
   sidebarOpen: {
@@ -81,7 +81,7 @@ const handleClick = () => {
             </div>
             <div v-show="sidebarOpen" class="ml-2">
               <span class="text-sm text-[#666666]"
-                >{{ channel.numberOfFollowers }}
+                >{{ formatFollowers(channel.numberOfFollowers) }}
                 {{ getFollowerText(channel.numberOfFollowers) }}</span
               >
             </div>

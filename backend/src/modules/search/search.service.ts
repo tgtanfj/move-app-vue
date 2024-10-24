@@ -49,13 +49,15 @@ export class SearchService {
     const [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
+      .orderBy('channel.isBlueBadge', 'DESC')
+      .addOrderBy('channel.isPinkBadge', 'DESC')
+      .addOrderBy('channel.id', 'ASC')
       .skip(offset)
       .take(limit)
       .getManyAndCount();
 
     return { channels, totalCount };
   }
-
   async searchVideos(params: { query: string; page: number; limit: number }): Promise<{
     videos: Video[];
     totalItemCount: number;

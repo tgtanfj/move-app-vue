@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/video_model.dart';
+import 'package:move_app/data/repositories/share_repository.dart';
 import 'package:move_app/data/repositories/video_detail_repository.dart';
 import 'package:move_app/data/repositories/view_channel_profile_repository.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
@@ -11,14 +13,18 @@ import '../../../../data/repositories/comment_repository.dart';
 import '../../../../utils/util_date_time.dart';
 
 class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
+  final ShareRepository shareRepository = ShareRepository();
+
   final VideoDetailRepository videoRepository = VideoDetailRepository();
   final ViewChannelProfileRepository viewChannelRepository =
       ViewChannelProfileRepository();
 
   final commentRepository = CommentRepository();
+
   VideoDetailBloc() : super(VideoDetailState.initial()) {
     on<VideoDetailInitialEvent>(_onVideoDetailInitialEvent);
     on<VideoDetailSelectQualityEvent>(_onVideoDetailSelectQualityEvent);
+    on<VideoDetailShareSocialEvent>(_onVideoDetailShareSocialEvent);
     on<VideoDetailCommentChangedEvent>(onVideoDetailCommentChangedEvent);
     on<VideoDetailLoadMoreCommentsEvent>(onVideoDetailLoadMoreCommentEvent);
     on<VideoDetailPostCommentEvent>(onVideoDetailPostCommentEvent);
@@ -94,6 +100,37 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailSelectQualityEvent(
       VideoDetailSelectQualityEvent event, Emitter<VideoDetailState> emit) {}
+
+  void _onVideoDetailShareSocialEvent(
+      VideoDetailShareSocialEvent event, Emitter<VideoDetailState> emit) async {
+    final result =
+        await shareRepository.sharingVideo(event.videoId, event.option);
+    if (event.option == Constants.twitterOption) {
+      result.fold((l) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.success,
+          twitterLink: r,
+        ));
+      });
+    } else if (event.option == Constants.facebookOption) {
+      result.fold((l) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.success,
+          facebookLink: r,
+        ));
+      });
+    }
+  }
 
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,
       Emitter<VideoDetailState> emit) async {
@@ -344,7 +381,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       );
       final result =
           await commentRepository.patchCommentReaction(updatedComment);
-
       if (result.isRight()) {
         emit(
           state.copyWith(
@@ -479,7 +515,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailRateSubmitEvent(
       VideoDetailRateSubmitEvent event, Emitter<VideoDetailState> emit) async {
-    final rateResult = await videoRepository.rateVideo(8, event.rating);
+    final rateResult =
+        await videoRepository.rateVideo(state.video?.id ?? 0, event.rating);
     rateResult.fold((l) {
       emit(state.copyWith(errorMessage: l));
     }, (r) {
@@ -492,7 +529,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailFollowChannelEvent(VideoDetailFollowChannelEvent event,
       Emitter<VideoDetailState> emit) async {
-    emit(state.copyWith(status: VideoDetailStatus.processing));
     if (state.video?.channel?.isFollowed == true) {
       final result = await viewChannelRepository
           .unFollowChannel(state.video?.channel?.id ?? 0);

@@ -11,13 +11,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeState.initial()) {
     on<HomeInitialEvent>(_onHomeInitialEvent);
   }
-  final CategoriesRepository categoryRepository = CategoriesRepository();
+  final CategoriesRepository categoriesRepository = CategoriesRepository();
   final VideosRepository videoRepository = VideosRepository();
   void _onHomeInitialEvent(
       HomeInitialEvent event, Emitter<HomeState> emit) async {
     emit(state.copyWith(status: HomeStatus.processing));
     final result = await Future.wait([
-      categoryRepository.getListTopCategory(),
+      categoriesRepository.getListTopCategory(),
       videoRepository.getListYouMayLikeVideo(),
       videoRepository.getListTrendVideo(),
     ]);

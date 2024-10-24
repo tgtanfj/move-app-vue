@@ -16,11 +16,11 @@ class SuggestionRepository {
         ApiUrls.suggestionEndpoint,
         queryParameters: {'q': query},
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200  && response.data != null) {
         final result = parseSuggestion(response.data);
         return Right(result);
       } else {
-        return const Left('cannot load suggestion');
+        return const Left('Cannot load suggestion');
       }
     } catch (e) {
       if (e is DioException) {

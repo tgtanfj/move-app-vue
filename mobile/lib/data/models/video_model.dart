@@ -3,18 +3,21 @@ import 'package:move_app/data/models/channel_model.dart';
 
 class VideoModel {
   final int? id;
+  final String? thumbnailURL;
+  final int? numberOfViews;
+  final int? videoLength;
   final String? title;
+  final double? ratings;
   final String? workoutLevel;
   final String? duration;
+  final DateTime? createdAt;
+  final CategoryModel? category;
   final String? url;
-  final int? numberOfViews;
-  final double? ratings;
   final String? urlS3;
   final CategoryModel? categories;
   final ChannelModel? channel;
-  final String? thumbnailURL;
   final int? durationsVideo;
-  final DateTime? createdAt;
+  final bool? isCommentable;
 
   VideoModel({
     this.id,
@@ -30,6 +33,9 @@ class VideoModel {
     this.thumbnailURL,
     this.durationsVideo,
     this.createdAt,
+    this.category,
+    this.videoLength,
+    this.isCommentable
   });
 
   VideoModel copyWith({
@@ -46,6 +52,10 @@ class VideoModel {
     String? thumbnailURL,
     int? durationsVideo,
     DateTime? createdAt,
+    CategoryModel? category,
+    int? videoLength,
+    bool? isCommentable,
+
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -61,6 +71,9 @@ class VideoModel {
       thumbnailURL: thumbnailURL ?? this.thumbnailURL,
       durationsVideo: durationsVideo ?? this.durationsVideo,
       createdAt: createdAt ?? this.createdAt,
+      category: category ?? this.category,
+      videoLength: videoLength ?? this.videoLength,
+      isCommentable: isCommentable ?? this.isCommentable
     );
   }
 
@@ -76,8 +89,8 @@ class VideoModel {
           (json['numberOfViews'] is num) ? json['numberOfViews'].toInt() : 0,
       ratings: (json["ratings"] is num) ? json['ratings'].toDouble() : 0.0,
       urlS3: (json['urlS3'] is String) ? json['urlS3'] : '',
-      categories: CategoryModel.fromJson(json['category']),
-      channel: ChannelModel.fromJson(json['channel']),
+      categories: json['category'] != null ? CategoryModel.fromJson(json['category']): CategoryModel(title: ""),
+      channel: json['channel'] != null ? ChannelModel.fromJson(json['channel']) : ChannelModel(name: ""),
       thumbnailURL:
           (json['thumbnailURL'] is String) ? json['thumbnailURL'] : '',
       durationsVideo:
@@ -85,6 +98,13 @@ class VideoModel {
       createdAt: (json['createdAt'] is String)
           ? DateTime.parse(json['createdAt'])
           : null,
+      videoLength: json['videoLength'] is int ? json['videoLength'] : 0,
+      category: json['category'] != null
+          ? CategoryModel.fromJson(json['category'])
+          : null,
+      isCommentable: (json['isCommentable'] != null && json['isCommentable'] is bool)
+          ? json['isCommentable'] as bool
+          : false,
     );
   }
 }

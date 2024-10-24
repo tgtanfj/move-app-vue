@@ -20,27 +20,34 @@ class CustomButton extends StatelessWidget {
   final MainAxisAlignment? contentAlignment;
   final MainAxisSize? mainAxisSize;
   final bool isExpanded;
+  final double? width;
+  final double? height;
+  final SizedBox? sizedBox;
 
-  const CustomButton(
-      {super.key,
-      this.title = '',
-      this.titleStyle,
-      this.backgroundColor = Colors.white,
-      this.isEnabled = true,
-      this.prefix,
-      this.suffix,
-      this.onTap,
-      this.onLongPress,
-      this.borderRadius = 8,
-      this.padding,
-      this.textAlign,
-      this.borderColor,
-      this.maxLines,
-      this.textOverflow,
-      this.softWrap,
-      this.contentAlignment,
-      this.mainAxisSize,
-      this.isExpanded = true});
+  const CustomButton({
+    super.key,
+    this.title = '',
+    this.titleStyle,
+    this.backgroundColor = Colors.white,
+    this.isEnabled = true,
+    this.prefix,
+    this.suffix,
+    this.onTap,
+    this.onLongPress,
+    this.borderRadius = 8,
+    this.padding,
+    this.textAlign,
+    this.borderColor,
+    this.maxLines,
+    this.textOverflow,
+    this.softWrap,
+    this.contentAlignment,
+    this.mainAxisSize,
+    this.isExpanded = true,
+    this.width,
+    this.height,
+    this.sizedBox,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +56,8 @@ class CustomButton extends StatelessWidget {
       onLongPress: isEnabled ? onLongPress : null,
       borderRadius: BorderRadius.circular(borderRadius),
       child: Container(
+        width: width,
+        height: height,
         padding:
             padding ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
         decoration: BoxDecoration(
@@ -60,6 +69,7 @@ class CustomButton extends StatelessWidget {
           mainAxisAlignment: contentAlignment ?? MainAxisAlignment.center,
           children: [
             if (prefix != null) prefix!,
+            sizedBox ?? const SizedBox(),
             isExpanded
                 ? Expanded(
                     child: Text(

@@ -144,3 +144,20 @@ class VideoDetailFollowChannelEvent extends VideoDetailEvent {
   @override
   List<Object?> get props => [channelId];
 }
+
+final class VideoDetailShareSocialEvent extends VideoDetailEvent {
+  final int? videoId;
+  final String? option;
+
+  const VideoDetailShareSocialEvent({
+    this.videoId,
+    required this.option,
+  });
+
+  @override
+  List<Object?> get props => [
+        videoId,
+        option,
+      ];
+}
+
