@@ -1,7 +1,8 @@
 import { Donation } from '@/entities/donation.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { DonationDto } from '../dto/donation.dto';
 
 @Injectable()
 export class DonationRepository {
@@ -10,17 +11,18 @@ export class DonationRepository {
     private readonly donationRepository: Repository<Donation>,
   ) {}
 
-  async donation(userId: number, videoId: number, giftPackageId: number): Promise<Donation> {
+  async donation(userId: number, donationDto: DonationDto): Promise<Donation> {
     const donationCreated = await this.donationRepository.create({
       video: {
-        id: videoId,
+        id: donationDto.videoId,
       },
       user: {
         id: userId,
       },
       giftPackage: {
-        id: giftPackageId,
+        id: donationDto.giftPackageId,
       },
+      content: donationDto.content,
     });
 
     return await this.donationRepository.save(donationCreated);
@@ -33,6 +35,7 @@ export class DonationRepository {
     //   },
     //   giftPackage: {},
     // });
+
     const result = await this.donationRepository
       .createQueryBuilder('donation')
       .select('donation.videoId', 'videoId')
