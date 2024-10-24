@@ -19,6 +19,7 @@ class CustomEditText extends StatefulWidget {
   final int? maxLength;
   final bool isPasswordInput, isShowMessage;
   final Widget? suffix;
+  final Widget? suffixLabel;
   final Color? cursorColor;
   final String preMessage;
   final String sufMessage;
@@ -42,6 +43,7 @@ class CustomEditText extends StatefulWidget {
     this.maxLength = 255,
     this.isPasswordInput = false,
     this.suffix,
+    this.suffixLabel,
     this.mainMessage = "",
     this.borderColor = Colors.grey,
     this.isShowMessage = false,
@@ -100,11 +102,17 @@ class _CustomEditTextState extends State<CustomEditText> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         widget.title.isNotEmpty
-            ? Text(
-                widget.title,
-                style: widget.titleStyle ??
-                    AppTextStyles.montserratStyle.regular16Black,
-                textAlign: TextAlign.left,
+            ? Row(
+                children: [
+                  Text(
+                    widget.title,
+                    style: widget.titleStyle ??
+                        AppTextStyles.montserratStyle.regular16Black,
+                    textAlign: TextAlign.left,
+                  ),
+                  const SizedBox(width: 10),
+                  if (widget.suffixLabel != null) widget.suffixLabel!,
+                ],
               )
             : const SizedBox(),
         SizedBox(

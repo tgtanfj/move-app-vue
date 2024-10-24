@@ -56,6 +56,9 @@ class Constants {
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';
+  static const String wallet = 'Wallet';
+  static const String paymentMethod = 'Payment method';
+  static const String paymentHistory = 'Payment history';
   static const String updateProfilePicture = 'Update profile picture';
   static const String j = 'J';
   static const String male = 'Male';
@@ -101,7 +104,6 @@ class Constants {
   static const String intermediate = 'Intermediate';
   static const String following = 'Following';
   static const String browse = 'Browse';
-  static const String wallet = 'Wallet';
   static const String setting = 'Setting';
   static const String more = 'More';
   static const String aboutUs = 'About Us';
@@ -202,7 +204,8 @@ class Constants {
   static const String readMore = "Read More";
   static const String readLess = "Show Less";
   static const String cancelComment = "Cancel Reservation?";
-  static const String areUSure = "Are you sure you want to cancel this reservation?";
+  static const String areUSure =
+      "Are you sure you want to cancel this reservation?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
   static const String writeReply = "Write a reply";
@@ -271,4 +274,19 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String noPaymentMethod = 'No payment method setup';
+  static const String youDoNotHaveSavedPayment =
+      'You do not have any saved payment information.';
+  static const String setUpPaymentMethod = 'Setup payment method';
+  static const String yourPaymentMethod = '  Your payment method';
+  static const String paymentDetails = 'Payment details';
+  static const String cardholderName = 'Cardholder Name';
+  static const String cardNumber = 'Card Number';
+  static const String expiryDate = 'Expiry Date';
+  static const String cvv = 'CVV2/CVC2';
+  static const String bySubmittingPayment =
+      'By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s ';
+  static const String endUserLicense =
+      'End User License Agreement, Privacy Policy ';
+  static const String refunPolicy = 'Refund Policy.';
 }
