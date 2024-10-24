@@ -138,7 +138,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .height *
-                                              0.35,
+                                              0.3,
                                           child: ListSearchResultCategories(
                                             categoryList: state.categoryList,
                                           ),

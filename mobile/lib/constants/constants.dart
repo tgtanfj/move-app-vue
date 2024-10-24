@@ -277,7 +277,7 @@ class Constants {
   static const String paymentHistory = "Payment History";
   static const String date = "DATE";
   static const String productName = "PRODUCT NAME";
-  static const String qty = "QTY";
   static const String startDate = "START DATE";
   static const String endDate = "END DATE";
+  static const String time = "TIME";
 }

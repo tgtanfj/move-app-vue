@@ -89,8 +89,8 @@ class VideoModel {
           (json['numberOfViews'] is num) ? json['numberOfViews'].toInt() : 0,
       ratings: (json["ratings"] is num) ? json['ratings'].toDouble() : 0.0,
       urlS3: (json['urlS3'] is String) ? json['urlS3'] : '',
-      categories: CategoryModel.fromJson(json['category']),
-      channel: ChannelModel.fromJson(json['channel']),
+      categories: json['category'] != null ? CategoryModel.fromJson(json['category']): CategoryModel(title: ""),
+      channel: json['channel'] != null ? ChannelModel.fromJson(json['channel']) : ChannelModel(name: ""),
       thumbnailURL:
           (json['thumbnailURL'] is String) ? json['thumbnailURL'] : '',
       durationsVideo:

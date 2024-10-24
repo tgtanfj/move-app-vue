@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/presentation/screens/search/bloc/search_result_bloc.dart';
-import 'package:move_app/presentation/screens/search/page/search_result_body.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/bloc/payment_history_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/page/payment_history_body.dart';
 

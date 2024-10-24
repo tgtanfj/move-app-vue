@@ -13,8 +13,7 @@ import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/item_comment.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/write_comment.dart';
 import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
-
-import '../../../components/logout_dialog.dart';
+import 'package:move_app/presentation/components/logout_dialog.dart';
 
 class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;

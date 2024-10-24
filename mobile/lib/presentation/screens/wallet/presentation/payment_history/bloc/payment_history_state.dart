@@ -12,15 +12,15 @@ enum PaymentHistoryStatus {
 
 final class PaymentHistoryState extends Equatable {
   final PaymentHistoryStatus? status;
-  final bool? isPickedStartDate;
-  final bool? isPickedEndDate;
+  final bool isPickedStartDate;
+  final bool isPickedEndDate;
   final DateTime? startDate;
   final DateTime? endDate;
 
   const PaymentHistoryState({
     this.status,
-    this.isPickedStartDate,
-    this.isPickedEndDate,
+    this.isPickedStartDate = false,
+    this.isPickedEndDate = false,
     this.startDate,
     this.endDate,
   });

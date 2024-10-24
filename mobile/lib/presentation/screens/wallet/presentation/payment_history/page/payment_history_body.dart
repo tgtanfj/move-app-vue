@@ -1,17 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/bloc/payment_history_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/bloc/payment_history_event.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_history/bloc/payment_history_state.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/widgets/date_picker_widgets.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_history/widgets/list_payment_histories.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-import '../../../../../../config/theme/app_colors.dart';
-import '../../../../../components/custom_button.dart';
-import '../bloc/payment_history_state.dart';
-import '../widgets/list_payment_histories.dart';
 import 'package:intl/intl.dart';
 
 class PaymentHistoryBody extends StatefulWidget {
@@ -25,7 +24,7 @@ String formatDate(DateTime? date) {
   if (date != null) {
     return DateFormat('dd MMM yyyy').format(date!);
   }
-  return " ";
+  return "No date to format";
 }
 
 class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
@@ -115,19 +114,24 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                             )),
                         Expanded(
                             flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: Text(
-                                Constants.productName,
-                                style:
-                                    AppTextStyles.montserratStyle.medium12Grey,
-                              ),
+                            child: Text(
+                              Constants.time,
+                              style: AppTextStyles.montserratStyle.medium12Grey,
                             )),
-                        Text(
-                          Constants.qty,
-                          style: AppTextStyles.montserratStyle.medium12Grey,
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            Constants.productName,
+                            style: AppTextStyles.montserratStyle.medium12Grey,
+                          ),
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    const Divider(
+                      height: 1,
                     ),
                     const Expanded(child: ListPaymentHistories()),
                     Row(
@@ -169,40 +173,50 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                   ],
                 ),
               ),
-              if (state.isPickedStartDate == true)
-                Positioned(
-                  top: 90,
+              if (state.isPickedStartDate)
+                _buildDatePicker(
+                  isPicked: true,
+                  right: 22,
                   left: 0,
-                  child: Card(
-                    elevation: 6,
-                    color: AppColors.white,
-                    child: DatePickerWidgets(
-                      selectedDate: (startDate) {
-                        context.read<PaymentHistoryBloc>().add(
-                            PaymentHistorySelectionStartDateEvent(
-                                startDate: startDate.value));
-                      },
-                    ),
-                  ),
+                  onDateSelected: (startDate) {
+                    context.read<PaymentHistoryBloc>().add(
+                          PaymentHistorySelectionStartDateEvent(
+                              startDate: startDate),
+                        );
+                  },
                 ),
-              if (state.isPickedEndDate == true)
-                Positioned(
-                  top: 90,
+              if (state.isPickedEndDate)
+                _buildDatePicker(
+                  isPicked: true,
+                  left: 22,
                   right: 0,
-                  child: Card(
-                      elevation: 6,
-                      color: AppColors.white,
-                      child: DatePickerWidgets(
-                        selectedDate: (endDate) {
-                          context.read<PaymentHistoryBloc>().add(
-                              PaymentHistorySelectionEndDateEvent(
-                                  endDate: endDate.value));
-                        },
-                      )),
-                ),
+                  onDateSelected: (endDate) {
+                    context.read<PaymentHistoryBloc>().add(
+                        PaymentHistorySelectionEndDateEvent(endDate: endDate));
+                  },
+                )
             ],
           );
         },
+      ),
+    );
+  }
+
+  Positioned _buildDatePicker({
+    required bool isPicked,
+    double? left,
+    double? right,
+    required Function(DateTime) onDateSelected,
+  }) {
+    return Positioned(
+      top: 90,
+      left: left,
+      right: right,
+      child: Card(
+        elevation: 6,
+        child: DatePickerWidgets(
+          selectedDate: (date) => onDateSelected(date.value),
+        ),
       ),
     );
   }

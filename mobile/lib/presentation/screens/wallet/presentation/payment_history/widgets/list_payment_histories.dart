@@ -1,18 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
-import 'package:move_app/presentation/components/custom_logout_button.dart';
 
 class ListPaymentHistories extends StatelessWidget {
   final String? date;
   final String? productName;
-  final int? quantities;
+  final String? time;
 
   const ListPaymentHistories({
     super.key,
     this.date,
     this.productName,
-    this.quantities,
+    this.time,
   });
 
   @override
@@ -25,7 +24,7 @@ class ListPaymentHistories extends StatelessWidget {
             paymentHistoryWidgets(
               date ?? "22 Oct 2024",
               productName ?? "300 Reps",
-              quantities ?? 1,
+              time ?? "05:10:58",
             ),
             const Divider(
               height: 1,
@@ -40,7 +39,7 @@ class ListPaymentHistories extends StatelessWidget {
   }
 
   Widget paymentHistoryWidgets(
-      String? date, String? productName, int? quantities) {
+      String? date, String? productName, String? time) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 17),
       child: Row(
@@ -52,14 +51,18 @@ class ListPaymentHistories extends StatelessWidget {
                 style: AppTextStyles.montserratStyle.regular14Grey,
               )),
           Expanded(
-              flex: 1,
-              child: Text(
-                productName ?? "",
-                style: AppTextStyles.montserratStyle.bold14Black,
-              )),
-          Text(
-            (quantities ?? 1).toString(),
-            style: AppTextStyles.montserratStyle.bold14Black,
+            flex: 1,
+            child: Text(
+              time ?? "",
+              style: AppTextStyles.montserratStyle.regular14Grey,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              productName ?? "",
+              style: AppTextStyles.montserratStyle.bold14Black,
+            ),
           ),
         ],
       ),

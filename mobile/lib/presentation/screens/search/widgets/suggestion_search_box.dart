@@ -2,14 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/suggestion_model.dart';
+import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
-
-import '../../../../config/theme/app_icons.dart';
-import '../../../../config/theme/app_images.dart';
-import '../../../components/avatar.dart';
 
 class SuggestionSearchBox extends StatelessWidget {
   final SuggestionModel? suggestionModel;
@@ -55,9 +54,7 @@ class SuggestionSearchBox extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => VideoDetailPage(
-                              videoId:
-                              suggestionModel?.topCategory?.id ??
-                                  0)));
+                              videoId: suggestionModel?.topCategory?.id ?? 0)));
                 },
               )
             : const SizedBox(),
@@ -104,12 +101,14 @@ class SuggestionSearchBox extends StatelessWidget {
                     ),
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VideoDetailPage(
-                                  videoId:
-                                  suggestionModel?.topInstructors?[index].id ??
-                                      0)));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VideoDetailPage(
+                            videoId:
+                                suggestionModel?.topInstructors?[index].id ?? 0,
+                          ),
+                        ),
+                      );
                     },
                   );
                 })
