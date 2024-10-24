@@ -67,7 +67,7 @@ class _CustomTileState extends State<CustomTile> {
                         ? AppColors.tiffanyBlue
                         : AppColors.black,
                   ),
-                  onPressed: () {},
+                  onPressed: widget.onTap,
                 ),
               ],
             ),
