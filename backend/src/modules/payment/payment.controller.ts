@@ -31,7 +31,7 @@ export class PaymentController {
   @Get('list-reps-package')
   @HttpCode(HttpStatus.OK)
   async listRepsPackage() {
-    return this.paymentService.listRepsPackage();
+    return await this.paymentService.listRepsPackage();
   }
 
   @Post('buy-reps')
