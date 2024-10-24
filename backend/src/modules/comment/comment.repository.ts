@@ -26,6 +26,25 @@ export class CommentRepository {
     });
   }
 
+  async getAllComments(userId: number): Promise<Comment[]> {
+    return await this.commentRepository
+      .createQueryBuilder('comment')
+      .innerJoinAndSelect('comment.user', 'user')
+      .innerJoin('comment.video', 'video')
+      .innerJoin('video.channel', 'channel')
+      .where('channel.userId = :userId', { userId })
+      .select([
+        'comment.id',
+        'comment.content',
+        'comment.numberOfLike',
+        'comment.numberOfReply',
+        'comment.createdAt',
+        'user.id',
+        'user.username',
+      ])
+      .getMany();
+  }
+
   async getOne(id: number, relations?: FindOptionsRelations<Comment>): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: {

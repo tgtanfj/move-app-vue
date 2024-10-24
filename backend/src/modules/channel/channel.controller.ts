@@ -101,4 +101,10 @@ export class ChannelController {
   async overviewChannel(@User() user) {
     return await this.channelService.overViewAnalytic(user.id);
   }
+
+  @Get('get-all-comments')
+  @UseGuards(JwtAuthGuard)
+  async getAllComments(@User() user) {
+    return await this.channelService.getAllComments(user.id);
+  }
 }
