@@ -157,4 +157,15 @@ export class PaymentService {
 
     return await this.channelService.getChannelReps(userId);
   }
+
+  async findAllPaymentHistories() {
+    return await this.paymentRepository.findAllPaymentHistories({
+      user: true,
+      repsPackage: true,
+    });
+  }
+
+  async getAllCashOutHistories() {
+    return await this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
+  }
 }
