@@ -75,4 +75,8 @@ export class StripeService {
       confirm: true,
     });
   }
+
+  async getBalance() {
+    return await this.stripe.balance.retrieve();
+  }
 }

@@ -189,6 +189,7 @@ export class VideoRepository {
     const thumbnailURL = videoDetails.thumbnails.filter((thumbnail) => thumbnail.selected)[0]?.image;
     const channelIds = await this.getFollowedChannelsByUser(userId);
     const isFollowed = !!channelIds.find((id) => id == videoDetails.channel.id);
+
     return {
       ...dataVideoDetails,
       thumbnailURL,
@@ -362,6 +363,15 @@ export class VideoRepository {
     return follows.map((follow) => follow.channel?.id);
   }
 
+  async getUserIdsFollowedByChannelId(channelId: number): Promise<number[]> {
+    const follows = await this.followRepository.find({
+      where: { channel: { id: channelId } },
+      relations: ['user'],
+    });
+
+    return follows.map((follow) => follow.user?.id);
+  }
+
   async overviewAnalyticVideo(videoId: number, time: string) {
     const result = await this.videoRepository
       .createQueryBuilder('v')
@@ -396,14 +406,14 @@ export class VideoRepository {
       .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
       .leftJoin('users', 'u', 'wvh.userId = u.id')
       .select([
-        `CASE 
+        `CASE
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 18 AND 24 THEN '18 - 24'
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 25 AND 34 THEN '25 - 34'
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 35 AND 44 THEN '35 - 44'
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 45 AND 54 THEN '45 - 54'
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) BETWEEN 55 AND 64 THEN '55 - 64'
         WHEN EXTRACT(YEAR FROM AGE(u."dateOfBirth")) > 64 THEN '64 above'
-        ELSE 'Unknown' 
+        ELSE 'Unknown'
       END AS age_group`,
         'COUNT(u.id) AS total_count',
       ])
@@ -421,11 +431,11 @@ export class VideoRepository {
       .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
       .leftJoin('users', 'u', 'wvh.userId = u.id')
       .select([
-        `CASE 
+        `CASE
         WHEN u.gender = 'M' THEN 'Male'
         WHEN u.gender = 'F' THEN 'Female'
         WHEN u.gender = 'O' THEN 'Other'
-        ELSE 'Unknown' 
+        ELSE 'Unknown'
       END AS gender_group`,
         'COUNT(u.id) AS total_count',
         'COUNT(DISTINCT u.id) OVER() AS total_user',
@@ -473,6 +483,12 @@ export class VideoRepository {
           },
         },
       },
+    });
+  }
+
+  async findAll(relations?: FindOptionsRelations<Video>) {
+    return await this.videoRepository.find({
+      relations,
     });
   }
 }

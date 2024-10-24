@@ -4,12 +4,13 @@ import { searchParams } from '@/lib/searchparams';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 
-export const GENDER_OPTIONS = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' }
+export const WORKOUT_LEVEL_OPTIONS = [
+  { value: 'beginner', label: 'Beginner' },
+  { value: 'intermediate', label: 'Intermediate' },
+  { value: 'advanced', label: 'Advanced' }
 ];
 
-export function useEmployeeTableFilters() {
+export function useVideoTableFilters() {
   const [searchQuery, setSearchQuery] = useQueryState(
     'q',
     searchParams.q
@@ -17,9 +18,10 @@ export function useEmployeeTableFilters() {
       .withDefault('')
   );
 
-  const [genderFilter, setGenderFilter] = useQueryState(
-    'gender',
-    searchParams.gender.withOptions({ shallow: false }).withDefault('')
+
+  const [workoutLevelFilter, setWorkoutLevelFilter] = useQueryState(
+    'workoutLevel',
+    searchParams.workoutLevel.withOptions({ shallow: false }).withDefault('')
   );
 
   const [page, setPage] = useQueryState(
@@ -29,20 +31,19 @@ export function useEmployeeTableFilters() {
 
   const resetFilters = useCallback(() => {
     setSearchQuery(null);
-    setGenderFilter(null);
-
+    setWorkoutLevelFilter(null);
     setPage(1);
-  }, [setSearchQuery, setGenderFilter, setPage]);
+  }, [setSearchQuery, setWorkoutLevelFilter, setPage]);
 
   const isAnyFilterActive = useMemo(() => {
-    return !!searchQuery || !!genderFilter;
-  }, [searchQuery, genderFilter]);
+    return !!searchQuery || !!workoutLevelFilter;
+  }, [searchQuery, workoutLevelFilter]);
 
   return {
     searchQuery,
     setSearchQuery,
-    genderFilter,
-    setGenderFilter,
+    workoutLevelFilter,
+    setWorkoutLevelFilter,
     page,
     setPage,
     resetFilters,

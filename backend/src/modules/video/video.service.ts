@@ -1,5 +1,4 @@
 import { Video } from '@/entities/video.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
@@ -40,9 +39,9 @@ import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
 import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
 import { ViewService } from '../view/view.service';
-import { DonationService } from '../donation/donation.service';
-import { channel } from 'diagnostics_channel';
 import { OverviewVideoResponseDto } from './dto/response/overview-video-response.dto';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class VideoService {
@@ -52,7 +51,6 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
-    private thumbnailRepository: ThumbnailRepository,
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
@@ -63,6 +61,7 @@ export class VideoService {
     private readonly viewService: ViewService,
     // private readonly donationService: DonationService,
     private readonly i18n: I18nService,
+    private readonly notificationService: NotificationService,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
       fs.mkdirSync(this.videoUploadPath, { recursive: true });
@@ -204,6 +203,20 @@ export class VideoService {
     } catch (error) {
       throw new Error(error);
     }
+
+    const userFollowIds = await this.videoRepository.getUserIdsFollowedByChannelId(foundChannel.id);
+    const dataNotification = {
+      sender: {
+        id: userId,
+        username: foundChannel.name,
+        avatar: foundChannel.image,
+      },
+      type: NOTIFICATION_TYPE.UPLOAD,
+      videoId: video.id,
+      videoTitle: video.title,
+    };
+
+    await this.notificationService.sendOneToManyNotifications(userFollowIds, dataNotification);
     return video;
   }
 
@@ -486,9 +499,25 @@ export class VideoService {
         throw new NotFoundException(this.i18n.t('exceptions.videoHistory.NOT_CREATE_VIDEO_HISTORY'));
       });
     }
-    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
-      throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
-    });
+    const video = await this.videoRepository
+      .findVideoAndAlso(videoId, userId)
+      .then(async (data) => {
+        let canFollow = null;
+        if (userId) {
+          canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+        }
+
+        return {
+          ...data,
+          channel: {
+            ...data.channel,
+            canFollow,
+          },
+        };
+      })
+      .catch((error) => {
+        throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
+      });
     return video;
   }
 
@@ -582,5 +611,20 @@ export class VideoService {
       ...numberOfReps,
       image,
     };
+  }
+
+  async getAll() {
+    return await this.videoRepository.findAll({ channel: true }).then(async (videos) => {
+      return await Promise.all(
+        videos.map(async (video) => {
+          const thumbnailURL = (await this.thumbnailService.getSelectedThumbnail(video.id))?.image;
+
+          return {
+            ...video,
+            thumbnail: thumbnailURL,
+          };
+        }),
+      );
+    });
   }
 }

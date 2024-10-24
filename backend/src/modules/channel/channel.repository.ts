@@ -75,4 +75,11 @@ export class ChannelRepository {
       emailPayPal,
     });
   }
+  async getAllComments(userId: number) {
+    return await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.comments', 'comment')
+      .where('channel.user = :userId', { userId })
+      .getMany();
+  }
 }

@@ -1,8 +1,8 @@
-import Faq from '@views/Faq.vue'
-import StreamerCashout from '@views/StreamerCashout.vue'
+import StreamerCashout from '@views/streamer/StreamerCashout.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import ChannelSettings from '@components/channel-setttings/ChannelSettings.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +10,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/UserLayout.vue'),
+      component: () => import('../layout/UserLayout.vue'),
       children: [
         {
           path: '/',
@@ -35,7 +35,7 @@ const router = createRouter({
           component: () => import('../views/CategoriesView.vue')
         },
         {
-          path: '/categories/:title/:id',
+          path: '/categories/:title',
           name: 'category-id',
           component: () => import('../components/categories/CategoryId.vue')
         },
@@ -53,11 +53,6 @@ const router = createRouter({
           path: '/channel/:id',
           name: 'view-channel',
           component: () => import('@views/ChannelView.vue')
-        },
-        {
-          path: '/:pathMatch(.*)*',
-          name: '404',
-          component: () => import('../views/PageNotFound.vue')
         }
       ]
     },
@@ -73,7 +68,15 @@ const router = createRouter({
       children: [
         {
           path: 'videos',
-          component: () => import('../views/StreamerListVideo.vue')
+          component: () => import('../views/streamer/StreamerListVideo.vue')
+        },
+        {
+          path: 'analytics/overview',
+          component: () => import('../views/streamer/AnalyticsOverview.vue')
+        },
+        {
+          path: 'analytics/videos',
+          component: () => import('../views/streamer/AnalyticsVideos.vue')
         },
         {
           path: 'cashout',
@@ -95,6 +98,11 @@ const router = createRouter({
           component: () => import('../views/Faq.vue')
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: () => import('../views/PageNotFound.vue')
     }
   ],
   scrollBehavior(to, from, savedPosition) {

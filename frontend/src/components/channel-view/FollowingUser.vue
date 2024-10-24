@@ -4,6 +4,7 @@ import defaultAvatar from '@assets/icons/default-avatar.png'
 import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import { useRouter } from 'vue-router'
 import { getFollowerText } from '../../utils/follower.util'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({
   id: {
@@ -46,10 +47,9 @@ const handleNavigate = () => {
     <div>
       <div class="flex items-center">
         <span class="text-2xl ml-3 cursor-pointer" @click="handleNavigate">{{ name }}</span>
-        <span class="flex gap-2 ml-3">
-          <BlueBadgeIcon v-if="isBlueBadge" /> </span>
+        <span class="flex gap-2 ml-3"> <BlueBadgeIcon v-if="isBlueBadge" /> </span>
       </div>
-      <p class="text-sm">{{ follower }} {{ getFollowerText(follower) }}</p>
+      <p class="text-sm">{{ formatFollowers(follower) }} {{ getFollowerText(follower) }}</p>
     </div>
   </div>
 </template>

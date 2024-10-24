@@ -17,7 +17,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Video management',
-    url: '/dashboard/product',
+    url: '/dashboard/video-management',
     icon: 'product',
     isActive: false,
     items: []

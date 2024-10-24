@@ -45,13 +45,35 @@ export class FollowService {
     }
 
     await this.channelService.increaseFollow(channelId);
-    const receiver = (await this.channelService.findOne(channelId, { user: true })).user.id;
+    const channel = await this.channelService.findOne(channelId, { user: true });
+    const receiver = channel.user.id;
 
-    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+    let isExisted: boolean;
+    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+
     if (!isExisted) {
       const dataNotification = {
         sender: userInfo,
         type: NOTIFICATION_TYPE.FOLLOW,
+      };
+      await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
+    }
+
+    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+      receiver,
+      userInfo.id,
+      +channel.numberOfFollowers,
+    );
+
+    if (
+      channel.numberOfFollowers > 0 &&
+      Number.isInteger(Math.log10(channel.numberOfFollowers)) &&
+      !isExisted
+    ) {
+      const dataNotification = {
+        sender: 'system',
+        type: NOTIFICATION_TYPE.FOLLOW_MILESTONE,
+        follow_milestone: +channel.numberOfFollowers,
       };
       await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
     }

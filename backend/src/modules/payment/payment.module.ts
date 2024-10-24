@@ -14,6 +14,7 @@ import { PayPalService } from './paypal.service';
 import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RepsPackageRepository } from './repositories/reps-package.repository';
     forwardRef(() => StripeModule),
     forwardRef(() => ChannelModule),
     RedisModule,
+    NotificationModule,
   ],
   controllers: [PaymentController],
   providers: [

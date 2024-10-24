@@ -7,6 +7,10 @@ const endpointUser = {
   GET_ALL: `/user/admin`
 };
 
+const endpointVideo = {
+  GET_ALL: `/video/admin`
+};
+
 const endpointFAQs = {
   CREATE: `/faqs/`,
   READ: `/faqs/`,
@@ -17,4 +21,4 @@ const endpointFAQs = {
 
 const endpointOther = {};
 
-export { endpointAuth, endpointFAQs, endpointUser };
+export { endpointAuth, endpointFAQs, endpointUser, endpointVideo };

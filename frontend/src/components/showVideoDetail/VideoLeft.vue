@@ -19,6 +19,7 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import Rating from './Rating.vue'
 import { useFollowerStore } from '../../stores/follower.store'
+import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({
   videoDetail: {
@@ -34,6 +35,7 @@ const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
+const canFollow = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
 
@@ -43,6 +45,7 @@ onMounted(async () => {
     channelInfo.value = res.data
     isFollowed.value = channelInfo.value.isFollowed
     numFollower.value = channelInfo.value.numberOfFollowers
+    canFollow.value = channelInfo.value.canFollow
   }
 })
 
@@ -166,6 +169,7 @@ onMounted(() => {
           <div
             class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
             @click="handleFollow"
+            v-if="canFollow !== false"
           >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
             <HeartFilled v-show="isFollowed" />
@@ -192,7 +196,8 @@ onMounted(() => {
                 {{ channelInfo.name }}
               </h3>
               <p class="text-gray-500 font-medium">
-                {{ numFollower }} {{ getFollowerText(numFollower) }}
+                {{ numFollower ? formatFollowers(numFollower) : 0 }}
+                {{ getFollowerText(numFollower) }}
               </p>
             </div>
           </div>

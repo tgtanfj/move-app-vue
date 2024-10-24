@@ -104,8 +104,8 @@ export type Employee = {
   state: string;
   country: string;
   zipcode: string;
-  longitude?: number; // Optional field
-  latitude?: number; // Optional field
+  longitude?: number;
+  latitude?: number;
   job: string;
   profile_picture?: string | null; // Profile picture can be a string (URL) or null (if no picture)
 };
@@ -121,3 +121,14 @@ export type Product = {
   updated_at: string;
 };
 
+export type Video = {
+  id: number;
+  title: string;
+  thumbnail: string;
+  workoutLevel: string;
+  duration: string;
+  views: number;
+  comments: number;
+  ratings: number;
+  shares: number;
+};
