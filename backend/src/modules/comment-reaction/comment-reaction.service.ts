@@ -28,6 +28,13 @@ export class CommentReactionService {
   async create(userInfo: UserInfoDto, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     try {
       const userId = userInfo.id;
+      const commentReactionExisted = await this.commentReactionRepository.getOneWithUserComment(
+        userId,
+        dto.commentId,
+      );
+      if (commentReactionExisted) {
+        return commentReactionExisted;
+      }
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
       const comment = await this.commentRepository.getOne(dto.commentId, { user: true, video: true });
       const receiver = comment.user.id;
