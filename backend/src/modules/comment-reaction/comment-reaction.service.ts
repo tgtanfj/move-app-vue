@@ -35,13 +35,18 @@ export class CommentReactionService {
 
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
-      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+        receiver,
+        userInfo.id,
+        comment.id,
+      );
       if (!isExisted && userId !== receiver) {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
           videoId: comment.video.id,
           videoTitle: comment.video.title,
+          commentId: comment.id,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }
