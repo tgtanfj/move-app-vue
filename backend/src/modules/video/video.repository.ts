@@ -363,6 +363,15 @@ export class VideoRepository {
     return follows.map((follow) => follow.channel?.id);
   }
 
+  async getUserIdsFollowedByChannelId(channelId: number): Promise<number[]> {
+    const follows = await this.followRepository.find({
+      where: { channel: { id: channelId } },
+      relations: ['user'],
+    });
+
+    return follows.map((follow) => follow.user?.id);
+  }
+
   async overviewAnalyticVideo(videoId: number, time: string) {
     const result = await this.videoRepository
       .createQueryBuilder('v')
