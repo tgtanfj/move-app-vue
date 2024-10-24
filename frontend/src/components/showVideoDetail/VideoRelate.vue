@@ -2,8 +2,9 @@
 import CheckVerifyIcon from '@assets/icons/CheckVerifyIcon.vue'
 import EyeIcon from '@assets/icons/EyeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
-import { convertTimePostVideo } from '@utils/convertTimePostVideo.util';
-import { formatViews } from '@utils/formatViews.util';
+import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
+import { formatViews } from '@utils/formatViews.util'
+import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
 
 const props = defineProps({
   video: {
@@ -33,7 +34,7 @@ const workoutLevelLite =
 
 <template>
   <RouterLink :to="`/video/${video?.id}`">
-    <div class="flex flex-col cursor-pointer hover:bg-slate-50 duration-200 hover:scale-[1.01]">
+    <div class="flex flex-col cursor-pointer">
       <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
         <img
           class="object-cover w-full h-[170px]"
@@ -52,7 +53,7 @@ const workoutLevelLite =
           </p>
         </div>
         <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
-          <p class="font-bold">{{ video?.videoTime }}</p>
+          <p class="font-bold">{{ convertToTimeFormat(video.durationsVideo) }}</p>
         </div>
       </div>
       <div class="flex items-start mt-2">

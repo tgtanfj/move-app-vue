@@ -1,5 +1,3 @@
-import { NavItem } from '@/types';
-
 export type User = {
   id: number;
   name: string;
@@ -131,4 +129,29 @@ export type Video = {
   comments: number;
   ratings: number;
   shares: number;
+
+}
+export type Payment = {
+  id: number;
+
+  user: {
+    email: string;
+    fullName: string;
+  };
+  repsPackage: {
+    numberOfREPs: number;
+    price: number;
+  };
+};
+
+export type Withdraw = {
+  id: number;
+  numberOfREPs: number;
+  channel: {
+    name: string;
+    user: {
+      email: string;
+      fullName: string;
+    };
+  };
 };

@@ -17,4 +17,10 @@ export class Views extends BaseEntity {
     default: 1,
   })
   totalView: number;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  totalViewTime: number;
 }

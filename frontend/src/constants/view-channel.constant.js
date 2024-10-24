@@ -103,3 +103,29 @@ export const SHOW_ANALYTICS = [
     value: formatCategoryTitleToUrl('1 year ago')
   }
 ]
+
+export const RESPONSE_BY_COMMENTS = [
+  {
+    title: 'All responses',
+    value: formatCategoryTitleToUrl('All responses')
+  },
+  {
+    title: 'I haven’t respond',
+    value: formatCategoryTitleToUrl('I haven’t respond')
+  },
+  {
+    title: 'I have responded',
+    value: formatCategoryTitleToUrl('I have responded')
+  }
+]
+
+export const SORT_COMMENTS = [
+  {
+    title: 'Most recent',
+    value: formatCategoryTitleToUrl('Most recent')
+  },
+  {
+    title: 'Received REPs',
+    value: formatCategoryTitleToUrl('Received REPs')
+  }
+]

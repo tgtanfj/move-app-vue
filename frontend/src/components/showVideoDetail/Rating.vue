@@ -96,7 +96,7 @@ const openPopover = () => {
     class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer"
     ref="ratingModal"
   >
-    <div class="flex gap-2 items-center" @click="showRatingModal = true">
+    <div class="flex gap-2 items-center" @click="openPopover">
       <Star width="24px" color="#12BDA3" :fill="oldRating > 0 ? '#12BDA3' : '#ffffff'" />
       <span class="uppercase font-semibold text-sm"> {{ $t('video.rate') }}</span>
     </div>

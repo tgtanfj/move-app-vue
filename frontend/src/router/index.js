@@ -2,7 +2,7 @@ import StreamerCashout from '@views/streamer/StreamerCashout.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import ChannelSettings from '@components/channel-setttings/ChannelSettings.vue'
-
+import ChannelComments from '@components/channel-comments/ChannelComments.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,7 +35,7 @@ const router = createRouter({
           component: () => import('../views/CategoriesView.vue')
         },
         {
-          path: '/categories/:title',
+          path: '/categories/:title/:id',
           name: 'category-id',
           component: () => import('../components/categories/CategoryId.vue')
         },
@@ -85,6 +85,10 @@ const router = createRouter({
         {
           path: 'channel-settings',
           component: ChannelSettings
+        },
+        {
+          path: 'comments',
+          component: ChannelComments
         }
       ]
     },

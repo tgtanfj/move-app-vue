@@ -27,7 +27,7 @@ export class DonationService {
       const userId = userInfo.id;
       const { videoId, giftPackageId } = donationDto;
 
-      await this.donationRepository.donation(userId, videoId, giftPackageId);
+      await this.donationRepository.donation(userId, donationDto);
 
       const giftPackage = await this.giftPackageRepository.findOneGiftPackage(giftPackageId);
 
