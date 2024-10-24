@@ -3,7 +3,7 @@ import { ApiConfigService } from '@/shared/services/api-config.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { I18nService } from 'nestjs-i18n';
-import { FindOptionsRelations, UpdateResult } from 'typeorm';
+import { FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
 import { EmailService } from '../email/email.service';
 import { FollowService } from '../follow/follow.service';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
@@ -13,6 +13,9 @@ import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.d
 import { ChannelItemDto } from './dto/response/channel-item.dto';
 import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { CommentRepository } from '../comment/comment.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Comment } from '@/entities/comment.entity';
 
 @Injectable()
 export class ChannelService {
@@ -23,6 +26,7 @@ export class ChannelService {
     private readonly emailService: EmailService,
     private readonly apiConfig: ApiConfigService,
     private readonly i18n: I18nService,
+    private readonly commentRepository: CommentRepository,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
@@ -209,5 +213,9 @@ export class ChannelService {
       avgTime,
       lastVideo,
     };
+  }
+
+  async getAllComments(userId: number): Promise<Comment[]> {
+    return await this.commentRepository.getAllComments(userId);
   }
 }
