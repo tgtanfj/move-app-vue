@@ -1,10 +1,11 @@
 'use client';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Employee } from '@/constants/data';
+import { Video } from '@/constants/data';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
+import Image from 'next/image';
 
-export const columns: ColumnDef<Employee>[] = [
+export const columns: ColumnDef<Video>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -25,24 +26,48 @@ export const columns: ColumnDef<Employee>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'first_name',
-    header: 'NAME'
+    accessorKey: 'title',
+    header: 'TITLE'
   },
   {
-    accessorKey: 'country',
-    header: 'COUNTRY'
+    accessorKey: 'thumbnail',
+    header: 'THUMBNAIL',
+    cell: ({ row }) => {
+      return (
+        <div className="relative aspect-square h-16 w-16">
+          <Image
+            src={row.getValue('thumbnail')}
+            alt={row.getValue('title')}
+            fill
+            className="rounded-lg object-cover"
+          />
+        </div>
+      );
+    }
   },
   {
-    accessorKey: 'email',
-    header: 'EMAIL'
+    accessorKey: 'workoutLevel',
+    header: 'WORKOUT LEVEL'
   },
   {
-    accessorKey: 'job',
-    header: 'COMPANY'
+    accessorKey: 'duration',
+    header: 'DURATION'
   },
   {
-    accessorKey: 'gender',
-    header: 'GENDER'
+    accessorKey: 'views',
+    header: 'VIEWS'
+  },
+  {
+    accessorKey: 'comments',
+    header: 'COMMENTS'
+  },
+  {
+    accessorKey: 'ratings',
+    header: 'RATINGS'
+  },
+  {
+    accessorKey: 'shares',
+    header: 'SHARES'
   },
   {
     id: 'actions',
