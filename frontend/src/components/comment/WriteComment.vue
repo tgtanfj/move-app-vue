@@ -13,10 +13,6 @@ const props = defineProps({
     type: String,
     required: true
   },
-  me: {
-    type: Object,
-    required: true
-  },
   comments: {
     type: Array,
     required: true
@@ -86,7 +82,7 @@ const handleClickInput = () => {
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
       <img
-        :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
+        :src="userAvatar ?? defaultAvatar"
         class="w-[40px] h-[40px] rounded-full object-cover"
       />
       <Input
@@ -118,9 +114,13 @@ const handleClickInput = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Button @click="postCommentVideo" class="w-[104px] text-[16px]">{{
-        $t('comment.send')
-      }}</Button>
+      <Button
+        @click="postCommentVideo"
+        :disabled="comment === ''"
+        class="w-[104px] text-[16px]"
+        :class="{ 'bg-[#999999]': comment === '' }"
+        >{{ $t('comment.send') }}</Button
+      >
     </div>
   </div>
 </template>

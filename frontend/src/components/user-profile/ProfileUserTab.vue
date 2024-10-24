@@ -284,8 +284,9 @@ const onSubmit = async () => {
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
           if (authStore.user.username) authStore.user.username = values.username
+          console.log('test', values)
           localStorage.setItem('userInfo', values.username)
-          localStorage.setItem('userAvatar', values.avatar)
+          // localStorage.setItem('userAvatar', values.avatar)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })

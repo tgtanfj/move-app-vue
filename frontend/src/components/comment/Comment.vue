@@ -2,7 +2,6 @@
 import { commentServices } from '@services/comment.services'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '../../stores/auth'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 
@@ -13,7 +12,6 @@ const props = defineProps({
   }
 })
 
-const userStore = useAuthStore()
 const commentData = ref([])
 const isLoading = ref(false)
 const hasMoreComments = ref(true)
@@ -83,7 +81,6 @@ const handleUpdateComments = (updatedComments) => {
       <WriteComment
         :videoId="videoId"
         :comments="commentData"
-        :me="userStore?.user"
         @update="handlePushCommentFromChild"
       />
     </div>
@@ -92,7 +89,6 @@ const handleUpdateComments = (updatedComments) => {
         v-if="commentData.length !== 0"
         :videoId="videoId"
         :comments="commentData"
-        :me="userStore?.user"
         @update-comments="handleUpdateComments"
         @updateReplyCount="updateReplyCount"
       />
