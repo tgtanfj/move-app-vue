@@ -1,16 +1,24 @@
 <script setup>
 import defaultAvatar from '@assets/icons/default-avatar.png'
+import { formatFollowers } from '@utils/formatViews.util'
+import { ref, watchEffect } from 'vue'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { useChannelStore } from '../../stores/view-channel'
 import { getFollowerText } from '../../utils/follower.util'
 import ChannelActions from './ChannelActions.vue'
-import { ref } from 'vue'
-import { formatFollowers } from '@utils/formatViews.util'
 
 const channelStore = useChannelStore()
-const { image, numberOfFollowers, name, isBlueBadge, isPinkBadge } = channelStore.channelInfo
-const numFollower = ref(numberOfFollowers)
+const image = ref('');
+const name = ref('');
+const isBlueBadge = ref(false);
+const numFollower = ref(0)
+
+watchEffect(() => {
+  image.value = channelStore.channelInfo?.image || '';
+  name.value = channelStore.channelInfo?.name || '';
+  isBlueBadge.value = channelStore.channelInfo?.isBlueBadge || false;
+  numFollower.value = channelStore.channelInfo?.numberOfFollowers || 0;
+});
 
 const handleIncrease = () => {
   numFollower.value++

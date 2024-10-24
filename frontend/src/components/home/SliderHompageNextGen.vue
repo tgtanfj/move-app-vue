@@ -93,7 +93,6 @@ const startAutoSlide = () => {
       >
         <Card class="mt-5">
           <CardContent
-            @click="router.push(`/video/${previousVideo?.videoId}`)"
             class="relative flex p-0 mt-0 pt-0 items-center h-[250px] w-full justify-center rounded-lg overflow-hidden"
           >
             <img
