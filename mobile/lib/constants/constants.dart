@@ -202,7 +202,8 @@ class Constants {
   static const String readMore = "Read More";
   static const String readLess = "Show Less";
   static const String cancelComment = "Cancel Reservation?";
-  static const String areUSure = "Are you sure you want to cancel this reservation?";
+  static const String areUSure =
+      "Are you sure you want to cancel this reservation?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
   static const String writeReply = "Write a reply";
@@ -271,6 +272,51 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
-  static const String loginToWebsite ="Please log in to the website to view this notice!";
+  static const String loginToWebsite =
+      "Please log in to the website to view this notice!";
   static const String okay = "Okay";
+  static const String buyREP = 'Buy REP\$';
+  static const String rep = 'REP\$';
+  static const String us = 'US\$';
+  static const String youHave = 'You have ';
+  static const String priceUSD = 'Prices are shown in USD';
+  static const String completePurchase = 'Complete Purchase';
+  static const String orderSummary = 'Order Summary';
+  static const String total = 'Total';
+  static const String oneTimeChargeOn = 'One-time charge on';
+  static const String paymentDetails = 'Payment Details';
+  static const String bySubmittingPayment =
+      'By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s ';
+  static const String endUserLicenseAgreement = 'End User License Agreement';
+  static const String privacyPolicy = 'Privacy Policy ';
+  static const String refundPolicy = 'Refund Policy';
+  static const String saveMyPayment =
+      'Save my payment details for faster checkout in the future.';
+  static const String payNow = 'Pay now';
+  static const String cardholderName = 'Cardholder Name';
+  static const String cardNumber = 'Card number';
+  static const String expiryDate = 'Expiry date';
+  static const String cvv2 = 'CVV2/CVC2';
+  static const String mmyy = 'MM/YY';
+  static const String processingPayment = 'Processing your payment…';
+  static const String orderSuccess = 'Order success';
+  static const String orderFailed = 'Order failed';
+  static const String yourPurchaseOf = 'Your purchase of';
+  static const String isSuccessful = 'is successful!';
+  static const String isNotSuccessful = 'is not successful!';
+  static const String permissionRequired = 'Permission required';
+  static const String pleaseAllowPopUP =
+      'Please allow pop-up windows access in Safari to continue with your payment. To allow pop-up windows in Safari, open the ';
+  static const String appAndSelect = ' app and select ';
+  static const String safari = 'Safari';
+  static const String finallyTurnOn = 'Finally, turn on the toggle on ';
+  static const String blockPopUps = 'Block Pop-ups';
+  static const String close = 'Close';
+  static const String favorites = 'Favorites';
+  static const String downloads = 'Downloads';
+  static const String visaEndingWith = 'Visa ending with';
+  static const String change = 'Change';
+  static const String cvv2Explain =
+      'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
+  static const String back = 'Back';
 }

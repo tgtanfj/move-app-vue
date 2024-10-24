@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import PaymentHistory from './PaymentHistory.vue'
-import PaymentMethod from './PaymentMethod.vue'
+import PaymentMethodTab from './PaymentMethodTab.vue'
 
 const tabs = [
   { id: 1, label: 'payment_history.payment_method' },
@@ -34,7 +34,7 @@ const changeTab = (tab) => {
       </div>
     </div>
     <div v-show="tabShow === 1">
-      <PaymentMethod />
+      <PaymentMethodTab />
     </div>
     <div v-show="tabShow === 2">
       <PaymentHistory />

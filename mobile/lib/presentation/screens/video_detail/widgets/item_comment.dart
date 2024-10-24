@@ -123,9 +123,9 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 17,
                         ),
                         Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isBlueBadge ??
-                                    false,
+                            visible: widget
+                                    .commentModel?.user?.channel?.isBlueBadge ??
+                                false,
                             child: SvgPicture.asset(
                               AppIcons.verify.svgAssetPath,
                             )),
@@ -133,9 +133,9 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 5,
                         ),
                         Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isPinkBadge ??
-                                    false,
+                            visible: widget
+                                    .commentModel?.user?.channel?.isPinkBadge ??
+                                false,
                             child: SvgPicture.asset(
                               AppIcons.starFlower.svgAssetPath,
                             )),

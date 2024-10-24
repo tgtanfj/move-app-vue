@@ -6,19 +6,21 @@ class CustomTile extends StatefulWidget {
   final String title;
   final TextStyle titleStyle;
   final Widget? expandedContent;
+  final VoidCallback onTap;
+  final bool isExpanded;
   const CustomTile(
       {super.key,
       required this.title,
       this.expandedContent,
-      required this.titleStyle});
+      required this.titleStyle,
+      required this.onTap,
+      this.isExpanded = false});
 
   @override
   State<CustomTile> createState() => _CustomTileState();
 }
 
 class _CustomTileState extends State<CustomTile> {
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,11 +45,7 @@ class _CustomTileState extends State<CustomTile> {
       child: Column(
         children: [
           InkWell(
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
+            onTap: widget.onTap,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +54,7 @@ class _CustomTileState extends State<CustomTile> {
                     padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
                     child: Text(
                       widget.title,
-                      style: _isExpanded
+                      style: widget.isExpanded
                           ? AppTextStyles.montserratStyle.bold16TiffanyBlue
                           : widget.titleStyle,
                     ),
@@ -64,20 +62,17 @@ class _CustomTileState extends State<CustomTile> {
                 ),
                 IconButton(
                   icon: Icon(
-                    _isExpanded ? Icons.remove : Icons.add,
-                    color:
-                        _isExpanded ? AppColors.tiffanyBlue : AppColors.black,
+                    widget.isExpanded ? Icons.remove : Icons.add,
+                    color: widget.isExpanded
+                        ? AppColors.tiffanyBlue
+                        : AppColors.black,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isExpanded = !_isExpanded;
-                    });
-                  },
+                  onPressed: () {},
                 ),
               ],
             ),
           ),
-          if (_isExpanded && widget.expandedContent != null)
+          if (widget.isExpanded && widget.expandedContent != null)
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
