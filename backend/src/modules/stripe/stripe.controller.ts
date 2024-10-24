@@ -34,6 +34,6 @@ export class StripeController {
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   async getBalance() {
-    return this.stripeService.getBalance();
+    return await this.stripeService.getBalance();
   }
 }
