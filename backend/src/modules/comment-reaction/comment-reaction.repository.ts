@@ -37,16 +37,11 @@ export class CommentReactionRepository {
   }
 
   async create(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
-    const isExisted = await this.commentReactionRepository.findOne({
-      where: { user: { id: userId }, comment: { id: dto.commentId } },
-    });
-    if (!isExisted) {
-      const { commentId, ...data } = dto;
-      data['comment'] = { id: commentId };
-      data['user'] = { id: userId };
-      return await this.commentReactionRepository.save(data);
-    }
-    return isExisted;
+    const { commentId, ...data } = dto;
+    data['comment'] = { id: commentId };
+    data['user'] = { id: userId };
+
+    return await this.commentReactionRepository.save(data);
   }
 
   async update(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
