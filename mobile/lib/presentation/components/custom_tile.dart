@@ -42,32 +42,40 @@ class _CustomTileState extends State<CustomTile> {
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                  child: Text(
-                    widget.title,
-                    style: _isExpanded
-                        ? AppTextStyles.montserratStyle.bold16TiffanyBlue
-                        : widget.titleStyle,
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
+                    child: Text(
+                      widget.title,
+                      style: _isExpanded
+                          ? AppTextStyles.montserratStyle.bold16TiffanyBlue
+                          : widget.titleStyle,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  _isExpanded ? Icons.remove : Icons.add,
-                  color: _isExpanded ? AppColors.tiffanyBlue : AppColors.black,
+                IconButton(
+                  icon: Icon(
+                    _isExpanded ? Icons.remove : Icons.add,
+                    color:
+                        _isExpanded ? AppColors.tiffanyBlue : AppColors.black,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isExpanded = !_isExpanded;
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    _isExpanded = !_isExpanded;
-                  });
-                },
-              ),
-            ],
+              ],
+            ),
           ),
           if (_isExpanded && widget.expandedContent != null)
             Padding(

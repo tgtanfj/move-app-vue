@@ -75,28 +75,6 @@ class _ViewFAQsBodyState extends State<ViewFAQsBody> {
               return const SizedBox();
             },
           ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: RichText(
-              text: TextSpan(
-                text: Constants.cantFindAnAnswer,
-                style: AppTextStyles.montserratStyle.regular14Black,
-                children: [
-                  TextSpan(
-                    text: Constants.contactUs,
-                    style: AppTextStyles.montserratStyle.regular14TiffanyBlue
-                        .copyWith(decoration: TextDecoration.underline),
-                  ),
-                  TextSpan(
-                    text: Constants.hereAndWeWillAddress,
-                    style: AppTextStyles.montserratStyle.regular14Black,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 52),
         ],
       ),
     );
