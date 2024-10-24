@@ -25,6 +25,7 @@ class UserModel {
   final bool? isActive;
   final String? stripeId;
   final ChannelModel? channel;
+  final int? numberOfREPs;
 
   UserModel({
     this.id,
@@ -48,6 +49,7 @@ class UserModel {
     this.isActive,
     this.stripeId,
     this.channel,
+    this.numberOfREPs,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -88,6 +90,7 @@ class UserModel {
       channel: json['channel'] != null
           ? ChannelModel.fromJson(json['channel'])
           : null,
+      numberOfREPs: json['numberOfREPs'] is int? ? json['numberOfREPs'] : 0,
     );
   }
 
@@ -112,6 +115,8 @@ class UserModel {
     String? role,
     bool? isActive,
     String? stripeId,
+    ChannelModel? channel,
+    int? numberOfREPs,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -134,6 +139,8 @@ class UserModel {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       stripeId: stripeId ?? this.stripeId,
+      channel: channel ?? this.channel,
+      numberOfREPs: numberOfREPs ?? this.numberOfREPs,
     );
   }
 

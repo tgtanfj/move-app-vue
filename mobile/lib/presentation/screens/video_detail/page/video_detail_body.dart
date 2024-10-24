@@ -11,6 +11,7 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_bloc.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
+import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
 import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
 
@@ -405,7 +406,23 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         state.video?.channel?.id ?? 0));
               }
             },
-            giftRepButton: () {},
+            giftRepButton: () {
+              if (token.isEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const DialogAuthentication();
+                  },
+                );
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return GiftRepsDialog(videoId: state.video?.id ?? 0);
+                  },
+                );
+              }
+            },
             onTapRate: () {
               if (token.isEmpty) {
                 showDialog(

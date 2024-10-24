@@ -11,6 +11,8 @@ enum VideoDetailStatus {
   rateSuccess,
 }
 
+
+
 class VideoDetailState extends Equatable {
   final VideoDetailStatus? status;
   final bool isShowVideo;
@@ -32,7 +34,7 @@ class VideoDetailState extends Equatable {
   final String? option;
   final String? twitterLink;
   final String? facebookLink;
-
+ 
   const VideoDetailState({
     this.video,
     this.status,

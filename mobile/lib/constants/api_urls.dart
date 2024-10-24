@@ -29,4 +29,7 @@ class ApiUrls {
       "home/you-may-like-no-login";
   static const String follow = "follow";
   static const String homeCategoriesEndPoint = "home/categories";
+  static const String giftListPackageEndPoint = "donation/list-gift-packages";
+  static const String donationEndPoint = "donation";
+
 }
