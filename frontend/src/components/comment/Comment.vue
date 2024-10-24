@@ -89,12 +89,17 @@ const handleUpdateComments = (updatedComments) => {
     </div>
     <div class="w-full mt-10">
       <RenderComment
+        v-if="commentData.length !== 0"
         :videoId="videoId"
         :comments="commentData"
         :me="userStore?.user"
         @update-comments="handleUpdateComments"
         @updateReplyCount="updateReplyCount"
       />
+      <div v-else class="w-full flex flex-col items-center justify-center pt-6">
+        <p class="text-[16px]">No comments to display</p>
+        <p class="text-[14px] text-[#666666]">Leave a comment to get started</p>
+      </div>
     </div>
   </div>
   <div v-else class="flex w-full items-center justify-center">

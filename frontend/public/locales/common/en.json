@@ -352,7 +352,14 @@
     "tell_us": "Tell us a little bit about yourself.",
     "characters": "characters",
     "add": "Add social links to display on your channel.",
-    "save": "Save settings"
+    "save": "Save settings",
+    "success":"Save channel settings successfully",
+    "failed": "Save channel settings failed"
+  },
+  "channel_comments": {
+    "comments": "Comments",
+    "reps": "REPs received",
+    "videos": "Videos"
   },
   "wallet": {
     "card_number": "Card Number",
