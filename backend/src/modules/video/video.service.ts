@@ -485,9 +485,25 @@ export class VideoService {
         throw new NotFoundException(this.i18n.t('exceptions.videoHistory.NOT_CREATE_VIDEO_HISTORY'));
       });
     }
-    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
-      throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
-    });
+    const video = await this.videoRepository
+      .findVideoAndAlso(videoId, userId)
+      .then(async (data) => {
+        let canFollow = null;
+        if (userId) {
+          canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+        }
+
+        return {
+          ...data,
+          channel: {
+            ...data.channel,
+            canFollow,
+          },
+        };
+      })
+      .catch((error) => {
+        throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
+      });
     return video;
   }
 
