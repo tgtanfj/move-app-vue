@@ -29,7 +29,7 @@ export class CommentReactionService {
     try {
       const userId = userInfo.id;
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
-      const comment = await this.commentRepository.getOne(dto.commentId, { user: true });
+      const comment = await this.commentRepository.getOne(dto.commentId, { user: true, video: true });
       const receiver = comment.user.id;
       comment.numberOfLike += dto.isLike ? 1 : 0;
 
@@ -40,6 +40,8 @@ export class CommentReactionService {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
+          videoId: comment.video.id,
+          videoTitle: comment.video.title,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }

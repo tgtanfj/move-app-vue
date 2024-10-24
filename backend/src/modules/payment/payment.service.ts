@@ -17,6 +17,8 @@ import { PayPalService } from './paypal.service';
 import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PaymentService {
@@ -30,7 +32,7 @@ export class PaymentService {
     private readonly redisService: RedisService,
     private readonly configService: ApiConfigService,
     private readonly cashOutRepository: CashOutRepository,
-
+    private readonly notificationService: NotificationService,
     private readonly i18n: I18nService,
   ) {}
 
@@ -52,6 +54,13 @@ export class PaymentService {
     const repsOfUser = repPackage.numberOfREPs + Number(user.numberOfREPs);
 
     await this.userService.updateREPs(user.id, repsOfUser);
+
+    const dataNotification = {
+      sender: 'system',
+      type: NOTIFICATION_TYPE.PURCHASE,
+      purchase: +repPackage.numberOfREPs,
+    };
+    await this.notificationService.sendOneToOneNotification(user.id, dataNotification);
 
     this.paymentRepository.createPaymentHistory(user.id, repPackage.id);
   }
@@ -137,6 +146,13 @@ export class PaymentService {
       this.paypalService.createPayout(emailReceiveREPs, amountWithDraw);
 
       this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs);
+
+      const dataNotification = {
+        sender: 'system',
+        type: NOTIFICATION_TYPE.CASHOUT,
+        cashout: +amountWithDraw,
+      };
+      await this.notificationService.sendOneToOneNotification(userId, dataNotification);
     } catch (error) {
       throw new BadRequestException(error);
     }
