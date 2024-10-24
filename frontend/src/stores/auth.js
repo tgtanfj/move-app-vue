@@ -243,8 +243,10 @@ export const useAuthStore = defineStore('auth', () => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {
           user.value = currentUser
-          currentUser.getIdToken().then((idToken) => {
-            accessToken.value = idToken
+          currentUser.getIdToken().then((idTokenFB) => {
+            idToken.value = idTokenFB
+            const localToken = localStorage.getItem('token')
+            accessToken.value = localToken ? localToken : null
             if (loginMethodLocal === 'google') {
               localStorage.setItem('loginMethod', 'google')
             } else {
