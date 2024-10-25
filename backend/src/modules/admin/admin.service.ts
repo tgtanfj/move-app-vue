@@ -27,7 +27,7 @@ export class AdminService {
       row.totalTopUp = +totalTopUp || 0;
       row.totalDonations = +totalDonations || 0;
 
-      data.push(row);
+      if (row.totalTopUp != 0 || row.totalDonations != 0 || row.totalEarnings != 0) data.push(row);
     }
 
     return data;
