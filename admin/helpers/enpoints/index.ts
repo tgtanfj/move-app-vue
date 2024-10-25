@@ -11,6 +11,11 @@ const endpointVideo = {
   GET_ALL: `/video/admin`
 };
 
+const endpointPayment = {
+  GET_PAYMENT_HISTORIES: `/payment/admin/payment-histories`,
+  GET_WITHDRAW_HISTORIES: `/payment/admin/cashout-histories`
+};
+
 const endpointFAQs = {
   CREATE: `/faqs/`,
   READ: `/faqs/`,
@@ -21,4 +26,10 @@ const endpointFAQs = {
 
 const endpointOther = {};
 
-export { endpointAuth, endpointFAQs, endpointUser, endpointVideo };
+export {
+  endpointAuth,
+  endpointFAQs,
+  endpointPayment,
+  endpointUser,
+  endpointVideo
+};

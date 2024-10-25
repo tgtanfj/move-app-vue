@@ -33,7 +33,8 @@ export const convertTimePostVideo = (timestamp) => {
 
 export const convertTimeComment = (timestamp) => {
   const now = new Date()
-  const timeDifference = now - new Date(timestamp)
+  const commentTime = new Date(timestamp)
+  const timeDifference = now - commentTime
   const seconds = Math.floor(timeDifference / 1000)
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
@@ -42,7 +43,9 @@ export const convertTimeComment = (timestamp) => {
   const months = Math.floor(days / 30)
   const years = Math.floor(days / 365)
 
-  if (seconds < 60) {
+  if (seconds <= 0) {
+    return `0 seconds ago`
+  } else if (seconds < 60) {
     return `${seconds} seconds ago`
   } else if (minutes < 60) {
     return `${minutes} minutes ago`

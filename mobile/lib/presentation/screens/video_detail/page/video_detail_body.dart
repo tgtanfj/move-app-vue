@@ -128,11 +128,18 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   else ...[
                     buildWriteCommentPart(context, state),
                     Center(
-                      child: Text(
-                        Constants.emptyComments,
-                        style:
-                            AppTextStyles.montserratStyle.regular14GraniteGray,
-                      ),
+                      child: Column(children: [
+                        Text(
+                          Constants.emptyComments,
+                          style:
+                              AppTextStyles.montserratStyle.bold14GraniteGray,
+                        ),
+                        Text(
+                          Constants.leaveAComment,
+                          style: AppTextStyles
+                              .montserratStyle.regular13GraniteGray,
+                        ),
+                      ]),
                     ),
                   ],
                 ],

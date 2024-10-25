@@ -9,7 +9,7 @@ import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 import { commentServices } from '@services/comment.services'
 import { Input } from '@common/ui/input'
@@ -21,10 +21,6 @@ import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 const props = defineProps({
   comments: {
     type: Array,
-    required: true
-  },
-  me: {
-    type: Object,
     required: true
   }
 })
@@ -236,6 +232,10 @@ const createReply = async (commentId) => {
     }
   }
 }
+
+const isReplyValid = computed(() => {
+  return replyData.value.trim() !== ''
+})
 </script>
 
 <template>
@@ -328,7 +328,7 @@ const createReply = async (commentId) => {
 
           <div v-if="replyInputId === item.id" class="w-full flex items-center gap-4 mt-2">
             <img
-              :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
+              :src="userAvatar ?? defaultAvatar"
               class="w-[40px] h-[40px] rounded-full object-cover"
             />
             <Input
@@ -345,9 +345,13 @@ const createReply = async (commentId) => {
             <Button @click="cancelComment" class="text-[16px] font-normal" variant="outline">{{
               $t('comment.cancel')
             }}</Button>
-            <Button @click="createReply(item.id)" class="w-[104px] text-[16px]">{{
-              $t('comment.send')
-            }}</Button>
+            <Button
+              @click="createReply(item.id)"
+              :disabled="!isReplyValid"
+              class="w-[104px] text-[16px]"
+              :class="{ 'bg-[#999999]': !isReplyValid }"
+              >{{ $t('comment.send') }}</Button
+            >
           </div>
 
           <div v-if="item.numberOfReply > 0" class="mt-1 cursor-pointer transition-all">
@@ -391,10 +395,7 @@ const createReply = async (commentId) => {
                   <p class="text-[13px] font-bold">
                     {{ myReplyPerComment[item.id].user.username }}
                   </p>
-                  <div
-                    v-if="myReplyPerComment[item.id].user.channel"
-                    class="flex items-center"
-                  >
+                  <div v-if="myReplyPerComment[item.id].user.channel" class="flex items-center">
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                   </div>
                   <div

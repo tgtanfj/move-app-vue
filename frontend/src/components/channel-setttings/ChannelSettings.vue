@@ -13,6 +13,7 @@ const tabShow = ref(1)
 const channelBio = ref()
 const channelLinks = ref([])
 const channelId = ref(null)
+const isSuccess = ref(false)
 
 const changeTab = (tab) => {
   tabShow.value = tab
@@ -24,6 +25,7 @@ onMounted(async () => {
     channelBio.value = response.data.bio
     channelLinks.value = [...response.data.socialLinks]
     channelId.value = response.data.id
+    isSuccess.value = true
   }
 })
 </script>
@@ -51,6 +53,7 @@ onMounted(async () => {
       <div v-show="tabShow === 1">
         <ChannelTab
           :channelId="channelId"
+          :isSuccess="isSuccess"
           v-model:channelBio="channelBio"
           v-model:channelLinks="channelLinks"
         />

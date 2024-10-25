@@ -50,6 +50,8 @@ class GiftRepsBloc extends Bloc<GiftRepsEvent, GiftRepsState> {
 
     if (repOfUser >= numberOfREPs) {
       emit(state.copyWith(isSendEnabled: true));
+    } else {
+      emit(state.copyWith(isSendEnabled: false));
     }
   }
 

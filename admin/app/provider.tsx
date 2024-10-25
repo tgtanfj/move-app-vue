@@ -1,13 +1,13 @@
 'use client';
 
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { useRouter } from 'next/navigation';
+import { store } from '@/store';
+import { AppProgressBar } from 'next-nprogress-bar';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { ThemeProviderProps } from 'next-themes/dist/types';
-import { AppProgressBar } from 'next-nprogress-bar';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { Provider } from 'react-redux';
 import { Toaster } from 'sonner';
-import { store } from '@/store';
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
           options={{ showSpinner: false }}
         />
         <Provider store={store}>
-          <Toaster closeButton richColors position="top-right" />
+          <Toaster richColors position="top-right" />
           {children},
         </Provider>
       </NextThemesProvider>

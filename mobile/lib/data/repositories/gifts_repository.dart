@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/gift_model.dart';
+import 'package:move_app/data/models/send_gift_model.dart';
 import 'package:move_app/data/services/api_service.dart';
 
 class GiftsRepository {
@@ -30,11 +31,9 @@ class GiftsRepository {
     required String content,
   }) async {
     String accessToken = SharedPrefer.sharedPrefer.getUserToken();
-    final data = {
-      'giftPackageId': giftId,
-      'videoId': 67,
-      'content': content,
-    };
+    final data =
+        SendGiftModel(giftId: giftId, videoId: videoId, content: content)
+            .toJson();
     try {
       final response = await ApiService().request(
         APIRequestMethod.post,

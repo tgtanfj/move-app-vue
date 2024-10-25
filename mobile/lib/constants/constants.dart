@@ -326,6 +326,7 @@ class Constants {
   static const String startDate = "START DATE";
   static const String endDate = "END DATE";
   static const String time = "TIME";
+  static const String leaveAComment= "Leave a comment to get started";
   static const String supportYourInstructorWithReps =
       "Support your instructor with REPs!";
   static const String selectAmountOfRepsToSendToTheInstructor =

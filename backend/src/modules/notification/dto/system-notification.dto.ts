@@ -38,19 +38,19 @@ export class SystemNotificationDto {
     description: 'follow milestone',
   })
   @IsOptional()
-  follow_milestone?: number;
+  followMilestone?: number;
 
   @ApiPropertyOptional({
     description: 'rep milestone',
   })
   @IsOptional()
-  rep_milestone?: number;
+  repMilestone?: number;
 
   @ApiPropertyOptional({
     description: 'view video milestone',
   })
   @IsOptional()
-  view_video_milestone?: number;
+  viewVideoMilestone?: number;
 
   @ApiPropertyOptional({
     description: 'purchase',

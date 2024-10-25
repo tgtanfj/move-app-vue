@@ -351,7 +351,6 @@ export class VideoService {
       channel: {
         id: channelId,
       },
-      isPublish: true,
     };
 
     if (categoryId) {
@@ -371,38 +370,38 @@ export class VideoService {
         break;
       case SortBy.VIEWS_HIGH_TO_LOW:
         order = {
-          ...order,
           numberOfViews: 'DESC',
+          ...order,
         };
         break;
       case SortBy.VIEWS_LOW_TO_HIGH:
         order = {
-          ...order,
           numberOfViews: 'ASC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_HIGH_TO_LOW:
+      case SortBy.DURATION_LONG_TO_SHORT:
         order = {
-          ...order,
           durationsVideo: 'DESC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_LOW_TO_HIGH:
+      case SortBy.DURATION_SHORT_TO_LONG:
         order = {
-          ...order,
           durationsVideo: 'ASC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_HIGH_TO_LOW:
         order = {
-          ...order,
           ratings: 'DESC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_LOW_TO_HIGH:
         order = {
-          ...order,
           ratings: 'ASC',
+          ...order,
         };
         break;
       default:
@@ -504,7 +503,10 @@ export class VideoService {
       .then(async (data) => {
         let canFollow = null;
         if (userId) {
-          canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+          canFollow = true;
+
+          if ((await this.channelService.getChannelByUserId(userId)) !== null)
+            canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
         }
 
         return {
