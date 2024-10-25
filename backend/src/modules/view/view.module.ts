@@ -7,6 +7,7 @@ import { ViewRepository } from './view.repository';
 import { VideoViewHistorys } from '@/entities/video-view-history.entity';
 import { VideoModule } from '../video/video.module';
 import { NotificationModule } from '../notification/notification.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

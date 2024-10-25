@@ -15,6 +15,10 @@ export class Views extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 1,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   totalView: number;
 
