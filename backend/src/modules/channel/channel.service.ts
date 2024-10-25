@@ -78,7 +78,7 @@ export class ChannelService {
 
     const [followingChannels, socialLinks] = await Promise.all([
       this.followService
-        .getFollowingChannels(channel.user.id, 4, { channel: true })
+        .getFollowingChannels(channel.user.id, { channel: true })
         .then(async (followings) => {
           return await Promise.all(
             followings.map(async (follow) => {
