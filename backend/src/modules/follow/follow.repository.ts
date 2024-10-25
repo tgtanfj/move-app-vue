@@ -27,7 +27,7 @@ export class FollowRepository {
     });
   }
 
-  async getFollowingChannels(userId: number, limit: number, relations: FindOptionsRelations<Follow>) {
+  async getFollowingChannels(userId: number, relations: FindOptionsRelations<Follow>) {
     return this.followRepository.find({
       where: {
         user: {
@@ -40,7 +40,6 @@ export class FollowRepository {
           isBlueBadge: 'ASC',
         },
       },
-      take: limit,
       relations,
     });
   }
