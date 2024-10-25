@@ -24,19 +24,19 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Payment management',
-    url: '#',
+    url: '/dashboard/payment-management',
     icon: 'billing',
     isActive: true,
 
     items: [
       {
-        title: 'Profile',
-        url: '/dashboard/profile',
+        title: 'Payment Management',
+        url: '/dashboard/payment-management',
         icon: 'userPen'
       },
       {
-        title: 'Login',
-        url: '/',
+        title: 'Withdraw Management',
+        url: '/dashboard/withdraw-management',
         icon: 'login'
       }
     ]

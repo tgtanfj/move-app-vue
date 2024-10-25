@@ -5,12 +5,13 @@ import YoutubeIcon from '@assets/icons/YoutubeIcon.vue'
 import { Button } from '@common/ui/button'
 import { Input } from '@common/ui/input'
 import { Textarea } from '@common/ui/textarea'
-import Loading from '@components/Loading.vue'
+import { useToast } from '@common/ui/toast'
 import {
   REGEX_FACEBOOK_URL,
   REGEX_INSTAGRAM_URL,
   REGEX_YOUTUBE_URL
 } from '@constants/regex.constant'
+import { t } from '@helpers/i18n.helper'
 import { channelSettingsService } from '@services/channel-settings.services'
 import { ref, watch, watchEffect } from 'vue'
 
@@ -18,11 +19,17 @@ const props = defineProps({
   channelId: {
     type: Number,
     required: true
+  },
+  isSuccess: {
+    type: Boolean,
+    required: true
   }
 })
 
 const channelBio = defineModel('channelBio')
 const channelLinks = defineModel('channelLinks')
+
+const { toast } = useToast()
 
 const charCount = ref(0)
 const charLimit = ref(500)
@@ -32,11 +39,19 @@ const facebookLink = ref('')
 const insLink = ref('')
 const youtubeLink = ref('')
 
+const initialBio = ref('')
+const initialFacebookLink = ref('')
+const initialInstagramLink = ref('')
+const initialYoutubeLink = ref('')
+
 const facebookError = ref('')
 const instagramError = ref('')
 const youtubeError = ref('')
 
 const initializeLinks = () => {
+  if (channelBio.value) {
+    charCount.value = channelBio.value.length
+  }
   channelLinks.value.forEach((channel) => {
     if (channel.name === 'facebook') {
       facebookLink.value = channel.link
@@ -47,12 +62,6 @@ const initializeLinks = () => {
     }
   })
 }
-
-watchEffect(() => {
-  if (channelLinks.value && channelLinks.value.length > 0) {
-    initializeLinks()
-  }
-})
 
 const validateLinks = () => {
   let banned = false
@@ -97,7 +106,7 @@ const handleTextarea = (inputValue) => {
 
 const handleSaveSettings = async () => {
   let fbLink = ''
-  let insLink = ''
+  let instLink = ''
   let ytLink = ''
 
   if (validateLinks()) {
@@ -105,25 +114,75 @@ const handleSaveSettings = async () => {
       if (socialLink.name === 'facebook') {
         fbLink = socialLink.link || ''
       } else if (socialLink.name === 'instagram') {
-        insLink = socialLink.link || ''
+        instLink = socialLink.link || ''
       } else if (socialLink.name === 'youtube') {
         ytLink = socialLink.link || ''
       }
     })
+
+    if (
+      channelBio.value === initialBio.value &&
+      fbLink === initialFacebookLink.value &&
+      instLink === initialInstagramLink.value &&
+      ytLink === initialYoutubeLink.value
+    ) {
+      return
+    }
+
     isLoading.value = true
-    await channelSettingsService.saveChannelSettings(
-      props.channelId,
-      channelBio.value,
-      fbLink,
-      insLink,
-      ytLink
-    )
+    try {
+      const res = await channelSettingsService.saveChannelSettings(
+        props.channelId,
+        channelBio.value,
+        fbLink,
+        instLink,
+        ytLink
+      )
+      if (res.message === 'success') {
+        initialBio.value = channelBio.value
+        initialFacebookLink.value = fbLink
+        initialInstagramLink.value = instLink
+        initialYoutubeLink.value = ytLink
+        toast({ description: `${t('channel_settings.success')}`, variant: 'successfully' })
+      }
+    } catch (error) {
+      toast({ description: error.message, variant: 'destructive' })
+    }
     isLoading.value = false
     facebookError.value = ''
     instagramError.value = ''
     youtubeError.value = ''
   }
 }
+
+watch(
+  () => props.isSuccess,
+  (newValue) => {
+    if (newValue) {
+      if (channelBio.value) {
+        initialBio.value = channelBio.value
+      }
+      if (channelLinks.value && channelLinks.value.length > 0) {
+        channelLinks.value.forEach((channel) => {
+          if (channel.name === 'facebook') {
+            initialFacebookLink.value = channel.link
+          } else if (channel.name === 'instagram') {
+            initialInstagramLink.value = channel.link
+          } else if (channel.name === 'youtube') {
+            initialYoutubeLink.value = channel.link
+          }
+        })
+      }
+      initializeLinks()
+    }
+  }
+)
+
+watchEffect(() => {
+  if (channelLinks.value && channelLinks.value.length > 0) {
+    initializeLinks()
+  }
+})
 
 watch([facebookLink, insLink, youtubeLink], ([newFacebook, newInstagram, newYoutube]) => {
   channelLinks.value = [
@@ -203,9 +262,8 @@ watch([facebookLink, insLink, youtubeLink], ([newFacebook, newInstagram, newYout
         </div>
       </div>
     </div>
-    <Button @click="handleSaveSettings" class="w-[230px] h-[40px] mt-8"
+    <Button @click="handleSaveSettings" class="w-[230px] h-[40px] mt-8" :is-loading="isLoading"
       ><span v-if="!isLoading" class="text-white font-bold">{{ $t('channel_settings.save') }}</span>
-      <Loading v-if="isLoading" />
     </Button>
   </div>
 </template>
