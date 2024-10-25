@@ -33,6 +33,7 @@ import { RedisModule } from './shared/services/redis/redis.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { ViewModule } from './modules/view/view.module';
 import { ChannelModule } from './modules/channel/channel.module';
+import { AdminModule } from './modules/admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -83,6 +84,7 @@ import { ChannelModule } from './modules/channel/channel.module';
     DonationModule,
     NotificationModule,
     ViewModule,
+    AdminModule,
   ],
   providers: [
     {
