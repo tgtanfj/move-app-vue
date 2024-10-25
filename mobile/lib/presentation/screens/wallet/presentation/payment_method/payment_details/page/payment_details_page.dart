@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/bloc/payment_details_bloc.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/bloc/payment_details_event.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/page/payment_details_body.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/bloc/payment_details_bloc.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/bloc/payment_details_event.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/page/payment_details_body.dart';
 
 class PaymentDetailsPage extends StatefulWidget {
   const PaymentDetailsPage({super.key});

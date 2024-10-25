@@ -10,9 +10,9 @@ import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/bloc/payment_details_bloc.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/bloc/payment_details_event.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/bloc/payment_details_state.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/bloc/payment_details_bloc.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/bloc/payment_details_event.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/bloc/payment_details_state.dart';
 
 class PaymentDetailsBody extends StatefulWidget {
   const PaymentDetailsBody({super.key});
@@ -22,11 +22,6 @@ class PaymentDetailsBody extends StatefulWidget {
 }
 
 class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
-  final TextEditingController cardHolderNameController =
-      TextEditingController();
-  final TextEditingController cardNumberController = TextEditingController();
-  final TextEditingController expiryDateController = TextEditingController();
-  final TextEditingController cvvControler = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentDetailsBloc, PaymentDetailsState>(
@@ -74,25 +69,31 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         title: Constants.cardholderName,
                         titleStyle:
                             AppTextStyles.montserratStyle.regular14Black,
+                        onChanged: (value) => {
+                          BlocProvider.of<PaymentDetailsBloc>(context).add(
+                            PaymentDetailsCardHolderNameEvent(
+                              cardHolderName: value,
+                            ),
+                          )
+                        },
                       ),
                       const SizedBox(
                         height: 12,
                       ),
                       _createTitle(title: Constants.country),
                       CustomDropdownButton(
-                        initialValue: state.countryList.isNotEmpty
-                            ? state.countryList[0].id
-                            : null,
+                        hintText: state.selectedCountry?.name ?? '',
+                        initialValue: state.selectedCountry?.id,
                         items: state.countryList.map((country) {
                           return {'id': country.id, 'name': country.name};
                         }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
+                        onChanged: (countryId) {
+                          if (countryId != null) {
                             BlocProvider.of<PaymentDetailsBloc>(context).add(
                               PaymentDetailsCountrySelectEvent(
-                                selectedCountry: state.countryList.firstWhere(
-                                    (country) => country.id == value),
-                              ),
+                                  selectedCountry: state.countryList.firstWhere(
+                                (e) => e.id == countryId,
+                              )),
                             );
                           }
                         },
@@ -107,6 +108,13 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         title: Constants.cardNumber,
                         titleStyle:
                             AppTextStyles.montserratStyle.regular14Black,
+                        onChanged: (value) => {
+                          BlocProvider.of<PaymentDetailsBloc>(context).add(
+                            PaymentDetailsCardNumberEvent(
+                              cardNumber: value,
+                            ),
+                          )
+                        },
                       ),
                       const SizedBox(
                         height: 12,
@@ -119,6 +127,14 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                               title: Constants.expiryDate,
                               titleStyle:
                                   AppTextStyles.montserratStyle.regular14Black,
+                              onChanged: (value) => {
+                                BlocProvider.of<PaymentDetailsBloc>(context)
+                                    .add(
+                                  PaymentDetailsExpiryDateEvent(
+                                    expiryDate: value,
+                                  ),
+                                )
+                              },
                             ),
                           ),
                           const SizedBox(
@@ -130,6 +146,14 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                               title: Constants.cvv,
                               titleStyle:
                                   AppTextStyles.montserratStyle.regular14Black,
+                              onChanged: (value) => {
+                                BlocProvider.of<PaymentDetailsBloc>(context)
+                                    .add(
+                                  PaymentDetailsCvvEvent(
+                                    cvv: value,
+                                  ),
+                                )
+                              },
                               suffixLabel: SvgPicture.asset(
                                 AppIcons.question.svgAssetPath,
                                 colorFilter: const ColorFilter.mode(
@@ -177,6 +201,8 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         backgroundColor: AppColors.tiffanyBlue,
                         onTap: () {
                           FocusScope.of(context).unfocus();
+                          print("Submit ${state.cvv}");
+                          print("country here ${state.selectedCountry?.name}");
                           context
                               .read<PaymentDetailsBloc>()
                               .add(PaymentDetailsSubmitEvent(
@@ -187,7 +213,7 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                                 cvv: state.cvv ?? '',
                                 country: state.selectedCountry?.name ?? '',
                               ));
-                          Navigator.pop(context, true);
+                          // Navigator.pop(context, true);
                         },
                       )
                     ]),

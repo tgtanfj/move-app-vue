@@ -3,7 +3,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
-import 'package:move_app/presentation/screens/wallet/presentation/payment_method/presentation/page/payment_details_page.dart';
+import 'package:move_app/presentation/screens/wallet/presentation/payment_method/payment_details/page/payment_details_page.dart';
 
 class PaymentMethodBody extends StatefulWidget {
   final bool? showCardHolder;

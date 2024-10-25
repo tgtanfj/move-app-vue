@@ -50,3 +50,35 @@ class PaymentDetailsCountrySelectEvent extends PaymentDetailsEvent {
 
   List<Object?> get props => [countryId ?? 0, selectedCountry ?? 0];
 }
+
+class PaymentDetailsCardHolderNameEvent extends PaymentDetailsEvent {
+  final String cardHolderName;
+
+  const PaymentDetailsCardHolderNameEvent({required this.cardHolderName});
+
+  List<Object?> get props => [cardHolderName];
+}
+
+class PaymentDetailsCardNumberEvent extends PaymentDetailsEvent {
+  final String cardNumber;
+
+  const PaymentDetailsCardNumberEvent({required this.cardNumber});
+
+  List<Object?> get props => [cardNumber];
+}
+
+class PaymentDetailsExpiryDateEvent extends PaymentDetailsEvent {
+  final String expiryDate;
+
+  const PaymentDetailsExpiryDateEvent({required this.expiryDate});
+
+  List<Object?> get props => [expiryDate];
+}
+
+class PaymentDetailsCvvEvent extends PaymentDetailsEvent {
+  final String cvv;
+
+  const PaymentDetailsCvvEvent({required this.cvv});
+
+  List<Object?> get props => [cvv];
+}
