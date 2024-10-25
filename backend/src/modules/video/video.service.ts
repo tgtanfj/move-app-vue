@@ -503,7 +503,10 @@ export class VideoService {
       .then(async (data) => {
         let canFollow = null;
         if (userId) {
-          canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+          canFollow = true;
+
+          if ((await this.channelService.getChannelByUserId(userId)) !== null)
+            canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
         }
 
         return {
