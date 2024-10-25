@@ -4,13 +4,20 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
-import 'package:move_app/data/data_sources/dummy_data.dart';
+import 'package:move_app/data/models/rep_model.dart';
 import 'package:move_app/presentation/screens/buy_rep/widgets/rep_item.dart';
 
 class BuyRepDialog extends StatelessWidget {
   final bool isBack;
+  final List<RepModel> reps;
+  final int numberOfREPs;
 
-  const BuyRepDialog({super.key, this.isBack = false});
+  const BuyRepDialog({
+    super.key,
+    this.isBack = false,
+    required this.reps,
+    required this.numberOfREPs,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +72,7 @@ class BuyRepDialog extends StatelessWidget {
                         style: AppTextStyles.montserratStyle.regular16Black,
                         children: [
                           TextSpan(
-                            text: Constants.rep,
+                            text: '$numberOfREPs ${Constants.rep}',
                             style: AppTextStyles.montserratStyle.bold16black,
                           ),
                         ],
@@ -96,7 +103,12 @@ class BuyRepDialog extends StatelessWidget {
               itemBuilder: (context, index) {
                 return RepItem(
                   rep: reps[index],
-                  onRepSelect: () {},
+                  onSelectRep: () {
+                    Navigator.pop(
+                      context,
+                      reps[index],
+                    );
+                  },
                 );
               },
               separatorBuilder: (context, index) => const Divider(),

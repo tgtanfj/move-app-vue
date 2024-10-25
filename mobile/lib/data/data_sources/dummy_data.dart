@@ -1,7 +1,6 @@
 import 'package:move_app/data/models/category_model.dart';
 
 import '../models/notification_model.dart';
-import '../models/rep_model.dart';
 import '../models/user_model.dart';
 
 List<CategoryModel> dummyCategories = [
@@ -223,31 +222,4 @@ final List<NotificationModel> notifications = [
     createTime: '1 mins ago',
     hasRead: false,
   ),
-];
-
-List<RepModel> reps = [
-  RepModel(
-    rep: 300,
-    price: 2.1,
-  ),
-  RepModel(
-    rep: 500,
-    price: 3.5,
-  ),
-  RepModel(
-    rep: 1500,
-    price: 10.5,
-  ),
-  RepModel(
-    rep: 5000,
-    price: 35,
-  ),
-  RepModel(
-    rep: 10000,
-    price: 70,
-  ),
-  RepModel(
-    rep: 25000,
-    price: 175,
-  )
 ];

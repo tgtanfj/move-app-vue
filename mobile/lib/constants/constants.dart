@@ -314,7 +314,7 @@ class Constants {
   static const String close = 'Close';
   static const String favorites = 'Favorites';
   static const String downloads = 'Downloads';
-  static const String visaEndingWith = 'Visa ending with';
+  static const String endingWith = 'ending with';
   static const String change = 'Change';
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
@@ -326,4 +326,12 @@ class Constants {
   static const String startDate = "START DATE";
   static const String endDate = "END DATE";
   static const String time = "TIME";
+  static const String repsNotFound = 'Reps not found';
+  static const String paymentMethodsNotFound = 'Payment method not found';
+  static const incorrectlyFormattedCardHolderName =
+      'Incorrectly formatted cardholder name';
+  static const invalidCardNumber = 'Invalid card number';
+  static const checkYourExpirationDate = 'Check your expiration date';
+  static const invalidCardVerificationCode = 'Invalid card verification code';
+  static const requiresConfirmation = 'requires_confirmation';
 }

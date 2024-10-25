@@ -32,4 +32,9 @@ class ApiUrls {
   static const String homeCategoriesNoLoginEndPoint =
       "home/categories-no-login/";
   static const String homeCategoriesLoginEndPoint = "home/categories/";
+  static const String paymentListRepsPackageEndPoint =
+      "payment/list-reps-package";
+  static const String stripeListCardsEndPoint = "stripe/list-cards";
+  static const String paymentBuyRepsEndPoint = "payment/buy-reps";
+  static const String addPaymentEndpoint = "addPaymentEndpoint";
 }
