@@ -151,4 +151,7 @@ class MontserratStyles {
       12, Colors.grey, AppFontWeight.medium.weight);
   final regular12Grey = customMontserratStyle(
       12, Colors.grey, AppFontWeight.regular.weight);
+  final bold14GraniteGray = customMontserratStyle(
+      14, AppColors.graniteGray, AppFontWeight.bold.weight);
+
 }
