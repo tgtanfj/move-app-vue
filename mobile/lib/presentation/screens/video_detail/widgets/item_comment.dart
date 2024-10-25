@@ -69,6 +69,14 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 48,
                           height: 48,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              AppImages.defaultAvatar.webpAssetPath,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         )),
               const SizedBox(
                 width: 12,
