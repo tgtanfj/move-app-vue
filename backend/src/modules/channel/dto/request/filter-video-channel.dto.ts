@@ -22,4 +22,19 @@ export enum ShowBy {
   LAST_90_DAYS = 'last-90-days',
   ONE_YEAR_AGO = 'one-year-ago',
 }
+
+export enum GraphicType {
+  AGE = 'age',
+  GENDER = 'gender',
+  NATION = 'nation',
+  COUNTRY = 'country',
+}
+
+export enum AnalyticSortBy {
+  ALL = 'all',
+  VIEWS = 'views',
+  RATINGS = 'ratings',
+  REPS = 'reps',
+}
+export type OrderBy = { field: string; direction: 'ASC' | 'DESC' };
 export class FilterVideoChannelDto {}

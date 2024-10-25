@@ -53,6 +53,7 @@ export class WatchingVideoHistoryRepository {
       video: {
         id: videoId,
       },
+      rate: Not(0),
       createdAt: MoreThanOrEqual(time),
     });
     return result;
