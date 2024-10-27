@@ -18,6 +18,7 @@ export class CommentService {
     private readonly videoRepository: VideoRepository,
     private readonly notificationService: NotificationService,
     private readonly i18n: I18nService,
+    // private readonly commentReactionRepository: CommentRepository,
   ) {}
 
   async getNumberOfComments(videoId: number): Promise<number> {
@@ -32,8 +33,8 @@ export class CommentService {
     return await this.commentRepository.getReplyComments(id, limit, cursor, userId);
   }
 
-  async getOne(id: number): Promise<Comment> {
-    return await this.commentRepository.getOne(id);
+  async getOneDetails(id: number, userId?: number): Promise<Comment> {
+    return await this.commentRepository.getOneDetails(id, userId);
   }
 
   async getAll(): Promise<Comment[]> {

@@ -49,7 +49,7 @@ const instagramError = ref('')
 const youtubeError = ref('')
 
 const isBioValid = computed(() => {
-  return channelBio.value.trim() !== ''
+  return channelBio.value === '' || channelBio.value.trim() !== ''
 })
 
 const initializeLinks = () => {

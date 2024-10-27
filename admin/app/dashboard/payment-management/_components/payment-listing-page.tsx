@@ -5,9 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { useGetAllPaymentHistoriesQuery } from '@/store/queries/paymentManagement';
 import PaymentTable from './payment-tables';
 
-type TUsersListingPage = {};
-
-export default function PaymentListingPage({}: TUsersListingPage) {
+export default function PaymentListingPage({}) {
   const {
     result = [],
     total = 0,

@@ -36,7 +36,11 @@ export class CommentReactionService {
         return commentReactionExisted;
       }
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
-      const comment = await this.commentRepository.getOne(dto.commentId, { user: true, video: true });
+      const comment = await this.commentRepository.getOne(dto.commentId, {
+        user: true,
+        video: true,
+        parent: true,
+      });
       const receiver = comment.user.id;
       comment.numberOfLike += dto.isLike ? 1 : 0;
 
@@ -53,7 +57,8 @@ export class CommentReactionService {
           type: NOTIFICATION_TYPE.LIKE,
           videoId: comment.video.id,
           videoTitle: comment.video.title,
-          commentId: comment.id,
+          commentId: comment?.parent ? comment.parent.id : comment.id,
+          replyId: comment?.parent ? comment.id : undefined,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }

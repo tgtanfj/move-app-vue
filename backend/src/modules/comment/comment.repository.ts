@@ -2,7 +2,15 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import {
+  Brackets,
+  FindOptionsRelations,
+  LessThan,
+  MoreThan,
+  Repository,
+  TreeRepository,
+  UpdateResult,
+} from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -26,23 +34,102 @@ export class CommentRepository {
     });
   }
 
-  async getAllComments(userId: number): Promise<Comment[]> {
-    return await this.commentRepository
+  async getAllComments(
+    userId: number,
+    filter: string = 'all',
+    sortBy: string = 'createdAt',
+    page: number = 1,
+    pageSize: number = 5,
+  ): Promise<{
+    data: Comment[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
+    const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
-      .innerJoin('comment.video', 'video')
+      .innerJoinAndSelect('comment.video', 'video')
       .innerJoin('video.channel', 'channel')
+      .leftJoinAndSelect('comment.children', 'child')
+      .leftJoinAndSelect('video.thumbnails', 'thumbnail', 'thumbnail.selected = :selected', {
+        selected: true,
+      })
+      .leftJoinAndSelect('video.category', 'category')
       .where('channel.userId = :userId', { userId })
-      .select([
-        'comment.id',
-        'comment.content',
-        'comment.numberOfLike',
-        'comment.numberOfReply',
-        'comment.createdAt',
-        'user.id',
-        'user.username',
-      ])
-      .getMany();
+      .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
+
+    if (filter === 'unresponded') {
+      queryBuilder.andWhere(
+        `NOT EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
+      );
+    } else if (filter === 'responded') {
+      queryBuilder.andWhere(
+        `EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
+      );
+    }
+
+    switch (sortBy) {
+      case 'createdAt':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      case 'totalDonation':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      default:
+        queryBuilder.orderBy('comment.createdAt', 'DESC');
+        break;
+    }
+
+    const totalItemCount = await queryBuilder.getCount();
+
+    queryBuilder.skip((page - 1) * pageSize).take(pageSize);
+
+    const comments = await queryBuilder.getMany();
+
+    const totalPages = Math.ceil(totalItemCount / pageSize);
+    const itemFrom = (page - 1) * pageSize + 1;
+    const itemTo = Math.min(itemFrom + comments.length - 1, totalItemCount);
+
+    const data = await Promise.all(
+      comments.map(async (comment) => {
+        const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
+        return { ...comment, totalDonation };
+      }),
+    );
+
+    if (sortBy === 'receivedReps') {
+      data.sort((a, b) => {
+        if (b.totalDonation !== a.totalDonation) {
+          return b.totalDonation - a.totalDonation;
+        }
+        if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        }
+        return b.numberOfLike - a.numberOfLike;
+      });
+    }
+
+    return {
+      data,
+      totalItemCount,
+      totalPages,
+      itemFrom,
+      itemTo,
+    };
   }
 
   async getOne(id: number, relations?: FindOptionsRelations<Comment>): Promise<Comment> {
@@ -99,11 +186,35 @@ export class CommentRepository {
     return await this.commentRepository.find();
   }
 
-  async getComments(condition: any, videoId: number, limit: number, userId?: number) {
+  async getOneDetails(id: number, userId?: number) {
+    const comment = await this.commentRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'user.channel', 'video'],
+      order: { createdAt: 'DESC' },
+      select: {
+        user: {
+          id: true,
+          avatar: true,
+          username: true,
+          fullName: true,
+          channel: {
+            isPinkBadge: true,
+            isBlueBadge: true,
+          },
+        },
+        video: {
+          id: true,
+        },
+      },
+    });
+    return await this.addInformation(comment, comment.video.id, userId);
+  }
+
+  async getComments(condition: any, videoId: number, limit: number, order: boolean, userId?: number) {
     const comments = await this.commentRepository.find({
       where: condition,
       relations: ['user', 'user.channel'],
-      order: { createdAt: 'DESC' },
+      order: { createdAt: order ? 'ASC' : 'DESC' },
       select: {
         user: {
           id: true,
@@ -119,20 +230,8 @@ export class CommentRepository {
       take: limit,
     });
 
-    let checkLike: CommentReaction;
-    const listComments = Promise.all(
-      comments.map(async (comment) => {
-        const [reactions, donation] = await Promise.all([
-          this.getReactionsInComment(comment.id),
-          this.getTotalDonations(comment.user.id, videoId),
-        ]);
-        userId && (checkLike = reactions.find((reaction) => reaction.user.id === userId));
-        return {
-          ...comment,
-          isLike: checkLike?.isLike,
-          totalDonation: donation,
-        };
-      }),
+    const listComments = await Promise.all(
+      comments.map((comment) => this.addInformation(comment, videoId, userId)),
     );
 
     return listComments;
@@ -145,7 +244,7 @@ export class CommentRepository {
       whereCondition.id = cursor ? LessThan(cursor) : undefined;
     }
 
-    const data = await this.getComments(whereCondition, videoId, limit, userId);
+    const data = await this.getComments(whereCondition, videoId, limit, false, userId);
 
     return data;
   }
@@ -154,10 +253,10 @@ export class CommentRepository {
     const whereCondition: any = { parent: { id: id } };
 
     if (cursor) {
-      whereCondition.id = cursor ? LessThan(cursor) : undefined;
+      whereCondition.id = cursor ? MoreThan(cursor) : undefined;
     }
     const videoId = (await this.getOneWithVideo(id)).video.id;
-    const data = await this.getComments(whereCondition, videoId, limit, userId);
+    const data = await this.getComments(whereCondition, videoId, limit, true, userId);
 
     return data;
   }
@@ -188,6 +287,37 @@ export class CommentRepository {
     }, 0);
 
     return totalDonations;
+  }
+
+  private async addInformation(comment: Comment, videoId: number, userId?: number) {
+    const [reactions, donation, lastContentDonate] = await Promise.all([
+      this.getReactionsInComment(comment.id),
+      this.getTotalDonations(comment.user.id, videoId),
+      this.getLastContentDonate(comment.user.id, videoId),
+    ]);
+
+    const checkLike = userId ? reactions.find((reaction) => reaction.user.id === userId) : undefined;
+
+    return {
+      ...comment,
+      isLike: checkLike?.isLike,
+      totalDonation: donation,
+      lastContentDonate,
+    };
+  }
+
+  async getLastContentDonate(userId: number, videoId: number) {
+    const donations = await this.donationRepository.findOne({
+      where: {
+        user: { id: userId },
+        video: { id: videoId },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return donations?.content;
   }
 
   async create(userId: number, dto: CreateCommentDto) {

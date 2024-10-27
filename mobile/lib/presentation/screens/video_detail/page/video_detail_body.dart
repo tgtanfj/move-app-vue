@@ -11,9 +11,9 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_bloc.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
+import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
-import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
-
+import 'package:move_app/presentation/screens/video_detail/widgets/vimeo_player.dart';
 import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../constants/constants.dart';
@@ -42,7 +42,11 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScrollComments);
   }
-
+   @override
+   void deactivate(){
+    context.read<VideoDetailBloc>().add(const VideoDetailPopEvent());
+     super.deactivate();
+   }
   @override
   void dispose() {
     _scrollController.dispose();
@@ -412,7 +416,23 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         state.video?.channel?.id ?? 0));
               }
             },
-            giftRepButton: () {},
+            giftRepButton: () {
+              if (token.isEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const DialogAuthentication();
+                  },
+                );
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return GiftRepsDialog(videoId: state.video?.id ?? 0);
+                  },
+                );
+              }
+            },
             onTapRate: () {
               if (token.isEmpty) {
                 showDialog(

@@ -18,10 +18,32 @@ export const formatDateShort = (date) => {
   return `${month}-${day}-${year}`
 }
 
-// Get time from a date-time string
-export const formatTime = (dateString) => {
+// Format date as 18 October 2024
+export function formatDate(dateString) {
   const date = new Date(dateString)
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }
+  return date.toLocaleDateString('en-GB', options)
+}
+
+// Get time from a date-time string
+export function formatTime(isoString) {
+  const date = new Date(isoString)
+
+  let hours = date.getUTCHours()
+  const minutes = date.getUTCMinutes()
+  const seconds = date.getUTCSeconds()
+
+  const period = hours >= 12 ? 'PM' : 'AM'
+
+  // Convert to 12-hour format
+  hours = hours % 12
+  hours = hours ? hours : 12 // Nếu là 0 thì đổi thành 12
+
+  // Format các giá trị thành dạng 2 chữ số
+  const formattedMinutes = minutes.toString().padStart(2, '0')
+  const formattedSeconds = seconds.toString().padStart(2, '0')
+
+  return `${hours}:${formattedMinutes}:${formattedSeconds} ${period}`
 }
 
 // Convert Date to CalendarDate

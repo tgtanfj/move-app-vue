@@ -82,25 +82,29 @@ const handleTakeChange = (val) => {
     </div>
 
     <div class="flex items-center gap-5">
-      <p v-if="payments.length > 1">
-        {{
+      <p
+        v-if="payments.length > 1"
+        v-html="
           $t('common.display_range_record', {
-            to: display_range.to,
-            from: display_range.from,
+            to: `<strong>${display_range.to}</strong>`,
+            from: `<strong>${display_range.from}</strong>`,
             total
           })
-        }}
-      </p>
+        "
+      ></p>
       <p v-else>
         {{ $t('common.display_single_record', { num: total }) }}
       </p>
 
       <div>
         <Button variant="link" class="p-4" @click="handlePrevPage">
-          <ChevronLeft :size="16" class="text-darkGray hover:text-primary" />
+          <ChevronLeft :size="17" :class="currentPage > 1 ? 'text-primary' : 'text-darkGray '" />
         </Button>
         <Button variant="link" class="p-4" @click="handleNextPage">
-          <ChevronRight :size="16" class="text-darkGray hover:text-primary" />
+          <ChevronRight
+            :size="17"
+            :class="currentPage < totalPages ? 'text-primary' : 'text-darkGray '"
+          />
         </Button>
       </div>
     </div>

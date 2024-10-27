@@ -10,9 +10,9 @@ import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
 import { fetchChannelAbout } from '@services/channel_about.services'
 import { useFollow, useUnfollow } from '@services/follow.services'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { formatFollowers } from '@utils/formatViews.util'
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useFollowerStore } from '../../stores/follower.store'
@@ -21,6 +21,9 @@ import { getFollowerText } from '../../utils/follower.util'
 import { sortedSocialLinks } from '../../utils/socialOrder.util'
 import Rating from './Rating.vue'
 import { Button } from '../../common/ui/button/index'
+import axios from 'axios'
+import { ADMIN_BASE } from '@constants/api.constant'
+import GiftReps from './GiftReps.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -36,9 +39,28 @@ const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
-const canFollow = ref(null)
+const isMyVideo = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
+const route = useRoute()
+const commentId = route.query.commentId
+const replyId = route.query.replyId
+
+const newRating = ref(null)
+const commentUnshift = ref({
+  user: {
+    id: 60,
+    username: 'TomJerryhihi',
+    fullName: 'Testabcabc',
+    avatar:
+      'https://move-project.s3.us-east-1.amazonaws.com/images/4198b020-91d2-11ef-8ca9-9310ceb7ec09.png',
+    channel: {
+      isBlueBadge: true,
+      isPinkBadge: true
+    }
+  },
+  totalDonation: 0
+})
 
 onMounted(async () => {
   if (props.videoDetail) {
@@ -46,8 +68,56 @@ onMounted(async () => {
     channelInfo.value = res.data
     isFollowed.value = channelInfo.value.isFollowed
     numFollower.value = channelInfo.value.numberOfFollowers
-    canFollow.value = channelInfo.value.canFollow
+    isMyVideo.value = channelInfo.value.canFollow
   }
+})
+
+const getCommentById = async () => {
+  if (commentId) {
+    try {
+      const response = await axios.get(`${ADMIN_BASE}/comment/${commentId}`)
+      if (response && response.data) {
+        const apiData = response.data
+        commentUnshift.value = {
+          ...apiData.data,
+          ...commentUnshift.value
+        }
+        console.log(commentUnshift.value)
+        scrollToComment(commentId)
+      }
+    } catch (error) {
+      console.error('Error fetching comment by ID:', error)
+    }
+  }
+}
+
+const scrollToComment = () => {
+  if (commentId && replyId) {
+    console.log('reply scroll')
+  } else if (commentId) {
+    setTimeout(() => {
+      const commentElement = document.getElementById(commentId)
+      if (commentElement) {
+        const navbarHeight = 100
+        const elementPosition = commentElement.getBoundingClientRect().top + window.scrollY
+        const offsetPosition = elementPosition - navbarHeight
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+        commentElement.classList.add('highlight')
+      } else {
+        console.log('Element not found after timeout')
+      }
+    }, 1000)
+  }
+}
+
+onMounted(() => {
+  nextTick(() => {
+    getCommentById()
+  })
 })
 
 const durationLite =
@@ -122,6 +192,10 @@ const handleNavigate = () => {
   router.push(`/channel/${props.videoDetail.channel.id}`)
 }
 
+const handleUpdateRating = (rating) => {
+  newRating.value = rating
+}
+
 watch(
   () => userStore.accessToken,
   (newToken) => {
@@ -149,7 +223,7 @@ onMounted(() => {
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
         <p class="flex gap-1 text-xl font-semibold">
-          <StartIcon width="24px" height="24px" />{{ props.videoDetail.ratings }}
+          <StartIcon width="24px" height="24px" />{{ newRating || props.videoDetail.ratings }}
         </p>
       </div>
 
@@ -170,13 +244,13 @@ onMounted(() => {
           <div
             class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
             @click="handleFollow"
-            v-if="canFollow !== false"
+            v-if="isMyVideo !== false"
           >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
             <HeartFilled v-show="isFollowed" />
             {{ $t('video_detail.follow') }}
           </div>
-          <Rating :videoDetail="videoDetail" />
+          <Rating @update-rating="handleUpdateRating" />
           <ShareLinkVideo />
         </div>
       </div>
@@ -204,7 +278,7 @@ onMounted(() => {
             </div>
           </div>
         </RouterLink>
-        <Button>Gift REPs</Button>
+        <GiftReps :videoId="props.videoDetail.id" v-if="isMyVideo !== false" />
       </div>
 
       <Tabs class="w-full">
@@ -239,7 +313,11 @@ onMounted(() => {
       <!-- /Video channel -->
       <DropdownMenuSeparator class="my-4" />
 
-      <Comment :isCommentable="videoDetail?.isCommentable" class="mt-10" />
+      <Comment
+        :isCommentable="videoDetail?.isCommentable"
+        class="mt-10"
+        :commentUnshift="commentUnshift"
+      />
     </div>
   </div>
 </template>
