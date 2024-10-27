@@ -16,6 +16,8 @@ import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { Follow } from '@/entities/follow.entity';
 import { Channel } from '@/entities/channel.entity';
+import { channel } from 'diagnostics_channel';
+import { OrderBy } from '../channel/dto/request/filter-video-channel.dto';
 
 @Injectable()
 export class VideoRepository {
@@ -438,7 +440,6 @@ export class VideoRepository {
         ELSE 'Unknown'
       END AS gender_group`,
         'COUNT(u.id) AS total_count',
-        'COUNT(DISTINCT u.id) OVER() AS total_user',
       ])
       .addSelect('')
       .where('v.id = :videoId', { videoId })
@@ -490,5 +491,118 @@ export class VideoRepository {
     return await this.videoRepository.find({
       relations,
     });
+  }
+  async getMostViewerNationality(videoId: number, time: string) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('users', 'u', 'wvh.userId = u.id')
+      .leftJoin('countries', 'c', 'u.countryId = c.id')
+      .select([
+        `COALESCE(c.id::TEXT, 'Unknown') AS country_id`,
+        `COALESCE(c.name, 'Unknown') AS country_name`,
+        'COUNT(u.id) AS total_users',
+      ])
+      .where('v.id = :videoId', { videoId })
+      .andWhere('wvh.createdAt >= :time', { time })
+      .groupBy('country_id,country_name')
+      .orderBy('total_users', 'DESC')
+      .getRawMany();
+
+    return result;
+  }
+
+  async getVideoViewersByState(videoId: number, time: string, countryId: number) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('users', 'u', 'wvh.userId = u.id')
+      .leftJoin('states', 's', 'u.stateId = s.id')
+      .select(['COALESCE(s.id, 0) AS state_id', 'COUNT(u.id) AS total_users', 's.name as state_name'])
+      .where('v.id = :videoId', { videoId })
+      .andWhere('u.countryId = :countryId', { countryId })
+      .andWhere('wvh.createdAt >= :time', { time })
+      .groupBy('s.id, s.name')
+      .orderBy('total_users', 'DESC')
+      .getRawMany();
+
+    return result;
+  }
+
+  async getVideoAnalytics(
+    channelId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('views', 'vw', 'v.id = vw.videoId')
+      .leftJoin('donations', 'd', 'v.id = d.videoId')
+      .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .select([
+        'v.id AS video_id',
+        'v.title AS video_title',
+        'v.ratings AS video_ratings',
+        'v.numberOfViews AS number_of_views',
+        'v.createdAt as created_at',
+        'COUNT(DISTINCT d."userId") AS total_donators',
+        'COUNT(*) OVER() AS total_count',
+      ])
+      .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
+      .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
+      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .where('v.channelId = :channelId', { channelId })
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews')
+      .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany();
+
+    return {
+      totalCount: result.length > 0 ? +result[0].total_count : 0,
+      result,
+    };
+  }
+
+  async getVideoAnalyticByQuery(
+    channelId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('views', 'vw', 'v.id = vw.videoId') // Left join with views
+      .leftJoin('donations', 'd', 'v.id = d.videoId') // Left join with donations
+      .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id') // Left join with gift-packages
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId') // Left join with watching-video-histories
+      .select([
+        'v.id AS video_id', // Video ID
+        'v.title AS video_title', // Video title
+        'v.ratings AS video_ratings', // Rating of video
+        'v.numberOfViews AS number_of_views', // Number of views of video
+        'v.createdAt as created_at',
+        'COUNT(DISTINCT d."userId") AS total_donators',
+        'COUNT(*) OVER() AS total_count',
+      ])
+      .where('v.channelId = :channelId', { channelId })
+      .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
+      .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
+      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews') // Group by video attributes
+      .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST') // Order by dynamic field and direction
+      .limit(limit) // Limit results for pagination
+      .offset(offset) // Offset for pagination
+      .getRawMany(); // Get the raw results
+
+    return {
+      totalCount: result.length > 0 ? +result[0].total_count : 0, // Get the total count
+      result,
+    };
   }
 }

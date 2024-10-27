@@ -20,7 +20,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateVideoDTO } from './dto/create-video.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
@@ -126,6 +126,7 @@ export class VideoController {
     return await this.videoService.downloadVideo(videoId);
   }
 
+  @ApiOperation({ summary: 'overview analytic specific video' })
   @UseGuards(JwtAuthGuard)
   @Get('analytic/:videoId')
   async overviewVideoAnalytic(
@@ -137,6 +138,7 @@ export class VideoController {
     return await this.videoService.overviewVideoAnalytic(videoId, user.id, query.option);
   }
 
+  @ApiOperation({ summary: 'graphic of video' })
   @UseGuards(JwtAuthGuard)
   @Get('analytic/graphic/:videoId')
   async demoGraphicVideoAnalytic(
@@ -144,10 +146,19 @@ export class VideoController {
     @User() user,
     @Query() query: DetailVideoAnalyticDTO,
   ) {
-    // return await this.videoService.sortVideoByPriority();
-    const time = new Date();
-    time.setDate(time.getDate() - 100);
-    const timeFomat = time.toISOString().split('T')[0];
-    return await this.videoService.graphicGender(videoId, timeFomat);
+    return await this.videoService.getGraphicAnalytic(videoId, user.id, query.option, query.graphic);
+  }
+
+  @ApiOperation({ summary: 'graphic by state' })
+  @UseGuards(JwtAuthGuard)
+  @Get('analytic/graphic/:videoId/:countryId')
+  async videoAnalyticByState(
+    @Param('videoId') videoId: number,
+    @Param('countryId') countryId: number,
+    @User()
+    user,
+    @Query() query: DetailVideoAnalyticDTO,
+  ) {
+    return await this.videoService.getGraphicState(videoId, countryId, query.option);
   }
 }

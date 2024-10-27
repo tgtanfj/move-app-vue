@@ -82,10 +82,11 @@ const workoutLevelLite =
             </div>
           </div>
         </div>
-        <div class="flex items-center gap-1 ml-auto">
+        <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto">
           <StartIcon class="h-[16px] w-[16px]" />
           <p class="text-[14px] font-bold">{{ video?.ratings }}</p>
         </div>
+        <div v-else class="flex items-center gap-1 ml-auto"></div>
       </div>
     </div>
   </RouterLink>

@@ -24,12 +24,8 @@ export class FollowService {
     return await this.followRepository.countFollowers(channelId);
   }
 
-  async getFollowingChannels(
-    userId: number,
-    limit: number,
-    relations: FindOptionsRelations<Follow>,
-  ): Promise<Follow[]> {
-    return await this.followRepository.getFollowingChannels(userId, limit, relations);
+  async getFollowingChannels(userId: number, relations: FindOptionsRelations<Follow>): Promise<Follow[]> {
+    return await this.followRepository.getFollowingChannels(userId, relations);
   }
 
   async save(userInfo: UserInfoDto, channelId: number) {

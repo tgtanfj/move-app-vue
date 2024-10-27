@@ -1,6 +1,6 @@
 import { WatchingVideoHistory } from '@/entities/watching-video-history.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { RateDto } from './dto/rate.dto';
 export class WatchingVideoHistoryRepository {
   constructor(
@@ -9,7 +9,10 @@ export class WatchingVideoHistoryRepository {
   ) {}
 
   async averageRateByVideoId(videoId: number): Promise<number> {
-    const averageRate = await this.watchingVideoHistoryRepository.average('rate', { video: { id: videoId } });
+    const averageRate = await this.watchingVideoHistoryRepository.average('rate', {
+      video: { id: videoId },
+      rate: Not(0),
+    });
     return parseFloat(averageRate.toFixed(1));
   }
 
@@ -50,6 +53,7 @@ export class WatchingVideoHistoryRepository {
       video: {
         id: videoId,
       },
+      rate: Not(0),
       createdAt: MoreThanOrEqual(time),
     });
     return result;

@@ -13,7 +13,7 @@ import {
 } from '@constants/regex.constant'
 import { t } from '@helpers/i18n.helper'
 import { channelSettingsService } from '@services/channel-settings.services'
-import { ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 const props = defineProps({
   channelId: {
@@ -47,6 +47,10 @@ const initialYoutubeLink = ref('')
 const facebookError = ref('')
 const instagramError = ref('')
 const youtubeError = ref('')
+
+const isBioValid = computed(() => {
+  return channelBio.value === '' || channelBio.value.trim() !== ''
+})
 
 const initializeLinks = () => {
   if (channelBio.value) {
@@ -105,6 +109,10 @@ const handleTextarea = (inputValue) => {
 }
 
 const handleSaveSettings = async () => {
+  if (!isBioValid.value) {
+    return
+  }
+
   let fbLink = ''
   let instLink = ''
   let ytLink = ''
@@ -130,6 +138,7 @@ const handleSaveSettings = async () => {
     }
 
     isLoading.value = true
+    channelBio.value = channelBio.value.trim()
     try {
       const res = await channelSettingsService.saveChannelSettings(
         props.channelId,

@@ -9,7 +9,7 @@ import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
 import { commentServices } from '@services/comment.services'
 import { Input } from '@common/ui/input'
@@ -22,7 +22,7 @@ const props = defineProps({
   comments: {
     type: Array,
     required: true
-  },
+  }
 })
 
 const emit = defineEmits(['update-comments', 'updateReplyCount'])
@@ -232,6 +232,10 @@ const createReply = async (commentId) => {
     }
   }
 }
+
+const isReplyValid = computed(() => {
+  return replyData.value.trim() !== ''
+})
 </script>
 
 <template>
@@ -343,9 +347,9 @@ const createReply = async (commentId) => {
             }}</Button>
             <Button
               @click="createReply(item.id)"
-              :disabled="replyData === ''"
+              :disabled="!isReplyValid"
               class="w-[104px] text-[16px]"
-              :class="{ 'bg-[#999999]': replyData === '' }"
+              :class="{ 'bg-[#999999]': !isReplyValid }"
               >{{ $t('comment.send') }}</Button
             >
           </div>
