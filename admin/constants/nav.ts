@@ -38,6 +38,11 @@ export const navItems: NavItem[] = [
         title: 'Withdraw Management',
         url: '/dashboard/withdraw-management',
         icon: 'login'
+      },
+      {
+        title: 'Revenue Management',
+        url: '/dashboard/revenue-management',
+        icon: 'login'
       }
     ]
   },

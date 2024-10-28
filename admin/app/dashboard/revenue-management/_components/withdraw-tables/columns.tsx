@@ -6,7 +6,8 @@ export const columns: ColumnDef<Withdraw>[] = [
   {
     accessorKey: 'id',
     header: 'Withdraw ID',
-    enableSorting: false
+    enableSorting: false,
+    size: 500
   },
   {
     accessorKey: 'channel.user.fullName',
@@ -15,7 +16,6 @@ export const columns: ColumnDef<Withdraw>[] = [
   {
     accessorKey: 'channel.user.email',
     header: 'Email'
-    
   },
 
   {
