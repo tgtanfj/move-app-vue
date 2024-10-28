@@ -39,27 +39,37 @@ export class CommentRepository {
     itemFrom: number;
     itemTo: number;
   }> {
+    console.log('userId', userId);
     const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
       .innerJoinAndSelect('comment.video', 'video')
       .innerJoin('video.channel', 'channel')
       .leftJoinAndSelect('comment.children', 'child')
-      .leftJoinAndSelect('video.thumbnails', 'thumbnail')
+      .leftJoinAndSelect('video.thumbnails', 'thumbnail', 'thumbnail.selected = :selected', {
+        selected: true,
+      })
       .leftJoinAndSelect('video.category', 'category')
-      .where('channel.userId = :userId', { userId })
-      .andWhere('video.channelId = channel.id')
-      .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
-      .select(['comment', 'user', 'video', 'thumbnail', 'category']);
+      .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
 
     if (filter === 'unresponded') {
       queryBuilder.andWhere(
-        new Brackets((qb) => {
-          qb.where('child.id IS NULL').orWhere('child.userId != :userId', { userId });
-        }),
+        `NOT EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
       );
     } else if (filter === 'responded') {
-      queryBuilder.andWhere('child.id IS NOT NULL').andWhere('child.userId = :userId', { userId });
+      queryBuilder.andWhere(
+        `EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
+      );
     }
 
     const totalItemCount = await queryBuilder.select('DISTINCT comment.id').getCount();
