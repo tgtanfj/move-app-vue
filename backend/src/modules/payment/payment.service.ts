@@ -1,4 +1,5 @@
 import { User } from '@/entities/user.entity';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
@@ -6,6 +7,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
+import { NotificationService } from '../notification/notification.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
@@ -17,8 +19,6 @@ import { PayPalService } from './paypal.service';
 import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
 import { RepsPackageRepository } from './repositories/reps-package.repository';
-import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
-import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class PaymentService {
@@ -183,5 +183,19 @@ export class PaymentService {
 
   async getAllCashOutHistories() {
     return await this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
+  }
+
+  async getTotalWithdraw() {
+    const withDrawRate = this.configService.getNumber('WITHDRAW_RATE');
+
+    const withdraws = await this.cashOutRepository.getAllCashOutHistory();
+
+    const total = withdraws.reduce((sum, withdraw) => {
+      return sum + +withdraw.numberOfREPs;
+    }, 0);
+
+    return {
+      totalWithdraw: total,
+    };
   }
 }
