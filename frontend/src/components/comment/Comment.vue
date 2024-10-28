@@ -2,7 +2,6 @@
 import { commentServices } from '@services/comment.services'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '../../stores/auth'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 
@@ -13,7 +12,6 @@ const props = defineProps({
   }
 })
 
-const userStore = useAuthStore()
 const commentData = ref([])
 const isLoading = ref(false)
 const hasMoreComments = ref(true)
@@ -83,18 +81,21 @@ const handleUpdateComments = (updatedComments) => {
       <WriteComment
         :videoId="videoId"
         :comments="commentData"
-        :me="userStore?.user"
         @update="handlePushCommentFromChild"
       />
     </div>
     <div class="w-full mt-10">
       <RenderComment
+        v-if="commentData.length !== 0"
         :videoId="videoId"
         :comments="commentData"
-        :me="userStore?.user"
         @update-comments="handleUpdateComments"
         @updateReplyCount="updateReplyCount"
       />
+      <div v-else class="w-full flex flex-col items-center justify-center pt-6">
+        <p class="text-[16px]">No comments to display</p>
+        <p class="text-[14px] text-[#666666]">Leave a comment to get started</p>
+      </div>
     </div>
   </div>
   <div v-else class="flex w-full items-center justify-center">

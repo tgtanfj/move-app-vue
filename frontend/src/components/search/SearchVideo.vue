@@ -37,17 +37,7 @@ const props = defineProps({
     </div>
     <div class="flex items-start mt-2">
       <router-link :to="`/channel/${video.channel.id}`">
-        <img
-          class="w-[50px] h-[50px] rounded-full"
-          :src="video.channel.image"
-          :class="
-            video.channel.isBlueBadge
-              ? 'border-blue-300 border-[3px]'
-              : video.channel.isPinkBadge
-                ? 'border-pink-300 border-[3px]'
-                : ''
-          "
-        />
+        <img class="w-[50px] h-[50px] rounded-full" :src="video.channel.image" />
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">
@@ -83,10 +73,11 @@ const props = defineProps({
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto pr-1 pl-2">
+      <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px] mr-1" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>
+      <div v-else class="flex items-center gap-1 ml-auto pr-1 pl-2"></div>
     </div>
   </div>
 </template>

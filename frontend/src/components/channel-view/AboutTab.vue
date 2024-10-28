@@ -1,10 +1,24 @@
 <script setup>
+import { ref, watchEffect } from 'vue'
 import { useChannelStore } from '../../stores/view-channel'
+import { sortedSocialLinks } from '../../utils/socialOrder.util'
 import FollowingUser from './FollowingUser.vue'
 import SocialLink from './SocialLink.vue'
 
 const channelStore = useChannelStore()
-const { bio, name, socialLinks, followingChannels } = channelStore.channelInfo
+// const { bio, name, socialLinks, followingChannels } = channelStore.channelInfo
+
+const bio = ref('');
+const name = ref('');
+const socialLinks = ref([]);
+const followingChannels = ref([]);
+
+watchEffect(() => {
+  bio.value = channelStore.channelInfo?.bio || '';
+  name.value = channelStore.channelInfo?.name || '';
+  socialLinks.value = sortedSocialLinks(channelStore.channelInfo?.socialLinks || []);
+  followingChannels.value = channelStore.channelInfo?.followingChannels || [];
+});
 </script>
 <template>
   <div class="flex gap-5 w-[90%] mb-6">
@@ -21,7 +35,12 @@ const { bio, name, socialLinks, followingChannels } = channelStore.channelInfo
     <div>
       <h4 class="text-xl font-bold mb-4">Social Network</h4>
       <div class="flex gap-3" v-if="socialLinks.length">
-        <SocialLink v-for="item in socialLinks" :key="item" :title="item.name" :link="item.link" />
+        <SocialLink
+          v-for="item in sortedSocialLinks(socialLinks)"
+          :key="item"
+          :title="item.name"
+          :link="item.link"
+        />
       </div>
       <p v-else class="italic">{{ $t('view_channel.no_social_network') }}</p>
     </div>

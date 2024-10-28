@@ -112,7 +112,7 @@ const handleScroll = () => {
       <div class="w-[90%] h-full p-6">
         <SeparatorCross :title="categoryTitle" />
         <div class="@container">
-          <div v-if="videos" class="grid grid-cols-3 gap-8 mt-4  @[1100px]:grid-cols-4">
+          <div v-if="videos" class="grid grid-cols-3 gap-8 mt-4  @[1200px]:grid-cols-4">
             <div v-for="(item, index) in videos" :key="index">
               <VideoMayLike :video="item" />
             </div>

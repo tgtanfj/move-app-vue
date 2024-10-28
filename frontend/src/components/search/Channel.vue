@@ -13,18 +13,7 @@ const props = defineProps({
 <template>
   <div class="flex items-center justify-start my-4">
     <router-link :to="`/channel/${channel.id}`">
-      <img
-        :src="channel.image"
-        alt=""
-        class="w-[100px] h-[100px] rounded-full"
-        :class="
-          channel.isBlueBadge
-            ? 'border-blue-300 border-[5px]'
-            : channel.isPinkBadge
-              ? 'border-pink-300 border-[5px]'
-              : ''
-        "
-      />
+      <img :src="channel.image" alt="" class="w-[100px] h-[100px] rounded-full" />
     </router-link>
     <div class="flex flex-col ml-8">
       <router-link class="flex items-center justify-start mb-1" :to="`/channel/${channel.id}`">

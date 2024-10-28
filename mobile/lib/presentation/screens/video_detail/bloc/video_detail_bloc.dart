@@ -10,7 +10,6 @@ import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_sta
 
 import '../../../../data/models/comment_model.dart';
 import '../../../../data/repositories/comment_repository.dart';
-import '../../../../utils/util_date_time.dart';
 
 class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   final ShareRepository shareRepository = ShareRepository();
@@ -57,21 +56,13 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
             state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
       },
       (comments) async {
-        final updatedComments = comments.map((comment) {
-          return comment.copyWith(
-            createTimeConvert: comment.createdAt?.getTimeDifference(),
-          );
-        }).toList();
-
         final originalNumOfReplies = {
-          for (var comment in updatedComments)
-            comment.id: comment.numberOfReply,
+          for (var comment in comments) comment.id: comment.numberOfReply,
         };
 
-        final lastCommentId =
-            updatedComments.isNotEmpty ? updatedComments.last.id : null;
+        final lastCommentId = comments.isNotEmpty ? comments.last.id : null;
         emit(state.copyWith(
-          listComments: updatedComments,
+          listComments: comments,
           lastCommentId: lastCommentId,
           status: VideoDetailStatus.success,
           originalNumOfReply: originalNumOfReplies,
@@ -142,15 +133,10 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     result.fold((l) {
       emit(state.copyWith(status: VideoDetailStatus.failure));
     }, (r) {
-      final newComments = r.map<CommentModel>((comment) {
-        return comment.copyWith(
-          createTimeConvert: comment.createdAt?.getTimeDifference(),
-        );
-      }).toList();
-      final updatedComments = [...state.listComments ?? [], ...newComments];
+      final updatedComments = [...state.listComments ?? [], ...r];
 
       final newNumOfReplies = {
-        for (var comment in newComments) comment.id: comment.numberOfReply
+        for (var comment in r) comment.id: comment.numberOfReply
       };
       final mergedNumOfReplies = {
         ...?state.originalNumOfReply,
@@ -198,15 +184,10 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
           final existingReplies = state.replies?[commentModel.id!] ?? [];
 
           final updatedReplies = [
-            newComment.copyWith(
-              createTimeConvert: newComment.createdAt?.getTimeDifference(),
-            ),
-            ...existingReplies.map((reply) {
-              return reply.copyWith(
-                createTimeConvert: reply.createdAt?.getTimeDifference(),
-              );
-            }),
+            newComment,
+            ...existingReplies,
           ];
+
           final updatedComments = state.listComments?.map((comment) {
             if (comment.id == event.commentId &&
                 (state.originalNumOfReply?[event.commentId] ?? 0) > 0) {
@@ -220,24 +201,18 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
           }).toList();
 
           emit(state.copyWith(
-              replies: {
-                ...state.replies ?? {},
-                commentModel.id!: updatedReplies.cast<CommentModel>(),
-              },
-              listComments: updatedComments,
-              status: VideoDetailStatus.success,
-              isShowTemporaryListReply: true));
+            replies: {
+              ...state.replies ?? {},
+              commentModel.id!: updatedReplies.cast<CommentModel>(),
+            },
+            listComments: updatedComments,
+            status: VideoDetailStatus.success,
+            isShowTemporaryListReply: true,
+          ));
         } else {
           final updatedComments = [
-            newComment.copyWith(
-              createTimeConvert: newComment.createdAt?.getTimeDifference(),
-            ),
-            ...state.listComments?.map((comment) {
-                  return comment.copyWith(
-                    createTimeConvert: comment.createdAt?.getTimeDifference(),
-                  );
-                }).toList() ??
-                [],
+            newComment,
+            ...state.listComments ?? [],
           ];
 
           emit(state.copyWith(
@@ -403,36 +378,39 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         event.commentId,
         limit: 10,
         cursor: event.lastIdReply);
-    result.fold((l) {
-      emit(state.copyWith(status: VideoDetailStatus.failure));
-    }, (r) {
-      final newReplies = r.map<CommentModel>((comment) {
-        return comment.copyWith(
-          createTimeConvert: comment.createdAt?.getTimeDifference(),
-        );
-      }).toList();
-      final existingReplies = state.replies?[event.commentId] ?? [];
-      final allReplies = [...existingReplies, ...newReplies];
-      final updatedReplies = {
-        ...?state.replies,
-        event.commentId: allReplies,
-      };
-      final updateIsHiddenListReply = {
-        ...?state.isHiddenListReply,
-        event.commentId: true,
-      };
-      final updatedComments = state.listComments?.map((comment) {
-        if (comment.id == event.commentId) {
-          return comment.copyWith(numberOfReply: allReplies.length);
-        }
-        return comment;
-      }).toList();
-      emit(state.copyWith(
-        replies: updatedReplies,
-        isHiddenListReply: updateIsHiddenListReply,
-        listComments: updatedComments,
-      ));
-    });
+
+    result.fold(
+      (error) {
+        emit(state.copyWith(status: VideoDetailStatus.failure));
+      },
+      (replies) {
+        final existingReplies = state.replies?[event.commentId] ?? [];
+        final allReplies = [...existingReplies, ...replies];
+
+        final updatedReplies = {
+          ...?state.replies,
+          event.commentId: allReplies,
+        };
+
+        final updateIsHiddenListReply = {
+          ...?state.isHiddenListReply,
+          event.commentId: true,
+        };
+
+        final updatedComments = state.listComments?.map((comment) {
+          if (comment.id == event.commentId) {
+            return comment.copyWith(numberOfReply: allReplies.length);
+          }
+          return comment;
+        }).toList();
+
+        emit(state.copyWith(
+          replies: updatedReplies,
+          isHiddenListReply: updateIsHiddenListReply,
+          listComments: updatedComments,
+        ));
+      },
+    );
   }
 
   void onVideoDetailHideRepliesCommentEvent(

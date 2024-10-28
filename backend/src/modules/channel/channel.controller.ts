@@ -2,12 +2,13 @@ import { Public } from '@/shared/decorators/public.decorator';
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards';
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChannelService } from './channel.service';
 import { EditChannelDto } from './dto/request/edit-channel.dto';
 import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { SetUpPayPalDto } from './dto/request/set-up-paypal.dto';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { VideosAnalyticDTO } from '../video/dto/request/videos-analytic.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -104,7 +105,76 @@ export class ChannelController {
 
   @Get('get-all-comments')
   @UseGuards(JwtAuthGuard)
-  async getAllComments(@User() user) {
-    return await this.channelService.getAllComments(user.id);
+  @ApiOperation({ summary: 'Get all comments with filtering, sorting, and pagination options' })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: 'Filter comments. Options: "all", "unresponded", "responded". Default is "all".',
+    schema: {
+      type: 'string',
+      default: 'all',
+      enum: ['all', 'unresponded', 'responded'],
+    },
+  })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    description: 'Sort comments by "createdAt" or "totalDonation". Default is "createdAt".',
+    schema: {
+      type: 'string',
+      default: 'createdAt',
+      enum: ['createdAt', 'totalDonation'],
+    },
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number, default is 1',
+    schema: {
+      type: 'number',
+      default: 1,
+    },
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Number of items per page, default is 5',
+    schema: {
+      type: 'number',
+      default: 5,
+    },
+  })
+  async getAllComments(
+    @User() user,
+    @Query('filter') filter: string = 'all',
+    @Query('sort') sort: string = 'createdAt',
+    @Query('page') page: number = 1, // Bắt đầu từ 1
+    @Query('pageSize') pageSize: number = 5,
+  ) {
+    const { data, totalItemCount, totalPages, itemFrom, itemTo } = await this.channelService.getAllComments(
+      user.id,
+      filter,
+      sort,
+      page,
+      pageSize,
+    );
+
+    return {
+      data,
+      meta: {
+        totalItemCount,
+        totalPages,
+        itemFrom,
+        itemTo,
+      },
+    };
+  }
+
+  @ApiOperation({ summary: 'get video analytics' })
+  @Get('video-analytics')
+  @UseGuards(JwtAuthGuard)
+  async videosAnalytics(@User() user, @Query() dto: VideosAnalyticDTO) {
+    const asc: boolean = dto.asc === 'true';
+    return await this.channelService.videoAnalytics(user.id, dto.option, dto.sortBy, dto.page, dto.take, asc);
   }
 }

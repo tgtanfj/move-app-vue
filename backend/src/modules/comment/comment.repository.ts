@@ -26,23 +26,87 @@ export class CommentRepository {
     });
   }
 
-  async getAllComments(userId: number): Promise<Comment[]> {
-    return await this.commentRepository
+  async getAllComments(
+    userId: number,
+    filter: string = 'all',
+    sortBy: string = 'createdAt',
+    page: number = 1,
+    pageSize: number = 5,
+  ): Promise<{
+    data: Comment[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
+    const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
-      .innerJoin('comment.video', 'video')
+      .innerJoinAndSelect('comment.video', 'video')
       .innerJoin('video.channel', 'channel')
+      .leftJoinAndSelect('comment.children', 'child')
+      .leftJoinAndSelect('video.thumbnails', 'thumbnail')
+      .leftJoinAndSelect('video.category', 'category')
       .where('channel.userId = :userId', { userId })
-      .select([
-        'comment.id',
-        'comment.content',
-        'comment.numberOfLike',
-        'comment.numberOfReply',
-        'comment.createdAt',
-        'user.id',
-        'user.username',
-      ])
-      .getMany();
+      .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
+      .select(['comment', 'user', 'video', 'child', 'thumbnail', 'category']);
+
+    if (filter === 'unresponded') {
+      queryBuilder.andWhere('child.id IS NULL OR child.userId != :userId', { userId });
+    } else if (filter === 'responded') {
+      queryBuilder.andWhere('child.id IS NOT NULL').andWhere('child.userId = :userId', { userId });
+    }
+
+    switch (sortBy) {
+      case 'createdAt':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      case 'totalDonation':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      default:
+        queryBuilder.orderBy('comment.createdAt', 'DESC');
+        break;
+    }
+
+    const totalItemCount = await queryBuilder.getCount();
+
+    queryBuilder.skip((page - 1) * pageSize).take(pageSize);
+
+    const comments = await queryBuilder.getMany();
+
+    const totalPages = Math.ceil(totalItemCount / pageSize);
+    const itemFrom = (page - 1) * pageSize + 1;
+    const itemTo = Math.min(itemFrom + comments.length - 1, totalItemCount);
+
+    const data = await Promise.all(
+      comments.map(async (comment) => {
+        const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
+        return { ...comment, totalDonation };
+      }),
+    );
+
+    if (sortBy === 'receivedReps') {
+      data.sort((a, b) => {
+        if (b.totalDonation !== a.totalDonation) {
+          return b.totalDonation - a.totalDonation;
+        }
+        if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        }
+        return b.numberOfLike - a.numberOfLike;
+      });
+    }
+
+    return {
+      data,
+      totalItemCount,
+      totalPages,
+      itemFrom,
+      itemTo,
+    };
   }
 
   async getOne(id: number, relations?: FindOptionsRelations<Comment>): Promise<Comment> {

@@ -55,11 +55,9 @@ class _SearchResultBodyState extends State<SearchResultBody> {
   Widget build(BuildContext context) {
     return BlocListener<SearchResultBloc, SearchResultState>(
       listener: (context, state) {
-        if (state.status == SearchResultStatus.processing) {
-          EasyLoading.show();
-        } else {
-          EasyLoading.dismiss();
-        }
+        (state.status == SearchResultStatus.processing)
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
       },
       child: BlocBuilder<SearchResultBloc, SearchResultState>(
         builder: (context, state) {

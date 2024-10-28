@@ -6,9 +6,9 @@ import {
   MessageSquare,
   Settings,
   Video
-} from 'lucide-vue-next'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+} from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 const sidebarList = [
   {
@@ -46,13 +46,19 @@ const sidebarList = [
     icon: Settings,
     path: '/streamer/channel-settings'
   }
-]
+];
 
-const router = useRoute()
-const path = computed(() => router.path)
+const route = useRoute();
+const path = computed(() => route.path);
+
+const isActivePath = (itemPath) => {
+  return path.value.startsWith(itemPath) || 
+         (itemPath === '/streamer/analytics/videos' && path.value.includes('/streamer/analytics/video/'))
+}
 </script>
+
 <template>
-  <div class="mt-[56px]">
+  <div class="mt-[56px] w-[241px] fixed left-0 z-10">
     <div className="grid h-screen flex-none w-[241px] min-h-screen">
       <div className="border-r bg-gray-100/40 lg:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
@@ -64,7 +70,7 @@ const path = computed(() => router.path)
                     v-if="item.children"
                     class="flex items-center w-full text-left p-2 rounded"
                     :to="`${item.path}/${item.children[0].path}`"
-                    :class="{ 'text-primary font-semibold': path.includes(item.path) }"
+                    :class="{ 'text-primary font-semibold': isActivePath(item.path) }"
                   >
                     <component :is="item.icon" class="mr-2" />
                     {{ item.name }}
@@ -76,7 +82,7 @@ const path = computed(() => router.path)
                     v-else
                     class="flex items-center w-full text-left p-2 rounded"
                     :to="item.path"
-                    :class="{ 'text-primary font-semibold': item.path === path }"
+                    :class="{ 'text-primary font-semibold': isActivePath(item.path) }"
                   >
                     <component :is="item.icon" class="mr-2" />
                     {{ item.name }}
@@ -87,7 +93,7 @@ const path = computed(() => router.path)
                     <router-link
                       :to="`${item.path}/${child.path}`"
                       class="block w-full text-left p-2 rounded"
-                      :class="{ 'font-semibold': `${item.path}/${child.path}` === path }"
+                      :class="{ 'font-semibold': isActivePath(`${item.path}/${child.path}`) }"
                     >
                       {{ child.name }}
                     </router-link>
