@@ -105,8 +105,69 @@ export class ChannelController {
 
   @Get('get-all-comments')
   @UseGuards(JwtAuthGuard)
-  async getAllComments(@User() user) {
-    return await this.channelService.getAllComments(user.id);
+  @ApiOperation({ summary: 'Get all comments with filtering, sorting, and pagination options' })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: 'Filter comments. Options: "all", "unresponded", "responded". Default is "all".',
+    schema: {
+      type: 'string',
+      default: 'all',
+      enum: ['all', 'unresponded', 'responded'],
+    },
+  })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    description: 'Sort comments by "createdAt" or "totalDonation". Default is "createdAt".',
+    schema: {
+      type: 'string',
+      default: 'createdAt',
+      enum: ['createdAt', 'totalDonation'],
+    },
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number, default is 1',
+    schema: {
+      type: 'number',
+      default: 1,
+    },
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Number of items per page, default is 5',
+    schema: {
+      type: 'number',
+      default: 5,
+    },
+  })
+  async getAllComments(
+    @User() user,
+    @Query('filter') filter: string = 'all',
+    @Query('sort') sort: string = 'createdAt',
+    @Query('page') page: number = 1, // Bắt đầu từ 1
+    @Query('pageSize') pageSize: number = 5,
+  ) {
+    const { data, totalItemCount, totalPages, itemFrom, itemTo } = await this.channelService.getAllComments(
+      user.id,
+      filter,
+      sort,
+      page,
+      pageSize,
+    );
+
+    return {
+      data,
+      meta: {
+        totalItemCount,
+        totalPages,
+        itemFrom,
+        itemTo,
+      },
+    };
   }
 
   @ApiOperation({ summary: 'get video analytics' })

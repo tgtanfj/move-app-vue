@@ -18,6 +18,7 @@ export class CommentService {
     private readonly videoRepository: VideoRepository,
     private readonly notificationService: NotificationService,
     private readonly i18n: I18nService,
+    // private readonly commentReactionRepository: CommentRepository,
   ) {}
 
   async getNumberOfComments(videoId: number): Promise<number> {

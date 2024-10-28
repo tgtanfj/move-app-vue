@@ -113,7 +113,6 @@ export class SearchService {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayDateString = yesterday.toISOString().split('T')[0];
 
-    // Lấy video có lượt xem cao nhất vào ngày hôm qua theo từ khóa và phân trang
     const videosWithHighestViews = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.viewHistories', 'viewHistory')

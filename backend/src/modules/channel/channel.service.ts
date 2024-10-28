@@ -224,8 +224,20 @@ export class ChannelService {
     };
   }
 
-  async getAllComments(userId: number): Promise<Comment[]> {
-    return await this.commentRepository.getAllComments(userId);
+  async getAllComments(
+    userId: number,
+    filter: string = 'all',
+    sortBy: string = 'createdAt',
+    page: number = 1, 
+    pageSize: number = 5,
+  ): Promise<{
+    data: Comment[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
+    return await this.commentRepository.getAllComments(userId, filter, sortBy, page, pageSize);
   }
 
   async videoAnalytics(
