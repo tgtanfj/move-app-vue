@@ -18,4 +18,5 @@ class AppColors {
   static const rajah  = Color(0xffFFB564);
   static const silverChalice = Color(0xffACACAC);
   static const pineGreen = Color(0xff008370);
+  static const grey = Color(0xFF9E9E9E);
 }

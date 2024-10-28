@@ -48,4 +48,8 @@ export class ViewService {
     }
     return view;
   }
+
+  async getTotalSecondByDate(time: Date, videoId: number) {
+    return await this.viewRepository.getSecondWatchByTime(videoId, time);
+  }
 }

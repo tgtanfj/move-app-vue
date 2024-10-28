@@ -62,4 +62,13 @@ export class ViewRepository {
     await this.videoViewHistoryRepository.save(existingView);
     return existingView;
   }
+
+  async getSecondWatchByTime(videoId: number, time: Date) {
+    return await this.viewRepository.sum('totalViewTime', {
+      createdAt: MoreThanOrEqual(time),
+      video: {
+        id: videoId,
+      },
+    });
+  }
 }

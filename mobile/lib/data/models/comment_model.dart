@@ -1,5 +1,8 @@
 import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/user_model.dart';
+import 'package:move_app/utils/util_date_time.dart';
+
+import '../../constants/constants.dart';
 
 class CommentModel {
   final int? id;
@@ -9,7 +12,6 @@ class CommentModel {
   final String? content;
   final int? numberOfLike;
   final UserModel? user;
-  final String? createTimeConvert;
   final int? videoId;
   final LikeStatus? likeStatus;
   final bool? isLike;
@@ -25,7 +27,6 @@ class CommentModel {
     this.content,
     this.numberOfLike,
     this.user,
-    this.createTimeConvert,
     this.videoId,
     this.likeStatus,
     this.isLike,
@@ -33,6 +34,13 @@ class CommentModel {
     this.numberOfReply,
     this.channel,
   });
+
+  String getTimeSinceCreated() {
+    if (createdAt != null) {
+      return createdAt!.getTimeDifference();
+    }
+    return Constants.justNow;
+  }
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     LikeStatus? status;
@@ -73,7 +81,6 @@ class CommentModel {
       String? content,
       int? numberOfLike,
       UserModel? user,
-      String? createTimeConvert,
       LikeStatus? likeStatus,
       int? totalDonation,
       bool? isLike,
@@ -86,7 +93,6 @@ class CommentModel {
         content: content ?? this.content,
         numberOfLike: numberOfLike ?? this.numberOfLike,
         user: user ?? this.user,
-        createTimeConvert: createTimeConvert ?? this.createTimeConvert,
         likeStatus: likeStatus ?? this.likeStatus,
         totalDonation: totalDonation ?? this.totalDonation,
         isLike: isLike ?? this.isLike,
@@ -108,5 +114,6 @@ class CommentModel {
     };
   }
 }
+
 
 enum LikeStatus { liked, unliked, unknown }

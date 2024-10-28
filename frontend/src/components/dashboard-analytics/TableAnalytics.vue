@@ -2,6 +2,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@common/ui/table'
 import Star from '../../assets/icons/Star.vue'
 import { truncateText } from '../../utils/truncateText.util';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   videos: {
@@ -9,6 +10,13 @@ const props = defineProps({
     required: true
   }
 })
+
+const router = useRouter()
+
+const routeToInDepth = (videoId) => {
+  router.push({ name: 'InDepthVideo', params: {videoId: videoId}})
+}
+
 </script>
 <template>
   <Table class="mt-5" v-if="videos.length > 0">
@@ -24,7 +32,7 @@ const props = defineProps({
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="video in videos" class="cursor-pointer hover:bg-[#EDFFFC]">
+      <TableRow v-for="video in videos" class="cursor-pointer hover:bg-[#EDFFFC]" @click="routeToInDepth(video.id)">
         <TableCell class="w-40"> <img :src="video.image" /> </TableCell>
         <TableCell
           ><p class="font-semibold">

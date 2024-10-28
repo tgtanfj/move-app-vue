@@ -2,12 +2,13 @@ import { Public } from '@/shared/decorators/public.decorator';
 import { User } from '@/shared/decorators/user.decorator';
 import { JwtAuthGuard } from '@/shared/guards';
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChannelService } from './channel.service';
 import { EditChannelDto } from './dto/request/edit-channel.dto';
 import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { SetUpPayPalDto } from './dto/request/set-up-paypal.dto';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { VideosAnalyticDTO } from '../video/dto/request/videos-analytic.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -106,5 +107,13 @@ export class ChannelController {
   @UseGuards(JwtAuthGuard)
   async getAllComments(@User() user) {
     return await this.channelService.getAllComments(user.id);
+  }
+
+  @ApiOperation({ summary: 'get video analytics' })
+  @Get('video-analytics')
+  @UseGuards(JwtAuthGuard)
+  async videosAnalytics(@User() user, @Query() dto: VideosAnalyticDTO) {
+    const asc: boolean = dto.asc === 'true';
+    return await this.channelService.videoAnalytics(user.id, dto.option, dto.sortBy, dto.page, dto.take, asc);
   }
 }
