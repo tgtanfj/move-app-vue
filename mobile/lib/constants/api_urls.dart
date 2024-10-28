@@ -35,4 +35,7 @@ class ApiUrls {
   static const String paymentHistory = "payment/history";
   static const String giftListPackageEndPoint = "donation/list-gift-packages";
   static const String donationEndPoint = "donation";
+  static const String viewEndPoint = "view";
+
+  
 }
