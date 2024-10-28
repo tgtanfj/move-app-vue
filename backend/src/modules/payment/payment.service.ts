@@ -195,7 +195,7 @@ export class PaymentService {
     }, 0);
 
     return {
-      totalWithdraw: total,
+      totalWithdraw: total * withDrawRate,
     };
   }
 }
