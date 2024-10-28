@@ -52,27 +52,42 @@ export class CommentRepository {
       .leftJoinAndSelect('video.category', 'category')
       .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
 
-    if (filter === 'unresponded') {
-      queryBuilder.andWhere(
-        `NOT EXISTS (
+      if (filter === 'unresponded') {
+        queryBuilder.andWhere(
+          `NOT EXISTS (
             SELECT 1 FROM "comments" "childComment"
             WHERE "childComment"."parentId" = "comment"."id"
             AND "childComment"."userId" = :userId
           )`,
-        { userId },
-      );
-    } else if (filter === 'responded') {
-      queryBuilder.andWhere(
-        `EXISTS (
+          { userId }
+        );
+      } else if (filter === 'responded') {
+        queryBuilder.andWhere(
+          `EXISTS (
             SELECT 1 FROM "comments" "childComment"
             WHERE "childComment"."parentId" = "comment"."id"
             AND "childComment"."userId" = :userId
           )`,
-        { userId },
-      );
+          { userId }
+        );
+      }
+      
+
+    switch (sortBy) {
+      case 'createdAt':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      case 'totalDonation':
+        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
+        break;
+
+      default:
+        queryBuilder.orderBy('comment.createdAt', 'DESC');
+        break;
     }
 
-    const totalItemCount = await queryBuilder.select('DISTINCT comment.id').getCount();
+    const totalItemCount = await queryBuilder.getCount();
 
     queryBuilder.skip((page - 1) * pageSize).take(pageSize);
 
