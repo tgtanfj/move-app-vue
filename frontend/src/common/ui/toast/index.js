@@ -18,7 +18,8 @@ export const toastVariants = cva(
         default: "border bg-background text-foreground",
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
-        successfully: "group border-primary bg-primary text-white"
+        successfully: "group border-primary bg-primary text-white",
+        notification: "group border-none bg-black text-white"
       },
     },
     defaultVariants: {

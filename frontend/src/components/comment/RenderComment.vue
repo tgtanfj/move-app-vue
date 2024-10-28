@@ -241,12 +241,13 @@ const isReplyValid = computed(() => {
 <template>
   <div class="w-full flex flex-col items-start gap-8">
     <div class="w-full" v-for="item in comments" :key="item.id">
-      <div class="flex items-start gap-4 w-full">
+      <div class="flex items-start gap-2 w-full" >
         <img
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
-        <div class="flex flex-col gap-1 w-full">
+        <div class="px-3 w-full pb-2" :id="item.id">
+          <div class="flex flex-col gap-1 w-full">
           <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
           <div class="flex items-center gap-3">
             <p class="text-[13px] font-bold">{{ item.user.username }}</p>
@@ -490,6 +491,7 @@ const isReplyValid = computed(() => {
             <div
               v-for="reply in repliesPerComment[item.id]"
               :key="reply.id"
+              :id="reply.id"
               class="flex gap-4 items-start"
             >
               <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
@@ -585,7 +587,17 @@ const isReplyValid = computed(() => {
             </div>
           </div>
         </div>
+        </div>
+        
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.highlight {
+  background-color: #F7F7F7;
+  border: 2px solid #13D0B4;
+  border-radius: 10px;
+}
+</style>

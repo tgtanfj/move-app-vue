@@ -9,6 +9,10 @@ const props = defineProps({
   isCommentable: {
     type: Boolean,
     required: true
+  },
+  commentUnshift: {
+    type: Object,
+    required: true
   }
 })
 
@@ -19,11 +23,18 @@ const cursor = ref(null)
 const commentFromChild = ref(null)
 const route = useRoute()
 
+let isCommentInserted = false
 const videoId = route.params.id
 
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
   loadComments()
+  // await loadComments()
+  // if (props.commentUnshift && !isCommentInserted) {
+  //   commentData.value = commentData.value.filter(comment => comment.id !== props.commentUnshift.id);
+  //   commentData.value.unshift(props.commentUnshift)
+  //   isCommentInserted = true
+  // }
 })
 
 onUnmounted(() => {
