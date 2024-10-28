@@ -76,7 +76,13 @@ const router = createRouter({
         },
         {
           path: 'analytics/videos',
-          component: () => import('../views/streamer/AnalyticsVideos.vue')
+          component: () => import('../views/streamer/AnalyticsVideos.vue'),
+          
+        },
+        {
+          path: 'analytics/video/in-depth/:videoId',
+          name: 'InDepthVideo',
+          component: () => import('../views/streamer/AnalyticsInDepth.vue')
         },
         {
           path: 'cashout',

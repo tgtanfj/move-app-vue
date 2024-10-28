@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white w-full h-full mt-[65px]">
+  <div class="bg-white w-full h-full">
     <div class="h-full flex items-center justify-center" v-if="videoStore.isLoading">
       <Loading />
     </div>
