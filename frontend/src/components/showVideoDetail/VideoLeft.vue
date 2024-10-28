@@ -23,6 +23,7 @@ import Rating from './Rating.vue'
 import { Button } from '../../common/ui/button/index'
 import axios from 'axios'
 import { ADMIN_BASE } from '@constants/api.constant'
+import GiftReps from './GiftReps.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -38,7 +39,7 @@ const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
-const canFollow = ref(null)
+const isMyVideo = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
 const route = useRoute()
@@ -65,7 +66,7 @@ onMounted(async () => {
     channelInfo.value = res.data
     isFollowed.value = channelInfo.value.isFollowed
     numFollower.value = channelInfo.value.numberOfFollowers
-    canFollow.value = channelInfo.value.canFollow
+    isMyVideo.value = channelInfo.value.canFollow
   }
 })
 
@@ -237,7 +238,7 @@ onMounted(() => {
           <div
             class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
             @click="handleFollow"
-            v-if="canFollow !== false"
+            v-if="isMyVideo !== false"
           >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
             <HeartFilled v-show="isFollowed" />
@@ -271,7 +272,7 @@ onMounted(() => {
             </div>
           </div>
         </RouterLink>
-        <Button>Gift REPs</Button>
+        <GiftReps :videoId="props.videoDetail.id" v-if="isMyVideo !== false"/> 
       </div>
 
       <Tabs class="w-full">

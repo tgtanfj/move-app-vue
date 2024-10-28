@@ -354,7 +354,7 @@
     "characters": "characters",
     "add": "Add social links to display on your channel.",
     "save": "Save settings",
-    "success":"Save channel settings successfully",
+    "success": "Save channel settings successfully",
     "failed": "Save channel settings failed"
   },
   "channel_comments": {
@@ -382,5 +382,14 @@
     "no_special_characters": "The cardholder name must  must contain only alphabetic characters and spaces",
     "remove_success": "Payment method removed successfully",
     "setup_success": "Your payment has been setup successfully."
+  },
+  "gift_reps": {
+    "gift_reps": "Gift REPs",
+    "support": "Support your instructor with REPs!",
+    "select": "Select amount of REPs to send to the instructor",
+    "have": "You have {amount}",
+    "get": "Get REPs",
+    "success": "Donate success",
+    "success_desc": "You have donated { donateSuccessReps } REPs successfully!"
   }
 }

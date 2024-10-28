@@ -24,7 +24,7 @@ const routeToInDepth = (videoId) => {
       <CardTitle class="text-base">{{ $t('streamer_analysis.latest_video') }}</CardTitle>
     </CardHeader>
     <CardContent class="pb-5">
-      <img :src="video.thumbnail" class="h-[300px] w-full object-cover">
+      <img :src="video.thumbnail" class="h-[265px] w-full object-cover">
       <h3 class="my-3 font-bold">
         {{ truncateText(video.title, 65) }}
       </h3>
