@@ -259,7 +259,7 @@
   "comment": {
     "cancel": "Cancel",
     "cancel_reservation": "Cancel Reservation?",
-    "are_you_sure": "Are you sure you want to cancel this reservation?",
+    "are_you_sure": "Are you sure you want to cancel this comment?",
     "no": "No",
     "yes": "Yes",
     "send": "Send",
@@ -267,6 +267,7 @@
     "show_less": "Show less",
     "hide": "Hide",
     "replies": "replies",
+    "reply1": "reply",
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
