@@ -155,3 +155,12 @@ export type Withdraw = {
     };
   };
 };
+
+export type Revenue = {
+  id: number;
+  email: string;
+  fullName: string;
+  totalEarnings: number;
+  totalTopUp: number;
+  totalDonations: number;
+};

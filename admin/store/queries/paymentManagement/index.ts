@@ -18,11 +18,43 @@ export const paymentAPI = baseApi.injectEndpoints({
         method: 'GET',
         flashError: true
       })
+    }),
+    getBalance: build.query({
+      query: () => ({
+        url: endpointPayment.GET_BALANCE,
+        method: 'GET',
+        flashError: true
+      })
+    }),
+    getRevenueEachUser: build.query({
+      query: () => ({
+        url: endpointPayment.GET_REVENUE_DATA,
+        method: 'GET',
+        flashError: true
+      })
+    }),
+    getTotalRevenue: build.query({
+      query: () => ({
+        url: endpointPayment.GET_TOTAL_REVENUE,
+        method: 'GET',
+        flashError: true
+      })
+    }),
+    getTotalWithdraw: build.query({
+      query: () => ({
+        url: endpointPayment.GET_TOTAL_WITHDRAW,
+        method: 'GET',
+        flashError: true
+      })
     })
   })
 });
 
 export const {
   useGetAllPaymentHistoriesQuery,
-  useGetAllWithdrawHistoriesQuery
+  useGetAllWithdrawHistoriesQuery,
+  useGetBalanceQuery,
+  useGetRevenueEachUserQuery,
+  useGetTotalRevenueQuery,
+  useGetTotalWithdrawQuery
 } = paymentAPI;

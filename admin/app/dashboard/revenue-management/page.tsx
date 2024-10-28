@@ -1,7 +1,7 @@
 import { searchParamsCache } from '@/lib/searchparams';
 import { SearchParams } from 'nuqs/parsers';
 import React from 'react';
-import WithdrawListingPage from './_components/withdraw-listing-page';
+import WithdrawListingPage from './_components/revenue-listing-page';
 
 type pageProps = {
   searchParams: SearchParams;
