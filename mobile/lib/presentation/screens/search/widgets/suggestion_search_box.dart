@@ -86,10 +86,6 @@ class SuggestionSearchBox extends StatelessWidget {
                         const SizedBox(
                           width: 4,
                         ),
-                        (suggestionModel?.topInstructors?[index].isPinkBadge ??
-                                false)
-                            ? SvgPicture.asset(AppIcons.starFlower.svgAssetPath)
-                            : const SizedBox(),
                       ],
                     ),
                     trailing: Text(
