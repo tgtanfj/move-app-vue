@@ -200,7 +200,7 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Show Less";
+  static const String readLess = "Read Less";
   static const String cancelComment = "Cancel Reservation?";
   static const String areUSure =
       "Are you sure you want to cancel this reservation?";

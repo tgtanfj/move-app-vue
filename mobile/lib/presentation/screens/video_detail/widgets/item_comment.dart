@@ -176,7 +176,7 @@ class _ItemCommentState extends State<ItemComment> {
                             )),
                         Expanded(
                           child: Text(
-                            (widget.commentModel?.createTimeConvert ?? "")
+                            (widget.commentModel?.getTimeSinceCreated() ?? "")
                                 .toString(),
                             style: AppTextStyles
                                 .montserratStyle.regular14GraniteGray,
