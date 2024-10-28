@@ -147,7 +147,7 @@ export class ChannelController {
     @User() user,
     @Query('filter') filter: string = 'all',
     @Query('sort') sort: string = 'createdAt',
-    @Query('page') page: number = 1, // Bắt đầu từ 1
+    @Query('page') page: number = 1, 
     @Query('pageSize') pageSize: number = 5,
   ) {
     const { data, totalItemCount, totalPages, itemFrom, itemTo } = await this.channelService.getAllComments(

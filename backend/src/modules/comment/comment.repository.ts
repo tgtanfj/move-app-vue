@@ -2,7 +2,7 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import { Brackets, FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -39,22 +39,37 @@ export class CommentRepository {
     itemFrom: number;
     itemTo: number;
   }> {
+    console.log('userId', userId);
     const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
       .innerJoinAndSelect('comment.video', 'video')
       .innerJoin('video.channel', 'channel')
       .leftJoinAndSelect('comment.children', 'child')
-      .leftJoinAndSelect('video.thumbnails', 'thumbnail')
+      .leftJoinAndSelect('video.thumbnails', 'thumbnail', 'thumbnail.selected = :selected', {
+        selected: true,
+      })
       .leftJoinAndSelect('video.category', 'category')
-      .where('channel.userId = :userId', { userId })
-      .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
-      .select(['comment', 'user', 'video', 'child', 'thumbnail', 'category']);
+      .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
 
     if (filter === 'unresponded') {
-      queryBuilder.andWhere('child.id IS NULL OR child.userId != :userId', { userId });
+      queryBuilder.andWhere(
+        `NOT EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
+      );
     } else if (filter === 'responded') {
-      queryBuilder.andWhere('child.id IS NOT NULL').andWhere('child.userId = :userId', { userId });
+      queryBuilder.andWhere(
+        `EXISTS (
+            SELECT 1 FROM "comments" "childComment"
+            WHERE "childComment"."parentId" = "comment"."id"
+            AND "childComment"."userId" = :userId
+          )`,
+        { userId },
+      );
     }
 
     switch (sortBy) {
