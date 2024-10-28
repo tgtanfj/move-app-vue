@@ -46,9 +46,10 @@ export class CommentRepository {
       .innerJoin('video.channel', 'channel')
       .leftJoinAndSelect('comment.children', 'child')
       .leftJoinAndSelect('video.thumbnails', 'thumbnail')
+      .leftJoinAndSelect('video.category', 'category')
       .where('channel.userId = :userId', { userId })
       .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
-      .select(['comment', 'user', 'video', 'child', 'thumbnail']);
+      .select(['comment', 'user', 'video', 'child', 'thumbnail', 'category']);
 
     if (filter === 'unresponded') {
       queryBuilder.andWhere('child.id IS NULL OR child.userId != :userId', { userId });
