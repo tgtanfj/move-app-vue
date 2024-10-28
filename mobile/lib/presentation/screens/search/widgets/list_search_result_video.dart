@@ -46,8 +46,9 @@ class ListSearchResultVideo extends StatelessWidget {
                           '00:00',
                   height: MediaQuery.of(context).size.height * 0.21,
                   isViewText: true,
+                  isDurationText: true,
                   image: videoList?[index].urlS3,
-                  numberOfViews: videoList?[index].numberOfViews.toString(),
+                  numberOfViews: videoList?[index].numberOfViews?.toCompactViewCount(),
                 ),
                 const SizedBox(
                   height: 4.0,
