@@ -326,7 +326,7 @@ class Constants {
   static const String startDate = "START DATE";
   static const String endDate = "END DATE";
   static const String time = "TIME";
-  static const String leaveAComment= "Leave a comment to get started";
+  static const String leaveAComment = "Leave a comment to get started";
   static const String noPaymentHistory = "No payment history found";
   static const String haveNotPurchased =
       "You have not purchased any REPs during this period of time.";
@@ -336,4 +336,19 @@ class Constants {
   static const String paymentHistoryNotFound = "Payment Histories Not Found";
   static const String cannotGetTotalPage = "Cannot get total pages";
   static const String noDateFormat = "No date to format";
+  static const String supportYourInstructorWithReps =
+      "Support your instructor with REPs!";
+  static const String selectAmountOfRepsToSendToTheInstructor =
+      "Select amount of Reps to send to the instructor";
+  static const String bestWorkoutYet = "Best workout yet!";
+  static const String thankYou = "Thank you!";
+  static const String wellDone = "Well done!";
+  static const String youHaveDoneTheUnbelievable =
+      "You have done the unthinkable!";
+  static const String youAreAwesome = "You are awesome!";
+  static const String donateSuccess = "Donate success";
+  static const String youHaveDonated = "You have donated ";
+  static const String rep$Successfully = " REP\$ successfully!";
+  static const String reps = " REPs";
+  static const String getReps = 'Get REPs';
 }
