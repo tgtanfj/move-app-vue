@@ -9,6 +9,7 @@ import { SHOW_ANALYTICS, SORT_BY_ANALYTICS } from '../../constants/view-channel.
 
 const videos = ref([
   {
+    id: 1,
     image: 'https://www.puregym.com/media/aoljxc1l/dumbbell-workouts-for-women.jpg?quality=80',
     details: {
       title: 'Full Body Workout',
@@ -22,6 +23,7 @@ const videos = ref([
     viewer_gifted: 120
   },
   {
+    id: 2,
     image: 'https://www.puregym.com/media/aoljxc1l/dumbbell-workouts-for-women.jpg?quality=80',
     details: {
       title: 'Full Body Workout Full Body Workout',
@@ -37,7 +39,7 @@ const videos = ref([
 ])
 </script>
 <template>
-  <div class="mt-[80px] ml-6 mb-16">
+  <div class="mt-[80px] ml-6 mb-16 w-full">
     <div class="flex items-center justify-between pr-16 mb-5">
       <h1 class="text-title-size font-bold">{{ $t('streamer_analysis.video_analytics') }}</h1>
       <div class="flex gap-10">

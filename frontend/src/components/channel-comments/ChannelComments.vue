@@ -39,7 +39,7 @@ const videos = ref([
 ])
 </script>
 <template>
-  <div class="mt-[80px] ml-6 mb-16">
+  <div class="mt-[80px] ml-6 mb-16 w-full">
     <div class="flex items-center justify-between pr-16 mb-5">
       <h1 class="text-title-size font-bold">{{ $t('channel_comments.comments') }}</h1>
       <div class="flex gap-10">
