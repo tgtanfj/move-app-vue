@@ -2,7 +2,7 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
+import { Brackets, FindOptionsRelations, LessThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -48,30 +48,21 @@ export class CommentRepository {
       .leftJoinAndSelect('video.thumbnails', 'thumbnail')
       .leftJoinAndSelect('video.category', 'category')
       .where('channel.userId = :userId', { userId })
+      .andWhere('video.channelId = channel.id')
       .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
-      .select(['comment', 'user', 'video', 'child', 'thumbnail', 'category']);
+      .select(['comment', 'user', 'video', 'thumbnail', 'category']);
 
     if (filter === 'unresponded') {
-      queryBuilder.andWhere('child.id IS NULL OR child.userId != :userId', { userId });
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('child.id IS NULL').orWhere('child.userId != :userId', { userId });
+        }),
+      );
     } else if (filter === 'responded') {
       queryBuilder.andWhere('child.id IS NOT NULL').andWhere('child.userId = :userId', { userId });
     }
 
-    switch (sortBy) {
-      case 'createdAt':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      case 'totalDonation':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      default:
-        queryBuilder.orderBy('comment.createdAt', 'DESC');
-        break;
-    }
-
-    const totalItemCount = await queryBuilder.getCount();
+    const totalItemCount = await queryBuilder.select('DISTINCT comment.id').getCount();
 
     queryBuilder.skip((page - 1) * pageSize).take(pageSize);
 
