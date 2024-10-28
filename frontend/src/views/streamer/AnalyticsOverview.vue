@@ -27,7 +27,7 @@ watchEffect(() => {
 </script>
 <template>
   <div class="mt-[80px] ml-6 mb-16">
-    <Loading v-if="isLoading" class="mt-72" />
+    <Loading v-if="isLoading" class="mt-72 ml-[500px]" />
     <div v-else class="flex gap-7">
       <div>
         <div>
@@ -43,7 +43,7 @@ watchEffect(() => {
             />
           </div>
         </div>
-        <div class="mt-10">
+        <div class="mt-10" v-if="latestVideo">
           <h1 class="text-title-size font-bold mb-5">
             {{ $t('streamer_analysis.video_summary') }}
           </h1>
@@ -54,7 +54,7 @@ watchEffect(() => {
             />
             <FiguresCard
               :title="$t('streamer_analysis.average_view_time')"
-              :figures="figures.avgTime ?? convertToTimeFormat(0)"
+              :figures="convertToTimeFormat(figures.avgTime)"
             />
           </div>
         </div>
@@ -63,7 +63,8 @@ watchEffect(() => {
         <h1 class="text-title-size font-bold mb-5">
           {{ $t('streamer_analysis.latest_analytics') }}
         </h1>
-        <LatestVideo :video="latestVideo" />
+        <LatestVideo v-if="latestVideo" :video="latestVideo" />
+        <div v-else class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</div>
       </div>
     </div>
   </div>
