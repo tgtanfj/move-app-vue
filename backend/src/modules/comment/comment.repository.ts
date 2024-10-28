@@ -72,21 +72,7 @@ export class CommentRepository {
       );
     }
 
-    switch (sortBy) {
-      case 'createdAt':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      case 'totalDonation':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      default:
-        queryBuilder.orderBy('comment.createdAt', 'DESC');
-        break;
-    }
-
-    const totalItemCount = await queryBuilder.getCount();
+    const totalItemCount = await queryBuilder.select('DISTINCT comment.id').getCount();
 
     queryBuilder.skip((page - 1) * pageSize).take(pageSize);
 

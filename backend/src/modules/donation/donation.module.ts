@@ -10,6 +10,7 @@ import { DonationController } from './donation.controller';
 import { DonationService } from './donation.service';
 import { DonationRepository } from './repositories/donation.repository';
 import { GiftPackageRepository } from './repositories/gift-package.repository';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GiftPackageRepository } from './repositories/gift-package.repository';
     forwardRef(() => UserModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => VideoModule),
+    NotificationModule,
   ],
   controllers: [DonationController],
   providers: [DonationService, DonationRepository, GiftPackageRepository, JwtService],

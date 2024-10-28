@@ -22,3 +22,33 @@ apiAxios.interceptors.request.use(
     return Promise.reject(error)
   }
 )
+apiAxios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { response } = error
+    if (response && response.status === 401) {
+      try {
+        const refreshToken = localStorage.getItem('refreshToken')
+        const res = await axios.get(`${ADMIN_BASE}/auth/refresh`, {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`
+          }
+        })
+        if (res.status === 200) {
+          const { accessToken, refreshToken: newRefreshToken } = res.data
+          localStorage.setItem('token', accessToken)
+          localStorage.setItem('refreshToken', newRefreshToken)
+          axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+          authStore.user.accessToken = accessToken
+        }
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError)
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        window.location.href = '/login'
+        return Promise.reject(refreshError)
+      }
+    }
+    return Promise.reject(error)
+  }
+)

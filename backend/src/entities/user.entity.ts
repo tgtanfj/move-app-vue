@@ -84,6 +84,10 @@ export class User extends BaseEntity {
   @Column({
     type: 'bigint',
     default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseInt(value, 10),
+    },
   })
   numberOfREPs: number;
 

@@ -8,6 +8,7 @@ import { EditChannelDto } from './dto/request/edit-channel.dto';
 import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
 import { SetUpPayPalDto } from './dto/request/set-up-paypal.dto';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
+import { VideosAnalyticDTO } from '../video/dto/request/videos-analytic.dto';
 
 @ApiTags('channel')
 @ApiBearerAuth('jwt')
@@ -167,5 +168,13 @@ export class ChannelController {
         itemTo,
       },
     };
+  }
+
+  @ApiOperation({ summary: 'get video analytics' })
+  @Get('video-analytics')
+  @UseGuards(JwtAuthGuard)
+  async videosAnalytics(@User() user, @Query() dto: VideosAnalyticDTO) {
+    const asc: boolean = dto.asc === 'true';
+    return await this.channelService.videoAnalytics(user.id, dto.option, dto.sortBy, dto.page, dto.take, asc);
   }
 }

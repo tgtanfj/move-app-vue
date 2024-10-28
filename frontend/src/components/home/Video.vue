@@ -19,7 +19,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col">
     <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
       <img
         class="object-cover w-full h-[170px] cursor-pointer"
@@ -41,7 +41,7 @@ const router = useRouter()
     </div>
     <div class="flex items-start mt-2 flex-1">
       <img class="w-[32px] h-[32px] rounded-full" :src="video.channel.image" />
-      <div class="ml-3 h-full flex flex-col">
+      <div class="ml-3">
         <p class="text-[16px] font-bold line-clamp-2">{{ video.title }}</p>
         <div class="flex flex-col items-start justify-start mt-auto">
           <div class="flex items-center gap-3">
@@ -51,7 +51,7 @@ const router = useRouter()
             >
               {{ video.channel.name }}
             </p>
-            <span class="flex gap-2 ml-3">
+            <span class="flex gap-2">
               <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
             </span>
           </div>
@@ -72,10 +72,11 @@ const router = useRouter()
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto pr-1 pl-2">
+      <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px]" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>
+      <div v-else class="flex items-center gap-1 ml-auto pr-1 pl-2"></div>
     </div>
   </div>
 </template>

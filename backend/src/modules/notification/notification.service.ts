@@ -74,13 +74,13 @@ export class NotificationService {
 
   async sendOneToOneNotification(userId: number, data: CommonNotificationDto | SystemNotificationDto) {
     const notificationRef = db.ref(`notifications/${userId}`).push();
-    await notificationRef.set({ data, isRead: false, timestamp: Date.now() });
+    await this.setNotificationData(notificationRef, data);
   }
 
-  async sendOneToManyNotifications(userIds: number[], data: CommonNotificationDto | SystemNotificationDto) {
+  async sendOneToManyNotifications(userIds: number[], data: CommonNotificationDto) {
     const promises = userIds.map(async (userId) => {
       const notificationRef = db.ref(`notifications/${userId}`).push();
-      return notificationRef.set({ data, isRead: false, timestamp: Date.now() });
+      return this.setNotificationData(notificationRef, data);
     });
     await Promise.all(promises);
   }
@@ -92,12 +92,23 @@ export class NotificationService {
     userSnapshots.forEach((userSnapshot) => {
       const userId = userSnapshot.key;
       const notificationRef = db.ref(`notifications/${userId}`).push();
-      promises.push(notificationRef.set({ data, isRead: false, timestamp: Date.now() }));
+      promises.push(this.setNotificationData(notificationRef, data));
     });
     await Promise.all(promises);
   }
 
-  async checkNotificationExistsAntiSpam(userId: number, senderId: number) {
+  async setNotificationData(
+    ref: admin.database.ThenableReference,
+    data: CommonNotificationDto | SystemNotificationDto,
+  ) {
+    await ref.set({
+      data,
+      isRead: false,
+      timestamp: Date.now(),
+    });
+  }
+
+  async checkNotificationExistsAntiSpam(userId: number, senderId: number, data?: number) {
     const notificationsRef = db.ref(`notifications/${userId}`);
     const snapshot = await notificationsRef.get();
 
@@ -111,7 +122,24 @@ export class NotificationService {
       const notification = notifications[notificationId];
       const type = notification.data?.type;
       const sender = notification.data?.sender;
-      if ((type === NOTIFICATION_TYPE.FOLLOW || type === NOTIFICATION_TYPE.LIKE) && sender.id === senderId) {
+      const followMilestone = notification.data?.followMilestone;
+      const viewVideoMilestone = notification.data?.viewVideoMilestone;
+      const repMilestone = notification.data?.repMilestone;
+      const commentId = notification.data?.commentId;
+
+      if (!data && type === NOTIFICATION_TYPE.FOLLOW && sender.id === senderId) {
+        return true;
+      }
+
+      if (type === NOTIFICATION_TYPE.LIKE && commentId === data) {
+        return true;
+      }
+
+      if (
+        (type === NOTIFICATION_TYPE.FOLLOW_MILESTONE && followMilestone === data) ||
+        (type === NOTIFICATION_TYPE.VIEW_VIDEO_MILESTONE && viewVideoMilestone === data) ||
+        (type === NOTIFICATION_TYPE.REP_MILESTONE && repMilestone === data)
+      ) {
         return true;
       }
     }

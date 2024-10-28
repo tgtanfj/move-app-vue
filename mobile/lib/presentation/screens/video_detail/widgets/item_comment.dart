@@ -69,6 +69,14 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 48,
                           height: 48,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              AppImages.defaultAvatar.webpAssetPath,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         )),
               const SizedBox(
                 width: 12,
@@ -123,9 +131,9 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 17,
                         ),
                         Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isBlueBadge ??
-                                    false,
+                            visible: widget
+                                    .commentModel?.user?.channel?.isBlueBadge ??
+                                false,
                             child: SvgPicture.asset(
                               AppIcons.verify.svgAssetPath,
                             )),
@@ -133,9 +141,9 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 5,
                         ),
                         Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isPinkBadge ??
-                                    false,
+                            visible: widget
+                                    .commentModel?.user?.channel?.isPinkBadge ??
+                                false,
                             child: SvgPicture.asset(
                               AppIcons.starFlower.svgAssetPath,
                             )),
@@ -168,7 +176,7 @@ class _ItemCommentState extends State<ItemComment> {
                             )),
                         Expanded(
                           child: Text(
-                            (widget.commentModel?.createTimeConvert ?? "")
+                            (widget.commentModel?.getTimeSinceCreated() ?? "")
                                 .toString(),
                             style: AppTextStyles
                                 .montserratStyle.regular14GraniteGray,

@@ -100,6 +100,14 @@ class _WriteCommentState extends State<WriteComment> {
                             width: 48,
                             height: 48,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                AppImages.defaultAvatar.webpAssetPath,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           )),
                 const SizedBox(
                   width: 12,
@@ -126,7 +134,7 @@ class _WriteCommentState extends State<WriteComment> {
                         onChanged: (value) {
                           widget.onChanged?.call(value);
                           setState(() {
-                            hasValue = value.isNotEmpty;
+                            hasValue = value.trim().isNotEmpty;
                           });
                         },
                         style: AppTextStyles.montserratStyle.regular14Black,
@@ -174,19 +182,23 @@ class _WriteCommentState extends State<WriteComment> {
                           widget.onTapCancel?.call();
                           return;
                         }
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return DialogCancelComment(
-                              onTapCancel: () {
-                                widget.onTapCancel?.call();
-                                Navigator.of(context).pop();
-                                clearComment();
-                              },
-                            );
-                          },
-                        );
+                        if (hasValue) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return DialogCancelComment(
+                                onTapCancel: () {
+                                  widget.onTapCancel?.call();
+                                  Navigator.of(context).pop();
+                                  clearComment();
+                                },
+                              );
+                            },
+                          );
+                        } else {
+                          FocusScope.of(context).unfocus();
+                        }
                       },
                     ),
                   ),
@@ -198,11 +210,16 @@ class _WriteCommentState extends State<WriteComment> {
                       onTap: () {
                         if (hasValue) {
                           widget.onTapSend?.call();
+                          clearComment();
                         }
-                        clearComment();
                       },
                       titleStyle: AppTextStyles.montserratStyle.bold16White,
-                      backgroundColor: AppColors.tiffanyBlue,
+                      borderColor: hasValue
+                          ? AppColors.tiffanyBlue
+                          : AppColors.spanishGray,
+                      backgroundColor: hasValue
+                          ? AppColors.tiffanyBlue
+                          : AppColors.spanishGray,
                     ),
                   ),
                   const SizedBox(

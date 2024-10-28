@@ -114,6 +114,7 @@
     "submit": "Submit",
     "loading": "Loading...",
     "rate": "Rate",
+    "remove": "Remove",
     "go_to_video_analysis": "Go to video analytics"
   },
   "label": {
@@ -258,7 +259,7 @@
   "comment": {
     "cancel": "Cancel",
     "cancel_reservation": "Cancel Reservation?",
-    "are_you_sure": "Are you sure you want to cancel this reservation?",
+    "are_you_sure": "Are you sure you want to cancel this comment?",
     "no": "No",
     "yes": "Yes",
     "send": "Send",
@@ -266,6 +267,7 @@
     "show_less": "Show less",
     "hide": "Hide",
     "replies": "replies",
+    "reply1": "reply",
     "show_more_replies": "Show more replies",
     "reply": "Reply",
     "show": "Show"
@@ -347,10 +349,47 @@
     "notifications": "Notifications",
     "channel_settings": "Channel Settings",
     "bio": "Bio",
-    "optionals":"(Optional)",
+    "optionals": "(Optional)",
     "tell_us": "Tell us a little bit about yourself.",
     "characters": "characters",
-    "add" :"Add social links to display on your channel.",
-    "save": "Save settings"
+    "add": "Add social links to display on your channel.",
+    "save": "Save settings",
+    "success": "Save channel settings successfully",
+    "failed": "Save channel settings failed"
+  },
+  "channel_comments": {
+    "comments": "Comments",
+    "reps": "REPs received",
+    "videos": "Videos"
+  },
+  "wallet": {
+    "card_number": "Card Number",
+    "card_holder": "Card Holder",
+    "card_info": "Card Information",
+    "your_payment_method": "Your payment method",
+    "no_payment_method_setup": "No payment method setup",
+    "no_saved_info": "You do not have any saved payment information.",
+    "setup_payment": "Setup payment method",
+    "payment_detail": "Payment details",
+    "cardholder_name": "Cardholder Name",
+    "by_submit": "By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s",
+    "end_user_license": "End User License Agreement",
+    "refund_policy": "Refund Policy",
+    "and": "and",
+    "remove_card": "Remove card",
+    "remove_card_description": "You card information will be removed and payment will not be made. Are you sure you want to remove payment method?",
+    "cardholder_name_4_50_long": "The card hodlder name must be 4-50 characters",
+    "no_special_characters": "The cardholder name must  must contain only alphabetic characters and spaces",
+    "remove_success": "Payment method removed successfully",
+    "setup_success": "Your payment has been setup successfully."
+  },
+  "gift_reps": {
+    "gift_reps": "Gift REPs",
+    "support": "Support your instructor with REPs!",
+    "select": "Select amount of REPs to send to the instructor",
+    "have": "You have {amount}",
+    "get": "Get REPs",
+    "success": "Donate success",
+    "success_desc": "You have donated { donateSuccessReps } REPs successfully!"
   }
 }

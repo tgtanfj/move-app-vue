@@ -1,6 +1,7 @@
 import 'package:move_app/data/models/category_model.dart';
 
 import '../models/notification_model.dart';
+import '../models/rep_model.dart';
 import '../models/user_model.dart';
 
 List<CategoryModel> dummyCategories = [
@@ -95,9 +96,7 @@ final List<NotificationModel> notifications = [
   NotificationModel(
     id: 3,
     userModel: UserModel(
-        username: 'tran.dan.043',
-        avatar:
-            "https://firebasestorage.googleapis.com/v0/b/r-coffee-ee438.appspot.com/o/images%2Fdavid.wilson%40example.com%2F332636819_5865095220248489_6948307745297316759_n.jpg?alt=media&token=e165cfa8-b1eb-4096-9756-9456ba074718"),
+        username: 'tran.dan.043',),
     content: ' started following you.',
     createTime: '1 mins ago',
     hasRead: false,
@@ -222,4 +221,31 @@ final List<NotificationModel> notifications = [
     createTime: '1 mins ago',
     hasRead: false,
   ),
+];
+
+List<RepModel> reps = [
+  RepModel(
+    rep: 300,
+    price: 2.1,
+  ),
+  RepModel(
+    rep: 500,
+    price: 3.5,
+  ),
+  RepModel(
+    rep: 1500,
+    price: 10.5,
+  ),
+  RepModel(
+    rep: 5000,
+    price: 35,
+  ),
+  RepModel(
+    rep: 10000,
+    price: 70,
+  ),
+  RepModel(
+    rep: 25000,
+    price: 175,
+  )
 ];

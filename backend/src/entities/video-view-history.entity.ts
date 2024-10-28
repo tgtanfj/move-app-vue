@@ -1,4 +1,4 @@
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Video } from './video.entity';
 import { BaseEntity } from './base/base.entity';
 
@@ -11,11 +11,17 @@ export class VideoViewHistorys extends BaseEntity {
   @Column({
     type: 'date',
   })
-  viewDate: string;
+  viewDate: Date;
 
   @Column({
     type: 'bigint',
     default: 0,
   })
   views: number;
+
+  @Column({
+    type: 'bigint',
+    default: 0,
+  })
+  totalViewTime: number;
 }

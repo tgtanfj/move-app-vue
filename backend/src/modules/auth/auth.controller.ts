@@ -25,6 +25,8 @@ import { LoginDto } from './dto/login.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SignUpEmailDto } from './dto/signup-email.dto';
+import { NotificationService } from '../notification/notification.service';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 
 @ApiTags('Auth')
 @ApiBearerAuth('jwt')
@@ -33,6 +35,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly publicIpAddressService: PublicIpAddressService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   @Post('login/google')
@@ -81,7 +84,15 @@ export class AuthController {
 
     const userId = req.user.id;
 
-    console.log(await this.authService.checkPasswordExpired(userId));
+    const checkPasswordExpired = await this.authService.checkPasswordExpired(userId);
+
+    if (checkPasswordExpired) {
+      const dataNotification = {
+        sender: 'system',
+        type: NOTIFICATION_TYPE.PASSWORD_CHANGE_REMINDER,
+      };
+      await this.notificationService.sendOneToOneNotification(userId, dataNotification);
+    }
 
     return await this.authService.login(userId, ip, userAgent);
   }

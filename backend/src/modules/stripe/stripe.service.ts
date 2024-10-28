@@ -1,9 +1,8 @@
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { I18nService } from 'nestjs-i18n';
 import Stripe from 'stripe';
 import { AttachPaymentMethodDto } from './dto/attach-payment-method.dto';
-import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class StripeService {
@@ -74,5 +73,22 @@ export class StripeService {
       off_session: true,
       confirm: true,
     });
+  }
+
+  async getBalance() {
+    return await this.stripe.balance.retrieve();
+  }
+
+  async getTotalRevenue() {
+    const transactions = await this.stripe.balanceTransactions.list();
+
+    const totalRevenue = transactions.data.reduce((sum, transaction) => {
+      const amount = transaction.amount;
+      return sum + amount;
+    }, 0);
+
+    return {
+      totalRevenue,
+    };
   }
 }
