@@ -18,6 +18,13 @@ export class Country {
   @Expose()
   name: string;
 
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  @Expose()
+  countryCode: string;
+
   @OneToMany(() => State, (state) => state.country)
   states: State[];
 }

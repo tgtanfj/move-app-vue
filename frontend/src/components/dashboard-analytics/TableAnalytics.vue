@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Star from '../../assets/icons/Star.vue'
 import { truncateText } from '../../utils/truncateText.util';
 import { useRouter } from 'vue-router';
+import { formatDate } from '../../utils/convertDate.util'
 
 const props = defineProps({
   videos: {
@@ -32,22 +33,21 @@ const routeToInDepth = (videoId) => {
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="video in videos" class="cursor-pointer hover:bg-[#EDFFFC]" @click="routeToInDepth(video.id)">
-        <TableCell class="w-40"> <img :src="video.image" /> </TableCell>
+      <TableRow v-for="video in videos" class="cursor-pointer hover:bg-[#EDFFFC]" @click="routeToInDepth(video.video_id)">
+        <TableCell class="w-40"> <img :src="video.thumbnail" /> </TableCell>
         <TableCell
           ><p class="font-semibold">
-            {{ truncateText(video.details.title, 20) }}
+            {{ truncateText(video.video_title, 30) }}
           </p>
-          <p class="mb-4">{{ video.details.category }}</p>
-          <p>{{ video.details.time }}</p></TableCell
+          <p>{{ formatDate(video.created_at) }}</p></TableCell
         >
-        <TableCell class="text-center">{{ video.views }}</TableCell>
-        <TableCell class="text-center">{{ video.average_view_time }}</TableCell>
+        <TableCell class="text-center">{{ video.total_views }}</TableCell>
+        <TableCell class="text-center">{{ video.avg_watch }}</TableCell>
         <TableCell class="text-center"
-          >{{ video.ratings }} <Star class="inline ml-3 mt-[-3px]" />
+          >{{ video.video_ratings }} <Star class="inline ml-1 mt-[-3px]" />
         </TableCell>
-        <TableCell class="text-center">{{ video.reps }}</TableCell>
-        <TableCell class="text-center">{{ video.viewer_gifted }}</TableCell>
+        <TableCell class="text-center">{{ video.total_reps }}</TableCell>
+        <TableCell class="text-center">{{ video.total_donators }}</TableCell>
       </TableRow>
     </TableBody>
   </Table>

@@ -59,7 +59,7 @@ const workoutLevelLite =
       <div class="flex items-start mt-2">
         <img class="w-[32px] h-[32px] rounded-full" :src="video?.channel?.image" />
         <div class="ml-3">
-          <p class="text-[16px] font-bold">{{ video?.title }}</p>
+          <p class="text-[16px] font-bold line-clamp-2">{{ video?.title }}</p>
           <div class="flex flex-col items-start justify-start mt-1.5">
             <div class="flex items-center gap-3">
               <p class="text-[#666666] text-[14px]">{{ video.name }}</p>

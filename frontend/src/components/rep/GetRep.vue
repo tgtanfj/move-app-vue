@@ -32,8 +32,8 @@ onMounted(() => {
 </script>
 <template>
   <Popover>
-    <PopoverTrigger asChild class="cursor-pointer font-semibold text-xl">
-      <p class="font-semibold text-xl">Get REP$</p>
+    <PopoverTrigger asChild class="cursor-pointer font-semibold text-[16px]">
+      <p class="font-bold text-center text-[16px] text-nowrap">Get REP$</p>
     </PopoverTrigger>
     <PopoverContent class="mt-2 -translate-x-24">
       <ul v-if="paymentStore.repsPackageList.length > 0">
