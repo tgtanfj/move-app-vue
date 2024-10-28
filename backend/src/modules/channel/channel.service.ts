@@ -306,6 +306,6 @@ export class ChannelService {
     );
 
     const totalPage = Math.ceil(totalCount / take);
-    return objectResponse(update, new PaginationMetadata(totalPage, page, take, totalPage));
+    return objectResponse(update, new PaginationMetadata(totalCount, page, take, totalPage));
   }
 }
