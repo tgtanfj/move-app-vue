@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
@@ -26,7 +27,11 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<PaymentHistoryBloc, PaymentHistoryState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        (state.status == PaymentHistoryStatus.processing)
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
+      },
       child: BlocBuilder<PaymentHistoryBloc, PaymentHistoryState>(
         builder: (context, state) {
           return Stack(
@@ -57,8 +62,9 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                                 titleStyle: AppTextStyles
                                     .montserratStyle.medium16TiffanyBlue,
                                 onTap: () {
-                                  context.read<PaymentHistoryBloc>().add(
-                                      PaymentHistoryOnTapStartDateEvent());
+                                  context
+                                      .read<PaymentHistoryBloc>()
+                                      .add(PaymentHistoryOnTapStartDateEvent());
                                 },
                                 textAlign: TextAlign.start,
                               ),
@@ -87,8 +93,9 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                                 titleStyle: AppTextStyles
                                     .montserratStyle.medium16TiffanyBlue,
                                 onTap: () {
-                                  context.read<PaymentHistoryBloc>().add(
-                                      PaymentHistoryOnTapEndDateEvent());
+                                  context
+                                      .read<PaymentHistoryBloc>()
+                                      .add(PaymentHistoryOnTapEndDateEvent());
                                 },
                                 textAlign: TextAlign.start,
                               ),
@@ -147,12 +154,14 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                                     child: RichText(
                                         text: TextSpan(children: [
                                       TextSpan(
-                                        text: "${state.startResult}-${state.endResult}",
+                                        text:
+                                            "${state.startResult}-${state.endResult}",
                                         style: AppTextStyles
                                             .montserratStyle.bold14Grey,
                                       ),
                                       TextSpan(
-                                        text: " of ${state.totalResult?.totalResult} result",
+                                        text:
+                                            " of ${state.totalResult?.totalResult} result",
                                         style: AppTextStyles
                                             .montserratStyle.regular14Grey,
                                       ),
@@ -167,7 +176,9 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                                               PaymentHistoryLoadPreviousPageEvent());
                                         },
                                         icon: const Icon(Icons.navigate_before),
-                                        color: state.currentPage == 1 ? AppColors.spanishGray : AppColors.tiffanyBlue,
+                                        color: state.currentPage == 1
+                                            ? AppColors.spanishGray
+                                            : AppColors.tiffanyBlue,
                                         padding: EdgeInsets.zero,
                                       ),
                                       IconButton(
@@ -198,6 +209,7 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
                                       AppTextStyles.montserratStyle.bold16Black,
                                 ),
                                 Text(
+                                  textAlign: TextAlign.center,
                                   Constants.haveNotPurchased,
                                   style: AppTextStyles
                                       .montserratStyle.regular16Black

@@ -330,4 +330,10 @@ class Constants {
   static const String noPaymentHistory = "No payment history found";
   static const String haveNotPurchased =
       "You have not purchased any REPs during this period of time.";
+  static const String dayMonthYear = "dd MMM yyyy";
+  static const String monthDayYear = "MMMM dd yyyy";
+  static const String timeFormat = "hh:mm:ss a";
+  static const String paymentHistoryNotFound = "Payment Histories Not Found";
+  static const String cannotGetTotalPage = "Cannot get total pages";
+  static const String noDateFormat = "No date to format";
 }

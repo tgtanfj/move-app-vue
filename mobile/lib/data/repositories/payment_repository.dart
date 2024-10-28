@@ -18,11 +18,11 @@ class PaymentRepository {
         ApiUrls.paymentHistory,
         queryParameters: paymentModel.toJson(),
       );
-      if (response.statusCode != null) {
+      if (response.statusCode == 200) {
         final result = parsePaymentHistory(response.data);
         return Right(result);
       } else {
-        return const Left("Cannot load Payment Histories");
+        return const Left(Constants.noPaymentHistory);
       }
     } catch (e) {
       if (e is DioException && e.response != null) {
@@ -52,12 +52,12 @@ class PaymentRepository {
         ApiUrls.paymentHistory,
         queryParameters: paymentModel.toJson(),
       );
-      if (response.statusCode != null) {
+      if (response.statusCode == 200) {
         final result = response.data['meta'];
         final total = PaymentModel.fromJson(result);
         return Right(total);
       } else {
-        return const Left("Cannot get total pages");
+        return const Left(Constants.cannotGetTotalPage);
       }
     } catch (e) {
       if (e is DioException && e.response != null) {
