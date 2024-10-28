@@ -32,4 +32,5 @@ class ApiUrls {
   static const String homeCategoriesNoLoginEndPoint =
       "home/categories-no-login/";
   static const String homeCategoriesLoginEndPoint = "home/categories/";
+  static const String paymentHistory = "payment/history";
 }

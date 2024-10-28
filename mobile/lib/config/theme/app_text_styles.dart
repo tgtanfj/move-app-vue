@@ -145,10 +145,12 @@ class MontserratStyles {
       16, AppColors.darkSilver, AppFontWeight.bold.weight);
   final regular16ChineseSilver = customMontserratStyle(
       16, AppColors.chineseSilver, AppFontWeight.regular.weight);
-    final regular14Grey = customMontserratStyle(
-      14, Colors.grey, AppFontWeight.regular.weight);
+    final bold14Grey = customMontserratStyle(
+      14, AppColors.graniteGray, AppFontWeight.bold.weight);
+  final regular14Grey = customMontserratStyle(
+      14, AppColors.graniteGray, AppFontWeight.regular.weight);
   final medium12Grey = customMontserratStyle(
-      12, Colors.grey, AppFontWeight.medium.weight);
+      12, AppColors.darkSilver, AppFontWeight.medium.weight);
   final regular12Grey = customMontserratStyle(
       12, Colors.grey, AppFontWeight.regular.weight);
   final bold14GraniteGray = customMontserratStyle(
