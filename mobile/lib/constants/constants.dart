@@ -246,22 +246,22 @@ class Constants {
   static const String allLevels = 'All Levels';
   static const String beginner = 'Beginner';
   static const String advanced = 'Advanced';
-  static const String allLevelsValue = 'all-levels';
+  static const String allLevelsValue = 'all-level';
   static const String beginnerValue = 'beginner';
   static const String intermediateValue = 'intermediate';
   static const String advancedValue = 'advanced';
   static const String mostRecent = 'Most Recent';
   static const String viewsHighToLow = 'Views (High to Low)';
   static const String viewsLowToHigh = 'Views (Low to High)';
-  static const String durationHighToLow = 'Duration (High to Low)';
-  static const String durationLowToHigh = 'Duration (Low to High)';
+  static const String durationLongToShort = 'Duration (Long to short)';
+  static const String durationShortToLong = 'Duration (Short to Long)';
   static const String ratingsHighToLow = 'Ratings (High to Low)';
   static const String ratingsLowToHigh = 'Ratings (Low to High)';
   static const String mostRecentValue = 'most-recent';
   static const String viewsHighToLowValue = 'views-high-to-low';
   static const String viewsLowToHighValue = 'views-low-to-high';
-  static const String durationHighToLowValue = 'duration-high-to-low';
-  static const String durationLowToHighValue = 'duration-low-to-high';
+  static const String durationHighToLowValue = 'duration-long-to-short';
+  static const String durationLowToHighValue = 'duration-short-to-long';
   static const String ratingsHighToLowValue = 'ratings-high-to-low';
   static const String ratingsLowToHighValue = 'ratings-low-to-high';
   static const String failedToLoadVideos = 'Failed to load videos';
@@ -351,6 +351,9 @@ class Constants {
   static const String rep$Successfully = " REP\$ successfully!";
   static const String reps = " REPs";
   static const String getReps = 'Get REPs';
+  static const String noDataAvailable = 'No data available';
+  static const String defaultThumbnailImage =
+      'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
   static const String enterValidContent = "Please enter search content";
   static const String notFoundResult = "No any search result found";
 }

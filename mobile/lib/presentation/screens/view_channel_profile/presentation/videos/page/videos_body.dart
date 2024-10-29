@@ -99,9 +99,8 @@ class _VideosBodyState extends State<VideosBody>
                         child: Text(Constants.failedToLoadVideos));
                   }
                   if (state.videos.isEmpty) {
-                    return Center(
-                      child: Text(
-                          '${state.channel?.name ?? 'No'} has not uploaded any videos yet.'),
+                    return const Center(
+                      child: Text(Constants.noDataAvailable),
                     );
                   } else {
                     return LazyLoadScrollView(
@@ -140,7 +139,6 @@ class _VideosBodyState extends State<VideosBody>
                                 },
                                 child: VideoPoster(
                                   height: height * 0.22,
-                                  isViewText: true,
                                   isDurationText: true,
                                   image: video.thumbnailURL,
                                   duration:

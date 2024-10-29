@@ -17,6 +17,8 @@ export function useWithdrawTableFilters() {
     searchParams.page.withDefault(1)
   );
 
+  
+
   const resetFilters = useCallback(() => {
     setSearchQuery(null);
     setPage(1);

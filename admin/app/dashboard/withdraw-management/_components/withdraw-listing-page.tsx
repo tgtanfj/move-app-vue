@@ -7,7 +7,7 @@ import PaymentTable from './withdraw-tables';
 
 type TUsersListingPage = {};
 
-export default function WithdrawListingPage({}: TUsersListingPage) {
+export default function WithdrawListingPage({}) {
   const {
     result = [],
     total = 0,
@@ -26,7 +26,7 @@ export default function WithdrawListingPage({}: TUsersListingPage) {
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading
-            title={`Payments (${total})`}
+            title={`Withdrawals (${total})`}
             description="Manage withdraw histories in your organization"
           />
         </div>

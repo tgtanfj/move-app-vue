@@ -83,8 +83,10 @@ export class StripeService {
     const transactions = await this.stripe.balanceTransactions.list();
 
     const totalRevenue = transactions.data.reduce((sum, transaction) => {
-      const amount = transaction.amount;
-      return sum + amount;
+      if (transaction.type === 'charge') {
+        const amount = transaction.amount;
+        return sum + amount;
+      }
     }, 0);
 
     return {

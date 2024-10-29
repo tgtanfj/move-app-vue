@@ -54,9 +54,9 @@ enum SortAndFilterType {
       case SortAndFilterType.viewsLowToHigh:
         return Constants.viewsLowToHigh;
       case SortAndFilterType.durationHighToLow:
-        return Constants.durationHighToLow;
+        return Constants.durationLongToShort;
       case SortAndFilterType.durationLowToHigh:
-        return Constants.durationLowToHigh;
+        return Constants.durationShortToLong;
       case SortAndFilterType.ratingsHighToLow:
         return Constants.ratingsHighToLow;
       case SortAndFilterType.ratingsLowToHigh:

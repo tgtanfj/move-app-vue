@@ -101,12 +101,22 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             ),
             GestureDetector(
                 onTap: widget.followButton,
-                child: widget.video?.channel?.canFollow ?? false
+                child: (widget.video?.channel?.isFollowed == null &&
+                        widget.video?.channel?.canFollow == null)
                     ? SvgPicture.asset(
-                        widget.video?.channel?.isFollowed ?? false
-                            ? AppIcons.fillHeart.svgAssetPath
-                            : AppIcons.heart.svgAssetPath)
-                    : const SizedBox()),
+                        AppIcons.heart.svgAssetPath,
+                        width: 20,
+                        height: 18,
+                      )
+                    : widget.video?.channel?.canFollow ?? false
+                        ? SvgPicture.asset(
+                            widget.video?.channel?.isFollowed ?? false
+                                ? AppIcons.fillHeart.svgAssetPath
+                                : AppIcons.heart.svgAssetPath,
+                            width: 20,
+                            height: 18,
+                          )
+                        : const SizedBox()),
             PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(

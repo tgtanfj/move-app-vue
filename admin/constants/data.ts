@@ -129,11 +129,10 @@ export type Video = {
   comments: number;
   ratings: number;
   shares: number;
-
-}
+};
 export type Payment = {
   id: number;
-
+  createdAt: any;
   user: {
     email: string;
     fullName: string;
@@ -147,6 +146,7 @@ export type Payment = {
 export type Withdraw = {
   id: number;
   numberOfREPs: number;
+  createdAt: any;
   channel: {
     name: string;
     user: {
@@ -154,4 +154,13 @@ export type Withdraw = {
       fullName: string;
     };
   };
+};
+
+export type Revenue = {
+  id: number;
+  email: string;
+  fullName: string;
+  totalEarnings: number;
+  totalTopUp: number;
+  totalDonations: number;
 };
