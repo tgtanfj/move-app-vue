@@ -288,7 +288,7 @@ onMounted(() => {
           >
         </TabsList>
         <DropdownMenuSeparator class="m-0" />
-        <TabsContent class="flex mt-4">
+        <TabsContent value="about" class="flex mt-4">
           <div class="flex-[1.7] bg-black text-white p-3 rounded-lg">
             <h3 class="font-semibold text-lg mb-2">About {{ channelInfo.name }}</h3>
             <p class="font-medium" v-if="channelInfo.bio">
