@@ -26,13 +26,13 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <div class="mt-[80px] ml-6 mb-16">
-    <Loading v-if="isLoading" class="mt-72 ml-[500px]" />
+  <div class="mt-[80px] ml-6 mb-16 w-full">
+    <Loading v-if="isLoading" class="mt-72" />
     <div v-else class="flex gap-7">
       <div>
         <div>
           <h1 class="text-title-size font-bold mb-5">{{ $t('streamer_analysis.overview') }}</h1>
-          <div class="flex gap-5">
+          <div v-if="latestVideo" class="flex gap-5">
             <FiguresCard
               :title="$t('streamer_analysis.total_followers')"
               :figures="figures.numberOfFollowers"
@@ -42,6 +42,7 @@ watchEffect(() => {
               :figures="figures.numberOfREPs"
             />
           </div>
+          <div v-else class="ml-5 mt-4 italic">{{ $t('common.no_data') }}</div>
         </div>
         <div class="mt-10" v-if="latestVideo">
           <h1 class="text-title-size font-bold mb-5">
@@ -59,12 +60,11 @@ watchEffect(() => {
           </div>
         </div>
       </div>
-      <div>
+      <div v-if="latestVideo">
         <h1 class="text-title-size font-bold mb-5">
           {{ $t('streamer_analysis.latest_analytics') }}
         </h1>
         <LatestVideo v-if="latestVideo" :video="latestVideo" />
-        <div v-else class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</div>
       </div>
     </div>
   </div>

@@ -25,7 +25,6 @@ const getUserIdFromToken = () => {
   const token = localStorage.getItem('token')
   if (token) {
     const decodedToken = jwtDecode(token)
-    console.log('token decoded', decodedToken)
     return decodedToken.sub
   }
   return null

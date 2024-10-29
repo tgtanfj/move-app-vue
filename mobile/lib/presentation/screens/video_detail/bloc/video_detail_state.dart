@@ -33,6 +33,7 @@ class VideoDetailState extends Equatable {
   final String? option;
   final String? twitterLink;
   final String? facebookLink;
+  final DateTime? timeStarted;
 
   const VideoDetailState({
     this.video,
@@ -55,6 +56,7 @@ class VideoDetailState extends Equatable {
     this.option,
     this.twitterLink,
     this.facebookLink,
+    this.timeStarted,
   });
 
   static VideoDetailState initial() => const VideoDetailState(
@@ -82,6 +84,7 @@ class VideoDetailState extends Equatable {
     String? option,
     String? twitterLink,
     String? facebookLink,
+    DateTime? timeStarted,
   }) {
     return VideoDetailState(
       video: video ?? this.video,
@@ -105,6 +108,7 @@ class VideoDetailState extends Equatable {
       option: option ?? this.option,
       twitterLink: twitterLink ?? this.twitterLink,
       facebookLink: facebookLink ?? this.facebookLink,
+      timeStarted: timeStarted ?? this.timeStarted,
     );
   }
 
@@ -130,5 +134,6 @@ class VideoDetailState extends Equatable {
         option,
         twitterLink,
         facebookLink,
+        timeStarted,
       ];
 }

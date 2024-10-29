@@ -58,7 +58,11 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
                 const SizedBox(
                   width: 12.0,
                 ),
-                SvgPicture.asset(AppIcons.arrowDown.svgAssetPath),
+                SvgPicture.asset(
+                  widget.isMoreEnable
+                      ? AppIcons.arrowUp.svgAssetPath
+                      : AppIcons.arrowDown.svgAssetPath,
+                ),
               ],
             ),
           ),

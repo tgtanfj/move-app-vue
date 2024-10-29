@@ -57,7 +57,6 @@ class UserRepository {
           ),
         );
       }
-
       final response = await apiService.request(
         APIRequestMethod.patch,
         ApiUrls.editUserProfileEndPoint,

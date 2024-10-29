@@ -5,10 +5,12 @@ class HorizontalDivider extends StatelessWidget {
   const HorizontalDivider({super.key});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Image.asset(
+        width: MediaQuery.of(context).size.width - 0,
         AppImages.headlineFull.webpAssetPath,
+        fit: BoxFit.fitWidth,
       ),
     );
   }

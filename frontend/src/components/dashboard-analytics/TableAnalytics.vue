@@ -1,9 +1,10 @@
 <script setup>
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@common/ui/table'
+import { useRouter } from 'vue-router'
 import Star from '../../assets/icons/Star.vue'
-import { truncateText } from '../../utils/truncateText.util';
-import { useRouter } from 'vue-router';
 import { formatDate } from '../../utils/convertDate.util'
+import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
+import { truncateText } from '../../utils/truncateText.util'
 
 const props = defineProps({
   videos: {
@@ -15,9 +16,8 @@ const props = defineProps({
 const router = useRouter()
 
 const routeToInDepth = (videoId) => {
-  router.push({ name: 'InDepthVideo', params: {videoId: videoId}})
+  router.push({ name: 'InDepthVideo', params: { videoId: videoId } })
 }
-
 </script>
 <template>
   <Table class="mt-5" v-if="videos.length > 0">
@@ -33,16 +33,26 @@ const routeToInDepth = (videoId) => {
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="video in videos" class="cursor-pointer hover:bg-[#EDFFFC]" @click="routeToInDepth(video.video_id)">
+      <TableRow
+        v-for="video in videos"
+        class="cursor-pointer hover:bg-[#EDFFFC]"
+        @click="routeToInDepth(video.video_id)"
+      >
         <TableCell class="w-40"> <img :src="video.thumbnail" /> </TableCell>
         <TableCell
           ><p class="font-semibold">
             {{ truncateText(video.video_title, 30) }}
           </p>
-          <p>{{ formatDate(video.created_at) }}</p></TableCell
-        >
+          <p class="mb-3">{{ video.category_title }}</p>
+          <p>{{ formatDate(video.created_at) }}</p>
+        </TableCell>
         <TableCell class="text-center">{{ video.total_views }}</TableCell>
-        <TableCell class="text-center">{{ video.avg_watch }}</TableCell>
+        <TableCell class="text-center">
+          {{ video.avg_watch ? convertToTimeFormat(video.avg_watch) : 0 }}
+          <span>
+            ({{ video.avg_watch  ? Math.round((video.avg_watch / video.video_duration) * 100) : 0 }}%)
+          </span>
+        </TableCell>
         <TableCell class="text-center"
           >{{ video.video_ratings }} <Star class="inline ml-1 mt-[-3px]" />
         </TableCell>

@@ -14,7 +14,8 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
 
   void _onVideosInitialEvent(
       VideosInitialEvent event, Emitter<VideosState> emit) async {
-    emit(state.copyWith(status: VideosStatus.processing, channelId: event.channelId));
+    emit(state.copyWith(
+        status: VideosStatus.processing, channelId: event.channelId));
     final videosResult = await videoRepository.getViewChannelProfileVideos(
         state.channelId ?? 0,
         page: state.currentPage);

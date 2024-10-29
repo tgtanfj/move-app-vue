@@ -24,7 +24,7 @@ const routeToInDepth = (videoId) => {
       <CardTitle class="text-base">{{ $t('streamer_analysis.latest_video') }}</CardTitle>
     </CardHeader>
     <CardContent class="pb-5">
-      <img :src="video.thumbnail" class="h-[300px] w-full object-cover">
+      <img :src="video.thumbnail" class="h-[265px] w-full object-cover">
       <h3 class="my-3 font-bold">
         {{ truncateText(video.title, 65) }}
       </h3>
@@ -35,7 +35,7 @@ const routeToInDepth = (videoId) => {
       </p>
       <p class="flex justify-between mb-3">
         <span>{{ $t('streamer_analysis.total_REPs_received') }}</span>
-        <span class="font-bold">{{ video.totalREPs ?? 0 }}</span>
+        <span class="font-bold">{{ video.totalreps ?? 0 }}</span>
       </p>
       <p class="flex justify-between items-center mb-3">
         <span>{{ $t('streamer_analysis.ratings') }}</span>

@@ -11,9 +11,9 @@
               <TableHead>{{ $t('streamer.videos') }}</TableHead>
               <TableHead>{{ $t('streamer.details') }}</TableHead>
               <TableHead>{{ $t('streamer.date_post') }}</TableHead>
-              <TableHead>{{ $t('streamer.views') }}</TableHead>
-              <TableHead>{{ $t('streamer.comment') }}</TableHead>
-              <TableHead>{{ $t('streamer.rating') }}</TableHead>
+              <TableHead class="text-center">{{ $t('streamer.views') }}</TableHead>
+              <TableHead class="text-center">{{ $t('streamer.comment') }}</TableHead>
+              <TableHead class="text-center">{{ $t('streamer.rating') }}</TableHead>
               <TableHead></TableHead>
             </template>
             <template v-else>

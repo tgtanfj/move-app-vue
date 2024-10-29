@@ -14,8 +14,7 @@ import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_eve
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
 import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
-import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
-
+import 'package:move_app/presentation/screens/video_detail/widgets/vimeo_player.dart';
 import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../constants/constants.dart';
@@ -45,7 +44,11 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScrollComments);
   }
-
+   @override
+   void deactivate(){
+    context.read<VideoDetailBloc>().add(const VideoDetailPopEvent());
+     super.deactivate();
+   }
   @override
   void dispose() {
     _scrollController.dispose();

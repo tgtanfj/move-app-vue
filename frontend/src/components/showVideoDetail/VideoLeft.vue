@@ -8,21 +8,21 @@ import SocialLink from '@components/channel-view/SocialLink.vue'
 import Comment from '@components/comment/Comment.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
+import { ADMIN_BASE } from '@constants/api.constant'
 import { fetchChannelAbout } from '@services/channel_about.services'
 import { useFollow, useUnfollow } from '@services/follow.services'
+import { formatFollowers } from '@utils/formatViews.util'
+import axios from 'axios'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { formatFollowers } from '@utils/formatViews.util'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useFollowerStore } from '../../stores/follower.store'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import { sortedSocialLinks } from '../../utils/socialOrder.util'
+import GiftReps from './GiftReps.vue'
 import Rating from './Rating.vue'
-import { Button } from '../../common/ui/button/index'
-import axios from 'axios'
-import { ADMIN_BASE } from '@constants/api.constant'
 
 const props = defineProps({
   videoDetail: {
@@ -38,12 +38,14 @@ const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
 const isFollowed = ref(null)
 const numFollower = ref(null)
-const canFollow = ref(null)
+const isMyVideo = ref(null)
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
 const route = useRoute()
 const commentId = route.query.commentId
 const replyId = route.query.replyId
+
+const newRating = ref(null)
 const commentUnshift = ref({
   user: {
     id: 60,
@@ -60,12 +62,16 @@ const commentUnshift = ref({
 })
 
 onMounted(async () => {
-  if (props.videoDetail) {
-    const res = await fetchChannelAbout(props.videoDetail.channel.id)
-    channelInfo.value = res.data
-    isFollowed.value = channelInfo.value.isFollowed
-    numFollower.value = channelInfo.value.numberOfFollowers
-    canFollow.value = channelInfo.value.canFollow
+  if (props.videoDetail && props.videoDetail.channel.id) {
+    try {
+      const res = await fetchChannelAbout(props.videoDetail.channel.id)
+      channelInfo.value = res.data
+      isFollowed.value = channelInfo.value.isFollowed
+      numFollower.value = channelInfo.value.numberOfFollowers
+      isMyVideo.value = channelInfo.value.canFollow
+    } catch (error) {
+      console.log(error)
+    }
   }
 })
 
@@ -189,6 +195,10 @@ const handleNavigate = () => {
   router.push(`/channel/${props.videoDetail.channel.id}`)
 }
 
+const handleUpdateRating = (rating) => {
+  newRating.value = rating
+}
+
 watch(
   () => userStore.accessToken,
   (newToken) => {
@@ -215,9 +225,13 @@ onMounted(() => {
     <div class="p-5 w-full">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
-        <p class="flex gap-1 text-xl font-semibold">
-          <StartIcon width="24px" height="24px" />{{ props.videoDetail.ratings }}
+        <p
+          v-if="props.videoDetail?.ratings !== 0 || newRating"
+          class="flex gap-1 text-xl font-semibold"
+        >
+          <StartIcon width="24px" height="24px" />{{ newRating || props.videoDetail.ratings }}
         </p>
+        <p v-else class="flex gap-1 text-xl font-semibold"></p>
       </div>
 
       <div class="flex gap-2 mt-2">
@@ -237,13 +251,13 @@ onMounted(() => {
           <div
             class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
             @click="handleFollow"
-            v-if="canFollow !== false"
+            v-if="isMyVideo !== false"
           >
             <Heart v-show="!isFollowed" width="24px" class="text-primary" />
             <HeartFilled v-show="isFollowed" />
             {{ $t('video_detail.follow') }}
           </div>
-          <Rating :videoDetail="videoDetail" />
+          <Rating @update-rating="handleUpdateRating" />
           <ShareLinkVideo />
         </div>
       </div>
@@ -271,7 +285,7 @@ onMounted(() => {
             </div>
           </div>
         </RouterLink>
-        <Button>Gift REPs</Button>
+        <GiftReps :videoId="props.videoDetail.id" v-if="isMyVideo !== false" />
       </div>
 
       <Tabs class="w-full">

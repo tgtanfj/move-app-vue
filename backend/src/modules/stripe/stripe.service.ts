@@ -25,6 +25,7 @@ export class StripeService {
   async listPaymentMethod(customerId: string) {
     const paymentMethods = await this.stripe.customers.listPaymentMethods(customerId, {
       type: 'card',
+      limit: 1,
     });
 
     const paymentMethodFiltered = paymentMethods.data.map((paymentMethod) => ({
@@ -39,7 +40,7 @@ export class StripeService {
       name: paymentMethod.billing_details.name,
     }));
 
-    return paymentMethodFiltered;
+    return paymentMethodFiltered[0];
   }
 
   async attachPaymentMethod(customerId: string, addPaymentMethod: AttachPaymentMethodDto) {
@@ -83,8 +84,10 @@ export class StripeService {
     const transactions = await this.stripe.balanceTransactions.list();
 
     const totalRevenue = transactions.data.reduce((sum, transaction) => {
-      const amount = transaction.amount;
-      return sum + amount;
+      if (transaction.type === 'charge') {
+        const amount = transaction.amount;
+        return sum + amount;
+      }
     }, 0);
 
     return {
