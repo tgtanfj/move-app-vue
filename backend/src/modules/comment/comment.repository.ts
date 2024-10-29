@@ -47,7 +47,6 @@ export class CommentRepository {
     itemFrom: number;
     itemTo: number;
   }> {
-    console.log('userId', userId);
     const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
@@ -58,6 +57,7 @@ export class CommentRepository {
         selected: true,
       })
       .leftJoinAndSelect('video.category', 'category')
+      .where('channel.userId = :userId', { userId })
       .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
 
     if (filter === 'unresponded') {

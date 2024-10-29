@@ -394,9 +394,10 @@ export class VideoRepository {
       .createQueryBuilder('v')
       .leftJoin('donations', 'd', 'v.id = d.videoId')
       .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
-      .select('SUM(g."numberOfREPs")', 'totalREPs')
+      .select('CAST(SUM(g."numberOfREPs") AS BIGINT) as totalREPs')
       .where('v.id = :videoId', { videoId })
       .andWhere('d."createdAt" >= :time', { time })
+      .groupBy('v.id')
       .getRawOne();
 
     return sum;

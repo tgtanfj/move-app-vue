@@ -50,6 +50,7 @@ export class UserService {
 
     userProfile.isBlueBadge = foundUser.channel ? foundUser.channel.isBlueBadge : false;
     userProfile.isPinkBadge = foundUser.channel ? foundUser.channel.isPinkBadge : false;
+    userProfile.channelId = foundUser.channel ? foundUser.channel.id : null;
 
     return userProfile;
   }
