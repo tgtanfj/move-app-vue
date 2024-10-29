@@ -470,6 +470,7 @@ export class VideoRepository {
       .getOne();
     return result;
   }
+
   async getOwnerVideo(videoId: number) {
     return await this.videoRepository.findOne({
       where: { id: videoId },
@@ -556,7 +557,7 @@ export class VideoRepository {
       ])
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
       .where('v.channelId = :channelId', { channelId })
       .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title')
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
@@ -597,7 +598,7 @@ export class VideoRepository {
       .where('v.channelId = :channelId', { channelId })
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
       .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
       .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title') // Group by video attributes
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST') // Order by dynamic field and direction
