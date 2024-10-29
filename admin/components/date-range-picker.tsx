@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -15,7 +16,9 @@ import { DateRange } from 'react-day-picker';
 export function CalendarDateRangePicker({
   className,
   onChange
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  onChange?: (newDate: DateRange) => void;
+}) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 9, 20),
     to: addDays(new Date(2024, 10, 20), 20)
@@ -58,7 +61,7 @@ export function CalendarDateRangePicker({
             selected={date}
             onSelect={(newDate) => {
               setDate(newDate);
-              if (onChange) {
+              if (onChange && newDate) {
                 // Call onChange prop if provided
                 onChange(newDate);
               }
