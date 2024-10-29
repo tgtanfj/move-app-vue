@@ -26,8 +26,8 @@ watchEffect(() => {
 })
 </script>
 <template>
-  <div class="mt-[80px] ml-6 mb-16">
-    <Loading v-if="isLoading" class="mt-72 ml-[500px]" />
+  <div class="mt-[80px] ml-6 mb-16 w-full">
+    <Loading v-if="isLoading" class="mt-72" />
     <div v-else class="flex gap-7">
       <div>
         <div>

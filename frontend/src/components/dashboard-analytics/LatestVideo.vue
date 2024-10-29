@@ -35,7 +35,7 @@ const routeToInDepth = (videoId) => {
       </p>
       <p class="flex justify-between mb-3">
         <span>{{ $t('streamer_analysis.total_REPs_received') }}</span>
-        <span class="font-bold">{{ video.totalREPs ?? 0 }}</span>
+        <span class="font-bold">{{ video.totalreps ?? 0 }}</span>
       </p>
       <p class="flex justify-between items-center mb-3">
         <span>{{ $t('streamer_analysis.ratings') }}</span>

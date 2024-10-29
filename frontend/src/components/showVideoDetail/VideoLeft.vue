@@ -8,22 +8,21 @@ import SocialLink from '@components/channel-view/SocialLink.vue'
 import Comment from '@components/comment/Comment.vue'
 import ShareLinkVideo from '@components/showVideoDetail/ShareLinkVideo.vue'
 import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
+import { ADMIN_BASE } from '@constants/api.constant'
 import { fetchChannelAbout } from '@services/channel_about.services'
 import { useFollow, useUnfollow } from '@services/follow.services'
+import { formatFollowers } from '@utils/formatViews.util'
+import axios from 'axios'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { formatFollowers } from '@utils/formatViews.util'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useFollowerStore } from '../../stores/follower.store'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import { sortedSocialLinks } from '../../utils/socialOrder.util'
-import Rating from './Rating.vue'
-import { Button } from '../../common/ui/button/index'
-import axios from 'axios'
-import { ADMIN_BASE } from '@constants/api.constant'
 import GiftReps from './GiftReps.vue'
+import Rating from './Rating.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -63,12 +62,16 @@ const commentUnshift = ref({
 })
 
 onMounted(async () => {
-  if (props.videoDetail) {
-    const res = await fetchChannelAbout(props.videoDetail.channel.id)
-    channelInfo.value = res.data
-    isFollowed.value = channelInfo.value.isFollowed
-    numFollower.value = channelInfo.value.numberOfFollowers
-    isMyVideo.value = channelInfo.value.canFollow
+  if (props.videoDetail && props.videoDetail.channel.id) {
+    try {
+      const res = await fetchChannelAbout(props.videoDetail.channel.id)
+      channelInfo.value = res.data
+      isFollowed.value = channelInfo.value.isFollowed
+      numFollower.value = channelInfo.value.numberOfFollowers
+      isMyVideo.value = channelInfo.value.canFollow
+    } catch (error) {
+      console.log(error)
+    }
   }
 })
 
@@ -292,7 +295,7 @@ onMounted(() => {
           >
         </TabsList>
         <DropdownMenuSeparator class="m-0" />
-        <TabsContent value="about" class="flex mt-4">
+        <TabsContent class="flex mt-4">
           <div class="flex-[1.7] bg-black text-white p-3 rounded-lg">
             <h3 class="font-semibold text-lg mb-2">About {{ channelInfo.name }}</h3>
             <p class="font-medium" v-if="channelInfo.bio">
