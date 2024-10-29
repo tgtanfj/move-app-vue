@@ -542,7 +542,17 @@ export class VideoRepository {
       .createQueryBuilder('v')
       .leftJoin('views', 'vw', 'v.id = vw.videoId')
       .leftJoin('donations', 'd', 'v.id = d.videoId')
-      .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
+      .leftJoin(
+        (qb) =>
+          qb
+            .select(['d.videoId AS videoId', 'SUM(g.numberOfREPs) AS total_reps'])
+            .from('gift-packages', 'g')
+            .leftJoin('donations', 'd', 'd.giftPackageId = g.id')
+            .where('g.deletedAt IS NULL')
+            .groupBy('d.videoId'),
+        'g_summary',
+        'g_summary.videoId = v.id',
+      )
       .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
       .leftJoin('categories', 'c', 'v.categoryId = c.id')
       .select([
@@ -557,16 +567,17 @@ export class VideoRepository {
       ])
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('COALESCE(g_summary.total_reps, 0)', 'total_reps')
       .where('v.channelId = :channelId', { channelId })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title')
+      // .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title, g_summary.total_reps')
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
       .limit(limit)
       .offset(offset)
       .getRawMany();
 
     return {
-      totalCount: result[0].total_count,
+      totalCount: result[0]?.total_count || 0,
       result,
     };
   }
@@ -580,35 +591,57 @@ export class VideoRepository {
   ) {
     const result = await this.videoRepository
       .createQueryBuilder('v')
-      .leftJoin('views', 'vw', 'v.id = vw.videoId') // Left join with views
-      .leftJoin('donations', 'd', 'v.id = d.videoId') // Left join with donations
-      .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id') // Left join with gift-packages
+      .leftJoin('views', 'vw', 'v.id = vw.videoId')
+      .leftJoin('donations', 'd', 'v.id = d.videoId')
+      .leftJoin(
+        (qb) =>
+          qb
+            .select(['d.videoId AS videoId', 'SUM(g.numberOfREPs) AS total_reps'])
+            .from('gift-packages', 'g')
+            .leftJoin('donations', 'd', 'd.giftPackageId = g.id')
+            .where('g.deletedAt IS NULL')
+            .groupBy('d.videoId'),
+        'g_summary',
+        'g_summary.videoId = v.id',
+      )
       .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
-      .leftJoin('categories', 'c', 'v.categoryId = c.id') // Left join with watching-video-histories
+      .leftJoin('categories', 'c', 'v.categoryId = c.id')
       .select([
-        'v.id AS video_id', // Video ID
-        'v.title AS video_title', // Video title
-        'v.ratings AS video_ratings', // Rating of video
-        'v.numberOfViews AS number_of_views', // Number of views of video
+        'v.id AS video_id',
+        'v.title AS video_title',
+        'v.ratings AS video_ratings',
+        'v.numberOfViews AS number_of_views',
         'v.createdAt as created_at',
         'COUNT(DISTINCT d."userId") AS total_donators',
         'COUNT(*) OVER() AS total_count',
         'c.title AS category_title',
       ])
-      .where('v.channelId = :channelId', { channelId })
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('COALESCE(g_summary.total_reps, 0)', 'total_reps')
+      .where('v.channelId = :channelId', { channelId })
       .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title') // Group by video attributes
-      .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST') // Order by dynamic field and direction
-      .limit(limit) // Limit results for pagination
-      .offset(offset) // Offset for pagination
-      .getRawMany(); // Get the raw results
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title, g_summary.total_reps')
+      .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
+      .limit(limit)
+      .offset(offset)
+      .getRawMany();
 
     return {
-      totalCount: result[0].total_count, // Get the total count
+      totalCount: result[0]?.total_count || 0,
       result,
     };
+  }
+
+  async getTotalSecondsOfChannel(channelId: number) {
+    const result = await this.videoRepository
+      .createQueryBuilder('v')
+      .leftJoin('views', 'vw', 'v.id = vw.videoId')
+      .select('SUM(vw."totalViewTime")', 'total_view_time')
+      .where('v.channelId = :channelId', { channelId })
+      .andWhere('vw."deletedAt" IS NULL')
+      .getRawOne();
+
+    return result.total_view_time 
   }
 }
