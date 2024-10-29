@@ -10,17 +10,16 @@ class CustomSearchChannel extends StatefulWidget {
   final String? name;
   final String? numberOfFollowers;
   final bool isBlueBadge;
-  final bool isPinkBadge;
   final VoidCallback? onChannelTap;
 
-  const CustomSearchChannel(
-      {super.key,
-      this.imageUrl,
-      this.name,
-      this.numberOfFollowers,
-      this.isBlueBadge = false,
-      this.isPinkBadge = false,
-      this.onChannelTap});
+  const CustomSearchChannel({
+    super.key,
+    this.imageUrl,
+    this.name,
+    this.numberOfFollowers,
+    this.isBlueBadge = false,
+    this.onChannelTap,
+  });
 
   @override
   State<CustomSearchChannel> createState() => _CustomSearchChannelState();
@@ -59,9 +58,6 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
                   const SizedBox(
                     width: 8,
                   ),
-                  widget.isPinkBadge
-                      ? SvgPicture.asset(AppIcons.starFlower.svgAssetPath)
-                      : const SizedBox(),
                 ],
               ),
               RichText(

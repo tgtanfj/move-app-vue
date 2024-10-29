@@ -47,6 +47,7 @@ const router = createRouter({
         },
         {
           path: '/video/:id',
+          name: 'videoDetail',
           component: () => import('../views/ShowVideoDetail.vue')
         },
         {

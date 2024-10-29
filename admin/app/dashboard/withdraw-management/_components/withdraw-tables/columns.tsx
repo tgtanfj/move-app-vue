@@ -15,6 +15,7 @@ export const columns: ColumnDef<Withdraw>[] = [
   {
     accessorKey: 'channel.user.email',
     header: 'Email'
+    
   },
 
   {

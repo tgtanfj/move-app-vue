@@ -161,7 +161,9 @@ export class SearchService {
       finalTopVideos = await this.videoRepository
         .createQueryBuilder('video')
         .select('video')
+        .leftJoinAndSelect('video.thumbnails', 'thumbnail')
         .where('video.title ILIKE :keyword OR video.keywords ILIKE :keyword', { keyword })
+        .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
         .orderBy('video.numberOfViews', 'DESC')
         .limit(2)
         .getMany();

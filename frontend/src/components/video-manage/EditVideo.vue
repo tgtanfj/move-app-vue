@@ -113,13 +113,16 @@ const handleEditVideo = async () => {
     } else {
       tags.value = ''
     }
-    charCount.value = tags.value.length
+
     isCommentable.value = String(videoDataEditing.value.isCommentable)
     images.value = [videoDataEditing.value.thumbnailURL]
     imagesSelected.value = videoDataEditing.value.thumbnailURL
+    if (tags.value) {
+      charCount.value = tags.value.length
+    }
     await getListCategories()
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 

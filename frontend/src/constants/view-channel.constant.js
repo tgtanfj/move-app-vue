@@ -53,31 +53,31 @@ export const SORT_BY = [
 export const SORT_BY_ANALYTICS = [
   {
     title: 'All statuses',
-    value: formatCategoryTitleToUrl('All statuses')
+    value: formatCategoryTitleToUrl('All')
   },
   {
     title: 'Views (High to Low)',
-    value: formatCategoryTitleToUrl('Views (High to Low)')
+    value: 'Views (High to Low)'
   },
   {
     title: 'Views (Low to High)',
-    value: formatCategoryTitleToUrl('Views (Low to High)')
+    value: 'Views (Low to High)'
   },
   {
     title: 'REPs (High to Low)',
-    value: formatCategoryTitleToUrl('REPs (High to Low)')
+    value: 'REPs (High to Low)'
   },
   {
     title: 'REPs (Low to High)',
-    value: formatCategoryTitleToUrl('REPs (Low to High)')
+    value: 'REPs (Low to High)'
   },
   {
     title: 'Ratings (High to Low)',
-    value: formatCategoryTitleToUrl('Ratings (High to Low)')
+    value: 'Ratings (High to Low)'
   },
   {
     title: 'Ratings (Low to High)',
-    value: formatCategoryTitleToUrl('Ratings (Low to High)')
+    value: 'Ratings (Low to High)'
   }
 ]
 
@@ -100,7 +100,7 @@ export const SHOW_ANALYTICS = [
   },
   {
     title: '1 year ago',
-    value: formatCategoryTitleToUrl('1 year ago')
+    value: formatCategoryTitleToUrl('one year ago')
   }
 ]
 
