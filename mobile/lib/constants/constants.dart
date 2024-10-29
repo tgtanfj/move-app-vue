@@ -200,13 +200,13 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Read Less";
-  static const String cancelComment = "Cancel Reservation?";
+  static const String showLess = "Show Less";
+  static const String cancelComment = "Cancel Comment?";
   static const String areUSure =
-      "Are you sure you want to cancel this reservation?";
+      "Are you sure you want to cancel this comment?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
-  static const String writeReply = "Write a reply";
+  static const String writeReply = "Reply comment";
   static const String justNow = "Just now";
   static const String secondsAgo = "seconds ago";
   static const String minutesAgo = "minutes ago";
@@ -354,4 +354,6 @@ class Constants {
   static const String noDataAvailable = 'No data available';
   static const String defaultThumbnailImage =
       'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
+  static const String goToHome = 'Go To Home';
+
 }

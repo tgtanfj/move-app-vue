@@ -263,6 +263,7 @@ class AuthRepository {
       );
       await SharedPrefer.sharedPrefer.setUserToken('');
       await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
+      await SharedPrefer.sharedPrefer.setUsername('');
       final GoogleSignIn googleSignIn = GoogleSignIn();
       await googleSignIn.signOut();
       await FacebookAuth.instance.logOut();
