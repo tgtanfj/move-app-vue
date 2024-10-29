@@ -191,6 +191,8 @@ export class VideoService {
         message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
+    foundChannel.numberOfVideos = foundChannel.numberOfVideos + 1;
+    await this.channelService.updateChannel(foundChannel)
     const selected = parseInt(dto.selectedThumbnail);
     //save thumbnails
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
@@ -737,5 +739,10 @@ export class VideoService {
         break;
     }
     return time;
+  }
+
+  async getTotalSecondsOfChannel(channelId: number) {
+    const result = await this.videoRepository.getTotalSecondsOfChannel(channelId);
+    return result || 0;
   }
 }

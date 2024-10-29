@@ -212,13 +212,19 @@ export class ChannelService {
 
   async overViewAnalytic(userId: number) {
     const { id, numberOfFollowers, numberOfREPs } = await this.channelRepository.getChannelByUserId(userId);
-    const totalView = (await this.videoService.getTotalViewOfChannel(id)) || 0;
-    const avgTime = 0;
-    const lastVideo = await this.videoService.getLastVideoOfChannel(id);
+    if (!id) {
+      throw new BadRequestException(`Channel not found`);
+    }
+    const [totalView, totalTime, lastVideo] = await Promise.all([
+      this.videoService.getTotalViewOfChannel(id),
+      this.videoService.getTotalSecondsOfChannel(id),
+      this.videoService.getLastVideoOfChannel(id),
+    ]);
+    const avgTime = totalView ? totalTime / totalView : 0;
     return {
       numberOfFollowers,
       numberOfREPs,
-      totalView,
+      totalView: totalView || 0,
       avgTime,
       lastVideo,
     };
@@ -300,8 +306,8 @@ export class ChannelService {
         return {
           ...obj,
           total_reps: total_reps || 0,
-          total_views:total_views||0,
-          avg_watch: obj.total_views ? total_seconds / obj.total_views : 0,
+          total_views: total_views || 0,
+          avg_watch: total_views ? total_seconds / total_views : 0,
           thumbnail: thumbnail?.image,
         };
       }),
@@ -309,5 +315,9 @@ export class ChannelService {
 
     const totalPage = Math.ceil(totalCount / take);
     return objectResponse(update, new PaginationMetadata(totalCount, page, take, totalPage));
+  }
+
+  async updateChannel(channel: Channel) {
+    return await this.channelRepository.updateChannel(channel);
   }
 }
