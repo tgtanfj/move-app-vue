@@ -96,9 +96,7 @@ final List<NotificationModel> notifications = [
   NotificationModel(
     id: 3,
     userModel: UserModel(
-        username: 'tran.dan.043',
-        avatar:
-            "https://firebasestorage.googleapis.com/v0/b/r-coffee-ee438.appspot.com/o/images%2Fdavid.wilson%40example.com%2F332636819_5865095220248489_6948307745297316759_n.jpg?alt=media&token=e165cfa8-b1eb-4096-9756-9456ba074718"),
+        username: 'tran.dan.043',),
     content: ' started following you.',
     createTime: '1 mins ago',
     hasRead: false,

@@ -269,7 +269,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
     final SearchHistoryModel searchHistoryModel =
         SearchHistoryModel(content: event.searchText);
     String token = SharedPrefer.sharedPrefer.getUserToken();
-    if (token.isNotEmpty) {
+    if (token.isNotEmpty && event.searchText.trim().isNotEmpty) {
       final history =
           await HistoryRepository().saveSearchHistory(searchHistoryModel);
       history.fold((l) {
@@ -306,16 +306,16 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       SearchLoadSuggestionEvent event, Emitter<SearchResultState> emit) async {
     final suggestions =
         await SuggestionRepository().searchSuggestion(event.searchText ?? "");
-    suggestions.fold((l) {
-      emit(state.copyWith(
-        status: SearchResultStatus.failure,
-        errorMessage: l,
-      ));
-    }, (r) {
-      emit(state.copyWith(
-        suggestionList: r,
-        status: SearchResultStatus.success,
-      ));
-    });
+      suggestions.fold((l) {
+        emit(state.copyWith(
+          status: SearchResultStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          suggestionList: r,
+          status: SearchResultStatus.success,
+        ));
+      });
   }
 }

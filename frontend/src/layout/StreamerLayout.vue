@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <Sidebar />
-    <div class="content grow">
+    <div class="content flex ml-[241px] w-full">
       <router-view />
     </div>
   </div>

@@ -15,7 +15,7 @@ class CategoriesRepository {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultCategory,
-        queryParameters: {'q': query, 'limit': 1, 'page': page},
+        queryParameters: {'q': query, 'limit': 2, 'page': page},
       );
       if (response.statusCode == 200) {
         final result = parseSearchResultCategory(response.data);
@@ -54,7 +54,7 @@ class CategoriesRepository {
       final response = await apiService.request(
         APIRequestMethod.get,
         ApiUrls.searchResultCategory,
-        queryParameters: {'q': query, 'limit': 1, 'page': page},
+        queryParameters: {'q': query, 'limit': 2, 'page': page},
       );
       if (response.statusCode == 200) {
         final result = response.data['meta'];

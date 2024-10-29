@@ -1,5 +1,6 @@
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
+import 'package:move_app/data/models/thumbnails_model.dart';
 
 class VideoModel {
   final int? id;
@@ -18,6 +19,7 @@ class VideoModel {
   final ChannelModel? channel;
   final int? durationsVideo;
   final bool? isCommentable;
+  final List<ThumbnailsModel>? thumbnailsModel;
 
   VideoModel({
     this.id,
@@ -35,7 +37,8 @@ class VideoModel {
     this.createdAt,
     this.category,
     this.videoLength,
-    this.isCommentable
+    this.isCommentable,
+    this.thumbnailsModel,
   });
 
   VideoModel copyWith({
@@ -55,7 +58,7 @@ class VideoModel {
     CategoryModel? category,
     int? videoLength,
     bool? isCommentable,
-
+    List<ThumbnailsModel>? thumbnailsModel,
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -73,7 +76,8 @@ class VideoModel {
       createdAt: createdAt ?? this.createdAt,
       category: category ?? this.category,
       videoLength: videoLength ?? this.videoLength,
-      isCommentable: isCommentable ?? this.isCommentable
+      isCommentable: isCommentable ?? this.isCommentable,
+      thumbnailsModel: thumbnailsModel ?? this.thumbnailsModel,
     );
   }
 
@@ -89,10 +93,19 @@ class VideoModel {
           (json['numberOfViews'] is num) ? json['numberOfViews'].toInt() : 0,
       ratings: (json["ratings"] is num) ? json['ratings'].toDouble() : 0.0,
       urlS3: (json['urlS3'] is String) ? json['urlS3'] : '',
-      categories: CategoryModel.fromJson(json['category']),
-      channel: ChannelModel.fromJson(json['channel']),
+      categories: json['category'] != null
+          ? CategoryModel.fromJson(json['category'])
+          : CategoryModel(title: ""),
+      channel: json['channel'] != null
+          ? ChannelModel.fromJson(json['channel'])
+          : ChannelModel(name: ""),
       thumbnailURL:
           (json['thumbnailURL'] is String) ? json['thumbnailURL'] : '',
+      thumbnailsModel: (json['thumbnails'] is List)
+          ? (json['thumbnails'] as List<dynamic>?)
+              ?.map((e) => ThumbnailsModel.fromJson(e))
+              .toList()
+          : [],
       durationsVideo:
           (json['durationsVideo'] is num) ? json['durationsVideo'].toInt() : 0,
       createdAt: (json['createdAt'] is String)
@@ -102,9 +115,10 @@ class VideoModel {
       category: json['category'] != null
           ? CategoryModel.fromJson(json['category'])
           : null,
-      isCommentable: (json['isCommentable'] != null && json['isCommentable'] is bool)
-          ? json['isCommentable'] as bool
-          : false,
+      isCommentable:
+          (json['isCommentable'] != null && json['isCommentable'] is bool)
+              ? json['isCommentable'] as bool
+              : false,
     );
   }
 }

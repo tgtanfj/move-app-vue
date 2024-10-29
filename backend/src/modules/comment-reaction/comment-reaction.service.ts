@@ -28,6 +28,13 @@ export class CommentReactionService {
   async create(userInfo: UserInfoDto, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     try {
       const userId = userInfo.id;
+      const commentReactionExisted = await this.commentReactionRepository.getOneWithUserComment(
+        userId,
+        dto.commentId,
+      );
+      if (commentReactionExisted) {
+        return commentReactionExisted;
+      }
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
       const comment = await this.commentRepository.getOne(dto.commentId, { user: true, video: true });
       const receiver = comment.user.id;
@@ -35,13 +42,18 @@ export class CommentReactionService {
 
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
-      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+        receiver,
+        userInfo.id,
+        comment.id,
+      );
       if (!isExisted && userId !== receiver) {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
           videoId: comment.video.id,
           videoTitle: comment.video.title,
+          commentId: comment.id,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }

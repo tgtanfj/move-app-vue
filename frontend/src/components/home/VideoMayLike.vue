@@ -19,7 +19,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col">
     <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
       <img
         class="object-cover w-full h-[170px] cursor-pointer"
@@ -42,10 +42,10 @@ const router = useRouter()
     <div class="flex items-start mt-2 flex-1">
       <img
         @click="router.push(`/channel/${video?.channel?.id}`)"
-        class="w-[32px] h-[32px] rounded-full cursor-pointer"
+        class="w-[32px] h-[32px] object-cover rounded-full cursor-pointer shrink-0"
         :src="video?.channel?.image"
       />
-      <div class="ml-3 h-full flex flex-col">
+      <div class="ml-3">
         <p
           @click="router.push(`/video/${video.id}`)"
           class="text-[16px] font-bold cursor-pointer line-clamp-2"
@@ -81,10 +81,11 @@ const router = useRouter()
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto pr-1 pl-2">
+      <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px]" />
         <p class="text-[14px] font-bold">{{ video?.ratings }}</p>
       </div>
+      <div v-else class="flex items-center gap-1 ml-auto pr-1 pl-2"></div>
     </div>
   </div>
 </template>

@@ -24,12 +24,8 @@ export class FollowService {
     return await this.followRepository.countFollowers(channelId);
   }
 
-  async getFollowingChannels(
-    userId: number,
-    limit: number,
-    relations: FindOptionsRelations<Follow>,
-  ): Promise<Follow[]> {
-    return await this.followRepository.getFollowingChannels(userId, limit, relations);
+  async getFollowingChannels(userId: number, relations: FindOptionsRelations<Follow>): Promise<Follow[]> {
+    return await this.followRepository.getFollowingChannels(userId, relations);
   }
 
   async save(userInfo: UserInfoDto, channelId: number) {
@@ -65,15 +61,14 @@ export class FollowService {
       +channel.numberOfFollowers,
     );
 
-    if (
-      channel.numberOfFollowers > 0 &&
-      Number.isInteger(Math.log10(channel.numberOfFollowers)) &&
-      !isExisted
-    ) {
+    const isMilestone =
+      Number.isInteger(Math.log10(channel.numberOfFollowers)) && Math.log10(channel.numberOfFollowers) >= 2;
+
+    if (channel.numberOfFollowers > 0 && isMilestone && !isExisted) {
       const dataNotification = {
         sender: 'system',
         type: NOTIFICATION_TYPE.FOLLOW_MILESTONE,
-        follow_milestone: +channel.numberOfFollowers,
+        followMilestone: +channel.numberOfFollowers,
       };
       await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
     }

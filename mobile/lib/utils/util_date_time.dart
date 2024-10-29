@@ -1,12 +1,12 @@
 import '../constants/constants.dart';
 
 extension UtilDateTime on DateTime {
-  String getTimeDifference() {
-    final now = DateTime.now();
-    final difference = now.difference(this);
+  String getTimeDifference({DateTime? createdAt}) {
+    final now = DateTime.now().toUtc();
+    final difference = now.difference(toUtc());
 
     if (difference.isNegative) {
-      return Constants.justNow;
+      return "0 ${Constants.secondAgo}";
     }
 
     if (difference.inSeconds < 60) {

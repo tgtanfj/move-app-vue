@@ -202,7 +202,7 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Show Less";
+  static const String readLess = "Read Less";
   static const String cancelComment = "Cancel Reservation?";
   static const String areUSure =
       "Are you sure you want to cancel this reservation?";
@@ -248,22 +248,22 @@ class Constants {
   static const String allLevels = 'All Levels';
   static const String beginner = 'Beginner';
   static const String advanced = 'Advanced';
-  static const String allLevelsValue = 'all-levels';
+  static const String allLevelsValue = 'all-level';
   static const String beginnerValue = 'beginner';
   static const String intermediateValue = 'intermediate';
   static const String advancedValue = 'advanced';
   static const String mostRecent = 'Most Recent';
   static const String viewsHighToLow = 'Views (High to Low)';
   static const String viewsLowToHigh = 'Views (Low to High)';
-  static const String durationHighToLow = 'Duration (High to Low)';
-  static const String durationLowToHigh = 'Duration (Low to High)';
+  static const String durationLongToShort = 'Duration (Long to short)';
+  static const String durationShortToLong = 'Duration (Short to Long)';
   static const String ratingsHighToLow = 'Ratings (High to Low)';
   static const String ratingsLowToHigh = 'Ratings (Low to High)';
   static const String mostRecentValue = 'most-recent';
   static const String viewsHighToLowValue = 'views-high-to-low';
   static const String viewsLowToHighValue = 'views-low-to-high';
-  static const String durationHighToLowValue = 'duration-high-to-low';
-  static const String durationLowToHighValue = 'duration-low-to-high';
+  static const String durationHighToLowValue = 'duration-long-to-short';
+  static const String durationLowToHighValue = 'duration-short-to-long';
   static const String ratingsHighToLowValue = 'ratings-high-to-low';
   static const String ratingsLowToHighValue = 'ratings-low-to-high';
   static const String failedToLoadVideos = 'Failed to load videos';
@@ -307,6 +307,7 @@ class Constants {
   static const String cardholderName = 'Cardholder Name';
   static const String cardNumber = 'Card number';
   static const String expiryDate = 'Expiry date';
+  static const String formatExpiryDate = 'MM/YY';
   static const String cvv2 = 'CVV2/CVC2';
   static const String mmyy = 'MM/YY';
   static const String processingPayment = 'Processing your payment…';
@@ -330,4 +331,41 @@ class Constants {
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
   static const String back = 'Back';
+  static const String date = "DATE";
+  static const String productName = "PRODUCT NAME";
+  static const String startDate = "START DATE";
+  static const String endDate = "END DATE";
+  static const String time = "TIME";
+  static const String leaveAComment = "Leave a comment to get started";
+  static const String noPaymentHistory = "No payment history found";
+  static const String haveNotPurchased =
+      "You have not purchased any REPs during this period of time.";
+  static const String dayMonthYear = "dd MMM yyyy";
+  static const String monthDayYear = "MMMM dd yyyy";
+  static const String timeFormat = "hh:mm:ss a";
+  static const String paymentHistoryNotFound = "Payment Histories Not Found";
+  static const String cannotGetTotalPage = "Cannot get total pages";
+  static const String noDateFormat = "No date to format";
+  static const String supportYourInstructorWithReps =
+      "Support your instructor with REPs!";
+  static const String selectAmountOfRepsToSendToTheInstructor =
+      "Select amount of Reps to send to the instructor";
+  static const String bestWorkoutYet = "Best workout yet!";
+  static const String thankYou = "Thank you!";
+  static const String wellDone = "Well done!";
+  static const String youHaveDoneTheUnbelievable =
+      "You have done the unthinkable!";
+  static const String youAreAwesome = "You are awesome!";
+  static const String donateSuccess = "Donate success";
+  static const String youHaveDonated = "You have donated ";
+  static const String rep$Successfully = " REP\$ successfully!";
+  static const String reps = " REPs";
+  static const String getReps = 'Get REPs';
+  static const String noDataAvailable = 'No data available';
+  static const incorrectlyFormattedCardHolderName =
+      'Incorrectly formatted cardholder name';
+  static const invalidCardNumber = 'Invalid card number';
+  static const checkYourExpirationDate = 'Check your expiration date';
+  static const invalidCardVerificationCode = 'Invalid card verification code';
+  static const paymentMethodsNotFound = 'Payment methods not found';
 }

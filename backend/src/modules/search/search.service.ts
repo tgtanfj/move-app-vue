@@ -113,7 +113,6 @@ export class SearchService {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayDateString = yesterday.toISOString().split('T')[0];
 
-    // Lấy video có lượt xem cao nhất vào ngày hôm qua theo từ khóa và phân trang
     const videosWithHighestViews = await this.videoRepository
       .createQueryBuilder('video')
       .leftJoinAndSelect('video.viewHistories', 'viewHistory')
@@ -162,7 +161,9 @@ export class SearchService {
       finalTopVideos = await this.videoRepository
         .createQueryBuilder('video')
         .select('video')
+        .leftJoinAndSelect('video.thumbnails', 'thumbnail')
         .where('video.title ILIKE :keyword OR video.keywords ILIKE :keyword', { keyword })
+        .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
         .orderBy('video.numberOfViews', 'DESC')
         .limit(2)
         .getMany();

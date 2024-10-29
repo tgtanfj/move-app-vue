@@ -8,4 +8,7 @@ class PaymentMethodModel {
   Map<String, dynamic> toJson() => {
         'paymentMethodId': paymentMethodId,
       };
+
+  @override
+  String toString() => paymentMethodId;
 }

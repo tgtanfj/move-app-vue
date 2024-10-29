@@ -7,8 +7,7 @@ import 'package:move_app/presentation/components/custom_tab_bar.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_method/page/payment_method_page.dart';
 
 class WalletBody extends StatefulWidget {
-  final bool? showCardHoder;
-  const WalletBody({super.key, this.showCardHoder});
+  const WalletBody({super.key});
 
   @override
   State<WalletBody> createState() => _WalletBodyState();

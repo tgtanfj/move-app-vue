@@ -6,7 +6,7 @@ import '../../config/theme/app_text_styles.dart';
 
 class CustomEditText extends StatefulWidget {
   final String title;
-  final String mainMessage;
+  final String? mainMessage;
   final TextStyle? textStyle;
   final TextStyle? titleStyle;
   final ValueChanged<String>? onChanged;

@@ -1,7 +1,7 @@
 <script setup>
 import { Button } from '@common/ui/button'
 import { Input } from '@common/ui/input'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
 import { commentServices } from '@services/comment.services'
 import defaultAvatar from '../../assets/icons/default-avatar.png'
@@ -11,10 +11,6 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 const props = defineProps({
   videoId: {
     type: String,
-    required: true
-  },
-  me: {
-    type: Object,
     required: true
   },
   comments: {
@@ -32,6 +28,10 @@ const isCancelComment = ref(false)
 const isFocused = ref(false)
 const comment = ref('')
 const userAvatar = ref(localStorage.getItem('userAvatar'))
+
+const isCommentValid = computed(() => {
+  return comment.value.trim() !== ''
+})
 
 const handleBlur = () => {
   if (!comment.value) {
@@ -51,6 +51,7 @@ const handleCloseEsc = (event) => {
 }
 
 const postCommentVideo = async () => {
+  if (!isCommentValid.value) return
   if (!authStore.accessToken) {
     openLoginStore.toggleOpenLogin()
   } else {
@@ -85,10 +86,7 @@ const handleClickInput = () => {
 <template>
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
-      <img
-        :src="me?.photoURL ?? userAvatar ?? defaultAvatar"
-        class="w-[40px] h-[40px] rounded-full object-cover"
-      />
+      <img :src="userAvatar ?? defaultAvatar" class="w-[40px] h-[40px] rounded-full object-cover" />
       <Input
         v-model="comment"
         @click="handleClickInput"
@@ -118,9 +116,13 @@ const handleClickInput = () => {
           </div>
         </DialogContent>
       </Dialog>
-      <Button @click="postCommentVideo" class="w-[104px] text-[16px]">{{
-        $t('comment.send')
-      }}</Button>
+      <Button
+        @click="postCommentVideo"
+        :disabled="!isCommentValid"
+        class="w-[104px] text-[16px]"
+        :class="{ 'bg-[#999999]': !isCommentValid }"
+        >{{ $t('comment.send') }}</Button
+      >
     </div>
   </div>
 </template>

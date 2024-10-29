@@ -70,4 +70,11 @@ export class PaymentController {
   async getAllCashOutHistories() {
     return await this.paymentService.getAllCashOutHistories();
   }
+
+  @Get('/admin/total-withdraw')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async getTotalWithdraw() {
+    return await this.paymentService.getTotalWithdraw();
+  }
 }

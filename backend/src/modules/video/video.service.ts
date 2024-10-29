@@ -28,7 +28,13 @@ import { ChannelService } from '../channel/channel.service';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
-import { FilterWorkoutLevel, ShowBy, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import {
+  FilterWorkoutLevel,
+  GraphicType,
+  OrderBy,
+  ShowBy,
+  SortBy,
+} from './../channel/dto/request/filter-video-channel.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { PaginationDto } from './dto/request/pagination.dto';
@@ -351,7 +357,6 @@ export class VideoService {
       channel: {
         id: channelId,
       },
-      isPublish: true,
     };
 
     if (categoryId) {
@@ -371,38 +376,38 @@ export class VideoService {
         break;
       case SortBy.VIEWS_HIGH_TO_LOW:
         order = {
-          ...order,
           numberOfViews: 'DESC',
+          ...order,
         };
         break;
       case SortBy.VIEWS_LOW_TO_HIGH:
         order = {
-          ...order,
           numberOfViews: 'ASC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_HIGH_TO_LOW:
+      case SortBy.DURATION_LONG_TO_SHORT:
         order = {
-          ...order,
           durationsVideo: 'DESC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_LOW_TO_HIGH:
+      case SortBy.DURATION_SHORT_TO_LONG:
         order = {
-          ...order,
           durationsVideo: 'ASC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_HIGH_TO_LOW:
         order = {
-          ...order,
           ratings: 'DESC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_LOW_TO_HIGH:
         order = {
-          ...order,
           ratings: 'ASC',
+          ...order,
         };
         break;
       default:
@@ -504,7 +509,10 @@ export class VideoService {
       .then(async (data) => {
         let canFollow = null;
         if (userId) {
-          canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+          canFollow = true;
+
+          if ((await this.channelService.getChannelByUserId(userId)) !== null)
+            canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
         }
 
         return {
@@ -526,11 +534,14 @@ export class VideoService {
   }
 
   async overviewVideoAnalytic(videoId: number, userId: number, showby?: ShowBy) {
-    const foundChannel = await this.channelService.getChannelByUserId(userId);
-    const foundVideo = await this.videoRepository.findOne(videoId, {
-      channel: true,
-      category: true,
-    });
+    const [foundChannel, foundVideo] = await Promise.all([
+      this.channelService.getChannelByUserId(userId),
+      this.videoRepository.findOne(videoId, {
+        channel: true,
+        category: true,
+      }),
+    ]);
+
     if (foundChannel.id !== foundVideo.channel.id) {
       throw new ForbiddenException();
     }
@@ -538,38 +549,34 @@ export class VideoService {
     const response = plainToInstance(OverviewVideoResponseDto, foundVideo, {
       excludeExtraneousValues: true,
     });
+
+    // Assign category and thumbnail info
     const thumbnail = await this.thumbnailService.getSelectedThumbnail(foundVideo.id);
     response.category = foundVideo.category.title;
-    response.thumbnail = thumbnail.image;
+    response.thumbnail = thumbnail?.image;
 
-    if (showby === ShowBy.ALL_TIME || !showby) {
-      const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, '1970-01-01');
-      response.numberOfReps = totalREPs;
-      response.rating = foundVideo.ratings;
-      response.numberOfViews = foundVideo.numberOfViews;
-      return response;
-    }
-
-    const time = new Date();
-    switch (showby) {
-      case ShowBy.LAST_7_DAYS:
-        time.setDate(time.getDate() - 7);
-        break;
-      case ShowBy.LAST_30_DAYS:
-        time.setDate(time.getDate() - 30);
-      case ShowBy.LAST_90_DAYS:
-        time.setDate(time.getDate() - 90);
-      default:
-        break;
-    }
-
+    // Set time based on showby selection
+    const time = this.calculateDateByShowBy(showby);
     const timeFomat = time.toISOString().split('T')[0];
-    const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, timeFomat);
-    const view = await this.viewService.getTotalViewInOnTime(time, videoId);
-    const rating = await this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time);
+
+    // Fetch analytics data in parallel
+    const [{ totalREPs }, view, second, rating] = await Promise.all([
+      this.videoRepository.getNumberOfRepByTime(
+        videoId,
+        showby === ShowBy.ALL_TIME ? '1970-01-01' : timeFomat,
+      ),
+      this.viewService.getTotalViewInOnTime(time, videoId),
+      this.viewService.getTotalSecondByDate(time, videoId),
+      showby === ShowBy.ALL_TIME
+        ? Promise.resolve(foundVideo.ratings)
+        : this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time),
+    ]);
+
     response.numberOfReps = totalREPs;
-    response.numberOfViews = view;
+    response.numberOfViews = showby === ShowBy.ALL_TIME ? foundVideo.numberOfViews : view;
     response.rating = rating;
+    response.avgWatched = view ? second / view : 0;
+    response.publishedOn = foundVideo.createdAt;
 
     return response;
   }
@@ -603,13 +610,13 @@ export class VideoService {
     if (!result) {
       return null;
     }
-    const numberOfReps = await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01');
-    const { image } = await this.thumbnailService.getSelectedThumbnail(result.id);
+    const numberOfReps = (await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01')) || 0;
+    const thumbail = await this.thumbnailService.getSelectedThumbnail(result.id);
 
     return {
       ...result,
       ...numberOfReps,
-      image,
+      thumbnail: thumbail?.image,
     };
   }
 
@@ -626,5 +633,109 @@ export class VideoService {
         }),
       );
     });
+  }
+  async getGraphicAnalytic(videoId: number, userId: number, showBy: ShowBy, typeGraphic: GraphicType) {
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
+    const foundVideo = await this.videoRepository.findOne(videoId, {
+      channel: true,
+      category: true,
+    });
+    if (foundChannel.id !== foundVideo.channel.id) {
+      throw new ForbiddenException();
+    }
+
+    const time = this.calculateDateByShowBy(showBy);
+    const timeFomat = time.toISOString().split('T')[0];
+
+    let result = null;
+    switch (typeGraphic) {
+      case GraphicType.AGE:
+        result = await this.graphicAgeAnalyticVideo(videoId, timeFomat);
+        break;
+      case GraphicType.GENDER:
+        result = await this.graphicGender(videoId, timeFomat);
+        break;
+      case GraphicType.NATION:
+        result = await this.getGraphicNation(videoId, timeFomat);
+      default:
+        break;
+    }
+    return result;
+  }
+
+  async getGraphicNation(videoId: number, time: string) {
+    const result = await this.videoRepository.getMostViewerNationality(videoId, time);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_users, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_users / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async getGraphicState(videoId: number, countryId: number, showBy: ShowBy) {
+    const time = this.calculateDateByShowBy(showBy);
+    const timeFomat = time.toISOString().split('T')[0];
+    const result = await this.videoRepository.getVideoViewersByState(videoId, timeFomat, countryId);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_users, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_users / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async videoAnalyticDashboard(
+    userId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    return await this.videoRepository.getVideoAnalytics(userId, time, orderBy, limit, offset);
+  }
+
+  async videoAnalyticDashboardByQuery(
+    userId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    return await this.videoRepository.getVideoAnalyticByQuery(userId, time, orderBy, limit, offset);
+  }
+  calculateDateByShowBy(showby: ShowBy): Date {
+    const time = new Date();
+    switch (showby) {
+      case ShowBy.LAST_7_DAYS:
+        time.setDate(time.getDate() - 7);
+        break;
+      case ShowBy.LAST_30_DAYS:
+        time.setDate(time.getDate() - 30);
+        break;
+      case ShowBy.LAST_90_DAYS:
+        time.setDate(time.getDate() - 90);
+        break;
+      case ShowBy.ONE_YEAR_AGO:
+        time.setDate(time.getDate() - 365);
+        break;
+      case ShowBy.ALL_TIME:
+      default:
+        time.setDate(time.getDate() - 9999); // Fallback for all-time or unspecified range
+        break;
+    }
+    return time;
   }
 }
