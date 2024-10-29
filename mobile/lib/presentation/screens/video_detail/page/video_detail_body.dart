@@ -44,11 +44,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScrollComments);
   }
-   @override
-   void deactivate(){
+
+  @override
+  void deactivate() {
     context.read<VideoDetailBloc>().add(const VideoDetailPopEvent());
-     super.deactivate();
-   }
+    super.deactivate();
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -127,17 +129,29 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   return state.status == VideoDetailStatus.processing
                       ? const SizedBox.shrink()
                       : state.isShowVideo
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if ((state.listComments?.isEmpty ?? true))
-                                  _buildEmptyCommentSection(
-                                      context, state, height),
-                                if (state.listComments?.isNotEmpty ?? false)
-                                  _buildCommentList(context, state, height),
-                                if (state.status == VideoDetailStatus.loading)
-                                  _buildLoadingIndicator(),
-                              ],
+                          ? SizedBox(
+                              child: state.listComments?.isEmpty ?? true
+                                  ? SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _buildEmptyCommentSection(
+                                              context, state, height),
+                                        ],
+                                      ),
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _buildCommentList(
+                                            context, state, height),
+                                        if (state.status ==
+                                            VideoDetailStatus.loading)
+                                          _buildLoadingIndicator(),
+                                      ],
+                                    ),
                             )
                           : Center(
                               child: Column(
