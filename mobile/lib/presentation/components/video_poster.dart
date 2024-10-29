@@ -9,7 +9,6 @@ import '../../config/theme/app_images.dart';
 
 class VideoPoster extends StatelessWidget {
   final double? height;
-  final bool isViewText;
   final bool isDurationText;
   final String? image;
   final String? numberOfViews;
@@ -17,7 +16,6 @@ class VideoPoster extends StatelessWidget {
   final VoidCallback? onTap;
   const VideoPoster({
     super.key,
-    this.isViewText = false,
     this.height,
     this.image,
     this.numberOfViews,
@@ -33,14 +31,16 @@ class VideoPoster extends StatelessWidget {
       child: Stack(children: [
         Positioned(
           child: Image.network(
-            image ?? "https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg",
+            image ?? Constants.defaultThumbnailImage,
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width - 40.0,
             height: height,
             errorBuilder: (context, error, stackTrace) {
               return Image.asset(
                 AppImages.posterVideo.pngAssetPath,
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
+                height: height,
+                width: MediaQuery.of(context).size.width - 40.0,
               );
             },
           ),
@@ -65,20 +65,9 @@ class VideoPoster extends StatelessWidget {
               const SizedBox(
                 width: 3.0,
               ),
-              Row(
-                children: [
-                  Text(
-                    numberOfViews ?? "",
-                    style: AppTextStyles.montserratStyle.bold12White,
-                  ),
-                  const Text(" "),
-                  isViewText
-                      ? Text(
-                          Constants.views,
-                          style: AppTextStyles.montserratStyle.bold12White,
-                        )
-                      : const SizedBox(),
-                ],
+              Text(
+                numberOfViews ?? "",
+                style: AppTextStyles.montserratStyle.bold12White,
               ),
               const SizedBox(
                 width: 3.0,

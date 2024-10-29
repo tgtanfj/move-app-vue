@@ -139,7 +139,6 @@ class _VideosBodyState extends State<VideosBody>
                                 },
                                 child: VideoPoster(
                                   height: height * 0.22,
-                                  isViewText: true,
                                   isDurationText: true,
                                   image: video.thumbnailURL,
                                   duration:

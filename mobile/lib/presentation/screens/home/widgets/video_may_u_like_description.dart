@@ -75,7 +75,7 @@ class VideoMayULikeDescription extends StatelessWidget {
         ),
         Row(
           children: [
-            Flexible(
+            Expanded(
               child: Text(
                 title,
                 maxLines: 1,

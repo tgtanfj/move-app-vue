@@ -46,10 +46,10 @@ class ListSearchResultVideo extends StatelessWidget {
                       videoList?[index].durationsVideo?.toDurationFormat() ??
                           '00:00',
                   height: MediaQuery.of(context).size.height * 0.21,
-                  isViewText: true,
                   isDurationText: true,
                   image: videoList?[index].thumbnailsModel?.first.image,
-                  numberOfViews: videoList?[index].numberOfViews?.toCompactViewCount(),
+                  numberOfViews:
+                      videoList?[index].numberOfViews?.toCompactViewCount(),
                 ),
                 const SizedBox(
                   height: 4.0,

@@ -75,7 +75,6 @@ class _VideosCategoryBodyState extends State<VideosCategoryBody> {
                                   image: state
                                       .listVideoCategory?[index].thumbnailURL,
                                   height: height * 0.21,
-                                  isViewText: true,
                                   isDurationText: true,
                                   duration: state.listVideoCategory?[index]
                                           .durationsVideo
