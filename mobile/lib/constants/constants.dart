@@ -351,4 +351,6 @@ class Constants {
   static const String rep$Successfully = " REP\$ successfully!";
   static const String reps = " REPs";
   static const String getReps = 'Get REPs';
+  static const String enterValidContent = "Please enter search content";
+  static const String notFoundResult = "No any search result found";
 }
