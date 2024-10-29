@@ -295,12 +295,12 @@ export class ChannelService {
 
     const update = await Promise.all(
       result.map(async (video) => {
-        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.video_id);
         const { total_seconds, total_reps, total_views, ...obj } = video;
         return {
           ...obj,
           total_reps: total_reps || 0,
-          total_views: total_views || 0,
+          total_views:total_views||0,
           avg_watch: obj.total_views ? total_seconds / obj.total_views : 0,
           thumbnail: thumbnail?.image,
         };
