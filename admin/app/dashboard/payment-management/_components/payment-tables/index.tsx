@@ -30,18 +30,6 @@ export default function PaymentTable({
     null
   );
 
-  const filteredData = data.filter((payment) => {
-    const matchesSearchName = payment.user.fullName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-
-    const matchesSearchEmail = payment.user.email
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-
-    return matchesSearchName || matchesSearchEmail;
-  });
-
   const dataFiltered = applyFilter({
     inputData: data,
     filterName: searchQuery,
@@ -59,7 +47,12 @@ export default function PaymentTable({
           searchKey={'full name or email'}
         />
         <CalendarDateRangePicker
-          onChange={(range) => setSelectedDateRange(range)}
+          onChange={(range) => {
+            if (range && typeof range !== 'object') return; // Ignore event if it's a FormEvent
+            if (range && 'from' in range && 'to' in range) {
+              setSelectedDateRange(range as DateRange);
+            }
+          }}
         />
         <DataTableResetFilter
           isFilterActive={isAnyFilterActive}

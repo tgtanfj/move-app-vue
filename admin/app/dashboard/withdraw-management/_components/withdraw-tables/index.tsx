@@ -47,7 +47,12 @@ export default function WithdrawTable({
           searchKey={'full name or email'}
         />
         <CalendarDateRangePicker
-          onChange={(range) => setSelectedDateRange(range)}
+          onChange={(range) => {
+            if (range && typeof range !== 'object') return; // Ignore event if it's a FormEvent
+            if (range && 'from' in range && 'to' in range) {
+              setSelectedDateRange(range as DateRange);
+            }
+          }}
         />
 
         <DataTableResetFilter
