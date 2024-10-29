@@ -17,6 +17,7 @@ import { Button } from '@common/ui/button'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import { useCommentToggleStore } from '../../stores/commentToggle.store'
 
 const props = defineProps({
   comments: {
@@ -29,6 +30,7 @@ const emit = defineEmits(['update-comments', 'updateReplyCount'])
 
 const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
+const commentToggleStore = useCommentToggleStore()
 
 const showFullContentIds = ref([])
 const showFullReplyIds = ref([])
@@ -79,6 +81,7 @@ const toggleCommentContent = (commentId) => {
 const handleLike = async (item) => {
   try {
     if (!checkIsAuth()) return
+    if (commentToggleStore.isDisabledActions) return
     if (!item.hasOwnProperty('isLike')) {
       const res = await commentServices.createCommentReaction(item?.id, true)
       if (res.message === 'success') {
@@ -101,6 +104,7 @@ const handleLike = async (item) => {
 const handleUnLike = async (item) => {
   try {
     if (!checkIsAuth()) return
+    if (commentToggleStore.isDisabledActions) return
     const res = await commentServices.deleteCommentReaction(item.id, false)
     if (res.message === 'success') {
       delete item.isLike
@@ -115,6 +119,7 @@ const handleUnLike = async (item) => {
 const handleDislike = async (item) => {
   try {
     if (!checkIsAuth()) return
+    if (commentToggleStore.isDisabledActions) return
     if (!item.hasOwnProperty('isLike')) {
       const res = await commentServices.createCommentReaction(item?.id, false)
       if (res.message === 'success') item.isLike = false
@@ -134,6 +139,7 @@ const handleDislike = async (item) => {
 const handleUnDislike = async (item) => {
   try {
     if (!checkIsAuth()) return
+    if (commentToggleStore.isDisabledActions) return
     const res = await commentServices.deleteCommentReaction(item.id)
     if (res.message === 'success') delete item.isLike
     emit('update-comments', toRaw(localComments.value))
@@ -200,6 +206,7 @@ const toggleReplyContent = (replyId) => {
 
 const showReplyInput = async (commentId) => {
   if (!checkIsAuth()) return
+  if (commentToggleStore.isDisabledActions) return
   if (replyInputId.value === commentId) {
     return
   }
@@ -430,7 +437,10 @@ const isReplyValid = computed(() => {
                       "
                     >
                       {{ myReplyPerComment[item.id].content.slice(0, 300) }}...
-                      <button @click="toggleReplyContent(myReplyPerComment[item.id].id)" class="text-[#666666]">
+                      <button
+                        @click="toggleReplyContent(myReplyPerComment[item.id].id)"
+                        class="text-[#666666]"
+                      >
                         {{ $t('comment.read_more') }}
                       </button>
                     </div>

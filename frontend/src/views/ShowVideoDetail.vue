@@ -10,6 +10,7 @@ import Button from '@common/ui/button/Button.vue'
 import { ADMIN_BASE } from '@constants/api.constant'
 import { useAuthStore } from '../stores/auth'
 import { apiAxios } from '@helpers/axios.helper'
+import { useCommentToggleStore } from '../stores/commentToggle.store'
 
 const route = useRoute()
 const router = useRouter()
@@ -30,6 +31,7 @@ let timer = null
 const goBackHome = () => {
   router.push('/')
 }
+const commentToggleStore = useCommentToggleStore()
 
 const getVideoDetailById = async (videoIdParams, token) => {
   try {
@@ -43,6 +45,8 @@ const getVideoDetailById = async (videoIdParams, token) => {
     } else {
       result = await apiAxios.get(`/video/${videoIdParams}/details`)
     }
+    commentToggleStore.setVideoChannelId(result?.data?.data?.channel?.id)
+    commentToggleStore.setIsCommentable(result?.data?.data?.isCommentable)
     const dataVideo = result.data.data
     if (dataVideo.url) {
       const vimeoId = dataVideo.url.split('/').pop()

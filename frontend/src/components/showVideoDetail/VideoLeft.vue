@@ -222,9 +222,13 @@ onMounted(() => {
     <div class="p-5 w-full">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
-        <p class="flex gap-1 text-xl font-semibold">
+        <p
+          v-if="props.videoDetail?.ratings !== 0 || newRating"
+          class="flex gap-1 text-xl font-semibold"
+        >
           <StartIcon width="24px" height="24px" />{{ newRating || props.videoDetail.ratings }}
         </p>
+        <p v-else class="flex gap-1 text-xl font-semibold"></p>
       </div>
 
       <div class="flex gap-2 mt-2">
