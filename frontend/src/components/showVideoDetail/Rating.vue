@@ -20,6 +20,8 @@ const showRatingModal = ref(false)
 
 const ratingModal = ref(null)
 
+const emit = defineEmits('update-rating')
+
 onMounted(() => {
   window.addEventListener('click', handleCloseRatingModal)
 })
@@ -71,9 +73,13 @@ const onSubmit = async () => {
       if (response.status === 200) {
         toast({ description: 'Thanks you for your ratings', variant: 'successfully' })
         oldRating.value = rating.value
+        const res = await apiAxios.get(`/video/${videoId}/details`)
+        if (res.status === 200) {
+          emit('update-rating', res.data.data.ratings)
+        } else throw new Error('Error when getting ratings')
       } else throw new Error(response.error)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       showRatingModal.value = false
     }
@@ -85,7 +91,7 @@ const cancel = () => {
 }
 const openPopover = () => {
   if (authStore.accessToken) {
-    showRatingModal.value = true // Show rating modal
+    showRatingModal.value = true
   } else {
     openLoginStore.toggleOpenLogin()
   }
@@ -127,7 +133,7 @@ const openPopover = () => {
               @click="onSubmit"
               :disabled="rating === 0 || oldRating === rating"
               :class="{ 'bg-gray-400': rating === 0 || oldRating === rating }"
-              >{{ $t('button.rate') }}</Button
+              >{{ $t('button.submit') }}</Button
             >
           </div>
         </div>

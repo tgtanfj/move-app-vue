@@ -13,6 +13,7 @@ import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_cha
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/page/videos_page.dart';
+import 'package:move_app/utils/util_number_format.dart';
 
 import '../../../../data/data_sources/local/shared_preferences.dart';
 import '../../../../data/services/launch_service.dart';
@@ -90,22 +91,11 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                                     height: 16,
                                   )
                                 : const SizedBox(),
-                            SizedBox(
-                                width: state.channel?.isPinkBadge ?? false
-                                    ? 7
-                                    : 0),
-                            state.channel?.isBlueBadge ?? false
-                                ? SvgPicture.asset(
-                                    AppIcons.starFlower.svgAssetPath,
-                                    width: 16,
-                                    height: 16,
-                                  )
-                                : const SizedBox(),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${state.channel?.numberOfFollowers ?? 0} ${Constants.followers}',
+                          '${state.channel?.numberOfFollowers?.toCompactViewCount() ?? 0} ${Constants.followers}',
                           style: AppTextStyles
                               .montserratStyle.regular14graniteGray,
                         ),
@@ -130,15 +120,22 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                                     state.channel?.id ?? 0));
                           }
                         },
-                        child: state.channel?.canFollow ?? false
+                        child: (state.channel?.isFollowed == null &&
+                                state.channel?.canFollow == null)
                             ? SvgPicture.asset(
-                                state.channel?.isFollowed ?? false
-                                    ? AppIcons.fillHeart.svgAssetPath
-                                    : AppIcons.heart.svgAssetPath,
+                                AppIcons.heart.svgAssetPath,
                                 width: 20,
                                 height: 18,
                               )
-                            : const SizedBox()),
+                            : state.channel?.canFollow ?? false
+                                ? SvgPicture.asset(
+                                    state.channel?.isFollowed ?? false
+                                        ? AppIcons.fillHeart.svgAssetPath
+                                        : AppIcons.heart.svgAssetPath,
+                                    width: 20,
+                                    height: 18,
+                                  )
+                                : const SizedBox()),
                   )
                 ],
               ),

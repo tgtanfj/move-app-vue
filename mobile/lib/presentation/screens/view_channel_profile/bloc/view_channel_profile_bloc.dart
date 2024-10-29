@@ -55,7 +55,6 @@ class ViewChannelProfileBloc
   void _onViewChannelProfileFollowChannelEvent(
       ViewChannelProfileFollowChannelEvent event,
       Emitter<ViewChannelProfileState> emit) async {
-    emit(state.copyWith(status: ViewChannelProfileStatus.processing));
     if (state.channel?.isFollowed == true) {
       final result =
           await channelRepository.unFollowChannel(state.channel?.id ?? 0);
@@ -66,7 +65,7 @@ class ViewChannelProfileBloc
         ));
       }, (r) {
         emit(state.copyWith(
-          status: ViewChannelProfileStatus.success,
+          status: ViewChannelProfileStatus.followEventSuccess,
           channel: state.channel?.copyWith(isFollowed: false),
         ));
       });
@@ -80,9 +79,20 @@ class ViewChannelProfileBloc
         ));
       }, (r) {
         emit(state.copyWith(
-          status: ViewChannelProfileStatus.success,
+          status: ViewChannelProfileStatus.followEventSuccess,
           channel: state.channel?.copyWith(isFollowed: true),
         ));
+      });
+    }
+    if (state.status == ViewChannelProfileStatus.followEventSuccess) {
+      final updateChannel = await channelRepository
+          .getViewChannelProfileAbout(state.channel?.id ?? 0);
+      updateChannel.fold((l) {
+        emit(state.copyWith(errorMessage: l));
+      }, (r) {
+        emit(state.copyWith(
+            channel: state.channel
+                ?.copyWith(numberOfFollowers: r.numberOfFollowers)));
       });
     }
   }

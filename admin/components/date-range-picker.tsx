@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -13,12 +14,17 @@ import * as React from 'react';
 import { DateRange } from 'react-day-picker';
 
 export function CalendarDateRangePicker({
-  className
-}: React.HTMLAttributes<HTMLDivElement>) {
+  className,
+  onChange
+}: React.HTMLAttributes<HTMLDivElement> & {
+  onChange?: (newDate: DateRange) => void;
+}) {
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2023, 0, 20),
-    to: addDays(new Date(2023, 0, 20), 20)
+    from: new Date(2024, 9, 20),
+    to: addDays(new Date(2024, 10, 20), 20)
   });
+
+  // console.log(date);
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -53,7 +59,13 @@ export function CalendarDateRangePicker({
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={(newDate) => {
+              setDate(newDate);
+              if (onChange && newDate) {
+                // Call onChange prop if provided
+                onChange(newDate);
+              }
+            }}
             numberOfMonths={2}
           />
         </PopoverContent>

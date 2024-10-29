@@ -1,11 +1,9 @@
 <template>
-  <div class="flex items-center gap-2 h-full">
-    <!-- <p v-if="!isInStreamerPage" class="font-bold text-center text-[16px] text-nowrap">Get REP$</p> -->
+  <div class="flex items-center gap-3 h-full">
     <div class="mr-2">
       <GetRep :isInStreamerPage="isInStreamerPage" />
     </div>
     <Notification />
-    <BellIcon />
     <DropdownMenu>
       <DropdownMenuTrigger class="w-[30px] h-[30px]">
         <img

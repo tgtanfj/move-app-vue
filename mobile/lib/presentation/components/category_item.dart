@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/data/models/category_model.dart';
-import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 

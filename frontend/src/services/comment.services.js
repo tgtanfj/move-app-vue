@@ -58,7 +58,6 @@ export const commentServices = {
   },
   deleteCommentReaction: async (commentId) => {
     try {
-      console.log('typdfa', commentId, typeof commentId)
       const response = await apiAxios.delete(`/comment-reaction/${commentId}`)
       return response.data
     } catch (error) {

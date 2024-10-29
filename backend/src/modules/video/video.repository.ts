@@ -394,9 +394,10 @@ export class VideoRepository {
       .createQueryBuilder('v')
       .leftJoin('donations', 'd', 'v.id = d.videoId')
       .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
-      .select('SUM(g."numberOfREPs")', 'totalREPs')
+      .select('CAST(SUM(g."numberOfREPs") AS BIGINT) as totalREPs')
       .where('v.id = :videoId', { videoId })
       .andWhere('d."createdAt" >= :time', { time })
+      .groupBy('v.id')
       .getRawOne();
 
     return sum;
@@ -469,6 +470,7 @@ export class VideoRepository {
       .getOne();
     return result;
   }
+
   async getOwnerVideo(videoId: number) {
     return await this.videoRepository.findOne({
       where: { id: videoId },
@@ -542,6 +544,7 @@ export class VideoRepository {
       .leftJoin('donations', 'd', 'v.id = d.videoId')
       .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id')
       .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('categories', 'c', 'v.categoryId = c.id')
       .select([
         'v.id AS video_id',
         'v.title AS video_title',
@@ -550,19 +553,20 @@ export class VideoRepository {
         'v.createdAt as created_at',
         'COUNT(DISTINCT d."userId") AS total_donators',
         'COUNT(*) OVER() AS total_count',
+        'c.title AS category_title',
       ])
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
       .where('v.channelId = :channelId', { channelId })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews')
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title')
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
       .limit(limit)
       .offset(offset)
       .getRawMany();
 
     return {
-      totalCount: result.length > 0 ? +result[0].total_count : 0,
+      totalCount: result[0].total_count,
       result,
     };
   }
@@ -579,7 +583,8 @@ export class VideoRepository {
       .leftJoin('views', 'vw', 'v.id = vw.videoId') // Left join with views
       .leftJoin('donations', 'd', 'v.id = d.videoId') // Left join with donations
       .leftJoin('gift-packages', 'g', 'd.giftPackageId = g.id') // Left join with gift-packages
-      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId') // Left join with watching-video-histories
+      .leftJoin('watching-video-histories', 'wvh', 'v.id = wvh.videoId')
+      .leftJoin('categories', 'c', 'v.categoryId = c.id') // Left join with watching-video-histories
       .select([
         'v.id AS video_id', // Video ID
         'v.title AS video_title', // Video title
@@ -588,20 +593,21 @@ export class VideoRepository {
         'v.createdAt as created_at',
         'COUNT(DISTINCT d."userId") AS total_donators',
         'COUNT(*) OVER() AS total_count',
+        'c.title AS category_title',
       ])
       .where('v.channelId = :channelId', { channelId })
       .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
       .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
-      .addSelect('CAST(SUM(g."numberOfREPs") AS BIGINT)', 'total_reps')
+      .addSelect('CAST(SUM(DISTINCT g."numberOfREPs") AS BIGINT)', 'total_reps')
       .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews') // Group by video attributes
+      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title') // Group by video attributes
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST') // Order by dynamic field and direction
       .limit(limit) // Limit results for pagination
       .offset(offset) // Offset for pagination
       .getRawMany(); // Get the raw results
 
     return {
-      totalCount: result.length > 0 ? +result[0].total_count : 0, // Get the total count
+      totalCount: result[0].total_count, // Get the total count
       result,
     };
   }

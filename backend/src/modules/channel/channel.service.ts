@@ -228,7 +228,7 @@ export class ChannelService {
     userId: number,
     filter: string = 'all',
     sortBy: string = 'createdAt',
-    page: number = 1, 
+    page: number = 1,
     pageSize: number = 5,
   ): Promise<{
     data: Comment[];
@@ -295,17 +295,19 @@ export class ChannelService {
 
     const update = await Promise.all(
       result.map(async (video) => {
-        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.id);
-        const { total_seconds, ...obj } = video;
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.video_id);
+        const { total_seconds, total_reps, total_views, ...obj } = video;
         return {
           ...obj,
-          avg_watch: total_seconds / obj.total_views,
+          total_reps: total_reps || 0,
+          total_views:total_views||0,
+          avg_watch: obj.total_views ? total_seconds / obj.total_views : 0,
           thumbnail: thumbnail?.image,
         };
       }),
     );
 
     const totalPage = Math.ceil(totalCount / take);
-    return objectResponse(update, new PaginationMetadata(totalPage, page, take, totalPage));
+    return objectResponse(update, new PaginationMetadata(totalCount, page, take, totalPage));
   }
 }
