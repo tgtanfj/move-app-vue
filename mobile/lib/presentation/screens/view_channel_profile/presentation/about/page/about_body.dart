@@ -82,6 +82,7 @@ class AboutBody extends StatelessWidget {
                       '$channelName ${Constants.isFollowing}',
                       style: AppTextStyles.montserratStyle.bold18black,
                     ),
+              const SizedBox(height: 40),
               FollowingWidget(
                 followingChannels: followingChannels ?? [],
                 onTapFollowingChannel: onTapFollowingChannel,

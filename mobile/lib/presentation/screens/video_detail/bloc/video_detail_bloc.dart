@@ -520,6 +520,15 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         rateSelected: r,
       ));
     });
+    if (state.status == VideoDetailStatus.rateSuccess) {
+      final updateVideo =
+          await videoRepository.getVideoDetail(state.video?.id ?? 0);
+      updateVideo.fold((l) {
+        emit(state.copyWith(errorMessage: l));
+      }, (r) {
+        emit(state.copyWith(video: state.video?.copyWith(ratings: r.ratings)));
+      });
+    }
   }
 
   void _onVideoDetailFollowChannelEvent(VideoDetailFollowChannelEvent event,
