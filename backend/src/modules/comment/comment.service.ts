@@ -33,8 +33,8 @@ export class CommentService {
     return await this.commentRepository.getReplyComments(id, limit, cursor, userId);
   }
 
-  async getOne(id: number): Promise<Comment> {
-    return await this.commentRepository.getOne(id);
+  async getOneDetails(id: number, userId?: number): Promise<Comment> {
+    return await this.commentRepository.getOneDetails(id, userId);
   }
 
   async getAll(): Promise<Comment[]> {
