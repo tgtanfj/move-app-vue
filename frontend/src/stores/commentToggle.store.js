@@ -1,12 +1,23 @@
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 export const useCommentToggleStore = defineStore('commentToggle', () => {
   const channelId = ref(null)
   const videoChannelId = ref(null)
   const isCommentable = ref(false)
+
   const isInstructor = computed(() => channelId.value === videoChannelId.value)
-  const isDisabledActions = computed(() => !isCommentable.value === isInstructor.value)
+  const isDisabledActions = ref(false)
+
+  const calculateIsDisabledActions = () => {
+    isDisabledActions.value = !isCommentable.value && isInstructor.value
+  }
+
+  watch([channelId, videoChannelId, isCommentable], () => {
+    if (channelId.value !== null && videoChannelId.value !== null) {
+      calculateIsDisabledActions()
+    }
+  })
 
   const setChannelId = (value) => {
     channelId.value = value
@@ -14,10 +25,6 @@ export const useCommentToggleStore = defineStore('commentToggle', () => {
 
   const setVideoChannelId = (value) => {
     videoChannelId.value = value
-  }
-
-  const setIsDisabledActions = (value) => {
-    isDisabledActions.value = value
   }
 
   const setIsCommentable = (value) => {
@@ -32,7 +39,6 @@ export const useCommentToggleStore = defineStore('commentToggle', () => {
     isCommentable,
     setChannelId,
     setVideoChannelId,
-    setIsDisabledActions,
     setIsCommentable
   }
 })
