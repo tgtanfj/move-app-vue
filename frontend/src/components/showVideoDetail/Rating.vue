@@ -133,7 +133,7 @@ const openPopover = () => {
               @click="onSubmit"
               :disabled="rating === 0 || oldRating === rating"
               :class="{ 'bg-gray-400': rating === 0 || oldRating === rating }"
-              >{{ $t('button.rate') }}</Button
+              >{{ $t('button.submit') }}</Button
             >
           </div>
         </div>
