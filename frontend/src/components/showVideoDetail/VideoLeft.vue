@@ -45,6 +45,8 @@ const mutationUnfollow = useUnfollow()
 const route = useRoute()
 const commentId = route.query.commentId
 const replyId = route.query.replyId
+
+const newRating = ref(null)
 const commentUnshift = ref({
   user: {
     id: 60,
@@ -190,6 +192,10 @@ const handleNavigate = () => {
   router.push(`/channel/${props.videoDetail.channel.id}`)
 }
 
+const handleUpdateRating = (rating) => {
+  newRating.value = rating
+}
+
 watch(
   () => userStore.accessToken,
   (newToken) => {
@@ -217,7 +223,7 @@ onMounted(() => {
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
         <p class="flex gap-1 text-xl font-semibold">
-          <StartIcon width="24px" height="24px" />{{ props.videoDetail.ratings }}
+          <StartIcon width="24px" height="24px" />{{ newRating || props.videoDetail.ratings }}
         </p>
       </div>
 
@@ -244,7 +250,7 @@ onMounted(() => {
             <HeartFilled v-show="isFollowed" />
             {{ $t('video_detail.follow') }}
           </div>
-          <Rating :videoDetail="videoDetail" />
+          <Rating @update-rating="handleUpdateRating" />
           <ShareLinkVideo />
         </div>
       </div>
@@ -272,7 +278,7 @@ onMounted(() => {
             </div>
           </div>
         </RouterLink>
-        <GiftReps :videoId="props.videoDetail.id" v-if="isMyVideo !== false"/> 
+        <GiftReps :videoId="props.videoDetail.id" v-if="isMyVideo !== false" />
       </div>
 
       <Tabs class="w-full">
