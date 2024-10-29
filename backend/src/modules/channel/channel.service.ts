@@ -309,7 +309,6 @@ export class ChannelService {
           total_views: total_views || 0,
           avg_watch: total_views ? total_seconds / total_views : 0,
           thumbnail: thumbnail?.image,
-          total_seconds,
         };
       }),
     );
