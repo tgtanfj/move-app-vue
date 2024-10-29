@@ -540,7 +540,19 @@ export class VideoRepository {
   ) {
     const result = await this.videoRepository
       .createQueryBuilder('v')
-      .leftJoin('views', 'vw', 'v.id = vw.videoId')
+      .leftJoin(
+        (qb) =>
+          qb
+            .select([
+              'vw.videoId AS videoId',
+              'SUM(vw.totalViewTime) AS total_seconds',
+              'SUM(vw.totalView) AS total_views',
+            ])
+            .from('views', 'vw')
+            .groupBy('vw.videoId'),
+        'vw_summary',
+        'vw_summary.videoId = v.id',
+      )
       .leftJoin('donations', 'd', 'v.id = d.videoId')
       .leftJoin(
         (qb) =>
@@ -565,12 +577,13 @@ export class VideoRepository {
         'COUNT(*) OVER() AS total_count',
         'c.title AS category_title',
       ])
-      .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
-      .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
+      .addSelect('COALESCE(vw_summary.total_seconds, 0)', 'total_seconds')
+      .addSelect('COALESCE(vw_summary.total_views, 0)', 'total_views')
       .addSelect('COALESCE(g_summary.total_reps, 0)', 'total_reps')
       .where('v.channelId = :channelId', { channelId })
-      // .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title, g_summary.total_reps')
+      .groupBy(
+        'v.id, v.title, v.ratings, v.numberOfViews, c.title, vw_summary.total_seconds, vw_summary.total_views, g_summary.total_reps',
+      )
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
       .limit(limit)
       .offset(offset)
@@ -580,6 +593,7 @@ export class VideoRepository {
       totalCount: result[0]?.total_count || 0,
       result,
     };
+
   }
 
   async getVideoAnalyticByQuery(
@@ -591,7 +605,19 @@ export class VideoRepository {
   ) {
     const result = await this.videoRepository
       .createQueryBuilder('v')
-      .leftJoin('views', 'vw', 'v.id = vw.videoId')
+      .leftJoin(
+        (qb) =>
+          qb
+            .select([
+              'vw.videoId AS videoId',
+              'SUM(vw.totalViewTime) AS total_seconds',
+              'SUM(vw.totalView) AS total_views',
+            ])
+            .from('views', 'vw')
+            .groupBy('vw.videoId'),
+        'vw_summary',
+        'vw_summary.videoId = v.id',
+      )
       .leftJoin('donations', 'd', 'v.id = d.videoId')
       .leftJoin(
         (qb) =>
@@ -616,12 +642,14 @@ export class VideoRepository {
         'COUNT(*) OVER() AS total_count',
         'c.title AS category_title',
       ])
-      .addSelect('CAST(SUM(vw."totalViewTime") AS BIGINT)', 'total_seconds')
-      .addSelect('CAST(SUM(vw."totalView") AS BIGINT)', 'total_views')
+      .addSelect('COALESCE(vw_summary.total_seconds, 0)', 'total_seconds')
+      .addSelect('COALESCE(vw_summary.total_views, 0)', 'total_views')
       .addSelect('COALESCE(g_summary.total_reps, 0)', 'total_reps')
       .where('v.channelId = :channelId', { channelId })
       .andWhere('(wvh.createdAt >= :time OR d.createdAt >= :time)', { time })
-      .groupBy('v.id, v.title, v.ratings, v.numberOfViews, c.title, g_summary.total_reps')
+      .groupBy(
+        'v.id, v.title, v.ratings, v.numberOfViews, c.title, vw_summary.total_seconds, vw_summary.total_views, g_summary.total_reps',
+      )
       .orderBy(`${orderBy.field}`, `${orderBy.direction}`, 'NULLS LAST')
       .limit(limit)
       .offset(offset)
@@ -631,6 +659,7 @@ export class VideoRepository {
       totalCount: result[0]?.total_count || 0,
       result,
     };
+
   }
 
   async getTotalSecondsOfChannel(channelId: number) {
