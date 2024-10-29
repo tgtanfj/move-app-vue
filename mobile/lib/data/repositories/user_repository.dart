@@ -22,9 +22,15 @@ class UserRepository {
       if (response.data != null) {
         final user = UserModel.fromJson(response.data['data']);
         final avatarUrl = response.data['data']['avatar'] as String?;
+        final username = response.data['data']['username'] as String?;
+
         if (avatarUrl != null && avatarUrl.isNotEmpty) {
           await SharedPrefer.sharedPrefer.setAvatarUserUrl(avatarUrl);
         }
+        if (username != null && username.isNotEmpty) {
+          await SharedPrefer.sharedPrefer.setUsername(username);
+        }
+
         return Right(user);
       } else {
         return const Left(Constants.userNotFound);
@@ -64,6 +70,8 @@ class UserRepository {
         ),
       );
       if (response.statusCode == 200) {
+        await SharedPrefer.sharedPrefer.setUsername("");
+        await SharedPrefer.sharedPrefer.setAvatarUserUrl("");
         return const Right(Constants.success);
       } else {
         return const Left(Constants.failed);

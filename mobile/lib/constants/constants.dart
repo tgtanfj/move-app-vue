@@ -200,13 +200,13 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Read Less";
-  static const String cancelComment = "Cancel Reservation?";
+  static const String showLess = "Show Less";
+  static const String cancelComment = "Cancel Comment?";
   static const String areUSure =
-      "Are you sure you want to cancel this reservation?";
+      "Are you sure you want to cancel this comment?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
-  static const String writeReply = "Write a reply";
+  static const String writeReply = "Reply comment";
   static const String justNow = "Just now";
   static const String secondsAgo = "seconds ago";
   static const String minutesAgo = "minutes ago";
@@ -351,4 +351,6 @@ class Constants {
   static const String rep$Successfully = " REP\$ successfully!";
   static const String reps = " REPs";
   static const String getReps = 'Get REPs';
+  static const String goToHome = 'Go To Home';
+
 }
