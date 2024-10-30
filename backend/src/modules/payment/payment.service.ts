@@ -49,7 +49,7 @@ export class PaymentService {
 
     const repPackage = await this.repsPackageRepository.findOneRepPackage(repPackageId);
 
-    await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId, save);
+    const charge = await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId, save);
 
     const repsOfUser = repPackage.numberOfREPs + Number(user.numberOfREPs);
 
@@ -63,6 +63,8 @@ export class PaymentService {
     await this.notificationService.sendOneToOneNotification(user.id, dataNotification);
 
     this.paymentRepository.createPaymentHistory(user.id, repPackage.id);
+
+    return charge;
   }
 
   async getPaymentHistory(userId: number, queryPaymentHistoryDto: QueryPaymentHistoryDto) {
@@ -86,8 +88,6 @@ export class PaymentService {
 
           return [data, total];
         });
-
-      console.log(data);
 
       const totalPages = Math.ceil(+total / queryPaymentHistoryDto.take);
 
