@@ -65,7 +65,7 @@ export class StripeService {
     });
   }
 
-  async charge(amount: number, paymentMethodId: string, customerId: string) {
+  async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
     return this.stripe.paymentIntents.create({
       amount: amount * 100,
       customer: customerId,
@@ -73,6 +73,7 @@ export class StripeService {
       currency: this.configService.get('STRIPE_CURRENCY'),
       off_session: true,
       confirm: true,
+      setup_future_usage: saveCard ? 'on_session' : 'off_session',
     });
   }
 

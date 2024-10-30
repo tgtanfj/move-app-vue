@@ -45,11 +45,11 @@ export class PaymentService {
   }
 
   async buyREPs(user: User, buyREPsDto: BuyREPsDto) {
-    const { paymentMethodId, repPackageId } = buyREPsDto;
+    const { paymentMethodId, repPackageId, save } = buyREPsDto;
 
     const repPackage = await this.repsPackageRepository.findOneRepPackage(repPackageId);
 
-    await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId);
+    await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId, save);
 
     const repsOfUser = repPackage.numberOfREPs + Number(user.numberOfREPs);
 
@@ -141,11 +141,13 @@ export class PaymentService {
     const emailReceiveREPs = channel.emailPayPal ? channel.emailPayPal : email;
 
     try {
-      this.channelService.updateREPs(channel.id, repsAfterWithDraw);
+      await Promise.all([
+        this.channelService.updateREPs(channel.id, repsAfterWithDraw),
 
-      this.paypalService.createPayout(emailReceiveREPs, amountWithDraw);
+        this.paypalService.createPayout(emailReceiveREPs, amountWithDraw),
 
-      this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs);
+        this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs),
+      ]);
 
       const dataNotification = {
         sender: 'system',

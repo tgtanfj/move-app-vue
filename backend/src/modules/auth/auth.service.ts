@@ -206,6 +206,10 @@ export class AuthService {
     // check password
     const account = await this.userService.findOneAccount(user.id);
 
+    if (!account) {
+      return null;
+    }
+
     const isPasswordValid = await bcrypt.compare(password, account.password);
 
     if (!isPasswordValid) {
