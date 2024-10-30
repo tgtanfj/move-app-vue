@@ -9,6 +9,16 @@ extension UtilDateTime on DateTime {
       return Constants.justNow;
     }
 
+    return _formatTimeDifference(difference);
+  }
+
+  static String formatTimestamp(int timestamp) {
+    final notificationTime = DateTime.fromMillisecondsSinceEpoch(timestamp).toUtc();
+    final difference = DateTime.now().difference(notificationTime);
+    return _formatTimeDifference(difference);
+  }
+
+  static String _formatTimeDifference(Duration difference) {
     if (difference.inSeconds < 60) {
       return '${difference.inSeconds} ${difference.inSeconds == 1 ? Constants.secondAgo : Constants.secondsAgo}';
     } else if (difference.inMinutes < 60) {
@@ -25,7 +35,7 @@ extension UtilDateTime on DateTime {
       return '$months ${months == 1 ? Constants.monthAgo : Constants.monthsAgo}';
     } else {
       final years = (difference.inDays / 365).floor();
-      return '$years ${years == 1 ? Constants.yeasAgo : Constants.yeasAgo}';
+      return '$years ${years == 1 ? Constants.yeaAgo : Constants.yeasAgo}';
     }
   }
 

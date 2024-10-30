@@ -56,6 +56,28 @@ class CommentRepository {
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, CommentModel>> getComment(int commentId) async {
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.get,
+        "${ApiUrls.getCommentEndPoint}$commentId",
+      );
+
+      if (response.statusCode == 200) {
+        final comment = CommentModel.fromJson(response.data['data']);
+        return Right(comment);
+      } else if (response.statusCode == 404) {
+        return const Left("Comment not found.");
+      } else {
+        return const Left("Unexpected error occurred.");
+      }
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
+
+
   Future<Either<String, Response>> postComment(
       CommentModel commentModel) async {
     try {

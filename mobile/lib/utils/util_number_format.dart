@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 extension UtilNumberFormat on int {
   String toCompactViewCount() {
     if (this >= 1000000000) {
@@ -23,5 +25,10 @@ extension UtilNumberFormat on int {
     } else {
       return '$minutes:$secondsStr'; 
     }
+  }
+
+  static String formatWithCommas(int value) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(value);
   }
 }

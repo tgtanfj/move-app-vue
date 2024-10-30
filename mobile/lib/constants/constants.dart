@@ -202,7 +202,8 @@ class Constants {
   static const String readMore = "Read More";
   static const String readLess = "Show Less";
   static const String cancelComment = "Cancel Reservation?";
-  static const String areUSure = "Are you sure you want to cancel this reservation?";
+  static const String areUSure =
+      "Are you sure you want to cancel this reservation?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
   static const String writeReply = "Write a reply";
@@ -224,7 +225,8 @@ class Constants {
   static const String notFound = "Not Found";
   static const String anonymous = "Anonymous";
   static const String showMoreReplies = "Show more replies";
-  static const String emptyComments = "No comments to  display";
+  static const String emptyComments = "No comments to display";
+  static const String leaveAComment = "Leave a comment to get started";
 
   static const String editedProfileSuccessfully = "Edited profile successfully";
   static const String rateTheVideo = "Rate the video";
@@ -271,6 +273,9 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
-  static const String loginToWebsite ="Please log in to the website to view this notice!";
+  static const String loginToWebsite =
+      "Please log in to the website to view this notice!";
   static const String okay = "Okay";
+  static const String emptyNotification =
+      "Your notifications will be displayed here. Follow your favorite channels to receive notifications about new videos.";
 }

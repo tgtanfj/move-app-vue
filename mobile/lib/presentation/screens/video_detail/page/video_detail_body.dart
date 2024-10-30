@@ -27,7 +27,9 @@ import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
 class VideoDetailBody extends StatefulWidget {
-  const VideoDetailBody({super.key});
+  const VideoDetailBody({
+    super.key,
+  });
 
   @override
   State<VideoDetailBody> createState() => _VideoDetailBodyState();
@@ -98,6 +100,21 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     },
                   )
                 : null;
+            if (state.targetCommentId != null) {
+              final comments = state.listComments;
+
+              if ((comments?.length ?? 0) > 2) {
+                double scrollToPosition = 100;
+
+                Future.delayed(const Duration(seconds: 1), () {
+                  _scrollController.animateTo(
+                    scrollToPosition,
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.linear,
+                  );
+                });
+              }
+            }
           },
           builder: (context, state) {
             return Column(
@@ -128,7 +145,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     buildWriteCommentPart(context, state),
                     Center(
                       child: Text(
-                        Constants.emptyComments ,
+                        Constants.emptyComments,
                         style:
                             AppTextStyles.montserratStyle.regular14GraniteGray,
                       ),
@@ -155,6 +172,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         )
                       : ListView.separated(
                           controller: _scrollController,
+                          physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: state.listComments?.length ?? 0,
                           separatorBuilder: (BuildContext context, int index) =>
@@ -167,6 +185,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                             final isHideRepliesForCurrentComment =
                                 state.isHiddenListReply?[commentModel?.id] ??
                                     false;
+                            final hasTargetCommentId =
+                                state.targetCommentId == commentModel?.id &&
+                                    state.targetReplyId == 0;
                             return Column(
                               children: [
                                 if (index == 0) ...[
@@ -185,6 +206,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                                         context, commentModel,
                                         isLike: false);
                                   },
+                                  hasTargetCommentId: hasTargetCommentId,
                                   isHideReplies: isHideRepliesForCurrentComment,
                                   widgetHideListReplies: Visibility(
                                     visible: isHideRepliesForCurrentComment,
@@ -231,8 +253,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                                           int replyIndex) {
                                         final replyCommentModel =
                                             replies[replyIndex];
+                                        final hasTargetReplyId =
+                                            state.targetReplyId ==
+                                                replyCommentModel.id;
                                         return ItemComment(
                                           commentModel: replyCommentModel,
+                                          hasTargetReplyId: hasTargetReplyId,
                                           isShowReplyButton: false,
                                           onTapLike: () {
                                             _handleCommentReaction(
@@ -438,7 +464,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.facebookOption));
-              if(state.facebookLink != null && state.facebookLink!.isNotEmpty){
+              if (state.facebookLink != null &&
+                  state.facebookLink!.isNotEmpty) {
                 openExternalApplication(state.facebookLink ?? "");
               }
             },
@@ -446,7 +473,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.twitterOption));
-              if(state.twitterLink != null && state.twitterLink!.isNotEmpty){
+              if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
                 openExternalApplication(state.twitterLink ?? "");
               }
             },

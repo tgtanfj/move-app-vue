@@ -21,6 +21,8 @@ class ItemComment extends StatefulWidget {
   final bool isShowReplyButton;
   final bool isShowTemporaryListReply;
   final int? originalNumOfReply;
+  final bool hasTargetReplyId;
+  final bool hasTargetCommentId;
 
   const ItemComment(
       {super.key,
@@ -35,7 +37,9 @@ class ItemComment extends StatefulWidget {
       this.onTapShowInputReply,
       this.isShowReplyButton = true,
       this.isShowTemporaryListReply = false,
-      this.originalNumOfReply});
+      this.originalNumOfReply,
+      this.hasTargetReplyId = false,
+      this.hasTargetCommentId = false});
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -47,252 +51,292 @@ class _ItemCommentState extends State<ItemComment> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
+    return Container(
+      decoration: widget.hasTargetReplyId
+          ? BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: AppColors.lavenderBlush,
+              border: Border.all(width: 1, color: AppColors.tiffanyBlue))
+          : null,
       child: SingleChildScrollView(
         child: Container(
           margin: const EdgeInsets.only(top: 15, right: 12, left: 12),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
             children: [
-              ClipOval(
-                  child: (widget.commentModel?.user?.avatar?.isEmpty) ?? true
-                      ? Image.asset(
-                          AppImages.defaultAvatar.webpAssetPath,
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.network(
-                          widget.commentModel?.user?.avatar ?? "",
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        )),
-              const SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 140,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: AppColors.rajah,
-                      ),
-                      child: Visibility(
-                        visible: (widget.commentModel?.totalDonation ?? 0) > 0,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(top: 3, left: 8, bottom: 3),
-                          child: Row(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ClipOval(
+                      child:
+                          (widget.commentModel?.user?.avatar?.isEmpty) ?? true
+                              ? Image.asset(
+                                  AppImages.defaultAvatar.webpAssetPath,
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  widget.commentModel?.user?.avatar ?? "",
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      AppImages.defaultAvatar.webpAssetPath,
+                                      width: 48,
+                                      height: 48,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                )),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.only(left: 12),
+                      decoration: widget.hasTargetCommentId
+                          ? BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.lavenderBlush,
+                              border: Border.all(
+                                  width: 1, color: AppColors.tiffanyBlue),
+                            )
+                          : null,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 140,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: AppColors.rajah,
+                            ),
+                            child: Visibility(
+                              visible:
+                                  (widget.commentModel?.totalDonation ?? 0) > 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 3, left: 8, bottom: 3),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      AppIcons.moveReps.svgAssetPath,
+                                    ),
+                                    const SizedBox(
+                                      width: 6,
+                                    ),
+                                    Text(
+                                      Constants.repSender,
+                                      style: AppTextStyles
+                                          .montserratStyle.bold12White,
+                                    ),
+                                    const SizedBox(
+                                      width: 19,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Row(
                             children: [
-                              SvgPicture.asset(
-                                AppIcons.moveReps.svgAssetPath,
-                              ),
-                              const SizedBox(
-                                width: 6,
-                              ),
                               Text(
-                                Constants.repSender,
+                                widget.commentModel?.user?.username ?? "",
+                                maxLines: null,
                                 style:
-                                    AppTextStyles.montserratStyle.bold12White,
+                                    AppTextStyles.montserratStyle.bold16Black,
                               ),
                               const SizedBox(
-                                width: 19,
+                                width: 17,
+                              ),
+                              Visibility(
+                                  visible: widget
+                                          .commentModel?.channel?.isBlueBadge ??
+                                      false,
+                                  child: SvgPicture.asset(
+                                    AppIcons.verify.svgAssetPath,
+                                  )),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Visibility(
+                                  visible: widget
+                                          .commentModel?.channel?.isPinkBadge ??
+                                      false,
+                                  child: SvgPicture.asset(
+                                    AppIcons.starFlower.svgAssetPath,
+                                  )),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Visibility(
+                                  visible:
+                                      (widget.commentModel?.totalDonation ??
+                                              0) >
+                                          0,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AppIcons.locReps.svgAssetPath,
+                                        width: 14,
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        "Gifted '${widget.commentModel?.totalDonation}' REPs",
+                                        style: AppTextStyles
+                                            .montserratStyle.semiBold14Rajah,
+                                      ),
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                    ],
+                                  )),
+                              Expanded(
+                                child: Text(
+                                  (widget.commentModel?.createTimeConvert ?? "")
+                                      .toString(),
+                                  style: AppTextStyles
+                                      .montserratStyle.regular14GraniteGray,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          (widget.commentModel?.user?.username?.isEmpty ?? true)
-                              ? Constants.anonymous
-                              : "${widget.commentModel?.user?.username!}",
-                          maxLines: null,
-                          style: AppTextStyles.montserratStyle.bold16Black,
-                        ),
-                        const SizedBox(
-                          width: 17,
-                        ),
-                        Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isBlueBadge ??
-                                    false,
-                            child: SvgPicture.asset(
-                              AppIcons.verify.svgAssetPath,
-                            )),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Visibility(
-                            visible:
-                                widget.commentModel?.channel?.isPinkBadge ??
-                                    false,
-                            child: SvgPicture.asset(
-                              AppIcons.starFlower.svgAssetPath,
-                            )),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Visibility(
-                            visible:
-                                (widget.commentModel?.totalDonation ?? 0) > 0,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width - 0,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SvgPicture.asset(
-                                  AppIcons.locReps.svgAssetPath,
-                                  width: 14,
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
                                 Text(
-                                  "Gifted '${widget.commentModel?.totalDonation}' REPs",
+                                  isSeeMore
+                                      ? widget.commentModel?.content ?? ""
+                                      : ((widget.commentModel?.content ?? "")
+                                                  .length >
+                                              300
+                                          ? "${(widget.commentModel?.content ?? "").substring(0, 300)}..."
+                                          : widget.commentModel?.content ?? ""),
                                   style: AppTextStyles
-                                      .montserratStyle.semiBold14Rajah,
+                                      .montserratStyle.regular16Black,
+                                  maxLines: null,
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
+                                  textAlign: TextAlign.left,
                                 ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                              ],
-                            )),
-                        Expanded(
-                          child: Text(
-                            (widget.commentModel?.createTimeConvert ?? "")
-                                .toString(),
-                            style: AppTextStyles
-                                .montserratStyle.regular14GraniteGray,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width - 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isSeeMore
-                                ? widget.commentModel?.content ?? ""
-                                : ((widget.commentModel?.content ?? "").length >
+                                (widget.commentModel?.content ?? "").length >
                                         300
-                                    ? "${(widget.commentModel?.content ?? "").substring(0, 300)}..."
-                                    : widget.commentModel?.content ?? ""),
-                            style: AppTextStyles.montserratStyle.regular16Black,
-                            maxLines: null,
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                            textAlign: TextAlign.left,
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isSeeMore = !isSeeMore;
+                                          });
+                                        },
+                                        child: Text(
+                                          isSeeMore
+                                              ? Constants.readLess
+                                              : Constants.readMore,
+                                          style: AppTextStyles
+                                              .montserratStyle.semiBold16Grey,
+                                        ),
+                                      )
+                                    : const SizedBox()
+                              ],
+                            ),
                           ),
-                          (widget.commentModel?.content ?? "").length > 300
-                              ? GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isSeeMore = !isSeeMore;
-                                    });
-                                  },
-                                  child: Text(
-                                    isSeeMore
-                                        ? Constants.readLess
-                                        : Constants.readMore,
-                                    style: AppTextStyles
-                                        .montserratStyle.semiBold16Grey,
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: GestureDetector(
+                                      onTap: widget.onTapLike,
+                                      child: SvgPicture.asset(
+                                        widget.commentModel?.likeStatus ==
+                                                LikeStatus.liked
+                                            ? AppIcons.likeFiled.svgAssetPath
+                                            : AppIcons.like.svgAssetPath,
+                                      ),
+                                    ),
                                   ),
-                                )
-                              : const SizedBox()
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      (widget.commentModel?.numberOfLike ?? 0)
+                                          .toString(),
+                                      style: AppTextStyles
+                                          .montserratStyle.regular16TiffanyBlue,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: GestureDetector(
+                                      onTap: widget.onTapDislike,
+                                      child: SvgPicture.asset(
+                                        widget.commentModel?.likeStatus ==
+                                                LikeStatus.unliked
+                                            ? AppIcons
+                                                .dislikeFilled.svgAssetPath
+                                            : AppIcons.dislike.svgAssetPath,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Visibility(
+                                    visible: widget.isShowReplyButton,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: GestureDetector(
+                                        onTap: widget.onTapShowInputReply,
+                                        child: Text(
+                                          Constants.reply,
+                                          style: AppTextStyles.montserratStyle
+                                              .regular16TiffanyBlue,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () {},
+                                child: SvgPicture.asset(
+                                  AppIcons.dots.svgAssetPath,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: GestureDetector(
-                                onTap: widget.onTapLike,
-                                child: SvgPicture.asset(
-                                  widget.commentModel?.likeStatus ==
-                                          LikeStatus.liked
-                                      ? AppIcons.likeFiled.svgAssetPath
-                                      : AppIcons.like.svgAssetPath,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                (widget.commentModel?.numberOfLike ?? 0)
-                                    .toString(),
-                                style: AppTextStyles
-                                    .montserratStyle.regular16TiffanyBlue,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: GestureDetector(
-                                onTap: widget.onTapDislike,
-                                child: SvgPicture.asset(
-                                  widget.commentModel?.likeStatus ==
-                                          LikeStatus.unliked
-                                      ? AppIcons.dislikeFilled.svgAssetPath
-                                      : AppIcons.dislike.svgAssetPath,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            Visibility(
-                              visible: widget.isShowReplyButton,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: GestureDetector(
-                                  onTap: widget.onTapShowInputReply,
-                                  child: Text(
-                                    Constants.reply,
-                                    style: AppTextStyles
-                                        .montserratStyle.regular16TiffanyBlue,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: SvgPicture.asset(
-                            AppIcons.dots.svgAssetPath,
-                          ),
-                        ),
-                      ],
-                    ),
+                  )
+                ],
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 62),
+                child: Wrap(
+                  children: [
                     widget.widgetReplyInput ?? const SizedBox.shrink(),
                     widget.widgetHideListReplies ?? const SizedBox.shrink(),
                     (widget.isShowTemporaryListReply &&
@@ -302,7 +346,7 @@ class _ItemCommentState extends State<ItemComment> {
                             children: [
                               Container(
                                 margin: widget.isHideReplies
-                                    ? const EdgeInsets.only(left: 70)
+                                    ? const EdgeInsets.only(left: 62)
                                     : EdgeInsets.zero,
                                 child: widget.widgetShowListReplies,
                               ),
@@ -316,7 +360,7 @@ class _ItemCommentState extends State<ItemComment> {
                                   const SizedBox.shrink(),
                               Container(
                                 margin: widget.isHideReplies
-                                    ? const EdgeInsets.only(left: 70)
+                                    ? const EdgeInsets.only(left: 62)
                                     : EdgeInsets.zero,
                                 child: widget.widgetShowListReplies,
                               ),
@@ -324,7 +368,7 @@ class _ItemCommentState extends State<ItemComment> {
                           ),
                     const SizedBox(
                       height: 16,
-                    )
+                    ),
                   ],
                 ),
               )

@@ -29,4 +29,7 @@ class ApiUrls {
       "home/you-may-like-no-login";
   static const String follow = "follow";
   static const String homeCategoriesEndPoint = "home/categories";
+  static const String realTimeDatabaseUrl="https://move-project-51201-default-rtdb.asia-southeast1.firebasedatabase.app";
+  static const String getCommentEndPoint = 'comment/';
+
 }

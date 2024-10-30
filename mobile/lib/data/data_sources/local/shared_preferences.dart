@@ -52,4 +52,20 @@ class SharedPrefer {
   String getUserAvatarUrl() {
     return _prefsInstance.getString(SharedPreferencesKey.avatarUrl) ?? "";
   }
+
+  Future<void> setUserId(int value) async {
+    await _prefsInstance.setInt(SharedPreferencesKey.userId, value);
+  }
+
+  int getUserId() {
+    return _prefsInstance.getInt(SharedPreferencesKey.userId) ?? 0;
+  }
+
+  Future<void> setUnreadNotificationCount(int value) async {
+    await _prefsInstance.setInt(SharedPreferencesKey.unreadNotificationCount, value);
+  }
+
+  int getUnreadNotificationCount() {
+    return _prefsInstance.getInt(SharedPreferencesKey.unreadNotificationCount) ?? 0;
+  }
 }

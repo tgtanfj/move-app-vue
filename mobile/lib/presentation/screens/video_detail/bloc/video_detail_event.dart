@@ -8,9 +8,14 @@ sealed class VideoDetailEvent extends Equatable {
 
 final class VideoDetailInitialEvent extends VideoDetailEvent {
   final int videoId;
-  const VideoDetailInitialEvent({required this.videoId});
+  final int? targetCommentId;
+  final int? targetReplyId;
+
+  const VideoDetailInitialEvent(
+      {required this.videoId, this.targetCommentId, this.targetReplyId});
+
   @override
-  List<Object?> get props => [videoId];
+  List<Object?> get props => [videoId, targetCommentId, targetReplyId];
 }
 
 final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
@@ -160,4 +165,3 @@ final class VideoDetailShareSocialEvent extends VideoDetailEvent {
         option,
       ];
 }
-

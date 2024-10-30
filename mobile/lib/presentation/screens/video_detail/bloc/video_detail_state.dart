@@ -32,9 +32,10 @@ class VideoDetailState extends Equatable {
   final String? option;
   final String? twitterLink;
   final String? facebookLink;
+  final int? targetCommentId;
+  final int? targetReplyId;
 
-  const VideoDetailState({
-    this.video,
+  const VideoDetailState({this.video,
     this.status,
     this.isShowVideo = false,
     this.inputComment,
@@ -54,14 +55,15 @@ class VideoDetailState extends Equatable {
     this.option,
     this.twitterLink,
     this.facebookLink,
-  });
+    this.targetCommentId,
+    this.targetReplyId});
 
-  static VideoDetailState initial() => const VideoDetailState(
+  static VideoDetailState initial() =>
+      const VideoDetailState(
         status: VideoDetailStatus.initial,
       );
 
-  VideoDetailState copyWith({
-    VideoDetailStatus? status,
+  VideoDetailState copyWith({VideoDetailStatus? status,
     String? inputComment,
     List<CommentModel>? listComments,
     Map<int, List<CommentModel>>? replies,
@@ -81,34 +83,37 @@ class VideoDetailState extends Equatable {
     String? option,
     String? twitterLink,
     String? facebookLink,
-  }) {
+    int? targetCommentId,
+    int? targetReplyId}) {
     return VideoDetailState(
-      video: video ?? this.video,
-      status: status ?? this.status,
-      isShowVideo: isShowVideo ?? this.isShowVideo,
-      inputComment: inputComment ?? this.inputComment,
-      listComments: listComments ?? this.listComments,
-      replies: replies ?? this.replies,
-      lastCommentId: lastCommentId ?? this.lastCommentId,
-      commentModel: commentModel ?? this.commentModel,
-      rateSelected: rateSelected ?? this.rateSelected,
-      errorMessage: errorMessage ?? this.errorMessage,
-      lastIdReply: lastIdReply ?? this.lastIdReply,
-      isHiddenListReply: isHiddenListReply ?? this.isHiddenListReply,
-      inputReply: inputReply ?? this.inputReply,
-      isHiddenInputReply: isHiddenInputReply ?? this.isHiddenInputReply,
-      originalNumOfReply: originalNumOfReply ?? this.originalNumOfReply,
-      isShowTemporaryListReply:
-          isShowTemporaryListReply ?? this.isShowTemporaryListReply,
-      videoId: videoId ?? this.videoId,
-      option: option ?? this.option,
-      twitterLink: twitterLink ?? this.twitterLink,
-      facebookLink: facebookLink ?? this.facebookLink,
-    );
+        video: video ?? this.video,
+        status: status ?? this.status,
+        isShowVideo: isShowVideo ?? this.isShowVideo,
+        inputComment: inputComment ?? this.inputComment,
+        listComments: listComments ?? this.listComments,
+        replies: replies ?? this.replies,
+        lastCommentId: lastCommentId ?? this.lastCommentId,
+        commentModel: commentModel ?? this.commentModel,
+        rateSelected: rateSelected ?? this.rateSelected,
+        errorMessage: errorMessage ?? this.errorMessage,
+        lastIdReply: lastIdReply ?? this.lastIdReply,
+        isHiddenListReply: isHiddenListReply ?? this.isHiddenListReply,
+        inputReply: inputReply ?? this.inputReply,
+        isHiddenInputReply: isHiddenInputReply ?? this.isHiddenInputReply,
+        originalNumOfReply: originalNumOfReply ?? this.originalNumOfReply,
+        isShowTemporaryListReply:
+        isShowTemporaryListReply ?? this.isShowTemporaryListReply,
+        videoId: videoId ?? this.videoId,
+        option: option ?? this.option,
+        twitterLink: twitterLink ?? this.twitterLink,
+        facebookLink: facebookLink ?? this.facebookLink,
+        targetCommentId: targetCommentId ?? this.targetCommentId,
+        targetReplyId: targetReplyId ?? this.targetReplyId);
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         status,
         inputComment,
         listComments,
@@ -129,5 +134,7 @@ class VideoDetailState extends Equatable {
         option,
         twitterLink,
         facebookLink,
+        targetCommentId,
+        targetReplyId,
       ];
 }

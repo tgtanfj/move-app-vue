@@ -11,15 +11,19 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     on<MenuSelectMoreEvent>(_onMenuSelectMoreEvent);
     on<MenuLogoutSuccessEvent>(_onMenuLogoutSuccessEvent);
   }
+
   final userRepository = UserRepository();
 
   void _onMenuInitialEvent(
       MenuInitialEvent event, Emitter<MenuState> emit) async {
     String token = SharedPrefer.sharedPrefer.getUserToken();
+
     if (token.isNotEmpty) {
       final result = await userRepository.getUserProfile();
       result.fold((l) {
-        emit(state.copyWith(status: MenuStatus.failure));
+        emit(state.copyWith(
+          status: MenuStatus.failure,
+        ));
       }, (r) {
         emit(state.copyWith(
           user: r,

@@ -1,10 +1,10 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=D:\ht\KI2_22_23\DACN\food-app\flutter
-FLUTTER_APPLICATION_PATH=D:\move-project-aug-2024\mobile
+FLUTTER_ROOT=D:\flutter_dev\flutter
+FLUTTER_APPLICATION_PATH=D:\madison_internship\project-move\move-project-aug-2024\mobile
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
-FLUTTER_BUILD_NUMBER=10.5
+FLUTTER_BUILD_NUMBER=15
 DART_OBFUSCATION=false
 TRACK_WIDGET_CREATION=true
 TREE_SHAKE_ICONS=false
