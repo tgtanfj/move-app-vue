@@ -70,7 +70,8 @@ class SuggestionSearchBox extends StatelessWidget {
                         widthAvatar: 40,
                         heightAvatar: 40,
                         radiusAvatar: 50),
-                    title: Row(
+                    title: Wrap(
+                      alignment: WrapAlignment.start,
                       children: [
                         Text(
                           suggestionModel?.topInstructors?[index].name ?? "",
@@ -83,9 +84,6 @@ class SuggestionSearchBox extends StatelessWidget {
                                 false)
                             ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
                             : const SizedBox(),
-                        const SizedBox(
-                          width: 4,
-                        ),
                       ],
                     ),
                     trailing: Text(

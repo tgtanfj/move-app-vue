@@ -7,11 +7,17 @@ import CustomSelection from '@components/channel-view/CustomSelection.vue'
 import FiguresCard from '@components/dashboard-analytics/FiguresCard.vue'
 import { SHOW_ANALYTICS } from '@constants/view-channel.constant'
 import { ChevronLeft } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { ADMIN_BASE } from '@constants/api.constant'
+import { apiAxios } from '@helpers/axios.helper'
+import { convertDatePublish } from '@utils/convertTimePostVideo.util'
 
 const selectedCountry = ref(null)
 const router = useRouter()
+const route = useRoute()
+
+const videoInDepthData = ref(null)
 
 const data = [
   { name: '18-24', total: 1100 },
@@ -41,6 +47,19 @@ const backToList = () => {
 const backToVideoAnalytics = () => {
   router.go(-1)
 }
+
+onMounted(async () => {
+  const videoAnaId = route.params.videoId
+  if(videoAnaId) {
+    try {
+      const res = await apiAxios.get(`${ADMIN_BASE}/video/analytic/${videoAnaId}?option=all-time`)
+      videoInDepthData.value = res.data.data
+      console.log(videoInDepthData.value)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+})
 </script>
 
 <template>
@@ -49,37 +68,37 @@ const backToVideoAnalytics = () => {
       @click="backToVideoAnalytics"
       class="flex items-center text-lg font-semibold text-primary"
     >
-      <ChevronLeft class="mr-1" /> Back to video analytics
+      <ChevronLeft class="mr-1" /> {{ $t('video_in_depth.back') }}
     </button>
     <div class="flex justify-between items-center my-1">
       <h1 class="font-bold text-3xl">In-depth analytics</h1>
       <CustomSelection label="show" :listItems="SHOW_ANALYTICS" />
     </div>
 
-    <div class="flex gap-14 mt-2">
+    <div class="flex gap-14 mt-2" v-if="videoInDepthData">
       <!-- Left content -->
       <div>
         <div class="w-[250px] h-[150px]">
           <img
-            src="https://i.pinimg.com/736x/2d/77/af/2d77af96a45900c929de6fc1f7a74a53.jpg"
+            :src="videoInDepthData.thumbnail"
             alt="thumbnail"
             class="w-full h-full"
           />
         </div>
-        <p class="font-bold text-lg mt-2">Leg days</p>
-        <p class="text-lg text-gray-500 font-medium">Just Move</p>
+        <p class="font-bold text-lg mt-2">{{ videoInDepthData.title }}</p>
+        <p class="text-lg text-gray-500 font-medium">{{ videoInDepthData.category }}</p>
         <div class="flex w-full justify-between mt-7">
           <div class="flex flex-col gap-2 uppercase text-gray-500">
-            <p class="font-semibold">views</p>
-            <p class="font-semibold">avg. view time</p>
-            <p class="font-semibold">Ratings</p>
-            <p class="font-semibold">Published on</p>
+            <p class="font-semibold">{{ $t('search.views') }}</p>
+            <p class="font-semibold">{{ $t('video_in_depth.avg_view_time') }}</p>
+            <p class="font-semibold">{{ $t('search.rating') }}</p>
+            <p class="font-semibold">{{ $t('video_in_depth.publish_on') }}</p>
           </div>
           <div class="flex flex-col gap-2 items-end">
-            <p>1,345</p>
-            <p>20:14</p>
-            <p class="flex gap-1 items-center">4.5 <StartIcon class="h-[16px] w-[16px]" /></p>
-            <p>13 Aug 2020</p>
+            <p>{{ videoInDepthData.numberOfViews }}</p>
+            <p>{{ videoInDepthData.avgWatched }}</p>
+            <p class="flex gap-1 items-center">{{ videoInDepthData.rating }}<StartIcon class="h-[16px] w-[16px]" /></p>
+            <p>{{ convertDatePublish(videoInDepthData.publishedOn) }}</p>
           </div>
         </div>
       </div>
@@ -90,7 +109,7 @@ const backToVideoAnalytics = () => {
           <FiguresCard title="Total REPs earned" />
           <FiguresCard title="Number of shares" />
         </div>
-        <h2 class="mt-8 font-bold text-lg">Demographics</h2>
+        <h2 class="mt-8 font-bold text-lg">{{ $t('video_in_depth.demographics') }}</h2>
         <!-- Tabs info -->
         <Tabs defaultValue="gender">
           <TabsList class="w-full flex justify-start p-0 mt-1 border-b-[1px] border-[#999999]">
@@ -98,19 +117,19 @@ const backToVideoAnalytics = () => {
               value="gender"
               class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mr-5 border-white rounded-none data-[state=active]:border-[#000] data-[state=active]:text-[#000]"
             >
-              <span class="font-bold">Gender</span>
+              <span class="font-bold">{{ $t('video_in_depth.gender') }}</span>
             </TabsTrigger>
             <TabsTrigger
               value="age"
               class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-5 border-white rounded-none data-[state=active]:border-[#000] data-[state=active]:text-[#000]"
             >
-              <span class="font-bold">Age</span>
+              <span class="font-bold">{{ $t('video_in_depth.age') }}</span>
             </TabsTrigger>
             <TabsTrigger
               value="country"
               class="data-[state=active]:border-b-[3px] border-b-[3px] px-0 mx-5 border-white rounded-none data-[state=active]:border-[#000] data-[state=active]:text-[#000]"
             >
-              <span class="font-bold">Country</span>
+              <span class="font-bold">{{ $t('video_in_depth.country') }}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -136,7 +155,7 @@ const backToVideoAnalytics = () => {
                     @click="backToList"
                     class="flex justify-start items-center font-medium mt-4 m-0 text-base text-primary"
                   >
-                    <ChevronLeft class="p-0 m-0" /> Back to video analytics
+                    <ChevronLeft class="p-0 m-0" /> {{ $t('video_in_depth.back') }}
                   </button>
                 </CardTitle>
               </CardHeader>
@@ -151,18 +170,11 @@ const backToVideoAnalytics = () => {
                   </li>
                 </ul>
               </CardContent>
-
-              <CardContent v-else class="pb-5">
-                <p>Hiển thị thông tin chi tiết của {{ selectedCountry.name }}...</p>
-                <button @click="backToList" class="mt-4 text-primary underline">
-                  Quay lại danh sách
-                </button>
-              </CardContent>
             </Card>
 
             <Card v-else class="w-[34rem] shadow-[0px_5px_10px_rgba(0,0,0,0.35)] mx-0 mt-0">
               <CardHeader class="p-5 pb-3">
-                <CardTitle class="text-lg font-bold">Most views</CardTitle>
+                <CardTitle class="text-lg font-bold">{{ $t('video_in_depth.most_views') }}</CardTitle>
               </CardHeader>
               <CardContent class="pb-5">
                 <ul class="w-full flex flex-col gap-1 list-none">

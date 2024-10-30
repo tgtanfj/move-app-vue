@@ -25,6 +25,7 @@ export class StripeService {
   async listPaymentMethod(customerId: string) {
     const paymentMethods = await this.stripe.customers.listPaymentMethods(customerId, {
       type: 'card',
+      limit: 1,
     });
 
     const paymentMethodFiltered = paymentMethods.data.map((paymentMethod) => ({
@@ -39,7 +40,7 @@ export class StripeService {
       name: paymentMethod.billing_details.name,
     }));
 
-    return paymentMethodFiltered;
+    return paymentMethodFiltered[0];
   }
 
   async attachPaymentMethod(customerId: string, addPaymentMethod: AttachPaymentMethodDto) {
@@ -64,14 +65,22 @@ export class StripeService {
     });
   }
 
-  async charge(amount: number, paymentMethodId: string, customerId: string) {
-    return this.stripe.paymentIntents.create({
+  async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
+    return await this.stripe.paymentIntents.create({
       amount: amount * 100,
       customer: customerId,
       payment_method: paymentMethodId,
       currency: this.configService.get('STRIPE_CURRENCY'),
-      off_session: true,
-      confirm: true,
+      off_session: saveCard ? false : true,
+      confirm: saveCard ? false : true,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      payment_method_options: {
+        card: {
+          setup_future_usage: saveCard ? 'off_session' : undefined,
+        },
+      },
     });
   }
 

@@ -21,29 +21,21 @@ const videoDetail = ref(null)
 const isLoading = ref(true)
 const isNotFoundVideo = ref(false)
 
-const durationVideo = ref(0)
-const hasCalledApi = ref(false)
-const videoId = ref(0)
-const viewTimeWatched = ref(0)
-
-let timer = null
-
 const goBackHome = () => {
   router.push('/')
 }
 const commentToggleStore = useCommentToggleStore()
 
-const getVideoDetailById = async (videoIdParams, token) => {
+const getVideoDetailById = async (videoId, token) => {
   try {
     isLoading.value = true
     isNotFoundVideo.value = false
     let result = null
 
-    videoId.value = videoIdParams
     if (!token) {
-      result = await axios.get(`${ADMIN_BASE}/video/${videoIdParams}/details`)
+      result = await axios.get(`${ADMIN_BASE}/video/${videoId}/details`)
     } else {
-      result = await apiAxios.get(`/video/${videoIdParams}/details`)
+      result = await apiAxios.get(`/video/${videoId}/details`)
     }
     commentToggleStore.setVideoChannelId(result?.data?.data?.channel?.id)
     commentToggleStore.setIsCommentable(result?.data?.data?.isCommentable)
@@ -54,9 +46,7 @@ const getVideoDetailById = async (videoIdParams, token) => {
       dataVideo.url = vimeoPlayerUrl
     }
     videoDetail.value = dataVideo
-    durationVideo.value = dataVideo.durationsVideo
 
-    startTimer()
   } catch (error) {
     console.log('Error', error)
     isNotFoundVideo.value = true
@@ -64,81 +54,6 @@ const getVideoDetailById = async (videoIdParams, token) => {
     isLoading.value = false
   }
 }
-
-const startTimer = () => {
-  let timeWatched = 0
-
-  if (timer) {
-    clearInterval(timer)
-  }
-
-  timer = setInterval(() => {
-    if (hasCalledApi.value) {
-      clearInterval(timer)
-      return
-    }
-
-    timeWatched += 1
-    viewTimeWatched.value = timeWatched
-
-    if (timeWatched >= (durationVideo.value * 0.7)) {
-      callViewApi()
-      hasCalledApi.value = true
-      clearInterval(timer)
-    }
-  }, 1000)
-}
-
-const callViewApi = async () => {
-  const jsonToSend = {
-    videoId: Number(videoId.value),
-    date: new Date().toISOString().split('T')[0]
-  }
-
-  try {
-    await axios.post(`${ADMIN_BASE}/view`, jsonToSend)
-  } catch (error) {
-    console.log('Error recording view:', error)
-  }
-}
-
-const onBeforeRouteLeave = (to, from, next) => {
-  clearInterval(timer)
-  if (hasCalledApi.value) {
-    callViewApiWithViewTime()
-  }
-  next()
-}
-
-const callViewApiWithViewTime = async () => {
-  const jsonToSend = {
-    videoId: Number(videoId.value),
-    date: new Date().toISOString().split('T')[0],
-    viewTime: Number(viewTimeWatched.value) 
-  }
-
-  try {
-    await axios.post(`${ADMIN_BASE}/view  `, jsonToSend)
-  } catch (error) {
-    console.log('Error recording view with viewTime:', error)
-  }
-}
-
-onMounted(() => {
-  router.beforeEach((to, from, next) => {
-    onBeforeRouteLeave(to, from, next)
-  })
-})
-
-onBeforeUnmount(() => {
-  clearInterval(timer)
-})
-
-watch(() => route.params.id, (newId) => {
-  hasCalledApi.value = false
-  viewTimeWatched.value = 0
-  getVideoDetailById(newId, authStore.accessToken)
-})
 
 watch(
   [() => route.params.id, () => authStore.accessToken],

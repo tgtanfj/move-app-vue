@@ -391,5 +391,15 @@
     "get": "Get REPs",
     "success": "Donate success",
     "success_desc": "You have donated { donateSuccessReps } REPs successfully!"
+  },
+  "video_in_depth": {
+    "most_views": "Most views",
+    "back": "Back to video analytics",
+    "country": "Country",
+    "age": "Age",
+    "gender": "Gender",
+    "demographics": "Demographics",
+    "avg_view_time": "avg. view time",
+    "publish_on": "Published on"
   }
 }

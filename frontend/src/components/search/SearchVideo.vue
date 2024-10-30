@@ -4,6 +4,7 @@ import EyeIcon from '@assets/icons/EyeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { convertToTimeFormat } from '@utils/formatVideoLength.util'
+import { formatViews } from '@utils/formatViews.util'
 import { detectDuration } from '@utils/uploadVideo.util'
 
 const props = defineProps({

@@ -61,3 +61,14 @@ export const convertTimeComment = (timestamp) => {
     return years === 1 ? '1 year ago' : `${years} years ago`
   }
 }
+
+export const convertDatePublish = (publishedOn) => {
+  const dateObj = new Date(publishedOn);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+  const day = dateObj.getDate();
+  const month = months[dateObj.getMonth()];
+  const year = dateObj.getFullYear();
+
+  return `${day} ${month} ${year}`
+}

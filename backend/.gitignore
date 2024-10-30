@@ -3,6 +3,7 @@
 /node_modules
 /build
 /db/migrations/*
+/src/shared/store/
 
 # Logs
 logs

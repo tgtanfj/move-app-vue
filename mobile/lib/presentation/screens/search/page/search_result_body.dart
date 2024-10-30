@@ -32,6 +32,7 @@ class SearchResultBody extends StatefulWidget {
 class _SearchResultBodyState extends State<SearchResultBody> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -81,9 +83,12 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               ),
               onValueChanged: (value) {
-                context
-                    .read<SearchResultBloc>()
-                    .add(SearchLoadSuggestionEvent(searchText: value));
+                if (_debounce?.isActive ?? false) _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 300), () {
+                  context
+                      .read<SearchResultBloc>()
+                      .add(SearchLoadSuggestionEvent(searchText: value));
+                });
               },
               onSubmitted: (value) {
                 context
@@ -129,7 +134,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                 (state.categoryList.isEmpty &&
                                         state.videoList.isEmpty &&
                                         state.channelList.isEmpty)
-                                    ?  Center(
+                                    ? Center(
                                         child: Text(Constants.notFoundResult,
                                             style: AppTextStyles
                                                 .montserratStyle.bold14Black),
