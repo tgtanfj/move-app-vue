@@ -50,6 +50,10 @@ export class CommentService {
       dto.videoId && (videoId = dto.videoId);
       const ownerVideo = await this.videoRepository.getOwnerVideo(videoId);
 
+      if (ownerVideo.isCommentable === false) {
+        throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
+      }
+
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
         await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
