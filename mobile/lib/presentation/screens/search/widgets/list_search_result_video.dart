@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/data/models/channel_model.dart';
-import 'package:move_app/data/models/thumbnails_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
 import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
@@ -47,9 +46,8 @@ class ListSearchResultVideo extends StatelessWidget {
                           '00:00',
                   height: MediaQuery.of(context).size.height * 0.21,
                   isDurationText: true,
-                  image: videoList?[index].thumbnailsModel?.first.image,
-                  numberOfViews:
-                      videoList?[index].numberOfViews?.toCompactViewCount(),
+                  image: videoList?[index].thumbnailsModel?.firstOrNull?.image,
+                  numberOfViews: videoList?[index].numberOfViews?.toCompactViewCount(),
                 ),
                 const SizedBox(
                   height: 4.0,

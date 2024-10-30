@@ -356,4 +356,6 @@ class Constants {
       'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
   static const String goToHome = 'Go To Home';
 
+  static const String enterValidContent = "Please enter search content";
+  static const String notFoundResult = "No any search result found";
 }

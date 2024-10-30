@@ -36,7 +36,8 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
               imageUrl: widget.imageUrl ?? "",
               widthAvatar: 72,
               heightAvatar: 72,
-              radiusAvatar: 50),
+              radiusAvatar: 50,
+          ),
           const SizedBox(
             width: 22,
           ),
