@@ -25,11 +25,12 @@ const props = defineProps({
         />
       </router-link>
       <div
+        v-if="video.numberOfViews > 0"
         class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 views' }}
+          {{ video.numberOfViews && formatViews(video.numberOfViews) }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
@@ -38,7 +39,7 @@ const props = defineProps({
     </div>
     <div class="flex items-start mt-2">
       <router-link :to="`/channel/${video.channel.id}`">
-        <img class="w-[50px] h-[50px] rounded-full" :src="video.channel.image" />
+        <img class="w-[50px] h-[50px] rounded-full shrink-0" :src="video.channel.image" />
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">

@@ -401,9 +401,13 @@ const isReplyValid = computed(() => {
                 class="flex items-center gap-1 justify-start"
               >
                 <ChevronUp class="text-primary w-[20px] transition-all" />
-                <p class="text-primary text-[13px] font-semibold">
-                  {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
+                <p v-if="item?.numberOfReply > 1" class="text-primary text-[13px] font-semibold">
+                  {{ $t('comment.hide') }} {{ item?.numberOfReply }}
                   {{ $t('comment.replies') }}
+                </p>
+                <p v-else class="text-primary text-[13px] font-semibold">
+                  {{ $t('comment.hide') }} {{ item?.numberOfReply }}
+                  {{ $t('comment.reply') }}
                 </p>
               </div>
             </div>
