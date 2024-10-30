@@ -80,39 +80,25 @@ export class CommentRepository {
       );
     }
 
-    switch (sortBy) {
-      case 'createdAt':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
+    const comments = await queryBuilder.getMany(); 
 
-      case 'totalDonation':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      default:
-        queryBuilder.orderBy('comment.createdAt', 'DESC');
-        break;
-    }
-
-    const totalItemCount = await queryBuilder.getCount();
-
-    queryBuilder.skip((page - 1) * pageSize).take(pageSize);
-
-    const comments = await queryBuilder.getMany();
-
-    const totalPages = Math.ceil(totalItemCount / pageSize);
-    const itemFrom = (page - 1) * pageSize + 1;
-    const itemTo = Math.min(itemFrom + comments.length - 1, totalItemCount);
-
-    const data = await Promise.all(
+    const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
         const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
         return { ...comment, totalDonation };
       }),
     );
 
-    if (sortBy === 'receivedReps') {
-      data.sort((a, b) => {
+    enrichedComments.sort((a, b) => {
+      if (sortBy === 'createdAt') {
+        if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        }
+        if (b.totalDonation !== a.totalDonation) {
+          return b.totalDonation - a.totalDonation;
+        }
+        return b.numberOfLike - a.numberOfLike;
+      } else if (sortBy === 'receivedReps') {
         if (b.totalDonation !== a.totalDonation) {
           return b.totalDonation - a.totalDonation;
         }
@@ -120,11 +106,20 @@ export class CommentRepository {
           return b.createdAt.getTime() - a.createdAt.getTime();
         }
         return b.numberOfLike - a.numberOfLike;
-      });
-    }
+      }
+      return 0;
+    });
+
+    const totalItemCount = enrichedComments.length;
+    const totalPages = Math.ceil(totalItemCount / pageSize);
+
+    const paginatedData = enrichedComments.slice((page - 1) * pageSize, page * pageSize);
+
+    const itemFrom = (page - 1) * pageSize + 1;
+    const itemTo = Math.min(itemFrom + paginatedData.length - 1, totalItemCount);
 
     return {
-      data,
+      data: paginatedData,
       totalItemCount,
       totalPages,
       itemFrom,

@@ -119,11 +119,11 @@ export class ChannelController {
   @ApiQuery({
     name: 'sort',
     required: false,
-    description: 'Sort comments by "createdAt" or "totalDonation". Default is "createdAt".',
+    description: 'Sort comments by "createdAt" or "receivedReps". Default is "createdAt".',
     schema: {
       type: 'string',
       default: 'createdAt',
-      enum: ['createdAt', 'totalDonation'],
+      enum: ['createdAt', 'receivedReps'],
     },
   })
   @ApiQuery({
@@ -148,7 +148,7 @@ export class ChannelController {
     @User() user,
     @Query('filter') filter: string = 'all',
     @Query('sort') sort: string = 'createdAt',
-    @Query('page') page: number = 1, 
+    @Query('page') page: number = 1,
     @Query('pageSize') pageSize: number = 5,
   ) {
     const { data, totalItemCount, totalPages, itemFrom, itemTo } = await this.channelService.getAllComments(
