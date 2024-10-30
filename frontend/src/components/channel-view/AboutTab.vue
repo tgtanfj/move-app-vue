@@ -49,7 +49,7 @@ watchEffect(() => {
   <!-- FOLLOWING -->
   <div v-if="followingChannels?.length > 0">
     <h2 class="font-bold text-title-size mb-16">{{ $t('view_channel.following', { name }) }}</h2>
-    <div class="grid grid-cols-4 gap-y-12">
+    <div class="grid grid-cols-4 gap-y-12 gap-x-12">
       <FollowingUser
         v-for="u in followingChannels"
         :key="u"
