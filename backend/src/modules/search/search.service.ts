@@ -49,8 +49,8 @@ export class SearchService {
     const [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
-      .orderBy('channel.isBlueBadge', 'DESC')
-      .addOrderBy('channel.isPinkBadge', 'DESC')
+      .orderBy('channel.numberOfFollowers', 'DESC')
+      .addOrderBy('channel.isBlueBadge', 'DESC')
       .addOrderBy('channel.id', 'ASC')
       .skip(offset)
       .take(limit)
