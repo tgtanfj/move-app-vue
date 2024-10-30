@@ -343,7 +343,7 @@ const isReplyValid = computed(() => {
                 >
                   {{ $t('comment.reply') }}
                 </p>
-                <p v-else class="text-primary text-[#A9A9A9]">
+                <p v-else class="text-[#A9A9A9]">
                   {{ $t('comment.reply') }}
                 </p>
               </div>

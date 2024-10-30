@@ -11,18 +11,18 @@ import VideoDisplay from '@components/showVideoDetail/VideoDisplay.vue'
 import { ADMIN_BASE } from '@constants/api.constant'
 import { fetchChannelAbout } from '@services/channel_about.services'
 import { useFollow, useUnfollow } from '@services/follow.services'
-import { formatFollowers } from '@utils/formatViews.util'
-import axios from 'axios'
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { formatFollowers, formatViews } from '@utils/formatViews.util'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useFollowerStore } from '../../stores/follower.store'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import { getFollowerText } from '../../utils/follower.util'
 import { sortedSocialLinks } from '../../utils/socialOrder.util'
-import GiftReps from './GiftReps.vue'
 import Rating from './Rating.vue'
+import axios from 'axios'
+import GiftReps from './GiftReps.vue'
 
 const props = defineProps({
   videoDetail: {
@@ -31,35 +31,26 @@ const props = defineProps({
   }
 })
 
-const channelInfo = ref({})
 const userStore = useAuthStore()
-const router = useRouter()
-const openLoginStore = useOpenLoginStore()
 const followerStore = useFollowerStore()
+const openLoginStore = useOpenLoginStore()
+
+const channelInfo = ref({})
 const isFollowed = ref(null)
 const numFollower = ref(null)
 const isMyVideo = ref(null)
+const newRating = ref(null)
+
 const mutationFollow = useFollow()
 const mutationUnfollow = useUnfollow()
+
+const router = useRouter()
 const route = useRoute()
+
 const commentId = route.query.commentId
 const replyId = route.query.replyId
 
-const newRating = ref(null)
-const commentUnshift = ref({
-  user: {
-    id: 60,
-    username: 'TomJerryhihi',
-    fullName: 'Testabcabc',
-    avatar:
-      'https://move-project.s3.us-east-1.amazonaws.com/images/4198b020-91d2-11ef-8ca9-9310ceb7ec09.png',
-    channel: {
-      isBlueBadge: true,
-      isPinkBadge: true
-    }
-  },
-  totalDonation: 0
-})
+const commentFirst = ref(null)
 
 onMounted(async () => {
   if (props.videoDetail && props.videoDetail.channel.id) {
@@ -75,18 +66,28 @@ onMounted(async () => {
   }
 })
 
+const handleNewComment = (comment) => {
+  commentFirst.value = comment
+  scrollToComment()
+}
+
+onMounted(() => {
+  nextTick(() => {
+    getCommentById().then(() => {
+      handleNewComment(commentFirst.value)
+    })
+  })
+})
+
 const getCommentById = async () => {
   if (commentId) {
     try {
       const response = await axios.get(`${ADMIN_BASE}/comment/${commentId}`)
-      if (response && response.data) {
-        const apiData = response.data
-        commentUnshift.value = {
-          ...apiData.data,
-          ...commentUnshift.value
-        }
-        console.log(commentUnshift.value)
-        scrollToComment(commentId)
+      const dataCommentBytId = response.data.data
+      if (response && dataCommentBytId) {
+        commentFirst.value = dataCommentBytId
+
+        scrollToComment()
       }
     } catch (error) {
       console.error('Error fetching comment by ID:', error)
@@ -101,7 +102,7 @@ const scrollToComment = () => {
     setTimeout(() => {
       const commentElement = document.getElementById(commentId)
       if (commentElement) {
-        const navbarHeight = 100
+        const navbarHeight = 150
         const elementPosition = commentElement.getBoundingClientRect().top + window.scrollY
         const offsetPosition = elementPosition - navbarHeight
 
@@ -216,30 +217,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="props.videoDetail" class="flex-[0.75]">
+  <div v-if="videoDetail" class="flex-[0.75]">
     <!-- video play -->
-    <VideoDisplay :videoUrl="props.videoDetail.url" />
+    <VideoDisplay :videoUrl="videoDetail.url" :videoId="videoDetail.id" />
     <!-- /video play -->
 
     <!-- Video actions and info -->
     <div class="p-5 w-full">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold">{{ props.videoDetail.title }}</h1>
-        <p
-          v-if="props.videoDetail?.ratings !== 0 || newRating"
-          class="flex gap-1 text-xl font-semibold"
-        >
-          <StartIcon width="24px" height="24px" />{{ newRating || props.videoDetail.ratings }}
+        <h1 class="text-2xl font-semibold">{{ videoDetail.title }}</h1>
+        <p v-if="videoDetail?.ratings !== 0 || newRating" class="flex gap-1 text-xl font-semibold">
+          <StartIcon width="24px" height="24px" />{{ newRating || videoDetail.ratings }}
         </p>
         <p v-else class="flex gap-1 text-xl font-semibold"></p>
       </div>
 
       <div class="flex gap-2 mt-2">
         <p class="text-red-500 font-semibold">
-          <span class="font-semibold">{{ props.videoDetail.numberOfViews }}</span>
+          <span class="font-semibold">{{ formatViews(videoDetail.numberOfViews) }}</span>
           {{ $t('video_detail.views') }}
         </p>
-        <p class="font-semibold text-primary">• {{ props.videoDetail.category?.title }}</p>
+        <p class="font-semibold text-primary">• {{ videoDetail.category?.title }}</p>
       </div>
 
       <div class="flex justify-between items-center mt-4">
@@ -265,7 +263,7 @@ onMounted(() => {
       <DropdownMenuSeparator class="my-6" />
       <!-- Video channel -->
       <div class="flex justify-between items-center">
-        <RouterLink :to="`/channel/${props.videoDetail.channel.id}`">
+        <RouterLink :to="`/channel/${videoDetail.channel.id}`">
           <div class="flex items-center gap-4">
             <img
               :src="channelInfo.image"
@@ -323,7 +321,7 @@ onMounted(() => {
       <Comment
         :isCommentable="videoDetail?.isCommentable"
         class="mt-10"
-        :commentUnshift="commentUnshift"
+        :commentFirst="commentFirst"
       />
     </div>
   </div>
