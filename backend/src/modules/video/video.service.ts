@@ -192,7 +192,7 @@ export class VideoService {
       });
     }
     foundChannel.numberOfVideos = foundChannel.numberOfVideos + 1;
-    await this.channelService.updateChannel(foundChannel)
+    await this.channelService.updateChannel(foundChannel);
     const selected = parseInt(dto.selectedThumbnail);
     //save thumbnails
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
@@ -574,7 +574,7 @@ export class VideoService {
         : this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time),
     ]);
 
-    response.numberOfReps = sum.totalreps;
+    response.numberOfReps = sum ? sum.totalreps : 0;
     response.numberOfViews = showby === ShowBy.ALL_TIME ? foundVideo.numberOfViews : view;
     response.rating = rating;
     response.avgWatched = view ? second / view : 0;
