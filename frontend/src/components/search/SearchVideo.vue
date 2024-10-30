@@ -6,7 +6,7 @@ import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { convertToTimeFormat } from '@utils/formatVideoLength.util'
 import { formatViews } from '@utils/formatViews.util'
 import { detectDuration } from '@utils/uploadVideo.util'
-import { formatViews } from "@utils/formatViews.util"
+
 const props = defineProps({
   video: {
     type: Object,
