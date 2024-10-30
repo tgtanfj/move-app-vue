@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
-import 'package:move_app/data/repositories/payment_method_repository.dart'; // Import repository
+import 'package:move_app/data/repositories/payment_method_repository.dart';
 import 'package:move_app/data/services/stripe_service.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
@@ -79,7 +79,6 @@ class PaymentDetailsBloc
 
         final result = await paymentMethodRepository
             .postAddPaymentMethod(paymentMethodModel);
-        print("result $result");
         result.fold(
           (error) {
             emit(state.copyWith(
@@ -87,6 +86,7 @@ class PaymentDetailsBloc
           },
           (response) {
             emit(state.copyWith(status: PaymentDetailsStatus.success));
+            emit(state.copyWith(status: PaymentDetailsStatus.added));
           },
         );
       } catch (e) {

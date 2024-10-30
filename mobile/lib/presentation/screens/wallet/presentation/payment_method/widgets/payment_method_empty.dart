@@ -37,11 +37,6 @@ class _PaymentMethodEmptyState extends State<PaymentMethodEmpty> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  Constants.cardNumber,
-                  style: AppTextStyles.montserratStyle.regular16Black
-                      .copyWith(fontStyle: FontStyle.italic),
-                ),
-                Text(
                   Constants.noPaymentMethod,
                   style: AppTextStyles.montserratStyle.bold16black,
                 ),

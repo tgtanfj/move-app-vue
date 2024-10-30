@@ -134,9 +134,10 @@ class Constants {
       'Username containing only letters, numbers, and underscores';
   static const String invalidCity = 'This field is required';
   static const String confirmLogout = 'Do you want to logout ?';
+  static const String confirmRemoveCard =
+      'Your card information will be removed and payment will not be made. Are you sure you want to remove payment method?';
   static const String yes = 'Yes';
   static const String no = 'No';
-
   static const String cantFindAnAnswer = 'Can’t find an answer? ';
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
@@ -202,13 +203,13 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Read Less";
-  static const String cancelComment = "Cancel Reservation?";
+  static const String showLess = "Show Less";
+  static const String cancelComment = "Cancel Comment?";
   static const String areUSure =
-      "Are you sure you want to cancel this reservation?";
+      "Are you sure you want to cancel this comment?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
-  static const String writeReply = "Write a reply";
+  static const String writeReply = "Reply comment";
   static const String justNow = "Just now";
   static const String secondsAgo = "seconds ago";
   static const String minutesAgo = "minutes ago";
@@ -307,7 +308,7 @@ class Constants {
   static const String cardholderName = 'Cardholder Name';
   static const String cardNumber = 'Card number';
   static const String expiryDate = 'Expiry date';
-  static const String formatExpiryDate = 'MM/YY';
+  static const String formatExpiryDate = 'MM/YYYY';
   static const String cvv2 = 'CVV2/CVC2';
   static const String mmyy = 'MM/YY';
   static const String processingPayment = 'Processing your payment…';
@@ -368,4 +369,20 @@ class Constants {
   static const checkYourExpirationDate = 'Check your expiration date';
   static const invalidCardVerificationCode = 'Invalid card verification code';
   static const paymentMethodsNotFound = 'Payment methods not found';
+  static const String defaultThumbnailImage =
+      'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
+  static const String goToHome = 'Go To Home';
+
+  static const String enterValidContent = "Please enter search content";
+  static const String notFoundResult = "No any search result found";
+  static const String anonymousCardNumber = '**** **** ****';
+  static const String cardHolderName = 'Cardholder Name';
+  static const String edit = 'Edit';
+  static const String remove = 'Remove';
+  static const String noName = 'No Name';
+  static const String removeCard = 'Remove card';
+  static const String setUpPaymentMethodSuccess =
+      'Your payment method has been setup successfully.';
+  static const String guideLineCVV =
+      'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
 }

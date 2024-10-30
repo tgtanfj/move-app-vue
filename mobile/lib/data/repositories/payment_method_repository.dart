@@ -60,4 +60,39 @@ class PaymentMethodRepository {
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, Response>> postDetachCard(
+      PaymentMethodModel paymentMethodModel) async {
+    try {
+      final Response response = await apiService.request(
+        APIRequestMethod.post,
+        ApiUrls.stripeDetachCardEndPoint,
+        data: paymentMethodModel.toJson(),
+        options: Options(
+          headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+      if (response.statusCode == 201) {
+        return Right(response);
+      } else {
+        return Left("${response.statusCode}");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          final errorData = e.response?.data;
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
+          return Left(errorMessage);
+        } else {
+          return Left(e.message.toString());
+        }
+      }
+      return Left(e.toString());
+    }
+  }
 }

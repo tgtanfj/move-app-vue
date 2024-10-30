@@ -6,6 +6,12 @@ import { IsEmail, IsNumber } from 'class-validator';
 
 export class UserProfile {
   @Expose()
+  readonly id: number;
+
+  @Expose()
+  channelId: number;
+
+  @Expose()
   readonly avatar: string;
 
   @Expose()

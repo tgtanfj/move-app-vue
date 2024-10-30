@@ -191,6 +191,8 @@ export class VideoService {
         message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
+    foundChannel.numberOfVideos = foundChannel.numberOfVideos + 1;
+    await this.channelService.updateChannel(foundChannel);
     const selected = parseInt(dto.selectedThumbnail);
     //save thumbnails
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
@@ -560,7 +562,7 @@ export class VideoService {
     const timeFomat = time.toISOString().split('T')[0];
 
     // Fetch analytics data in parallel
-    const [{ totalREPs }, view, second, rating] = await Promise.all([
+    const [sum, view, second, rating] = await Promise.all([
       this.videoRepository.getNumberOfRepByTime(
         videoId,
         showby === ShowBy.ALL_TIME ? '1970-01-01' : timeFomat,
@@ -572,7 +574,7 @@ export class VideoService {
         : this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time),
     ]);
 
-    response.numberOfReps = totalREPs;
+    response.numberOfReps = sum ? sum.totalreps : 0;
     response.numberOfViews = showby === ShowBy.ALL_TIME ? foundVideo.numberOfViews : view;
     response.rating = rating;
     response.avgWatched = view ? second / view : 0;
@@ -737,5 +739,10 @@ export class VideoService {
         break;
     }
     return time;
+  }
+
+  async getTotalSecondsOfChannel(channelId: number) {
+    const result = await this.videoRepository.getTotalSecondsOfChannel(channelId);
+    return result || 0;
   }
 }

@@ -138,46 +138,30 @@ watch(gender, (newValue) => {
 })
 
 watch(
-  selectedCountry,
+  [() => countries.value, () => selectedCountry.value],
   async (newValue) => {
-    if (countries.value.length > 0) {
-      const temp = countries?.value.filter((item) => item.name === newValue)
-      if (temp[0].name) setValues({ ...values, country: temp[0].name })
-      try {
-        const res = await axios.get(`${ADMIN_BASE}/countries/${temp[0].id}/states`)
-        if (res.status === 200) {
-          states.value = res.data.data
-        } else throw new Error(res.error)
-      } catch (error) {
-        console.log(error.message)
+    const [countries, selectedCountry] = newValue
+    if (countries.length > 0 && selectedCountry) {
+      const temp = countries.filter((item) => item.name === selectedCountry)
+      if (temp.length > 0 && temp[0].name) {
+        setValues({ ...values, country: temp[0].name })
+
+        try {
+          const res = await apiAxios.get(`/countries/${temp[0].id}/states`)
+          if (res.status === 200) {
+            states.value = res.data.data
+          } else {
+            throw new Error(res.error)
+          }
+        } catch (error) {
+          console.log(error.message)
+        }
       }
     }
   },
   { immediate: true }
 )
 
-watch(selectedState, async (newValue) => {
-  if (states.value.length > 0) {
-    const temp = states?.value.filter((item) => item.name === newValue)
-
-    if (temp[0].name) setValues({ ...values, state: temp[0].name })
-
-    if (temp.length > 0) userData.value = { ...userData.value, citi: temp[0] }
-    try {
-      const res = await axios.get(`${COUNTRY_BASE}/countries/state/cities/q`, {
-        params: {
-          country: selectedCountry.value,
-          state: newValue
-        }
-      })
-      if (res.status === 200) {
-        cities.value = res.data.data
-      } else throw new Error(res.error)
-    } catch (error) {
-      console.log(error.message)
-    }
-  }
-})
 watch(selectedCity, (newValue) => {
   setValues({ ...values, city: newValue })
 })
@@ -262,13 +246,15 @@ const onSubmit = async () => {
     }
     if (values.city !== userData.value.city) formData.append('city', values.city)
     if (isFormDataEmpty(formData)) {
-      isSubmitting.value = false
       return
     } else {
       try {
         const response = await axios.patch(`${ADMIN_BASE}/user/edit-profile`, formData, config)
-
         if (response.status === 200) {
+          const res = await apiAxios.get(`/user/profile`)
+          if (res.status === 200) {
+            userData.value.avatar = res.data.data.avatar
+          }
           userData.value = {
             ...values,
             country: {
@@ -284,7 +270,7 @@ const onSubmit = async () => {
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
           if (authStore.user.username) authStore.user.username = values.username
-          console.log('test', values)
+          authStore.user.avatar = res.data.data.avatar
           localStorage.setItem('userInfo', values.username)
           // localStorage.setItem('userAvatar', values.avatar)
         } else throw new Error(response.error)
@@ -533,9 +519,15 @@ const onErrorMessage = (msg) => {
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
                   <FormControl>
                     <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
-                      <SelectValue
-                        :placeholder="states.length === 0 ? 'No states' : 'Select state'"
-                      />
+                      <SelectValue>
+                        {{
+                          selectedState
+                            ? selectedState
+                            : states.length === 0
+                              ? 'No states'
+                              : 'Select state'
+                        }}
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -574,13 +566,13 @@ const onErrorMessage = (msg) => {
           </div>
           <div class="flex flex-col gap-1 w-full"></div>
         </div>
-        <Button type="submit" class="w-[230px] mt-6" :disabled="hasEmptyProperty(values)">
-          <template v-if="isSubmitting">
-            <Loading />
-          </template>
-          <template v-else>
-            {{ $t('user_profile.save') }}
-          </template>
+        <Button
+          type="submit"
+          class="w-[230px] mt-6"
+          :disabled="hasEmptyProperty(values)"
+          :is-loading="isSubmitting"
+        >
+          {{ $t('user_profile.save') }}
         </Button>
       </div>
     </form>

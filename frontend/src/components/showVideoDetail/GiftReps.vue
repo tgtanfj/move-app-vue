@@ -8,6 +8,7 @@ import { useDonation, useGiftPackages, useUserReps } from '../../services/giftre
 import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import BaseDialog from '../BaseDialog.vue'
+import { useCommentToggleStore } from '../../stores/commentToggle.store'
 
 const props = defineProps({
   videoId: {
@@ -21,6 +22,7 @@ const openDonationSuccess = ref(false)
 const donateSuccessReps = ref(0)
 const userStore = useAuthStore()
 const openLoginStore = useOpenLoginStore()
+const commentToggleStore = useCommentToggleStore()
 const listReps = ref([])
 const giftReps = reactive({
   giftPackageId: 0,
@@ -40,6 +42,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (!isLoadingUser.value && dataUser.value) {
     availableReps.value = dataUser.value.data?.numberOfREPs
+    commentToggleStore.setChannelId(dataUser.value.data?.channelId)
   }
 })
 

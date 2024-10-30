@@ -8,7 +8,9 @@ final class PaymentMethodInitialEvent extends PaymentMethodEvent {
 
 final class PaymentMethodFetchDataEvent extends PaymentMethodEvent {
   const PaymentMethodFetchDataEvent();
+}
 
-  @override
-  List<Object> get props => [];
+final class PaymentMethodDetachCardEvent extends PaymentMethodEvent {
+  final String? paymentMethodId;
+  const PaymentMethodDetachCardEvent(this.paymentMethodId);
 }

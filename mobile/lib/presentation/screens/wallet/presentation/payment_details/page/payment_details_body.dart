@@ -10,6 +10,7 @@ import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
@@ -35,7 +36,7 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
       }
       if (state.status == PaymentDetailsStatus.added) {
         EasyLoading.dismiss();
-        //TODO: add screen
+        Navigator.pushNamed(context, AppRoutes.routeWallet, arguments: true);
       }
     }, child: BlocBuilder<PaymentDetailsBloc, PaymentDetailsState>(
             builder: (context, state) {
@@ -181,31 +182,51 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                             width: 12,
                           ),
                           Expanded(
-                            child: CustomEditText(
-                              initialValue: state.cvv,
-                              title: Constants.cvv,
-                              titleStyle:
+                              child: CustomEditText(
+                            initialValue: state.cvv,
+                            title: Constants.cvv,
+                            titleStyle:
+                                AppTextStyles.montserratStyle.regular14Black,
+                            onChanged: (value) => {
+                              BlocProvider.of<PaymentDetailsBloc>(context).add(
+                                PaymentDetailsCvvEvent(
+                                  cvv: value,
+                                ),
+                              )
+                            },
+                            isShowMessage: state.isShowCvvMessage ?? false,
+                            textStyle: (state.isShowCvvMessage ?? false)
+                                ? AppTextStyles
+                                    .montserratStyle.regular14BrinkPink
+                                : AppTextStyles.montserratStyle.regular14Black,
+                            borderColor: AppColors.brinkPink,
+                            cursorColor: (state.isShowCvvMessage ?? false)
+                                ? AppColors.brinkPink
+                                : AppColors.tiffanyBlue,
+                            preMessage: state.cvvErrorMessage ?? '',
+                            suffixLabel: Tooltip(
+                              triggerMode: TooltipTriggerMode.tap,
+                              height: 50,
+                              message: Constants.guideLineCVV,
+                              textStyle:
                                   AppTextStyles.montserratStyle.regular14Black,
-                              onChanged: (value) => {
-                                BlocProvider.of<PaymentDetailsBloc>(context)
-                                    .add(
-                                  PaymentDetailsCvvEvent(
-                                    cvv: value,
-                                  ),
-                                )
-                              },
-                              isShowMessage: state.isShowCvvMessage ?? false,
-                              textStyle: (state.isShowCvvMessage ?? false)
-                                  ? AppTextStyles
-                                      .montserratStyle.regular14BrinkPink
-                                  : AppTextStyles
-                                      .montserratStyle.regular14Black,
-                              borderColor: AppColors.brinkPink,
-                              cursorColor: (state.isShowCvvMessage ?? false)
-                                  ? AppColors.brinkPink
-                                  : AppColors.tiffanyBlue,
-                              preMessage: state.cvvErrorMessage ?? '',
-                              suffixLabel: SvgPicture.asset(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: AppColors.white,
+                                border: Border.all(
+                                  color: AppColors.spanishGray,
+                                  width: 1,
+                                ),
+                              ),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              showDuration: const Duration(seconds: 2),
+                              verticalOffset: 15,
+                              textAlign: TextAlign.center,
+                              preferBelow: false,
+                              child: SvgPicture.asset(
                                 AppIcons.question.svgAssetPath,
                                 colorFilter: const ColorFilter.mode(
                                   AppColors.sonicSilver,
@@ -215,7 +236,7 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                                 height: 18,
                               ),
                             ),
-                          )
+                          ))
                         ],
                       ),
                       const SizedBox(
@@ -274,7 +295,6 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                                         country:
                                             state.selectedCountry?.name ?? '',
                                       ));
-                                  // Navigator.pop(context, true);
                                 }
                               : null)
                     ]),

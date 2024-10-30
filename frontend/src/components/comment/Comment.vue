@@ -1,20 +1,23 @@
 <script setup>
 import { commentServices } from '@services/comment.services'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
+import { useCommentToggleStore } from '../../stores/commentToggle.store'
 
 const props = defineProps({
   isCommentable: {
     type: Boolean,
     required: true
   },
-  commentUnshift: {
+  commentFirst: {
     type: Object,
     required: true
   }
 })
+
+const commentToggleStore = useCommentToggleStore()
 
 const commentData = ref([])
 const isLoading = ref(false)
@@ -23,18 +26,11 @@ const cursor = ref(null)
 const commentFromChild = ref(null)
 const route = useRoute()
 
-let isCommentInserted = false
 const videoId = route.params.id
 
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
-  loadComments()
-  // await loadComments()
-  // if (props.commentUnshift && !isCommentInserted) {
-  //   commentData.value = commentData.value.filter(comment => comment.id !== props.commentUnshift.id);
-  //   commentData.value.unshift(props.commentUnshift)
-  //   isCommentInserted = true
-  // }
+  await loadComments()
 })
 
 onUnmounted(() => {
@@ -54,15 +50,20 @@ const updateReplyCount = (id, newReplyCount) => {
 }
 
 const loadComments = async () => {
-  if (!hasMoreComments.value || isLoading.value) return
+  if (!hasMoreComments.value || isLoading.value) return;
   isLoading.value = true
 
   try {
-    const response = await commentServices.getCommentsByVideoId(cursor.value, videoId)
+    const response = await commentServices.getCommentsByVideoId(cursor.value, videoId);
     const newComments = response.data
 
     if (newComments.length > 0) {
-      commentData.value.push(...newComments)
+      newComments.forEach(comment => {
+        const exists = commentData.value.some(existingComment => existingComment.id === comment.id)
+        if (!exists) {
+          commentData.value.push(comment)
+        }
+      });
       cursor.value = newComments[newComments.length - 1].id
     } else {
       hasMoreComments.value = false
@@ -72,7 +73,7 @@ const loadComments = async () => {
   } finally {
     isLoading.value = false
   }
-}
+};
 
 const handleScroll = () => {
   const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 10
@@ -81,13 +82,23 @@ const handleScroll = () => {
   }
 }
 
+watch(() => props.commentFirst, (newComment) => {
+  if (newComment) {
+    const exists = commentData.value.some(comment => comment.id === newComment.id)
+    if (!exists) {
+      commentData.value.unshift(newComment)
+    }
+  }
+}, { immediate: true })
+
 const handleUpdateComments = (updatedComments) => {
   commentData.value = updatedComments
 }
+
 </script>
 
 <template>
-  <div class="w-full" v-if="isCommentable">
+  <div v-if="commentToggleStore.isCommentable" class="w-full">
     <div class="w-full">
       <WriteComment
         :videoId="videoId"
@@ -109,6 +120,26 @@ const handleUpdateComments = (updatedComments) => {
       </div>
     </div>
   </div>
+
+  <div
+    v-else-if="!commentToggleStore.isCommentable && commentToggleStore.isInstructor"
+    class="w-full"
+  >
+    <div class="w-full mt-10">
+      <RenderComment
+        v-if="commentData.length !== 0"
+        :videoId="videoId"
+        :comments="commentData"
+        @update-comments="handleUpdateComments"
+        @updateReplyCount="updateReplyCount"
+      />
+      <div v-else class="w-full flex flex-col items-center justify-center pt-6">
+        <p class="text-[16px]">No comments to display</p>
+        <p class="text-[14px] text-[#666666]">Leave a comment to get started</p>
+      </div>
+    </div>
+  </div>
+
   <div v-else class="flex w-full items-center justify-center">
     <p class="text-black text-base mt-4">Comments feature has been disabled.</p>
   </div>

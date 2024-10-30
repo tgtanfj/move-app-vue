@@ -9,6 +9,7 @@ import { db } from '@/shared/firebase/firebase.config';
 import { CommonNotificationDto } from './dto/common-notification.dto';
 import { SystemNotificationDto } from './dto/system-notification.dto';
 import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { Cron, CronExpression } from '@nestjs/schedule';
 @Injectable()
 export class NotificationService {
   async sendNotification({ token, title, body, icon }: NotificationDto) {
@@ -95,6 +96,21 @@ export class NotificationService {
       promises.push(this.setNotificationData(notificationRef, data));
     });
     await Promise.all(promises);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  async deleteNotification() {
+    const now = Date.now();
+    const threshold = now - 60 * 24 * 60 * 60 * 1000;
+
+    const notificationsRef = db.ref(`notifications`);
+    const snapshot = await notificationsRef.once('value');
+    snapshot.forEach((childSnapshot) => {
+      const createdAt = childSnapshot.val().createdAt;
+      if (createdAt < threshold) {
+        childSnapshot.ref.remove();
+      }
+    });
   }
 
   async setNotificationData(

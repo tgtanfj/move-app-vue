@@ -9,6 +9,7 @@ import { configSwagger } from './shared/configs/setup-swagger';
 import { ERRORS_DICTIONARY } from './shared/constraints/error-dictionary.constraint';
 import { ApiConfigService } from './shared/services/api-config.service';
 import { SharedModule } from './shared/shared.module';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -25,6 +26,8 @@ async function bootstrap() {
   }
 
   app.use(I18nMiddleware);
+  app.use(helmet())
+
   app.enableCors();
 
   app.useGlobalPipes(

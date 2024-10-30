@@ -94,5 +94,22 @@ export const commentServices = {
       console.error('Post reply error:', error)
       throw error
     }
+  },
+  getChannelComments: async (filter, sort, page) => {
+    const pageSize = 30
+    try {
+      const response = await apiAxios.get(`/channel/get-all-comments`, {
+        params: {
+          filter,
+          sort,
+          page,
+          pageSize
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Get channel comments error:', error)
+      throw error
+    }
   }
 }

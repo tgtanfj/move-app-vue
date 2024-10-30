@@ -170,18 +170,22 @@ class InputValidationHelper {
   }
 
   static String? validateExpiryDate(String expiryDate) {
-    if (!RegExp(r'^(0[1-9]|1[0-2])\/([0-9]{2})$').hasMatch(expiryDate)) {
+    if (!RegExp(r'^(0[1-9]|1[0-2])\/([0-9]{4})$').hasMatch(expiryDate)) {
       return Constants.checkYourExpirationDate;
     }
+
     final month = int.parse(expiryDate.split('/')[0]);
-    final year = int.parse('20${expiryDate.split('/')[1]}');
+    final year = int.parse(expiryDate.split('/')[1]);
     final currentYear = DateTime.now().year;
+    final currentMonth = DateTime.now().month;
+
     if (month < 1 ||
         month > 12 ||
         year < currentYear ||
-        !RegExp(r'^(0[1-9]|1[0-2])\/([0-9]{2})$').hasMatch(expiryDate)) {
+        (year == currentYear && month < currentMonth)) {
       return Constants.checkYourExpirationDate;
     }
+
     return null;
   }
 

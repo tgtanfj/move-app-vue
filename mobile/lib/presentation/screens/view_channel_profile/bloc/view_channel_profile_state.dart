@@ -7,7 +7,8 @@ enum ViewChannelProfileStatus {
   processing,
   success,
   failure,
-  loadingMore
+  loadingMore,
+  followEventSuccess,
 }
 
 final class ViewChannelProfileState extends Equatable {

@@ -49,9 +49,12 @@ export class CommentController {
     return await this.commentService.getReplyComments(id, limit, cursor, userId);
   }
 
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOne(@Param('id') id: number) {
-    return await this.commentService.getOne(id);
+  async getOne(@Param('id') id: number, @User() user?) {
+    const userId = user ? user.id : undefined;
+    return await this.commentService.getOneDetails(id, userId);
   }
 
   @Patch(':id')

@@ -43,11 +43,9 @@ class StripeService {
           options: const PaymentMethodOptions(
             setupFutureUsage: PaymentIntentsFutureUsage.OnSession,
           ));
-
-      print('Payment method created: ${paymentMethod.id}');
       return paymentMethod;
     } catch (e) {
-      throw Exception('Unable to create payment method: $e');
+      throw Exception(e.toString());
     }
   }
 }

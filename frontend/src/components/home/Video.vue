@@ -28,11 +28,12 @@ const router = useRouter()
         @click="router.push(`/video/${video.id}`)"
       />
       <div
+        v-if="video.numberOfViews > 0"
         class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 views' }}
+          {{ video.numberOfViews && formatViews(video.numberOfViews) }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">

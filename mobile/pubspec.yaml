@@ -62,6 +62,9 @@ dependencies:
   flutter_stripe: ^11.2.0
   intl: ^0.19.0
   syncfusion_flutter_datepicker: ^27.1.55
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.0.0
+  webview_flutter_wkwebview: ^3.16.0
 
 dev_dependencies:
   flutter_test:

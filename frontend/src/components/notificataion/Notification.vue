@@ -25,7 +25,6 @@ const getUserIdFromToken = () => {
   const token = localStorage.getItem('token')
   if (token) {
     const decodedToken = jwtDecode(token)
-    console.log('token decoded', decodedToken)
     return decodedToken.sub
   }
   return null
@@ -72,7 +71,6 @@ const markAsRead = async (notificationId, userId) => {
   const notificationRef = firebaseRef(database, `notifications/${userId}/${notificationId}`)
   try {
     await update(notificationRef, { isRead: true })
-    console.log('Notification marked as read.')
     await fetchNotifications()
   } catch (error) {
     console.error('Error marking notification as read:', error)

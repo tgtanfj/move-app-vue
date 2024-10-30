@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class BuyREPsDto {
   @IsNotEmpty()
@@ -14,4 +14,11 @@ export class BuyREPsDto {
     example: 'pm_1MqM05LkdIwHu7ixlDxxO6Mc',
   })
   paymentMethodId: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    example: false,
+  })
+  save: boolean;
 }

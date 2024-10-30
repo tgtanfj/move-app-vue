@@ -2,7 +2,7 @@
 import VideoLeft from '@components/showVideoDetail/VideoLeft.vue'
 import VideoRight from '@components/showVideoDetail/VideoRight.vue'
 import axios from 'axios'
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Skeleton } from '@common/ui/skeleton'
 import VideoSkeleton from '../components/home/VideoSkeleton.vue'
@@ -10,24 +10,35 @@ import Button from '@common/ui/button/Button.vue'
 import { ADMIN_BASE } from '@constants/api.constant'
 import { useAuthStore } from '../stores/auth'
 import { apiAxios } from '@helpers/axios.helper'
+import { useCommentToggleStore } from '../stores/commentToggle.store'
 
 const route = useRoute()
 const router = useRouter()
+
+const authStore = useAuthStore()
+
 const videoDetail = ref(null)
 const isLoading = ref(true)
 const isNotFoundVideo = ref(false)
-const authStore = useAuthStore()
+
+const goBackHome = () => {
+  router.push('/')
+}
+const commentToggleStore = useCommentToggleStore()
 
 const getVideoDetailById = async (videoId, token) => {
   try {
     isLoading.value = true
     isNotFoundVideo.value = false
     let result = null
+
     if (!token) {
       result = await axios.get(`${ADMIN_BASE}/video/${videoId}/details`)
     } else {
       result = await apiAxios.get(`/video/${videoId}/details`)
     }
+    commentToggleStore.setVideoChannelId(result?.data?.data?.channel?.id)
+    commentToggleStore.setIsCommentable(result?.data?.data?.isCommentable)
     const dataVideo = result.data.data
     if (dataVideo.url) {
       const vimeoId = dataVideo.url.split('/').pop()
@@ -35,16 +46,13 @@ const getVideoDetailById = async (videoId, token) => {
       dataVideo.url = vimeoPlayerUrl
     }
     videoDetail.value = dataVideo
+
   } catch (error) {
     console.log('Error', error)
     isNotFoundVideo.value = true
   } finally {
     isLoading.value = false
   }
-}
-
-const goBackHome = () => {
-  router.push('/')
 }
 
 watch(

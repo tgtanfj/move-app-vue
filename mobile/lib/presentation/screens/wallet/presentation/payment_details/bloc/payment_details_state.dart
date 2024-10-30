@@ -158,6 +158,6 @@ final class PaymentDetailsState extends Equatable {
         expiryDateErrorMessage,
         cvvErrorMessage,
         responseData,
-        paymentMethodId
+        paymentMethodId,
       ];
 }
