@@ -65,25 +65,30 @@ const handleClick = () => {
         </button>
       </div>
 
-      <div class="flex flex-col mt-4 gap-4">
+      <div class="flex flex-col w-full mt-4 gap-4">
         <div
           v-if="authStore.accessToken"
           v-for="channel in followerStore.follower"
           :key="channel.id"
-          class="flex items-center gap-1 cursor-pointer"
+          class="flex items-center w-full gap-1 cursor-pointer"
           @click="router.push(`/channel/${channel.id}`)"
         >
           <img :src="channel.image" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
-          <div class="flex flex-col gap-0">
-            <div class="flex items-center justify-start gap-2">
-              <span v-if="sidebarOpen" class="ml-2 text-sm text-nowrap">{{ channel.name }}</span>
+          <div class="flex flex-col gap-0 w-full">
+            <div class="flex gap-2 ">
+              <span
+                v-if="sidebarOpen"
+                class="ml-2 text-sm overflow-hidden max-w-[145px] text-ellipsis whitespace-nowrap"
+              >
+                {{ channel.name }}
+              </span>
               <BlueBadgeIcon v-if="channel.isBlueBadge && sidebarOpen" />
             </div>
             <div v-show="sidebarOpen" class="ml-2">
-              <span class="text-sm text-[#666666]"
-                >{{ formatFollowers(channel.numberOfFollowers) }}
-                {{ getFollowerText(channel.numberOfFollowers) }}</span
-              >
+              <span class="text-sm text-[#666666]">
+                {{ formatFollowers(channel.numberOfFollowers) }}
+                {{ getFollowerText(channel.numberOfFollowers) }}
+              </span>
             </div>
           </div>
         </div>

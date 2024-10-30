@@ -270,7 +270,9 @@
     "reply1": "reply",
     "show_more_replies": "Show more replies",
     "reply": "Reply",
-    "show": "Show"
+    "show": "Show",
+    "view": "View",
+    "view_comment": "View comment"
   },
   "video": {
     "rate": "Rate Video",

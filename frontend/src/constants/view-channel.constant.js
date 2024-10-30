@@ -107,25 +107,25 @@ export const SHOW_ANALYTICS = [
 export const RESPONSE_BY_COMMENTS = [
   {
     title: 'All responses',
-    value: formatCategoryTitleToUrl('All responses')
+    value: 'all'
   },
   {
     title: 'I haven’t respond',
-    value: formatCategoryTitleToUrl('I haven’t respond')
+    value: 'unresponded'
   },
   {
     title: 'I have responded',
-    value: formatCategoryTitleToUrl('I have responded')
+    value: 'responded'
   }
 ]
 
 export const SORT_COMMENTS = [
   {
     title: 'Most recent',
-    value: formatCategoryTitleToUrl('Most recent')
+    value: 'createdAt'
   },
   {
     title: 'Received REPs',
-    value: formatCategoryTitleToUrl('Received REPs')
+    value: 'receivedReps'
   }
 ]
