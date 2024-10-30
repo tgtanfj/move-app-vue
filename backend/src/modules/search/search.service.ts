@@ -55,13 +55,7 @@ export class SearchService {
 
     return { channels, totalCount };
   }
-  async searchVideos(params: { query: string; page: number; limit: number }): Promise<{
-    videos: Video[];
-    totalItemCount: number;
-    totalPages: number;
-    itemFrom: number;
-    itemTo: number;
-  }> {
+  async searchVideos(params: { query: string; page: number; limit: number }) {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
@@ -101,23 +95,26 @@ export class SearchService {
     return { videos: limitedVideos, totalItemCount: totalCount, totalPages, itemFrom, itemTo };
   }
 
-  private async getVideosWithHighestViewsYesterday(
-    keyword: string,
-    offset: number,
-    limit: number,
-  ): Promise<Video[]> {
+  private async getVideosWithHighestViewsYesterday(keyword: string, offset: number, limit: number) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
     const videosWithHighestViews = await this.videoRepository.find({
-      relations: { views: true },
+      relations: { views: true, thumbnails: true },
       where: { title: ILike(keyword), views: { viewDate: yesterday } },
       order: { views: { totalView: 'DESC' } },
       skip: offset,
       take: limit,
     });
-
-    return videosWithHighestViews;
+    const dataRes = videosWithHighestViews.map((video) => {
+      const { views, ...data } = video;
+      const thumbnails = video.thumbnails.find((thumbnail) => thumbnail.selected === true);
+      return {
+        ...data,
+        thumbnails: [thumbnails],
+      };
+    });
+    return dataRes;
   }
 
   async suggestion(query: string) {
