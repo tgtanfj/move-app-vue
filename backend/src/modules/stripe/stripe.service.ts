@@ -66,14 +66,21 @@ export class StripeService {
   }
 
   async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
-    return this.stripe.paymentIntents.create({
+    return await this.stripe.paymentIntents.create({
       amount: amount * 100,
       customer: customerId,
       payment_method: paymentMethodId,
       currency: this.configService.get('STRIPE_CURRENCY'),
-      off_session: true,
-      confirm: true,
-      setup_future_usage: saveCard ? 'on_session' : 'off_session',
+      off_session: saveCard ? false : true,
+      confirm: saveCard ? false : true,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      payment_method_options: {
+        card: {
+          setup_future_usage: saveCard ? 'off_session' : undefined,
+        },
+      },
     });
   }
 
