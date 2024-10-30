@@ -1,12 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Category } from '@/entities/category.entity';
 import { Channel } from '@/entities/channel.entity';
 import { Video } from '@/entities/video.entity';
-import { CreateSearchHistoryDto } from './dto/create-search.dto';
 import { SearchHistory } from '@/entities/search-history.entity';
-import { VimeoService } from '@/shared/services/vimeo.service';
 
 @Injectable()
 export class SearchService {
@@ -15,7 +13,6 @@ export class SearchService {
     @InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video) private readonly videoRepository: Repository<Video>,
     @InjectRepository(SearchHistory) private readonly searchHistoryRepository: Repository<SearchHistory>,
-    private vimeoService: VimeoService,
   ) {}
 
   async searchCategories(params: {
@@ -111,17 +108,14 @@ export class SearchService {
   ): Promise<Video[]> {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateString = yesterday.toISOString().split('T')[0];
 
-    const videosWithHighestViews = await this.videoRepository
-      .createQueryBuilder('video')
-      .leftJoinAndSelect('video.viewHistories', 'viewHistory')
-      .where('video.title ILIKE :keyword', { keyword })
-      .andWhere('viewHistory.viewDate = :yesterdayDate', { yesterdayDate: yesterdayDateString })
-      .orderBy('viewHistory.views', 'DESC')
-      .skip(offset)
-      .take(limit)
-      .getMany();
+    const videosWithHighestViews = await this.videoRepository.find({
+      relations: { views: true },
+      where: { title: ILike(keyword), views: { viewDate: yesterday } },
+      order: { views: { totalView: 'DESC' } },
+      skip: offset,
+      take: limit,
+    });
 
     return videosWithHighestViews;
   }
