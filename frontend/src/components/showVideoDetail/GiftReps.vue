@@ -34,7 +34,6 @@ const giftReps = reactive({
 })
 const { data, isLoading } = useGiftPackages()
 const { data: dataUser, isLoading: isLoadingUser } = useUserReps()
-const availableReps = ref(paymentStore.reps)
 const { isPending, mutate } = useDonation()
 
 const showListReps = ref(false)
@@ -56,7 +55,6 @@ watchEffect(() => {
 })
 watchEffect(() => {
   if (!isLoadingUser.value && dataUser.value) {
-    // availableReps.value = dataUser.value.data?.numberOfREPs
     commentToggleStore.setChannelId(dataUser.value.data?.channelId)
   }
 })
@@ -93,7 +91,7 @@ function handleClickReps(value) {
 
 const canGiftReps = computed(() => {
   return (
-    availableReps.value >
+    paymentStore.reps >
     listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
   )
 })
@@ -110,7 +108,6 @@ const handleDonation = () => {
         donateSuccessReps.value = listReps.value.find(
           (item) => item.id === giftReps.giftPackageId
         ).numberOfREPs
-        // availableReps.value -= donateSuccessReps.value
         paymentStore.reps -= donateSuccessReps.value
       },
       onError: (error) => {

@@ -57,6 +57,7 @@ const showFailureModal = ref(false)
 const purchaseError = ref('')
 const isChecked = ref(false)
 const path = ref('')
+const coun = ref('')
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -78,12 +79,20 @@ onMounted(async () => {
   })
   const handleCallAPis = async () => {
     await walletServices.fetchUserLocation().then((response) => {
-      if (response) userCountryIso.value = response?.country
+      if (response) coun.value = response?.country
     })
   }
   isLoading.value = true
   await handleCallAPis()
   isLoading.value = false
+})
+
+watch(showPurchaseModal, (newValue) => {
+  if (newValue) {
+    resetForm()
+    userCountryIso.value = coun.value
+    setValues({ ...values, country: coun.value })
+  }
 })
 
 watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
@@ -246,6 +255,16 @@ const onSubmit = async () => {
     resetAfterFailure()
   }
 }
+const resetFormOnClose = () => {
+  cardNumber.value = ''
+  cardholderName.value = ''
+  cardType.value = ''
+  expDate.value = ''
+  cvc.value = ''
+  userCountryIso.value = ''
+  showError.value = false
+  isChecked.value = false
+}
 
 const handleCloseSuccessModal = () => {
   showSuccessModal.value = false
@@ -295,7 +314,14 @@ const handleCloseSuccessModal = () => {
         </li>
       </ul>
     </div>
-    <Dialog v-model:open="showPurchaseModal">
+    <Dialog
+      v-model:open="showPurchaseModal"
+      @update:open="
+        (val) => {
+          if (!val) resetFormOnClose()
+        }
+      "
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-[20px] font-bold">

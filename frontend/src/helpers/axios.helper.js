@@ -40,8 +40,10 @@ apiAxios.interceptors.response.use(
         if (res.status === 200) {
           const { accessToken } = res.data.data
           localStorage.setItem('token', accessToken)
+          if (authStore) {
+            authStore.accessToken = accessToken
+          }
           apiAxios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-          authStore.user.accessToken = accessToken
         }
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)

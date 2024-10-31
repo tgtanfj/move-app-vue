@@ -380,7 +380,6 @@ const handleRidirect = (commentId, videoId) => {
                   v-if="isShowedReplies[item.id]"
                   class="flex items-center gap-1 justify-start"
                 >
-                  <ChevronUp class="text-primary w-[20px] transition-all" />
                   <p
                     v-if="repliesCountPerComment[item.id] > 1"
                     class="text-primary text-[13px] font-semibold"
@@ -392,6 +391,7 @@ const handleRidirect = (commentId, videoId) => {
                     {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
                     {{ $t('comment.reply') }}
                   </p>
+                  <ChevronUp class="text-primary w-[20px] transition-all" />
                 </div>
               </div>
             </div>

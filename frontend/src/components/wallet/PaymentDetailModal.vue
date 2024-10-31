@@ -42,8 +42,9 @@ const showError = ref(false)
 const cardholderName = ref('')
 const cvc = ref('')
 const cardNumber = ref('')
+const coun = ref('')
 
-const { values, setValues, errors } = useForm({
+const { values, setValues, errors, resetForm } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -55,13 +56,15 @@ const { values, setValues, errors } = useForm({
   validationSchema: walletSchema
 })
 
+watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
+
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
     if (response) countries.value = response?.data
   })
   const handleCallAPis = async () => {
     await walletServices.fetchUserLocation().then((response) => {
-      if (response) userCountryIso.value = response?.country
+      if (response) coun.value = response?.country
     })
   }
   isLoading.value = true
@@ -69,11 +72,12 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
-
 watch(isOpen, async (newValue) => {
   if (newValue) {
     stripe.value = await loadStripe(STRIPE_KEY)
+    resetForm()
+    userCountryIso.value = coun.value
+    setValues({ ...values, country: coun.value })
   }
 })
 
@@ -108,6 +112,17 @@ watch([expMonth, expYear], (newValue) => {
   }
 })
 
+const resetFormOnClose = () => {
+  cardNumber.value = ''
+  cardholderName.value = ''
+  cardType.value = ''
+  expMonth.value = ''
+  expYear.value = ''
+  cvc.value = ''
+  userCountryIso.value = ''
+  showError.value = false
+}
+
 const isSubmitEnabled = computed(() => {
   const isFormDataEmpty = hasEmptyProperty(values)
 
@@ -134,15 +149,23 @@ const onSubmit = async () => {
       type: values.cardType
     }
 
-    await paymentStore.createUserPaymentMethod(cardData).then(() => {
-      const { query } = route
-      if (query.returnTo) router.push(`${query.returnTo}`)
-    })
+    await paymentStore.createUserPaymentMethod(cardData)
+    // .then(() => {
+    //   const { query } = route
+    //   if (query.returnTo) router.push(`${query.returnTo}`)
+    // })
   }
 }
 </script>
 <template>
-  <Dialog v-model:open="isOpen">
+  <Dialog
+    v-model:open="isOpen"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <DialogTrigger aschild>
       <Button>{{ t('wallet.setup_payment') }}</Button>
     </DialogTrigger>
@@ -263,7 +286,7 @@ const onSubmit = async () => {
                       v-model.trim="expYear"
                     />
                   </div>
-                  <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+                  <FormMessage class="!mt-0" :class="{ hidden: !showError }" />
                 </FormItem>
               </FormField>
             </div>
