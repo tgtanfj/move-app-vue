@@ -126,7 +126,7 @@ const startAutoSlide = () => {
               />
             </div>
             <div class="flex-[0.35] h-full flex flex-col items-start justify-center gap-2.5">
-              <div  class="flex items-start pl-[8%] gap-3 w-[70%]">
+              <div class="flex items-start pl-[8%] gap-3 w-[70%]">
                 <img
                   @click.stop="router.push(`/channel/${activeVideo?.channel?.id}`)"
                   :src="activeVideo?.channel.image"
@@ -165,13 +165,12 @@ const startAutoSlide = () => {
               </div>
             </div>
             <div
+              v-if="activeVideo?.numberOfViews > 0"
               class="absolute bottom-4 left-4 bg-black text-white px-2 py-1 rounded-md font-bold h-[25px] text-[16px] flex items-center gap-2"
             >
               <EyeIcon />
               <p>
-                {{
-                  activeVideo?.numberOfViews ? formatViews(activeVideo?.numberOfViews) : '0 view'
-                }}
+                {{ activeVideo?.numberOfViews && formatViews(activeVideo?.numberOfViews) }}
               </p>
             </div>
           </CardContent>

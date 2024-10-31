@@ -130,7 +130,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,
       Emitter<VideoDetailState> emit) async {
-    emit(state.copyWith(status: VideoDetailStatus.processing));
+    emit(state.copyWith(status: VideoDetailStatus.loading));
     final result = await commentRepository.getListCommentVideo(
         state.video?.id ?? 0,
         limit: 30,
@@ -189,8 +189,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
           final existingReplies = state.replies?[commentModel.id!] ?? [];
 
           final updatedReplies = [
-            newComment,
             ...existingReplies,
+            newComment,
           ];
 
           final updatedComments = state.listComments?.map((comment) {
@@ -379,18 +379,21 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   void onVideoDetailLoadRepliesCommentEvent(
       VideoDetailLoadRepliesCommentEvent event,
       Emitter<VideoDetailState> emit) async {
+    final existingReplies = state.replies?[event.commentId] ?? [];
+
+    bool havePostReply = existingReplies.length == 1;
     final result = await commentRepository.getListRepliesComment(
         event.commentId,
         limit: 10,
-        cursor: event.lastIdReply);
+        cursor: havePostReply ? null : event.lastIdReply);
 
     result.fold(
       (error) {
         emit(state.copyWith(status: VideoDetailStatus.failure));
       },
       (replies) {
-        final existingReplies = state.replies?[event.commentId] ?? [];
-        final allReplies = [...existingReplies, ...replies];
+        final allReplies =
+            havePostReply ? [...replies] : [...existingReplies, ...replies];
 
         final updatedReplies = {
           ...?state.replies,

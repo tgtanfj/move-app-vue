@@ -29,11 +29,14 @@ class ApiUrls {
       "home/you-may-like-no-login";
   static const String follow = "follow";
   static const String homeCategoriesEndPoint = "home/categories";
+  static const String addPaymentEndpoint = "stripe/attach-card";
   static const String homeCategoriesNoLoginEndPoint =
       "home/categories-no-login/";
   static const String homeCategoriesLoginEndPoint = "home/categories/";
   static const String paymentHistory = "payment/history";
   static const String giftListPackageEndPoint = "donation/list-gift-packages";
   static const String donationEndPoint = "donation";
+  static const String stripeListCardsEndPoint = "stripe/list-cards";
   static const String viewEndPoint = "view";
+   static const String stripeDetachCardEndPoint = "stripe/detach-card";
 }

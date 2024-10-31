@@ -23,7 +23,7 @@ export class PaymentRepository {
       },
     });
 
-    return this.paymentRepository.save(paymentHistoryCreated);
+    return await this.paymentRepository.save(paymentHistoryCreated);
   }
 
   async findPaymentHistory(

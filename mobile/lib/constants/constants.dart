@@ -56,6 +56,9 @@ class Constants {
   static const String settings = 'Settings';
   static const String profile = 'Profile';
   static const String notifications = 'Notifications';
+  static const String wallet = 'Wallet';
+  static const String paymentMethod = 'Payment method';
+  static const String paymentHistory = 'Payment history';
   static const String updateProfilePicture = 'Update profile picture';
   static const String j = 'J';
   static const String male = 'Male';
@@ -101,7 +104,6 @@ class Constants {
   static const String intermediate = 'Intermediate';
   static const String following = 'Following';
   static const String browse = 'Browse';
-  static const String wallet = 'Wallet';
   static const String setting = 'Setting';
   static const String more = 'More';
   static const String aboutUs = 'About Us';
@@ -132,9 +134,10 @@ class Constants {
       'Username containing only letters, numbers, and underscores';
   static const String invalidCity = 'This field is required';
   static const String confirmLogout = 'Do you want to logout ?';
+  static const String confirmRemoveCard =
+      'Your card information will be removed and payment will not be made. Are you sure you want to remove payment method?';
   static const String yes = 'Yes';
   static const String no = 'No';
-
   static const String cantFindAnAnswer = 'Can’t find an answer? ';
   static const String contactUs = 'Contact Us';
   static const String hereAndWeWillAddress =
@@ -200,13 +203,13 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
-  static const String readLess = "Read Less";
-  static const String cancelComment = "Cancel Reservation?";
+  static const String showLess = "Show Less";
+  static const String cancelComment = "Cancel Comment?";
   static const String areUSure =
-      "Are you sure you want to cancel this reservation?";
+      "Are you sure you want to cancel this comment?";
   static const String getRep$ = 'Get REP\$';
   static const String userName = 'User Name';
-  static const String writeReply = "Write a reply";
+  static const String writeReply = "Reply comment";
   static const String justNow = "Just now";
   static const String secondsAgo = "seconds ago";
   static const String minutesAgo = "minutes ago";
@@ -272,6 +275,18 @@ class Constants {
   static const String copyLink = "Copy link";
   static const String facebookOption = "Facebook";
   static const String twitterOption = "Twitter";
+  static const String noPaymentMethod = 'No payment method setup';
+  static const String youDoNotHaveSavedPayment =
+      'You do not have any saved payment information.';
+  static const String setUpPaymentMethod = 'Setup payment method';
+  static const String yourPaymentMethod = '  Your payment method';
+  static const String paymentDetails = 'Payment details';
+  static const String cvv = 'CVV2/CVC2';
+  static const String bySubmittingPayment =
+      'By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s ';
+  static const String endUserLicense =
+      'End User License Agreement, Privacy Policy ';
+  static const String refunPolicy = 'Refund Policy.';
   static const String loginToWebsite =
       "Please log in to the website to view this notice!";
   static const String okay = "Okay";
@@ -284,9 +299,6 @@ class Constants {
   static const String orderSummary = 'Order Summary';
   static const String total = 'Total';
   static const String oneTimeChargeOn = 'One-time charge on';
-  static const String paymentDetails = 'Payment Details';
-  static const String bySubmittingPayment =
-      'By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s ';
   static const String endUserLicenseAgreement = 'End User License Agreement';
   static const String privacyPolicy = 'Privacy Policy ';
   static const String refundPolicy = 'Refund Policy';
@@ -296,6 +308,7 @@ class Constants {
   static const String cardholderName = 'Cardholder Name';
   static const String cardNumber = 'Card number';
   static const String expiryDate = 'Expiry date';
+  static const String formatExpiryDate = 'MM/YYYY';
   static const String cvv2 = 'CVV2/CVC2';
   static const String mmyy = 'MM/YY';
   static const String processingPayment = 'Processing your payment…';
@@ -319,8 +332,6 @@ class Constants {
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
   static const String back = 'Back';
-  static const String paymentMethod = "Payment Method";
-  static const String paymentHistory = "Payment History";
   static const String date = "DATE";
   static const String productName = "PRODUCT NAME";
   static const String startDate = "START DATE";
@@ -352,6 +363,26 @@ class Constants {
   static const String reps = " REPs";
   static const String getReps = 'Get REPs';
   static const String noDataAvailable = 'No data available';
+  static const incorrectlyFormattedCardHolderName =
+      'Incorrectly formatted cardholder name';
+  static const invalidCardNumber = 'Invalid card number';
+  static const checkYourExpirationDate = 'Check your expiration date';
+  static const invalidCardVerificationCode = 'Invalid card verification code';
+  static const paymentMethodsNotFound = 'Payment methods not found';
   static const String defaultThumbnailImage =
       'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
+  static const String goToHome = 'Go To Home';
+
+  static const String enterValidContent = "Please enter search content";
+  static const String notFoundResult = "No any search result found";
+  static const String anonymousCardNumber = '**** **** ****';
+  static const String cardHolderName = 'Cardholder Name';
+  static const String edit = 'Edit';
+  static const String remove = 'Remove';
+  static const String noName = 'No Name';
+  static const String removeCard = 'Remove card';
+  static const String setUpPaymentMethodSuccess =
+      'Your payment method has been setup successfully.';
+  static const String guideLineCVV =
+      'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
 }

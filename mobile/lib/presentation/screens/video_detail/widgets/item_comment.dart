@@ -215,7 +215,7 @@ class _ItemCommentState extends State<ItemComment> {
                                   },
                                   child: Text(
                                     isSeeMore
-                                        ? Constants.readLess
+                                        ? Constants.showLess
                                         : Constants.readMore,
                                     style: AppTextStyles
                                         .montserratStyle.semiBold16Grey,
