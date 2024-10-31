@@ -9,6 +9,8 @@ import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 import BaseDialog from '../BaseDialog.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
+import ListRepPackage from '@components/rep/ListRepPackage.vue'
+import { usePaymentStore } from '../../stores/payment'
 
 const props = defineProps({
   videoId: {
@@ -21,6 +23,7 @@ const isOpenBuyReps = ref(false)
 const openDonationSuccess = ref(false)
 const donateSuccessReps = ref(0)
 const userStore = useAuthStore()
+const paymentStore = usePaymentStore()
 const openLoginStore = useOpenLoginStore()
 const commentToggleStore = useCommentToggleStore()
 const listReps = ref([])
@@ -31,8 +34,20 @@ const giftReps = reactive({
 })
 const { data, isLoading } = useGiftPackages()
 const { data: dataUser, isLoading: isLoadingUser } = useUserReps()
-const availableReps = ref(0)
+const availableReps = ref(paymentStore.reps)
 const { isPending, mutate } = useDonation()
+
+const showListReps = ref(false)
+
+const handleCloseModal = () => {
+  showListReps.value = false
+  giftReps.giftPackageId = 0
+  giftReps.content = PRESET_MESSAGE[0]
+}
+const handleBackGiftModal = () => {
+  showListReps.value = false
+  isOpenBuyReps.value = false
+}
 
 watchEffect(() => {
   if (!isLoading.value && data.value) {
@@ -41,7 +56,7 @@ watchEffect(() => {
 })
 watchEffect(() => {
   if (!isLoadingUser.value && dataUser.value) {
-    availableReps.value = dataUser.value.data?.numberOfREPs
+    // availableReps.value = dataUser.value.data?.numberOfREPs
     commentToggleStore.setChannelId(dataUser.value.data?.channelId)
   }
 })
@@ -67,6 +82,7 @@ const handleOpen = () => {
 }
 const handleGetReps = () => {
   isOpenBuyReps.value = true
+  showListReps.value = true
 }
 function handleClickMessage(value) {
   giftReps.content = value
@@ -94,7 +110,8 @@ const handleDonation = () => {
         donateSuccessReps.value = listReps.value.find(
           (item) => item.id === giftReps.giftPackageId
         ).numberOfREPs
-        availableReps.value -= donateSuccessReps.value
+        // availableReps.value -= donateSuccessReps.value
+        paymentStore.reps -= donateSuccessReps.value
       },
       onError: (error) => {
         // errorMessage.value = error.response?.data?.message
@@ -110,7 +127,7 @@ const handleDonation = () => {
         >{{ $t('gift_reps.gift_reps') }} <ChevronRight class="ml-2"
       /></Button>
     </PopoverTrigger>
-    <PopoverContent class="p-0 w-[480px] rounded-lg">
+    <PopoverContent class="p-0 w-[480px] rounded-lg border-none">
       <div v-if="!isOpenBuyReps">
         <div class="flex justify-between p-5 py-4 border-b-2 border-lightGray">
           <div>
@@ -162,23 +179,30 @@ const handleDonation = () => {
             class="text-[17px]"
             v-html="
               $t('gift_reps.have', {
-                amount: `<strong>${availableReps} REPs</strong>`
+                amount: `<strong>${paymentStore.reps} REPs</strong>`
               })
             "
           ></p>
           <Button @click="handleGetReps">{{ $t('gift_reps.get') }}</Button>
         </div>
       </div>
+      <ListRepPackage
+        :showListReps="showListReps"
+        @close-modal="handleCloseModal"
+        @back-giftrep="handleBackGiftModal"
+        @success-buy="closePopover"
+        :isGiftReps="true"
+      />
 
       <!--BUY REPS-->
-      <div v-else class="p-3">
+      <!-- <div v-else class="p-3">
         <div class="flex items-center justify-between">
           <Button variant="link" @click="isOpenBuyReps = false" class="text-black text-[14px] p-0"
             ><ChevronLeft class="mr-1" />Back</Button
           >
           <X @click="closePopover" class="cursor-pointer" />
         </div>
-      </div>
+      </div> -->
     </PopoverContent>
   </Popover>
 
@@ -189,6 +213,7 @@ const handleDonation = () => {
         if (!val) closeDialog()
       }
     "
+    :width="450"
   >
     <div class="text-center">
       <h3 class="font-bold my-4 text-xl">{{ $t('gift_reps.success') }}</h3>

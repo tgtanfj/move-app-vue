@@ -15,7 +15,6 @@ export const usePaymentStore = defineStore('payment', () => {
   const showSucessNotify = ref(false)
   const stripeErr = ref('')
   const reps = ref(0)
-  const hasCheckedForPayment = ref(false)
   const isBuying = ref(false)
 
   const repsPackageList = ref([])
@@ -51,9 +50,9 @@ export const usePaymentStore = defineStore('payment', () => {
     try {
       isLoading.value = true
       const response = await apiAxios.get('/stripe/list-cards')
-      if (response.status === 200) {
-        userPaymentList.value = response.data.data
-      } else throw new Error(response.data.error)
+      if (response.status === 200 && response.data.data.id) {
+        userPaymentList.value = { ...response.data.data }
+      } else throw new Error(response.data.error || 'Error getting payment information')
     } catch (error) {
       console.error('Error fetching user payment:', error)
     } finally {
@@ -215,14 +214,17 @@ export const usePaymentStore = defineStore('payment', () => {
             save: isChecked
           })
           if (response.status === 200) {
+            if (isChecked) {
+              await fetchUserPaymentMethod()
+            }
             const { client_secret, status } = response.data.data
             if (status !== 'succeeded') {
               await stripe.value.confirmCardPayment(client_secret)
             }
             reps.value += item.numberOfREPs
-            if (path === '/wallet') {
-              await fetchUserPaymentMethod()
-            }
+            // if (path === '/wallet') {
+            //   await fetchUserPaymentMethod()
+            // }
           } else {
             throw new Error('Error purchasing. Please try again.')
           }
@@ -243,18 +245,16 @@ export const usePaymentStore = defineStore('payment', () => {
     if (userPaymentList.value) {
       return true
     }
-    if (!hasCheckedForPayment.value) {
-      hasCheckedForPayment.value = true
-      try {
-        const response = await apiAxios.get('/stripe/list-cards')
-        if (response.status === 200 && response.data.data) {
-          userPaymentList.value = { ...response.data.data }
-          return true
-        }
-      } catch (error) {
-        return false
+    try {
+      const response = await apiAxios.get('/stripe/list-cards')
+      if (response.status === 200 && response.data.data) {
+        userPaymentList.value = { ...response.data.data }
+        return true
       }
+    } catch (error) {
+      return false
     }
+
     return false
   }
   return {
@@ -267,7 +267,6 @@ export const usePaymentStore = defineStore('payment', () => {
     stripeErr,
     repsPackageList,
     reps,
-    hasCheckedForPayment,
     checkForSavedPayment,
     getListRepsPackage,
     hideNotify,

@@ -29,11 +29,11 @@ import { walletSchema } from '../../validation/schema'
 import { formatDateToDDMMMYYYY } from '@utils/wallet.util'
 import { hasEmptyProperty } from '@utils/userProfile.util'
 import { useForm } from 'vee-validate'
-import { X } from 'lucide-vue-next'
+import { ChevronLeft, X } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
 
 const paymentStore = usePaymentStore()
-const emit = defineEmits(['buy-package', 'close-modal'])
+const emit = defineEmits(['buy-package', 'close-modal', 'back-giftrep', 'success-buy'])
 const queryClient = useQueryClient()
 
 const router = useRouter()
@@ -57,7 +57,6 @@ const showFailureModal = ref(false)
 const purchaseError = ref('')
 const isChecked = ref(false)
 const path = ref('')
-const isGiftReps = ref(false)
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -128,6 +127,10 @@ const props = defineProps({
   showListReps: {
     type: Boolean,
     required: true
+  },
+  isGiftReps: {
+    type: Boolean,
+    required: false
   }
 })
 
@@ -172,8 +175,7 @@ const closeModal = () => {
 }
 
 const handleBackGiftModal = () => {
-  emit('close-modal')
-  console.log('back to gift reps modal')
+  emit('back-giftrep')
 }
 
 const handleRedirectToAddPayment = () => {
@@ -237,11 +239,17 @@ const onSubmit = async () => {
       )
       resetAfterSuccess()
     }
+    // emit('success-buy')
     queryClient.invalidateQueries('payment_history')
   } catch (error) {
     purchaseError.value = error
     resetAfterFailure()
   }
+}
+
+const handleCloseSuccessModal = () => {
+  showSuccessModal.value = false
+  emit('success-buy')
 }
 </script>
 
@@ -251,20 +259,22 @@ const onSubmit = async () => {
       class="absolute right-0 bg-white text-black border-2 shadow-lg rounded-md mt-3 min-w-[300px] z-5"
       :class="{ hidden: !showListReps }"
     >
-      <div class="px-4 mt-6">
+      <div class="px-2 mt-3">
         <div class="flex items-center justify-between" v-if="isGiftReps">
-          <span @click="handleBackGiftModal" class="text-lg my-2 font-sans">Back</span>
+          <Button variant="link" @click="handleBackGiftModal" class="text-black text-[14px] p-0"
+            ><ChevronLeft class="mr-1" />Back</Button
+          >
           <X class="cursor-pointer" @click="closeModal" />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between px-3">
           <h2 class="font-bold my-2 text-2xl font-sans">{{ t('buyreps.buy_reps') }}</h2>
           <X class="cursor-pointer" @click="closeModal" v-if="!isGiftReps" />
         </div>
-        <p class="text-base font-sans">
+        <p class="text-base font-sans px-3">
           {{ t('buyreps.you_have') }}
           <span class="font-semibold">{{ paymentStore.reps }} {{ t('buyreps.reps') }}</span>
         </p>
-        <p class="text-sm text-slate-400 font-sans">{{ t('buyreps.price_in_usd') }}</p>
+        <p class="text-sm text-slate-400 font-sans px-3">{{ t('buyreps.price_in_usd') }}</p>
       </div>
       <div class="w-full h-[.7px] bg-slate-200 my-2"></div>
       <ul v-if="paymentStore.repsPackageList.length > 0">
@@ -543,7 +553,7 @@ const onSubmit = async () => {
           >
         </DialogHeader>
         <div class="flex items-center justify-center gap-4">
-          <Button @click="showSuccessModal = false">{{ t('button.ok') }}</Button>
+          <Button @click="handleCloseSuccessModal">{{ t('button.ok') }}</Button>
         </div>
       </DialogContent>
     </Dialog>
