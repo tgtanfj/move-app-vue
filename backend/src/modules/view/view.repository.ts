@@ -15,7 +15,7 @@ export class ViewRepository {
     return sum;
   }
 
-  async createUpdateViewDate(dto: CreateUpdateViewDto) {
+  async createUpdateViewDate(dto: CreateUpdateViewDto, timeCountView: number) {
     const { videoId, date, viewTime } = dto;
     const existingView = await this.viewRepository.findOne({
       where: { video: { id: videoId }, viewDate: date },
@@ -30,8 +30,8 @@ export class ViewRepository {
       await this.viewRepository.save(view);
       return view;
     }
-    !viewTime && existingView.totalView++;
-    viewTime && (existingView.totalViewTime = +existingView.totalViewTime + viewTime);
+    !viewTime && existingView.totalView++ && (existingView.totalViewTime += timeCountView);
+    viewTime && (existingView.totalViewTime = +existingView.totalViewTime + viewTime - timeCountView);
 
     await this.viewRepository.save(existingView);
     return existingView;
