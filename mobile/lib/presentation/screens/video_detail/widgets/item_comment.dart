@@ -69,6 +69,14 @@ class _ItemCommentState extends State<ItemComment> {
                           width: 48,
                           height: 48,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              AppImages.defaultAvatar.webpAssetPath,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         )),
               const SizedBox(
                 width: 12,
@@ -168,7 +176,7 @@ class _ItemCommentState extends State<ItemComment> {
                             )),
                         Expanded(
                           child: Text(
-                            (widget.commentModel?.createTimeConvert ?? "")
+                            (widget.commentModel?.getTimeSinceCreated() ?? "")
                                 .toString(),
                             style: AppTextStyles
                                 .montserratStyle.regular14GraniteGray,
@@ -207,7 +215,7 @@ class _ItemCommentState extends State<ItemComment> {
                                   },
                                   child: Text(
                                     isSeeMore
-                                        ? Constants.readLess
+                                        ? Constants.showLess
                                         : Constants.readMore,
                                     style: AppTextStyles
                                         .montserratStyle.semiBold16Grey,

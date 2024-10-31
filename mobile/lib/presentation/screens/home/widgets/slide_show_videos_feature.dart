@@ -20,14 +20,20 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    late double heightSlideShow;
+    if (height > 800) {
+      heightSlideShow = height * 0.4;
+    } else {
+      heightSlideShow = height * 0.42;
+    }
     return ImageSlideshow(
       initialPage: 0,
       autoPlayInterval: 3000,
       isLoop: true,
+      height: heightSlideShow,
       onPageChanged: (value) {},
       indicatorColor: AppColors.black,
       indicatorBackgroundColor: AppColors.graniteGray,
-      height: height * 0.45,
       children: List.generate(widget.listVideo.length, (index) {
         return SizedBox(
           width: MediaQuery.of(context).size.width - 40.0,
@@ -44,7 +50,6 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
                   ),
                 ),
                 height: height * 0.21,
-                isViewText: true,
                 image: widget.listVideo[index].thumbnailURL ?? '',
                 numberOfViews: widget.listVideo[index].numberOfViews
                         ?.toCompactViewCount() ??

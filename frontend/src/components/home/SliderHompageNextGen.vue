@@ -125,8 +125,8 @@ const startAutoSlide = () => {
                 alt=""
               />
             </div>
-            <div class="flex-[0.35] h-full flex flex-col items-center justify-center gap-2.5">
-              <div class="flex items-start gap-3 w-[70%]">
+            <div class="flex-[0.35] h-full flex flex-col items-start justify-center gap-2.5">
+              <div class="flex items-start pl-[8%] gap-3 w-[70%]">
                 <img
                   @click.stop="router.push(`/channel/${activeVideo?.channel?.id}`)"
                   :src="activeVideo?.channel.image"
@@ -145,13 +145,14 @@ const startAutoSlide = () => {
                   <div class="text-[#666666] text-[14px] flex flex-col">
                     <p>{{ activeVideo?.category?.title }}</p>
                   </div>
-                  <div class="flex items-center gap-2 mt-1">
+                  <div v-if="activeVideo?.ratings !== 0" class="flex items-center gap-2 mt-1">
                     <Star />
                     <p class="font-bold text-[14px]">{{ activeVideo?.ratings }}</p>
                   </div>
+                  <div v-else class="flex items-center gap-2 mt-1"></div>
                 </div>
               </div>
-              <div class="flex items-center mt-1 justify-start w-[80%] gap-2">
+              <div class="flex pl-[8%] items-center mt-1 justify-start w-[80%] gap-2">
                 <div class="py-2 px-4 bg-[#EEEEEE] rounded-full text-[10px] font-bold">
                   {{ activeVideo?.workoutLevel }}
                 </div>
@@ -159,18 +160,17 @@ const startAutoSlide = () => {
                   {{ detectDuration(activeVideo?.duration) }}
                 </div>
               </div>
-              <div class="w-[80%] text-[14px] text-[#666666] mt-2">
+              <div class="w-[80%] pl-[8%] text-[14px] text-[#666666] mt-2">
                 {{ activeVideo?.title }}
               </div>
             </div>
             <div
+              v-if="activeVideo?.numberOfViews > 0"
               class="absolute bottom-4 left-4 bg-black text-white px-2 py-1 rounded-md font-bold h-[25px] text-[16px] flex items-center gap-2"
             >
               <EyeIcon />
               <p>
-                {{
-                  activeVideo?.numberOfViews ? formatViews(activeVideo?.numberOfViews) : '0 view'
-                }}
+                {{ activeVideo?.numberOfViews && formatViews(activeVideo?.numberOfViews) }}
               </p>
             </div>
           </CardContent>

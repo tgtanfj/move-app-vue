@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
+import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/categories_repository.dart';
 import 'package:move_app/data/repositories/channels_repository.dart';
@@ -39,14 +41,13 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
   Future<void> _onSearchResultInitialEvent(
       SearchResultInitialEvent event, Emitter<SearchResultState> emit) async {
     emit(state.copyWith(
-      status: SearchResultStatus.processing,
       searchQuery: event.searchQuery,
     ));
-    if (event.searchQuery != null && event.searchQuery!.isNotEmpty) {
+    if (event.searchQuery != null && event.searchQuery!.trim().isNotEmpty) {
       final result = await Future.wait([
-        categoriesRepository.searchCategory(event.searchQuery!, 1),
-        channelsRepository.searchChannel(event.searchQuery!, 1),
-        videosRepository.searchVideo(event.searchQuery!)
+        categoriesRepository.searchCategory(event.searchQuery!.trim(), 1),
+        channelsRepository.searchChannel(event.searchQuery!.trim(), 1),
+        videosRepository.searchVideo(event.searchQuery!.trim())
       ]);
       (result[0] as Either<String, List<CategoryModel>>).fold((l) {
         emit(state.copyWith(
@@ -55,7 +56,9 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
         ));
       }, (r) {
         emit(state.copyWith(
-            categoryList: r, status: SearchResultStatus.success));
+          categoryList: r,
+          status: SearchResultStatus.success,
+        ));
       });
       (result[1] as Either<String, List<ChannelModel>>).fold((l) {
         emit(state.copyWith(
@@ -74,22 +77,11 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       }, (r) {
         emit(state.copyWith(videoList: r, status: SearchResultStatus.success));
       });
-      if (state.categoryList.isEmpty &&
-          state.channelList.isEmpty &&
-          state.videoList.isEmpty) {
-        emit(state.copyWith(
-          status: SearchResultStatus.failure,
-        ));
-      } else {
-        emit(state.copyWith(
-          status: SearchResultStatus.success,
-          categoryList: state.categoryList,
-          channelList: state.channelList,
-          videoList: state.videoList,
-        ));
-      }
     } else {
-      emit(state.copyWith(status: SearchResultStatus.failure));
+      emit(state.copyWith(
+        status: SearchResultStatus.failure,
+        errorMessage: Constants.failedToLoadVideos,
+      ));
     }
   }
 
@@ -106,9 +98,11 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       ));
     }, (r) {
       emit(state.copyWith(
-          totalChannelPages: r, status: SearchResultStatus.success));
+        totalChannelPages: r,
+        status: SearchResultStatus.success,
+      ));
     });
-    if (totalPages != null) {
+    if (state.totalChannelPages != null) {
       if (currentPage < state.totalChannelPages!.toInt()) {
         currentPage++;
         final channels = await channelsRepository.searchChannel(
@@ -182,7 +176,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       emit(state.copyWith(
           totalCategoriesPages: r, status: SearchResultStatus.success));
     });
-    if (totalPages != null) {
+    if (state.totalCategoriesPages != null) {
       if (currentPage < state.totalCategoriesPages!.toInt()) {
         currentPage++;
         final categories = await categoriesRepository.searchCategory(
@@ -269,7 +263,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
     final SearchHistoryModel searchHistoryModel =
         SearchHistoryModel(content: event.searchText);
     String token = SharedPrefer.sharedPrefer.getUserToken();
-    if (token.isNotEmpty) {
+    if (token.isNotEmpty && event.searchText.trim().isNotEmpty) {
       final history =
           await HistoryRepository().saveSearchHistory(searchHistoryModel);
       history.fold((l) {
@@ -286,7 +280,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
   Future<void> _onSearchRemoveHistoryEvent(
       SearchRemoveHistoryEvent event, Emitter<SearchResultState> emit) async {
     final SearchHistoryModel searchHistoryModel =
-    SearchHistoryModel(content: event.searchText);
+        SearchHistoryModel(content: event.searchText);
     String token = SharedPrefer.sharedPrefer.getUserToken();
     if (token.isNotEmpty) {
       final history =

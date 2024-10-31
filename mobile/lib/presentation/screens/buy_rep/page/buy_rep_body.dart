@@ -36,7 +36,7 @@ class _BuyRepBodyState extends State<BuyRepBody> {
               });
         }
         if (state.status == BuyRepStatus.orderSuccess) {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context).pop();
           showDialog(
               context: context,
               builder: (BuildContext build) {
@@ -44,7 +44,7 @@ class _BuyRepBodyState extends State<BuyRepBody> {
               });
         }
         if (state.status == BuyRepStatus.orderFailed) {
-          Navigator.of(context, rootNavigator: true).pop();
+          Navigator.of(context).pop();
           showDialog(
               context: context,
               builder: (BuildContext build) {

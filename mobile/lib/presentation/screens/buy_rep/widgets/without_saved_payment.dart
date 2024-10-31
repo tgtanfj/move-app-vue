@@ -101,6 +101,11 @@ class WithoutSavedPayment extends StatelessWidget {
         CustomEditText(
           onChanged: onChangeCardNumber,
           isShowMessage: isShowCardNumberMessage,
+          textInputType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(16),
+          ],
           textStyle: isShowCardNumberMessage
               ? AppTextStyles.montserratStyle.regular14BrinkPink
               : AppTextStyles.montserratStyle.regular14Black,
@@ -123,6 +128,11 @@ class WithoutSavedPayment extends StatelessWidget {
                   Text(Constants.expiryDate,
                       style: AppTextStyles.montserratStyle.regular14Black),
                   CustomEditText(
+                    hintText: Constants.mmyy,
+                    textInputType: TextInputType.number,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(5),
+                    ],
                     onChanged: onChangeExpiryDate,
                     isShowMessage: isShowExpiryDateMessage,
                     textStyle: isShowExpiryDateMessage
@@ -164,6 +174,11 @@ class WithoutSavedPayment extends StatelessWidget {
                       ],
                     ),
                     CustomEditText(
+                        textInputType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
                         onChanged: onChangeCvv,
                         isShowMessage: isShowCvvMessage,
                         textStyle: isShowCvvMessage

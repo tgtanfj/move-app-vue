@@ -53,31 +53,31 @@ export const SORT_BY = [
 export const SORT_BY_ANALYTICS = [
   {
     title: 'All statuses',
-    value: formatCategoryTitleToUrl('All statuses')
+    value: formatCategoryTitleToUrl('All')
   },
   {
     title: 'Views (High to Low)',
-    value: formatCategoryTitleToUrl('Views (High to Low)')
+    value: 'Views (High to Low)'
   },
   {
     title: 'Views (Low to High)',
-    value: formatCategoryTitleToUrl('Views (Low to High)')
+    value: 'Views (Low to High)'
   },
   {
     title: 'REPs (High to Low)',
-    value: formatCategoryTitleToUrl('REPs (High to Low)')
+    value: 'REPs (High to Low)'
   },
   {
     title: 'REPs (Low to High)',
-    value: formatCategoryTitleToUrl('REPs (Low to High)')
+    value: 'REPs (Low to High)'
   },
   {
     title: 'Ratings (High to Low)',
-    value: formatCategoryTitleToUrl('Ratings (High to Low)')
+    value: 'Ratings (High to Low)'
   },
   {
     title: 'Ratings (Low to High)',
-    value: formatCategoryTitleToUrl('Ratings (Low to High)')
+    value: 'Ratings (Low to High)'
   }
 ]
 
@@ -100,32 +100,32 @@ export const SHOW_ANALYTICS = [
   },
   {
     title: '1 year ago',
-    value: formatCategoryTitleToUrl('1 year ago')
+    value: formatCategoryTitleToUrl('one year ago')
   }
 ]
 
 export const RESPONSE_BY_COMMENTS = [
   {
     title: 'All responses',
-    value: formatCategoryTitleToUrl('All responses')
+    value: 'all'
   },
   {
     title: 'I haven’t respond',
-    value: formatCategoryTitleToUrl('I haven’t respond')
+    value: 'unresponded'
   },
   {
     title: 'I have responded',
-    value: formatCategoryTitleToUrl('I have responded')
+    value: 'responded'
   }
 ]
 
 export const SORT_COMMENTS = [
   {
     title: 'Most recent',
-    value: formatCategoryTitleToUrl('Most recent')
+    value: 'createdAt'
   },
   {
     title: 'Received REPs',
-    value: formatCategoryTitleToUrl('Received REPs')
+    value: 'receivedReps'
   }
 ]

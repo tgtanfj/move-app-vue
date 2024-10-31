@@ -5,7 +5,9 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/rep_model.dart';
+import 'package:move_app/presentation/screens/buy_rep/page/buy_rep_page.dart';
 import 'package:move_app/presentation/screens/buy_rep/widgets/rep_item.dart';
+import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 
 class BuyRepDialog extends StatelessWidget {
   final bool isBack;
@@ -44,7 +46,14 @@ class BuyRepDialog extends StatelessWidget {
                         ? Row(
                             children: [
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        const GiftRepsDialog(),
+                                  );
+                                },
                                 child: SvgPicture.asset(
                                   AppIcons.arrowLeft.svgAssetPath,
                                   width: 10,
@@ -106,7 +115,14 @@ class BuyRepDialog extends StatelessWidget {
                   onSelectRep: () {
                     Navigator.pop(
                       context,
-                      reps[index],
+                    );
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return BuyRepPage(
+                          rep: reps[index],
+                        );
+                      },
                     );
                   },
                 );

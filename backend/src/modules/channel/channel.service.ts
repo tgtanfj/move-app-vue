@@ -1,6 +1,6 @@
 import { Channel } from '@/entities/channel.entity';
 import { ApiConfigService } from '@/shared/services/api-config.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { I18nService } from 'nestjs-i18n';
 import { FindOptionsRelations, Repository, UpdateResult } from 'typeorm';
@@ -9,13 +9,23 @@ import { FollowService } from '../follow/follow.service';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { VideoService } from '../video/video.service';
 import { ChannelRepository } from './channel.repository';
-import { FilterWorkoutLevel, SortBy } from './dto/request/filter-video-channel.dto';
+import {
+  AnalyticSortBy,
+  FilterWorkoutLevel,
+  OrderBy,
+  ShowBy,
+  SortBy,
+} from './dto/request/filter-video-channel.dto';
 import { ChannelItemDto } from './dto/response/channel-item.dto';
 import { ChannelProfileDto, SocialLink } from './dto/response/channel-profile.dto';
 import { ChannelSettingDto } from './dto/response/channel-setting.dto';
 import { CommentRepository } from '../comment/comment.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from '@/entities/comment.entity';
+import { objectResponse } from '@/shared/utils/response-metadata.function';
+import { PaginationMetadata } from '../video/dto/response/pagination.meta';
+import { ThumbnailService } from '../thumbnail/thumbnail.service';
+import { ViewService } from '../view/view.service';
 
 @Injectable()
 export class ChannelService {
@@ -27,6 +37,7 @@ export class ChannelService {
     private readonly apiConfig: ApiConfigService,
     private readonly i18n: I18nService,
     private readonly commentRepository: CommentRepository,
+    private readonly thumbnailService: ThumbnailService,
   ) {}
 
   async getChannelByUserId(userId: number): Promise<Channel> {
@@ -77,21 +88,19 @@ export class ChannelService {
     });
 
     const [followingChannels, socialLinks] = await Promise.all([
-      this.followService
-        .getFollowingChannels(channel.user.id, 4, { channel: true })
-        .then(async (followings) => {
-          return await Promise.all(
-            followings.map(async (follow) => {
-              const channelItem = plainToInstance(ChannelItemDto, follow.channel, {
-                excludeExtraneousValues: true,
-              });
+      this.followService.getFollowingChannels(channel.user.id, { channel: true }).then(async (followings) => {
+        return await Promise.all(
+          followings.map(async (follow) => {
+            const channelItem = plainToInstance(ChannelItemDto, follow.channel, {
+              excludeExtraneousValues: true,
+            });
 
-              channelItem.numberOfFollowers = +channelItem.numberOfFollowers;
+            channelItem.numberOfFollowers = +channelItem.numberOfFollowers;
 
-              return channelItem;
-            }),
-          );
-        }),
+            return channelItem;
+          }),
+        );
+      }),
       this.getSocialLinks(channel.facebookLink, channel.youtubeLink, channel.instagramLink),
     ]);
 
@@ -203,19 +212,112 @@ export class ChannelService {
 
   async overViewAnalytic(userId: number) {
     const { id, numberOfFollowers, numberOfREPs } = await this.channelRepository.getChannelByUserId(userId);
-    const totalView = await this.videoService.getTotalViewOfChannel(id);
-    const avgTime = null;
-    const lastVideo = await this.videoService.getLastVideoOfChannel(id);
+    if (!id) {
+      throw new BadRequestException(`Channel not found`);
+    }
+    const [totalView, totalTime, lastVideo] = await Promise.all([
+      this.videoService.getTotalViewOfChannel(id),
+      this.videoService.getTotalSecondsOfChannel(id),
+      this.videoService.getLastVideoOfChannel(id),
+    ]);
+    const avgTime = totalView ? totalTime / totalView : 0;
     return {
       numberOfFollowers,
       numberOfREPs,
-      totalView,
+      totalView: totalView || 0,
       avgTime,
       lastVideo,
     };
   }
 
-  async getAllComments(userId: number): Promise<Comment[]> {
-    return await this.commentRepository.getAllComments(userId);
+  async getAllComments(
+    userId: number,
+    filter: string = 'all',
+    sortBy: string = 'createdAt',
+    page: number = 1,
+    pageSize: number = 5,
+  ): Promise<{
+    data: Comment[];
+    totalItemCount: number;
+    totalPages: number;
+    itemFrom: number;
+    itemTo: number;
+  }> {
+    return await this.commentRepository.getAllComments(userId, filter, sortBy, page, pageSize);
+  }
+
+  async videoAnalytics(
+    userId: number,
+    showBy: ShowBy,
+    sortBy: AnalyticSortBy,
+    page: number = 1,
+    take = 10,
+    asc?: boolean,
+  ) {
+    const time = new Date();
+
+    const timeFrames: Record<ShowBy, number> = {
+      [ShowBy.LAST_7_DAYS]: 7,
+      [ShowBy.LAST_30_DAYS]: 30,
+      [ShowBy.LAST_90_DAYS]: 90,
+      [ShowBy.ONE_YEAR_AGO]: 365,
+      [ShowBy.ALL_TIME]: 9999,
+    };
+
+    if (showBy in timeFrames) {
+      time.setDate(time.getDate() - timeFrames[showBy]);
+    }
+
+    const orderby: OrderBy = {
+      field:
+        sortBy === AnalyticSortBy.RATINGS
+          ? 'video_ratings'
+          : sortBy === AnalyticSortBy.REPS
+            ? 'total_reps'
+            : 'total_views',
+      direction: asc ? 'ASC' : 'DESC',
+    };
+    const timeFomat = time.toISOString().split('T')[0];
+    const offset = (page - 1) * take;
+    const foundChannel = await this.getChannelByUserId(userId);
+
+    const analyticsMethod =
+      showBy === ShowBy.ALL_TIME
+        ? this.videoService.videoAnalyticDashboard
+        : this.videoService.videoAnalyticDashboardByQuery;
+
+    const { totalCount, result } = await analyticsMethod.call(
+      this.videoService,
+      foundChannel.id,
+      timeFomat,
+      orderby,
+      take,
+      offset,
+    );
+
+    if (result.length === 0) {
+      return [];
+    }
+
+    const update = await Promise.all(
+      result.map(async (video) => {
+        const thumbnail = await this.thumbnailService.getSelectedThumbnail(video.video_id);
+        const { total_seconds, total_reps, total_views, ...obj } = video;
+        return {
+          ...obj,
+          total_reps: total_reps || 0,
+          total_views: total_views || 0,
+          avg_watch: total_views ? total_seconds / total_views : 0,
+          thumbnail: thumbnail?.image,
+        };
+      }),
+    );
+
+    const totalPage = Math.ceil(totalCount / take);
+    return objectResponse(update, new PaginationMetadata(totalCount, page, take, totalPage));
+  }
+
+  async updateChannel(channel: Channel) {
+    return await this.channelRepository.updateChannel(channel);
   }
 }

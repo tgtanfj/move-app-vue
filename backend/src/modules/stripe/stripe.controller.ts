@@ -36,4 +36,11 @@ export class StripeController {
   async getBalance() {
     return await this.stripeService.getBalance();
   }
+
+  @Get('revenue')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async getTotalRevenues() {
+    return await this.stripeService.getTotalRevenue();
+  }
 }

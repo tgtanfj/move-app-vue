@@ -38,9 +38,11 @@ import Loading from '../Loading.vue'
 import UploadVideoProgress from './UploadVideoProgress.vue'
 import { useRoute } from 'vue-router'
 import { useVideoStore } from '../../stores/videoManage'
+import { useQueryClient } from '@tanstack/vue-query'
 
 const route = useRoute()
 const videoStore = useVideoStore()
+const queryClient = useQueryClient()
 
 const isOpenUploadVideoModal = ref(false)
 const isOpenUploadVideoDetails = ref(false)
@@ -417,6 +419,8 @@ const thirdButton = async (tab) => {
         if (isVideosPage.value) {
           await videoStore.getUploadedVideosList(10, 1)
         }
+        queryClient.invalidateQueries('overview-analytics')
+        queryClient.invalidateQueries('videos-analytics')
       } else {
         uploadLoading.value = false
       }

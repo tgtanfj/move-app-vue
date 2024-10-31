@@ -13,7 +13,7 @@ class ListChannels extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: (channelList.length < 8) ? channelList.length : 8,
+      itemCount: channelList.length,
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
             child: CustomSearchChannel(
@@ -31,7 +31,6 @@ class ListChannels extends StatelessWidget {
               numberOfFollowers:
               channelList[index].numberOfFollowers.toString(),
               isBlueBadge: channelList[index].isBlueBadge,
-              isPinkBadge: channelList[index].isPinkBadge,
         ));
       },
       separatorBuilder: (BuildContext context, int index) {

@@ -128,7 +128,11 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                 const SizedBox(
                   width: 12.0,
                 ),
-                SvgPicture.asset(AppIcons.arrowDown.svgAssetPath),
+                SvgPicture.asset(
+                  widget.isMoreEnable
+                      ? AppIcons.arrowUp.svgAssetPath
+                      : AppIcons.arrowDown.svgAssetPath,
+                ),
               ],
             ),
           ),

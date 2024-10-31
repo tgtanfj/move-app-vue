@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white w-full h-full mt-[65px]">
-    <div class="h-full flex items-center justify-center" v-if="videoStore.isLoading">
+  <div class="bg-white w-full h-full mb-10">
+    <div class="h-full mt-60 flex items-center justify-center" v-if="videoStore.isLoading">
       <Loading />
     </div>
     <template v-if="!videoStore.isLoading && videoStore.videos">

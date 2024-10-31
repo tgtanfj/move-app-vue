@@ -128,7 +128,6 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('userEmail', userInfo.data.data.email)
-        console.log('userInfo', userInfo.data)
         localStorage.setItem('userAvatar', userInfo?.data?.data?.avatar)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')

@@ -115,6 +115,7 @@ class UserModel {
     String? role,
     bool? isActive,
     String? stripeId,
+    ChannelModel? channel,
     int? numberOfREPs,
   }) {
     return UserModel(
@@ -138,6 +139,7 @@ class UserModel {
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       stripeId: stripeId ?? this.stripeId,
+      channel: channel ?? this.channel,
       numberOfREPs: numberOfREPs ?? this.numberOfREPs,
     );
   }

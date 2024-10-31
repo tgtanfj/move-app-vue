@@ -9,7 +9,7 @@ export class Donation extends BaseEntity {
   @Column({
     type: 'varchar',
     nullable: false,
-    default: ''
+    default: '',
   })
   content: string;
 

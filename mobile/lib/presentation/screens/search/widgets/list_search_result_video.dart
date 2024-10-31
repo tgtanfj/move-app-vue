@@ -12,8 +12,8 @@ class ListSearchResultVideo extends StatelessWidget {
 
   const ListSearchResultVideo({
     super.key,
-    required this.videoList,
-    required this.channelList,
+    this.videoList,
+    this.channelList,
   });
 
   @override
@@ -45,9 +45,9 @@ class ListSearchResultVideo extends StatelessWidget {
                       videoList?[index].durationsVideo?.toDurationFormat() ??
                           '00:00',
                   height: MediaQuery.of(context).size.height * 0.21,
-                  isViewText: true,
-                  image: videoList?[index].urlS3,
-                  numberOfViews: videoList?[index].numberOfViews.toString(),
+                  isDurationText: true,
+                  image: videoList?[index].thumbnailsModel?.firstOrNull?.image,
+                  numberOfViews: videoList?[index].numberOfViews?.toCompactViewCount(),
                 ),
                 const SizedBox(
                   height: 4.0,
@@ -55,6 +55,7 @@ class ListSearchResultVideo extends StatelessWidget {
                 VideoFeatureDescription(
                   videoModel: videoList?[index],
                   channelModel: videoList?[index].channel,
+                  category: videoList?[index].categories,
                 ),
               ],
             ),

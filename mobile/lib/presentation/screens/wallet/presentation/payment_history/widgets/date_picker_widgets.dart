@@ -8,10 +8,14 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 
 class DatePickerWidgets extends StatefulWidget {
   final Function(DateRangePickerSelectionChangedArgs)? selectedDate;
+  final DateTime? minDate;
+  final DateTime? maxDate;
 
   const DatePickerWidgets({
     super.key,
     this.selectedDate,
+    this.maxDate,
+    this.minDate,
   });
 
   @override
@@ -29,10 +33,11 @@ class _DatePickerWidgetsState extends State<DatePickerWidgets> {
         onSelectionChanged: widget.selectedDate,
         selectionMode: DateRangePickerSelectionMode.single,
         todayHighlightColor: AppColors.tiffanyBlue,
-        initialSelectedDate: DateTime.now(),
         backgroundColor: AppColors.white,
         selectionColor: AppColors.tiffanyBlue,
         headerHeight: 60,
+        maxDate: widget.maxDate,
+        minDate: widget.minDate,
         showNavigationArrow: true,
         headerStyle: DateRangePickerHeaderStyle(
           backgroundColor: AppColors.white,

@@ -1,9 +1,8 @@
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { I18nService } from 'nestjs-i18n';
 import Stripe from 'stripe';
 import { AttachPaymentMethodDto } from './dto/attach-payment-method.dto';
-import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class StripeService {
@@ -26,6 +25,7 @@ export class StripeService {
   async listPaymentMethod(customerId: string) {
     const paymentMethods = await this.stripe.customers.listPaymentMethods(customerId, {
       type: 'card',
+      limit: 1,
     });
 
     const paymentMethodFiltered = paymentMethods.data.map((paymentMethod) => ({
@@ -40,7 +40,7 @@ export class StripeService {
       name: paymentMethod.billing_details.name,
     }));
 
-    return paymentMethodFiltered;
+    return paymentMethodFiltered[0];
   }
 
   async attachPaymentMethod(customerId: string, addPaymentMethod: AttachPaymentMethodDto) {
@@ -65,18 +65,41 @@ export class StripeService {
     });
   }
 
-  async charge(amount: number, paymentMethodId: string, customerId: string) {
-    return this.stripe.paymentIntents.create({
+  async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
+    return await this.stripe.paymentIntents.create({
       amount: amount * 100,
       customer: customerId,
       payment_method: paymentMethodId,
       currency: this.configService.get('STRIPE_CURRENCY'),
-      off_session: true,
-      confirm: true,
+      off_session: saveCard ? false : true,
+      confirm: saveCard ? false : true,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      payment_method_options: {
+        card: {
+          setup_future_usage: saveCard ? 'off_session' : undefined,
+        },
+      },
     });
   }
 
   async getBalance() {
     return await this.stripe.balance.retrieve();
+  }
+
+  async getTotalRevenue() {
+    const transactions = await this.stripe.balanceTransactions.list();
+
+    const totalRevenue = transactions.data.reduce((sum, transaction) => {
+      if (transaction.type === 'charge') {
+        const amount = transaction.amount;
+        return sum + amount;
+      }
+    }, 0);
+
+    return {
+      totalRevenue,
+    };
   }
 }

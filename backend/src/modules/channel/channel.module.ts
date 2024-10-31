@@ -13,6 +13,8 @@ import { EmailService } from '../email/email.service';
 import { DonationModule } from '../donation/donation.module';
 import { CommentModule } from '../comment/comment.module';
 import { Comment } from '@/entities/comment.entity';
+import { ThumbnailModule } from '../thumbnail/thumbnail.module';
+import { ViewModule } from '../view/view.module';
 
 @Module({
   imports: [
@@ -22,6 +24,10 @@ import { Comment } from '@/entities/comment.entity';
     forwardRef(() => VideoModule),
     DonationModule,
     CommentModule,
+    VideoModule,
+    forwardRef(() => DonationModule),
+    ViewModule,
+    ThumbnailModule,
   ],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelRepository, JwtService, EmailService],

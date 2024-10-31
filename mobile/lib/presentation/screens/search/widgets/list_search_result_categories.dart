@@ -14,47 +14,41 @@ class ListSearchResultCategories extends StatelessWidget {
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       scrollDirection: Axis.horizontal,
-      itemCount: categoryList.isEmpty ? categoryList.length : 2,
+      itemCount: categoryList.length,
       itemBuilder: (BuildContext context, int index) {
-        return Expanded(
-          flex: 1,
-          child: GestureDetector(
-            onTap: () {},
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.network(
-                  categoryList[index].image ?? "",
-                  height: MediaQuery.of(context).size.width * 0.33 * 1.45,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      AppImages.hiitCategory.pngAssetPath,
-                      fit: BoxFit.cover,
-                    );
-                  },
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  categoryList[index].title ?? "",
-                  style: AppTextStyles.montserratStyle.bold18black,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                RichText(
-                    text: TextSpan(children: [
-                  TextSpan(
-                      text: categoryList[index].numberOfViews.toString(),
-                      style:
-                          AppTextStyles.montserratStyle.regular14graniteGray),
-                  TextSpan(
-                      text: " views",
-                      style:
-                          AppTextStyles.montserratStyle.regular14graniteGray),
-                ]))
-              ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              categoryList[index].image ?? "",
+              height: MediaQuery.of(context).size.width * 0.33 * 1.45,
+              fit: BoxFit.fill,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  AppImages.hiitCategory.pngAssetPath,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
-          ),
+            const SizedBox(height: 8.0),
+            Text(
+              categoryList[index].title ?? "",
+              style: AppTextStyles.montserratStyle.bold18black,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            RichText(
+                text: TextSpan(children: [
+              TextSpan(
+                  text: categoryList[index].numberOfViews.toString(),
+                  style:
+                      AppTextStyles.montserratStyle.regular14graniteGray),
+              TextSpan(
+                  text: " views",
+                  style:
+                      AppTextStyles.montserratStyle.regular14graniteGray),
+            ]))
+          ],
         );
       },
       separatorBuilder: (BuildContext context, int index) {

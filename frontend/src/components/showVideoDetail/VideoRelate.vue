@@ -45,11 +45,12 @@ const workoutLevelLite =
           :alt="video?.title"
         />
         <div
+          v-if="video?.numberOfViews > 0"
           class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
         >
           <EyeIcon />
           <p class="font-bold">
-            {{ video?.numberOfViews ? formatViews(video?.numberOfViews) : '0 view' }}
+            {{ video?.numberOfViews && formatViews(video?.numberOfViews) }}
           </p>
         </div>
         <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
@@ -59,7 +60,7 @@ const workoutLevelLite =
       <div class="flex items-start mt-2">
         <img class="w-[32px] h-[32px] rounded-full" :src="video?.channel?.image" />
         <div class="ml-3">
-          <p class="text-[16px] font-bold">{{ video?.title }}</p>
+          <p class="text-[16px] font-bold line-clamp-2">{{ video?.title }}</p>
           <div class="flex flex-col items-start justify-start mt-1.5">
             <div class="flex items-center gap-3">
               <p class="text-[#666666] text-[14px]">{{ video.name }}</p>
@@ -82,10 +83,11 @@ const workoutLevelLite =
             </div>
           </div>
         </div>
-        <div class="flex items-center gap-1 ml-auto">
+        <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto">
           <StartIcon class="h-[16px] w-[16px]" />
           <p class="text-[14px] font-bold">{{ video?.ratings }}</p>
         </div>
+        <div v-else class="flex items-center gap-1 ml-auto"></div>
       </div>
     </div>
   </RouterLink>

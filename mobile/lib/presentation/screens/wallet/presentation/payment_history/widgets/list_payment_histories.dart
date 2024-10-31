@@ -1,70 +1,72 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
+import 'package:move_app/data/models/payment_model.dart';
+import 'package:move_app/utils/util_date_time_format.dart';
 
 class ListPaymentHistories extends StatelessWidget {
-  final String? date;
-  final String? productName;
-  final String? time;
+  final List<PaymentModel>? paymentHistoryList;
 
   const ListPaymentHistories({
     super.key,
-    this.date,
-    this.productName,
-    this.time,
+    this.paymentHistoryList,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: [
-            paymentHistoryWidgets(
-              date ?? "22 Oct 2024",
-              productName ?? "300 Reps",
-              time ?? "05:10:58",
-            ),
-            const Divider(
-              height: 1,
-            ),
-          ],
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(height: 12.0);
-      },
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.57,
+      child: ListView.separated(
+        itemCount: paymentHistoryList?.length ?? 0,
+        itemBuilder: (BuildContext context, int index) {
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: paymentHistoryWidgets(
+                          UtilDateTimeFormat().formatMonthDateYear(
+                              DateTime.parse(paymentHistoryList?[index]
+                                      .createdAt
+                                      .toString() ??
+                                  "")),
+                          AppTextStyles.montserratStyle.regular14Grey)),
+                  Expanded(
+                      flex: 1,
+                      child: paymentHistoryWidgets(
+                          UtilDateTimeFormat().formatTime(DateTime.parse(
+                              paymentHistoryList?[index].createdAt.toString() ??
+                                  "")),
+                          AppTextStyles.montserratStyle.regular14Grey)),
+                  Expanded(
+                    flex: 1,
+                    child: paymentHistoryWidgets(
+                        "${paymentHistoryList?[index].repsPackage?.numberOfREPs.toString()} REPs",
+                        AppTextStyles.montserratStyle.bold14Black),
+                  ),
+                ],
+              ),
+              const Divider(
+                height: 1,
+              )
+            ],
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(height: 12.0);
+        },
+      ),
     );
   }
 
-  Widget paymentHistoryWidgets(
-      String? date, String? productName, String? time) {
+  Widget paymentHistoryWidgets(String? title, TextStyle? titleStyle) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 17),
-      child: Row(
-        children: [
-          Expanded(
-              flex: 1,
-              child: Text(
-                date ?? "",
-                style: AppTextStyles.montserratStyle.regular14Grey,
-              )),
-          Expanded(
-            flex: 1,
-            child: Text(
-              time ?? "",
-              style: AppTextStyles.montserratStyle.regular14Grey,
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              productName ?? "",
-              style: AppTextStyles.montserratStyle.bold14Black,
-            ),
-          ),
-        ],
+      child: Text(
+        title ?? "",
+        style: titleStyle,
       ),
     );
   }

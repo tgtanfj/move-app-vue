@@ -9,6 +9,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
+import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
 
 class SuggestionSearchBox extends StatelessWidget {
   final SuggestionModel? suggestionModel;
@@ -53,8 +54,7 @@ class SuggestionSearchBox extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VideoDetailPage(
-                              videoId: suggestionModel?.topCategory?.id ?? 0)));
+                          builder: (context) => VideosCategoryPage(categoryId: suggestionModel?.topCategory?.id ?? 0 ,)));
                 },
               )
             : const SizedBox(),
@@ -70,7 +70,8 @@ class SuggestionSearchBox extends StatelessWidget {
                         widthAvatar: 40,
                         heightAvatar: 40,
                         radiusAvatar: 50),
-                    title: Row(
+                    title: Wrap(
+                      alignment: WrapAlignment.start,
                       children: [
                         Text(
                           suggestionModel?.topInstructors?[index].name ?? "",
@@ -82,13 +83,6 @@ class SuggestionSearchBox extends StatelessWidget {
                         (suggestionModel?.topInstructors?[index].isBlueBadge ??
                                 false)
                             ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
-                            : const SizedBox(),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        (suggestionModel?.topInstructors?[index].isPinkBadge ??
-                                false)
-                            ? SvgPicture.asset(AppIcons.starFlower.svgAssetPath)
                             : const SizedBox(),
                       ],
                     ),
@@ -147,9 +141,6 @@ class SuggestionSearchBox extends StatelessWidget {
                   );
                 })
             : const SizedBox(),
-        if (suggestionModel?.topCategory != null ||
-            suggestionModel?.topInstructors != null ||
-            suggestionModel?.topVideos != null)
           ListTile(
             leading: const Icon(
               Icons.search,

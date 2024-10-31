@@ -17,7 +17,6 @@ export class ViewService {
   }
 
   async createUpdateViewDate(dto: CreateUpdateViewDto) {
-    await this.viewRepository.createUpdateVideoViewDate(dto);
     const view = await this.viewRepository.createUpdateViewDate(dto);
     if (!dto.viewTime) {
       const video = await this.videoRepository.findOne(dto.videoId, { channel: { user: true } });
@@ -47,5 +46,9 @@ export class ViewService {
       }
     }
     return view;
+  }
+
+  async getTotalSecondByDate(time: Date, videoId: number) {
+    return await this.viewRepository.getSecondWatchByTime(videoId, time);
   }
 }

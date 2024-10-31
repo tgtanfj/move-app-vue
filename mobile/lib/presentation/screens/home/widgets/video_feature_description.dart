@@ -34,6 +34,7 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,13 +107,15 @@ class _VideoFeatureDescriptionState extends State<VideoFeatureDescription> {
               const SizedBox(
                 width: 53.0,
               ),
-              Text(
-                (widget.videoModel?.createdAt != null)
-                    ? '${widget.category?.title} • ${widget.videoModel?.createdAt?.timeAgo()}'
-                    : widget.category?.title ?? "",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.montserratStyle.regular14graniteGray,
+              Flexible(
+                child: Text(
+                  (widget.videoModel?.createdAt != null)
+                      ? '${widget.category?.title} • ${widget.videoModel?.createdAt?.timeAgo()}'
+                      : widget.category?.title ?? "",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.montserratStyle.regular14graniteGray,
+                ),
               ),
             ],
           ),
