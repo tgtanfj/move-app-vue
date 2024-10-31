@@ -47,9 +47,13 @@ const routeToInDepth = (videoId) => {
         </TableCell>
         <TableCell class="text-center">{{ video.total_views }}</TableCell>
         <TableCell class="text-center">
-          {{ video.avg_watch ? convertToTimeFormat(video.avg_watch) : 0 }}
+          {{ video.avg_watch ? convertToTimeFormat(Math.round(video.avg_watch)) : 0 }}
           <span>
-            ({{ video.avg_watch  ? Math.round((video.avg_watch / video.video_duration) * 100) : 0 }}%)
+            ({{
+              video.avg_watch
+                ? Math.round((Math.round(video.avg_watch) / video.video_duration) * 100)
+                : 0
+            }}%)
           </span>
         </TableCell>
         <TableCell class="text-center"

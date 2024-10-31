@@ -48,7 +48,9 @@
             class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
           >
             <WalletIcon class="group-hover:text-primary duration-100" />
-            <p class="font-semibold group-hover:text-primary duration-100">Wallet (0 REPs)</p>
+            <p class="font-semibold group-hover:text-primary duration-100">
+              Wallet ({{ paymentStore.reps }} REPs)
+            </p>
           </RouterLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -109,6 +111,7 @@ import BaseDialog from './BaseDialog.vue'
 import { videoService } from '@services/video.services'
 import Notification from '@components/notificataion/Notification.vue'
 import GetRep from './rep/GetRep.vue'
+import { usePaymentStore } from '../stores/payment'
 
 const props = defineProps({
   isInStreamerPage: {
@@ -118,6 +121,7 @@ const props = defineProps({
 })
 
 const authStore = useAuthStore()
+const paymentStore = usePaymentStore()
 const router = useRouter()
 const showLogoutModal = ref(false)
 const userAvatar = ref(localStorage.getItem('userAvatar'))

@@ -1,16 +1,35 @@
+import { useToast } from '@common/ui/toast'
+import { STRIPE_KEY, STRIPE_PAYMENT_METHOD_API, STRIPE_TOKEN_API } from '@constants/api.constant'
 import { apiAxios } from '@helpers/axios.helper'
+import axios from 'axios'
 import { defineStore } from 'pinia'
-import { onBeforeUnmount, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+
+const { toast } = useToast()
 
 export const usePaymentStore = defineStore('payment', () => {
   const isLoading = ref(false)
   const isDeleting = ref(false)
   const isCreating = ref(false)
-  const userPaymentList = ref([])
+  const userPaymentList = ref(null)
   const showSucessNotify = ref(false)
   const stripeErr = ref('')
+  const reps = ref(0)
+  const hasCheckedForPayment = ref(false)
+  const isBuying = ref(false)
 
   const repsPackageList = ref([])
+
+  onMounted(async () => {
+    try {
+      const res = await apiAxios.get('/user/profile')
+      if (res.status === 200) {
+        reps.value = res.data.data.numberOfREPs
+      } else return
+    } catch (error) {
+      return
+    }
+  })
 
   onBeforeUnmount(() => {
     clearTimeout(notificationTimeout)
@@ -46,7 +65,7 @@ export const usePaymentStore = defineStore('payment', () => {
       const response = await apiAxios.post('/stripe/attach-card', {
         paymentMethodId: paymentId
       })
-      if (response.status === 200) {
+      if (response.status === 201) {
         showSucessNotify.value = true
         await fetchUserPaymentMethod()
         startNotificationTimer()
@@ -55,23 +74,72 @@ export const usePaymentStore = defineStore('payment', () => {
       console.error(error)
     }
   }
-  const createUserPaymentMethod = async (stripe, card, billing_details) => {
+  const createToken = async (card) => {
+    try {
+      const response = await axios.post(
+        STRIPE_TOKEN_API,
+        new URLSearchParams({
+          'card[number]': card.number,
+          'card[exp_month]': card.exp_month,
+          'card[exp_year]': card.exp_year,
+          'card[cvc]': card.cvc,
+          'card[name]': card.name,
+          'card[address_country]': card.country
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Bearer ${STRIPE_KEY}`
+          }
+        }
+      )
+
+      if (response.status === 200) {
+        if (card.type.toLowerCase() !== response.data.card.brand.toLowerCase()) {
+          throw new Error('Wrong Card Type')
+        } else {
+          const { id: token } = response.data
+          return { token }
+        }
+      } else {
+        throw new Error('Error creating token')
+      }
+    } catch (error) {
+      return { error: error.response?.data?.error || error.message }
+    }
+  }
+  const createUserPaymentMethod = async (card) => {
     try {
       isCreating.value = true
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: 'card',
-        card,
-        billing_details
-      })
-      if (error) {
-        throw new Error(error.message)
-      } else {
-        if (paymentMethod.id) {
-          sendPaymentIdToServer(paymentMethod.id)
+      const { token, error: tokenError } = await createToken(card)
+      if (tokenError) throw new Error(tokenError.message || tokenError)
+
+      if (token) {
+        const res = await axios.post(
+          STRIPE_PAYMENT_METHOD_API,
+          new URLSearchParams({
+            type: 'card',
+            'card[token]': token
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Bearer ${STRIPE_KEY}`
+            }
+          }
+        )
+
+        if (res.status === 200) {
+          const { id: paymentMethodId } = res.data
+          await sendPaymentIdToServer(paymentMethodId)
+        } else {
+          throw new Error(res.data.error || 'Error creating payment method')
         }
+      } else {
+        throw new Error('Token was not created')
       }
     } catch (err) {
-      stripeErr.value = err
+      toast({ description: err, variant: 'destructive' })
     } finally {
       isCreating.value = false
     }
@@ -82,8 +150,8 @@ export const usePaymentStore = defineStore('payment', () => {
       const response = await apiAxios.post('/stripe/detach-card', {
         paymentMethodId: id
       })
-      if (response.status === 200) {
-        userPaymentList.value = userPaymentList.value.filter((item) => item.id !== id)
+      if (response.status === 201) {
+        userPaymentList.value = null
       } else throw new Error(response.data)
     } catch (error) {
       console.error('Error deleting payment method', error)
@@ -102,19 +170,112 @@ export const usePaymentStore = defineStore('payment', () => {
       console.error('Error while loading rep packages list', error)
     }
   }
+
+  const buyRepsPackageWithSavedPayment = async (paymentMethodId, item) => {
+    try {
+      isBuying.value = true
+      const response = await apiAxios.post('/payment/buy-reps', {
+        repPackageId: item.id,
+        paymentMethodId: paymentMethodId
+      })
+      if (response.data && response.data.success) {
+        reps.value += item.numberOfREPs
+      } else throw new Error('Payment unsuccessful')
+    } catch (error) {
+      throw error
+    } finally {
+      isBuying.value = false
+    }
+  }
+  const buyRepsPackageWithoutSavedPayment = async (stripe, card, item, isChecked, path) => {
+    try {
+      isBuying.value = true
+      const { token, error: tokenError } = await createToken(card)
+      if (tokenError) throw new Error(tokenError.message || tokenError)
+
+      if (token) {
+        const res = await axios.post(
+          STRIPE_PAYMENT_METHOD_API,
+          new URLSearchParams({
+            type: 'card',
+            'card[token]': token
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: `Bearer ${STRIPE_KEY}`
+            }
+          }
+        )
+        if (res.status === 200) {
+          const { id: paymentMethodId } = res.data
+          const response = await apiAxios.post('/payment/buy-reps', {
+            repPackageId: item.id,
+            paymentMethodId: paymentMethodId,
+            save: isChecked
+          })
+          if (response.status === 200) {
+            const { client_secret, status } = response.data.data
+            if (status !== 'succeeded') {
+              await stripe.value.confirmCardPayment(client_secret)
+            }
+            reps.value += item.numberOfREPs
+            if (path === '/wallet') {
+              await fetchUserPaymentMethod()
+            }
+          } else {
+            throw new Error('Error purchasing. Please try again.')
+          }
+        } else {
+          throw new Error(res.data.error || 'Error creating payment method')
+        }
+      } else {
+        throw new Error('Token was not created')
+      }
+    } catch (err) {
+      throw err
+    } finally {
+      isBuying.value = false
+    }
+  }
+
+  const checkForSavedPayment = async () => {
+    if (userPaymentList.value) {
+      return true
+    }
+    if (!hasCheckedForPayment.value) {
+      hasCheckedForPayment.value = true
+      try {
+        const response = await apiAxios.get('/stripe/list-cards')
+        if (response.status === 200 && response.data.data) {
+          userPaymentList.value = { ...response.data.data }
+          return true
+        }
+      } catch (error) {
+        return false
+      }
+    }
+    return false
+  }
   return {
     isLoading,
     isDeleting,
     isCreating,
+    isBuying,
     userPaymentList,
     showSucessNotify,
     stripeErr,
     repsPackageList,
+    reps,
+    hasCheckedForPayment,
+    checkForSavedPayment,
     getListRepsPackage,
     hideNotify,
     fetchUserPaymentMethod,
     deleteUserPaymentMethod,
     createUserPaymentMethod,
-    sendPaymentIdToServer
+    sendPaymentIdToServer,
+    buyRepsPackageWithSavedPayment,
+    buyRepsPackageWithoutSavedPayment
   }
 })

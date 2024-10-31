@@ -53,6 +53,7 @@ const handleCloseResultModal = (event) => {
 }
 
 const redirectToSearch = (query) => {
+  searchStore.text = query
   router.push({
     path: '/search',
     query: {
