@@ -80,7 +80,7 @@ export class CommentRepository {
       );
     }
 
-    const comments = await queryBuilder.getMany(); 
+    const comments = await queryBuilder.getMany();
 
     const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
@@ -184,7 +184,7 @@ export class CommentRepository {
   async getOneDetails(id: number, userId?: number) {
     const comment = await this.commentRepository.findOne({
       where: { id: id },
-      relations: ['user', 'user.channel', 'video'],
+      relations: ['user', 'user.channel', 'video', 'parent', 'parent.video'],
       order: { createdAt: 'DESC' },
       select: {
         user: {
@@ -197,12 +197,20 @@ export class CommentRepository {
             isBlueBadge: true,
           },
         },
+        parent: {
+          id: true,
+          video: {
+            id: true,
+          },
+        },
         video: {
           id: true,
         },
       },
     });
-    return await this.addInformation(comment, comment.video.id, userId);
+    const videoId = comment.parent ? comment.parent.video.id : comment.video.id;
+    const { parent, video, ...commentDetails } = await this.addInformation(comment, videoId, userId);
+    return commentDetails;
   }
 
   async getComments(condition: any, videoId: number, limit: number, order: boolean, userId?: number) {
