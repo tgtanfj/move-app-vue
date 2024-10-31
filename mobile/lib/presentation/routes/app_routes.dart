@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:move_app/presentation/screens/auth/login/page/login_page.dart';
 import 'package:move_app/presentation/screens/category/page/category_page.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
 import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
@@ -37,6 +38,7 @@ class AppRoutes {
           const CreateNewPasswordPage(),
       routeCategory: (BuildContext context) => const CategoryPage(),
       routeNotification:  (BuildContext context) => const NotificationPage(),
+      logIn: (BuildContext context) => const LoginPage(),
     };
   }
 }

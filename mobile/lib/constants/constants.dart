@@ -354,4 +354,5 @@ class Constants {
   static const String noDataAvailable = 'No data available';
   static const String defaultThumbnailImage =
       'https://move-project.s3.us-east-1.amazonaws.com/images/defa0650-8b8a-11ef-b9dd-b39040cf0f3e.jpeg';
+  static const String shareSocial = "share-social";
 }

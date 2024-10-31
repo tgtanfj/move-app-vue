@@ -158,8 +158,12 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                         context: context,
                         builder: (BuildContext context) {
                           return ShareVideoDialog(
-                            onFacebookTap: widget.facebookButton,
-                            onTwitterTap: widget.twitterButton,
+                            onFacebookTap: (){
+                              widget.facebookButton.call();
+                            },
+                            onTwitterTap: (){
+                              widget.twitterButton.call();
+                            },
                             onCopyLinkTap: widget.copyLinkButton,
                           );
                         },

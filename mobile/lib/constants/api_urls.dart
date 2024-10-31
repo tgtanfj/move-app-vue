@@ -36,4 +36,5 @@ class ApiUrls {
   static const String giftListPackageEndPoint = "donation/list-gift-packages";
   static const String donationEndPoint = "donation";
   static const String viewEndPoint = "view";
+  static const String deepLink = "https://api.training-move-intern.madlab.tech/deep-link";
 }

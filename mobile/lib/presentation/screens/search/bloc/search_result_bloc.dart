@@ -86,6 +86,8 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           categoryList: state.categoryList,
           channelList: state.channelList,
           videoList: state.videoList,
+          currentCategoriesPage: 1,
+          page: 1,
         ));
       }
     } else {
@@ -108,7 +110,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       emit(state.copyWith(
           totalChannelPages: r, status: SearchResultStatus.success));
     });
-    if (totalPages != null) {
+    if (state.totalChannelPages != null) {
       if (currentPage < state.totalChannelPages!.toInt()) {
         currentPage++;
         final channels = await channelsRepository.searchChannel(
@@ -256,9 +258,6 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
         emit(state.copyWith(
           status: SearchResultStatus.success,
           searchHistory: r,
-          categoryList: [],
-          channelList: [],
-          videoList: [],
         ));
       });
     }

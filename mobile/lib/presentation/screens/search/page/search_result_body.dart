@@ -71,6 +71,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
               suffix: IconButton(
                 onPressed: () {
                   _controller.clear();
+                  _focusNode.requestFocus();
                   context
                       .read<SearchResultBloc>()
                       .add(SearchLoadHistoryEvent());
@@ -88,12 +89,16 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                     .add(SearchLoadSuggestionEvent(searchText: value));
               },
               onSubmitted: (value) {
-                context
-                    .read<SearchResultBloc>()
-                    .add(SearchSaveHistoryEvent(searchText: value));
-                _focusNode.unfocus();
-                context.read<SearchResultBloc>().add(SearchResultInitialEvent(
-                    searchQuery: _controller.text.trim()));
+                if (_controller.text.trim().isNotEmpty) {
+                  context
+                      .read<SearchResultBloc>()
+                      .add(SearchSaveHistoryEvent(searchText: value));
+                  _focusNode.unfocus();
+                  context.read<SearchResultBloc>().add(SearchResultInitialEvent(
+                      searchQuery: _controller.text.trim()));
+                }else{
+                  _focusNode.requestFocus();
+                }
               },
             ),
             backgroundColor: AppColors.white,

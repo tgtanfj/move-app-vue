@@ -5,10 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:move_app/config/app_config_loading.dart';
+import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 
 import 'config/app_config.dart';
+import 'constants/constants.dart';
 
 void main() async {
   await AppConfig.init();
@@ -57,6 +60,19 @@ class _MyAppState extends State<MyApp> {
       } else {
         if (kDebugMode) {
           print('Token is missing or empty.');
+        }
+      }
+    }  else if (uri != null && uri.host == Constants.shareSocial) {
+      final videoId = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : null;
+      if (videoId != null) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (context) => VideoDetailPage(videoId: int.tryParse(videoId) ?? 0),
+          ),
+        );
+      } else {
+        if (kDebugMode) {
+          print('Video ID is missing or empty.');
         }
       }
     } else {

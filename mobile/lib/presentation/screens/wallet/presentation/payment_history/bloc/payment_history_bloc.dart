@@ -20,6 +20,7 @@ class PaymentHistoryBloc
     on<PaymentHistoryLoadMorePageEvent>(_onPaymentHistoryLoadMorePageEvent);
     on<PaymentHistoryLoadPreviousPageEvent>(
         _onPaymentHistoryLoadPreviousPageEvent);
+    on<PaymentHistoryOnTapOutSideEvent>(_onPaymentHistoryOnTapOutSideEvent);
   }
 
   void _onPaymentHistoryInitialEvent(PaymentHistoryInitialEvent event,
@@ -113,6 +114,8 @@ class PaymentHistoryBloc
     }, (r) {
       emit(state.copyWith(
         total: r,
+        currentPage: 1,
+        startResult: 1,
         endResult: (state.startResult != null && r?.totalResult != null)
             ? (((r!.totalResult!) > 10) ? 10 : r.totalResult)
             : 0,
@@ -134,6 +137,14 @@ class PaymentHistoryBloc
       Emitter<PaymentHistoryState> emit) {
     emit(state.copyWith(
       isPickedEndDate: !(state.isPickedEndDate),
+      isPickedStartDate: false,
+    ));
+  }
+
+  void _onPaymentHistoryOnTapOutSideEvent(PaymentHistoryOnTapOutSideEvent event,
+      Emitter<PaymentHistoryState> emit) {
+    emit(state.copyWith(
+      isPickedEndDate: false,
       isPickedStartDate: false,
     ));
   }
@@ -197,8 +208,8 @@ class PaymentHistoryBloc
   void _onPaymentHistoryLoadPreviousPageEvent(
       PaymentHistoryLoadPreviousPageEvent event,
       Emitter<PaymentHistoryState> emit) async {
-    if (state.totalResult?.totalPages != null) {
-      if (state.totalResult!.totalPages! > 1) {
+    if (state.totalResult?.totalPages != null && state.currentPage != null) {
+      if (state.totalResult!.totalPages! > 1 && state.currentPage! > 1) {
         var currentPage = state.currentPage ?? 1;
         currentPage--;
         final paymentHistoryList =
