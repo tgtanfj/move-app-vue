@@ -1,13 +1,16 @@
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { I18nService } from 'nestjs-i18n';
 import Stripe from 'stripe';
 import { AttachPaymentMethodDto } from './dto/attach-payment-method.dto';
 
 @Injectable()
 export class StripeService {
   private stripe: Stripe;
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly i18n: I18nService,
+  ) {
     this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY'), {
       apiVersion: '2024-06-20',
     });
@@ -22,6 +25,7 @@ export class StripeService {
   async listPaymentMethod(customerId: string) {
     const paymentMethods = await this.stripe.customers.listPaymentMethods(customerId, {
       type: 'card',
+      limit: 1,
     });
 
     const paymentMethodFiltered = paymentMethods.data.map((paymentMethod) => ({
@@ -36,7 +40,7 @@ export class StripeService {
       name: paymentMethod.billing_details.name,
     }));
 
-    return paymentMethodFiltered;
+    return paymentMethodFiltered[0];
   }
 
   async attachPaymentMethod(customerId: string, addPaymentMethod: AttachPaymentMethodDto) {
@@ -48,7 +52,7 @@ export class StripeService {
       })
       .catch((err) => {
         console.log(err);
-        throw new BadRequestException(ERRORS_DICTIONARY.ADD_PAYMENT_METHOD_FAIL);
+        throw new BadRequestException(this.i18n.t('exceptions.payment.ADD_PAYMENT_METHOD_FAIL'));
       });
   }
 
@@ -57,18 +61,45 @@ export class StripeService {
 
     await this.stripe.paymentMethods.detach(paymentMethodId).catch((err) => {
       console.log(err);
-      throw new BadRequestException(ERRORS_DICTIONARY.DETACH_PAYMENT_METHOD_FAIL);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.DETACH_PAYMENT_METHOD_FAIL'));
     });
   }
 
-  async charge(amount: number, paymentMethodId: string, customerId: string) {
-    return this.stripe.paymentIntents.create({
+  async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
+    return await this.stripe.paymentIntents.create({
       amount: amount * 100,
       customer: customerId,
       payment_method: paymentMethodId,
       currency: this.configService.get('STRIPE_CURRENCY'),
-      off_session: true,
-      confirm: true,
+      off_session: saveCard ? false : true,
+      confirm: saveCard ? false : true,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      payment_method_options: {
+        card: {
+          setup_future_usage: saveCard ? 'off_session' : undefined,
+        },
+      },
     });
+  }
+
+  async getBalance() {
+    return await this.stripe.balance.retrieve();
+  }
+
+  async getTotalRevenue() {
+    const transactions = await this.stripe.balanceTransactions.list();
+
+    const totalRevenue = transactions.data.reduce((sum, transaction) => {
+      if (transaction.type === 'charge') {
+        const amount = transaction.amount;
+        return sum + amount;
+      }
+    }, 0);
+
+    return {
+      totalRevenue,
+    };
   }
 }

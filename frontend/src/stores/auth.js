@@ -128,9 +128,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('userEmail', userInfo.data.data.email)
-        if (userInfo.data.data.avatar !== null) {
-          localStorage.setItem('userAvatar', userInfo.data.data.avatar)
-        }
+        localStorage.setItem('userAvatar', userInfo?.data?.data?.avatar)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -168,6 +166,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('loginMethod')
           localStorage.removeItem('userInfo')
           localStorage.removeItem('userAvatar')
+          localStorage.removeItem('userEmail')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -181,6 +180,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('loginMethod')
         localStorage.removeItem('userInfo')
         localStorage.removeItem('userAvatar')
+        localStorage.removeItem('userEmail')
       }
     } catch (err) {
       errorMsg.value = err.message
@@ -234,15 +234,19 @@ export const useAuthStore = defineStore('auth', () => {
         })
 
         user.value = userInfo.data.data
+        localStorage.setItem('userAvatar', userInfo?.data?.data?.avatar)
       } catch (error) {
-        console.error("Error get profile: ", error)
+        console.error('Error get profile: ', error)
       }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {
           user.value = currentUser
-          currentUser.getIdToken().then((idToken) => {
-            accessToken.value = idToken
+          localStorage.setItem('userAvatar', currentUser.photoURL)
+          currentUser.getIdToken().then((idTokenFB) => {
+            idToken.value = idTokenFB
+            const localToken = localStorage.getItem('token')
+            accessToken.value = localToken ? localToken : null
             if (loginMethodLocal === 'google') {
               localStorage.setItem('loginMethod', 'google')
             } else {

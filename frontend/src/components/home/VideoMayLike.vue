@@ -3,11 +3,10 @@ import EyeIcon from '@assets/icons/EyeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
+import { detectDuration, detectWorkoutLevel } from '@utils/uploadVideo.util'
 import { useRouter } from 'vue-router'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '../../assets/icons/PinkBadgeIcon.vue'
 import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
-import { detectDuration, detectWorkoutLevel } from '@utils/uploadVideo.util'
 
 const props = defineProps({
   video: {
@@ -29,22 +28,32 @@ const router = useRouter()
         @click="router.push(`/video/${video?.id}`)"
       />
       <div
+      v-if="video.numberOfViews > 0"
         class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews ? formatViews(video.numberOfViews) : '0 view' }}
+          {{ video.numberOfViews && formatViews(video.numberOfViews) }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
         <p class="font-bold">{{ convertToTimeFormat(video?.durationsVideo) }}</p>
       </div>
     </div>
-    <div class="flex items-start mt-2">
-      <img @click="router.push(`/channel/${video?.channel?.id}`)" class="w-[32px] h-[32px] rounded-full cursor-pointer" :src="video?.channel?.image" />
+    <div class="flex items-start mt-2 flex-1">
+      <img
+        @click="router.push(`/channel/${video?.channel?.id}`)"
+        class="w-[32px] h-[32px] object-cover rounded-full cursor-pointer shrink-0"
+        :src="video?.channel?.image"
+      />
       <div class="ml-3">
-        <p @click="router.push(`/video/${video.id}`)" class="text-[16px] font-bold cursor-pointer line-clamp-2">{{ video?.title }}</p>
-        <div class="flex flex-col items-start justify-start mt-1.5">
+        <p
+          @click="router.push(`/video/${video.id}`)"
+          class="text-[16px] font-bold cursor-pointer line-clamp-2"
+        >
+          {{ video?.title }}
+        </p>
+        <div class="flex flex-col items-start justify-start mt-auto">
           <div class="flex items-center gap-3">
             <p
               class="text-[#666666] text-[14px] cursor-pointer"
@@ -52,7 +61,7 @@ const router = useRouter()
             >
               {{ video?.channel?.name }}
             </p>
-            <span class="flex gap-2 ml-2">
+            <span class="flex gap-2">
               <BlueBadgeIcon v-if="video?.channel?.isBlueBadge" />
             </span>
           </div>
@@ -73,10 +82,11 @@ const router = useRouter()
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto pl-1 mt-[5px]">
+      <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px]" />
         <p class="text-[14px] font-bold">{{ video?.ratings }}</p>
       </div>
+      <div v-else class="flex items-center gap-1 ml-auto pr-1 pl-2"></div>
     </div>
   </div>
 </template>

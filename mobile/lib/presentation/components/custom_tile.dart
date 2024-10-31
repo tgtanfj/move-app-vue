@@ -6,19 +6,21 @@ class CustomTile extends StatefulWidget {
   final String title;
   final TextStyle titleStyle;
   final Widget? expandedContent;
+  final VoidCallback onTap;
+  final bool isExpanded;
   const CustomTile(
       {super.key,
       required this.title,
       this.expandedContent,
-      required this.titleStyle});
+      required this.titleStyle,
+      required this.onTap,
+      this.isExpanded = false});
 
   @override
   State<CustomTile> createState() => _CustomTileState();
 }
 
 class _CustomTileState extends State<CustomTile> {
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,34 +44,35 @@ class _CustomTileState extends State<CustomTile> {
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
       child: Column(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                  child: Text(
-                    widget.title,
-                    style: _isExpanded
-                        ? AppTextStyles.montserratStyle.bold16TiffanyBlue
-                        : widget.titleStyle,
+          InkWell(
+            onTap: widget.onTap,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
+                    child: Text(
+                      widget.title,
+                      style: widget.isExpanded
+                          ? AppTextStyles.montserratStyle.bold16TiffanyBlue
+                          : widget.titleStyle,
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  _isExpanded ? Icons.remove : Icons.add,
-                  color: _isExpanded ? AppColors.tiffanyBlue : AppColors.black,
+                IconButton(
+                  icon: Icon(
+                    widget.isExpanded ? Icons.remove : Icons.add,
+                    color: widget.isExpanded
+                        ? AppColors.tiffanyBlue
+                        : AppColors.black,
+                  ),
+                  onPressed: widget.onTap,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _isExpanded = !_isExpanded;
-                  });
-                },
-              ),
-            ],
+              ],
+            ),
           ),
-          if (_isExpanded && widget.expandedContent != null)
+          if (widget.isExpanded && widget.expandedContent != null)
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

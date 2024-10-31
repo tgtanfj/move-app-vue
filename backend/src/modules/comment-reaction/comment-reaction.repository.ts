@@ -40,6 +40,7 @@ export class CommentReactionRepository {
     const { commentId, ...data } = dto;
     data['comment'] = { id: commentId };
     data['user'] = { id: userId };
+
     return await this.commentReactionRepository.save(data);
   }
 

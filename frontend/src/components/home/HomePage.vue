@@ -1,17 +1,17 @@
 <script setup>
 import SeparatorCross from '@components/SeparatorCross.vue'
-import SliderHomePage from './SliderHomePage.vue'
 import SeparatorCrossWithoutTitle from '@components/SeparatorCrossWithoutTitle.vue'
 import Category from './Category.vue'
 import VideosMayYouLike from './VideosMayYouLike.vue'
+import SliderHompageNextGen from './SliderHompageNextGen.vue'
 </script>
 
 <template>
   <div class="w-full h-full transition-all">
     <div class="w-[90%] m-6">
       <SeparatorCross :title="$t('homepage.featured')" />
-      <div class="w-[85%] m-auto h-[300px]">
-        <SliderHomePage />
+      <div class="w-[95%] m-auto">
+        <SliderHompageNextGen />
       </div>
       <SeparatorCrossWithoutTitle class="pt-14" />
       <div class="w-full">

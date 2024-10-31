@@ -60,7 +60,7 @@ class _ContentMenuState extends State<ContentMenu> {
           borderRadius: 0,
           titleStyle: AppTextStyles.montserratStyle.bold20White,
           textAlign: TextAlign.start,
-          onTap: () {},
+          onTap: widget.walletButton,
           title: '${Constants.wallet}(0 REP\$)',
         ),
         const SizedBox(

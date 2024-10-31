@@ -1,12 +1,12 @@
 import { CommentReaction } from '@/entities/comment-reaction.entity';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CommentReactionRepository } from './comment-reaction.repository';
-import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
+import { I18nService } from 'nestjs-i18n';
 import { CommentRepository } from '../comment/comment.repository';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { NotificationService } from '../notification/notification.service';
 import { UserInfoDto } from '../user/dto/user-info.dto';
-import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { CommentReactionRepository } from './comment-reaction.repository';
+import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
 
 @Injectable()
 export class CommentReactionService {
@@ -14,6 +14,7 @@ export class CommentReactionService {
     private readonly commentReactionRepository: CommentReactionRepository,
     private readonly commentRepository: CommentRepository,
     private readonly notificationService: NotificationService,
+    private readonly i18n: I18nService,
   ) {}
 
   async getOne(id: number): Promise<CommentReaction> {
@@ -27,25 +28,44 @@ export class CommentReactionService {
   async create(userInfo: UserInfoDto, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     try {
       const userId = userInfo.id;
+      const commentReactionExisted = await this.commentReactionRepository.getOneWithUserComment(
+        userId,
+        dto.commentId,
+      );
+      if (commentReactionExisted) {
+        return commentReactionExisted;
+      }
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
-      const comment = await this.commentRepository.getOne(dto.commentId, { user: true });
+      const comment = await this.commentRepository.getOne(dto.commentId, {
+        user: true,
+        video: true,
+        parent: true,
+      });
       const receiver = comment.user.id;
       comment.numberOfLike += dto.isLike ? 1 : 0;
 
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
-      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+        receiver,
+        userInfo.id,
+        comment.id,
+      );
       if (!isExisted && userId !== receiver) {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
+          videoId: comment.video.id,
+          videoTitle: comment.video.title,
+          commentId: comment?.parent ? comment.parent.id : comment.id,
+          replyId: comment?.parent ? comment.id : undefined,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }
 
       return commentReaction;
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_CREATE_COMMENT_REACTION);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT_REACTION'));
     }
   }
 
@@ -57,7 +77,7 @@ export class CommentReactionService {
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
       return commentReaction;
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_UPDATE_COMMENT_REACTION);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_UPDATE_COMMENT_REACTION'));
     }
   }
 
@@ -69,7 +89,7 @@ export class CommentReactionService {
       result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_DELETE_COMMENT_REACTION);
+      throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT_REACTION'));
     }
   }
 }

@@ -9,18 +9,25 @@ import { FollowModule } from '../follow/follow.module';
 import { JwtService } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { VideoModule } from '../video/video.module';
-import { FollowService } from '../follow/follow.service';
 import { EmailService } from '../email/email.service';
-import { User } from '@/entities/user.entity';
 import { DonationModule } from '../donation/donation.module';
+import { CommentModule } from '../comment/comment.module';
+import { Comment } from '@/entities/comment.entity';
+import { ThumbnailModule } from '../thumbnail/thumbnail.module';
+import { ViewModule } from '../view/view.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Channel]),
+    TypeOrmModule.forFeature([Channel, Comment]),
     FollowModule,
     forwardRef(() => UserModule),
+    forwardRef(() => VideoModule),
+    DonationModule,
+    CommentModule,
     VideoModule,
     forwardRef(() => DonationModule),
+    ViewModule,
+    ThumbnailModule,
   ],
   controllers: [ChannelController],
   providers: [ChannelService, ChannelRepository, JwtService, EmailService],

@@ -59,6 +59,26 @@
     "disable": "Disable",
     "save": "Save"
   },
+  "streamer_analysis": {
+    "video_analytics": "Video analytics",
+    "videos": "Videos",
+    "details": "Details",
+    "views": "Views",
+    "avg_view_time": "Avg. view time",
+    "ratings": "Ratings",
+    "reps": "REPs received",
+    "viewer_gifted": "Viewer gifted",
+    "overview": "Overview",
+    "video_summary": "Video summary",
+    "latest_analytics": "Latest analytics",
+    "total_followers": "Total followers",
+    "total_REPs_earned": "Total REPs earned",
+    "total_video_views": "Total video views",
+    "average_view_time": "Average view time",
+    "latest_video": "Latest video",
+    "total_views": "Total views",
+    "total_REPs_received": "Total REPs received"
+  },
   "change_password": {
     "title": "Change password",
     "desc": "Please enter your old and new password. Make sure your password is alphanumeric with at least 8 characters.",
@@ -93,7 +113,9 @@
     "cancel": "Cancel",
     "submit": "Submit",
     "loading": "Loading...",
-    "rate": "Rate"
+    "rate": "Rate",
+    "remove": "Remove",
+    "go_to_video_analysis": "Go to video analytics"
   },
   "label": {
     "password": "Password",
@@ -237,7 +259,7 @@
   "comment": {
     "cancel": "Cancel",
     "cancel_reservation": "Cancel Reservation?",
-    "are_you_sure": "Are you sure you want to cancel this reservation?",
+    "are_you_sure": "Are you sure you want to cancel this comment?",
     "no": "No",
     "yes": "Yes",
     "send": "Send",
@@ -245,9 +267,12 @@
     "show_less": "Show less",
     "hide": "Hide",
     "replies": "replies",
+    "reply1": "reply",
     "show_more_replies": "Show more replies",
     "reply": "Reply",
-    "show": "Show"
+    "show": "Show",
+    "view": "View",
+    "view_comment": "View comment"
   },
   "video": {
     "rate": "Rate Video",
@@ -303,10 +328,10 @@
     "no_paypal": "No PayPal information available",
     "paypal_transfer": "Paypal transfer to",
     "withdraw": "Withdraw",
-    "remaining_amount" : "Remaining amount:",
+    "remaining_amount": "Remaining amount:",
     "withdraw_value": "Withdraw value",
     "withdraw_all": "Withdraw all",
-    "processing_payment":"Processing payment",
+    "processing_payment": "Processing payment",
     "your_payment": "Your payment of",
     "is_being": "is being processed. Please allow 7 working days to receive your payment.",
     "note": "Note: The amount receive may vary due to the exchange rate & bank charges.",
@@ -316,9 +341,67 @@
     "by": "By submitting PayPal information you acknowledge that you have read, understood and agree to be bound by MOVE’s",
     "end_user": "End User License Agreement",
     "privacy": "Privacy Policy",
-    "and" : "and",
+    "and": "and",
     "refund": "Refund Policy",
     "next": "Next",
     "back": "Back"
+  },
+  "channel_settings": {
+    "channel": "Channel",
+    "notifications": "Notifications",
+    "channel_settings": "Channel Settings",
+    "bio": "Bio",
+    "optionals": "(Optional)",
+    "tell_us": "Tell us a little bit about yourself.",
+    "characters": "characters",
+    "add": "Add social links to display on your channel.",
+    "save": "Save settings",
+    "success": "Save channel settings successfully",
+    "failed": "Save channel settings failed"
+  },
+  "channel_comments": {
+    "comments": "Comments",
+    "reps": "REPs received",
+    "videos": "Videos"
+  },
+  "wallet": {
+    "card_number": "Card Number",
+    "card_holder": "Card Holder",
+    "card_info": "Card Information",
+    "your_payment_method": "Your payment method",
+    "no_payment_method_setup": "No payment method setup",
+    "no_saved_info": "You do not have any saved payment information.",
+    "setup_payment": "Setup payment method",
+    "payment_detail": "Payment details",
+    "cardholder_name": "Cardholder Name",
+    "by_submit": "By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s",
+    "end_user_license": "End User License Agreement",
+    "refund_policy": "Refund Policy",
+    "and": "and",
+    "remove_card": "Remove card",
+    "remove_card_description": "You card information will be removed and payment will not be made. Are you sure you want to remove payment method?",
+    "cardholder_name_4_50_long": "The card hodlder name must be 4-50 characters",
+    "no_special_characters": "The cardholder name must  must contain only alphabetic characters and spaces",
+    "remove_success": "Payment method removed successfully",
+    "setup_success": "Your payment has been setup successfully."
+  },
+  "gift_reps": {
+    "gift_reps": "Gift REPs",
+    "support": "Support your instructor with REPs!",
+    "select": "Select amount of REPs to send to the instructor",
+    "have": "You have {amount}",
+    "get": "Get REPs",
+    "success": "Donate success",
+    "success_desc": "You have donated { donateSuccessReps } REPs successfully!"
+  },
+  "video_in_depth": {
+    "most_views": "Most views",
+    "back": "Back to video analytics",
+    "country": "Country",
+    "age": "Age",
+    "gender": "Gender",
+    "demographics": "Demographics",
+    "avg_view_time": "avg. view time",
+    "publish_on": "Published on"
   }
 }

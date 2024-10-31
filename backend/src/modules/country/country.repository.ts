@@ -1,15 +1,16 @@
 import { Country } from '@/entities/country.entity';
 import { State } from '@/entities/state.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Equal, FindOptionsRelations } from 'typeorm';
+import { I18nService } from 'nestjs-i18n';
+import { Equal, FindOptionsRelations, Repository } from 'typeorm';
 
 @Injectable()
 export class CountryRepository {
   constructor(
     @InjectRepository(Country) private readonly countryRepository: Repository<Country>,
     @InjectRepository(State) private readonly stateRepository: Repository<State>,
+    private readonly i18n: I18nService,
   ) {}
 
   async getAllCountries(relations: FindOptionsRelations<Country> = null) {
@@ -38,7 +39,8 @@ export class CountryRepository {
         id: countryId,
       },
     });
-    if (!foundCountry) throw new Error(ERRORS_DICTIONARY.NOT_FOUND_ANY_COUNTRY);
+
+    if (!foundCountry) throw new Error(this.i18n.t('exceptions.user.NOT_FOUND_ANY_COUNTRY'));
 
     const states = await this.stateRepository.find({
       where: {

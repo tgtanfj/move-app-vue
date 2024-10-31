@@ -19,7 +19,7 @@ onMounted(() => {
   window.addEventListener('click', handleCloseResultModal)
 })
 onBeforeUnmount(() => {
-  window.addEventListener('click', handleCloseResultModal)
+  window.removeEventListener('click', handleCloseResultModal)
 })
 
 watch(
@@ -205,7 +205,7 @@ const onSubmit = () => {
           >
             <div class="flex items-center" @click="redirectTo('video', item.id)">
               <img
-                :src="item.thumbnail"
+                :src="item.thumbnails[0]?.image"
                 :alt="item.title"
                 class="w-[60px] h-[50px] cursor-pointer"
               />

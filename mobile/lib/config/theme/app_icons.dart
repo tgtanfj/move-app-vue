@@ -54,7 +54,11 @@ enum AppIcons {
   copied,
   redDot,
   whiteBell,
-  artboardMove
+  artboardMove,
+  masterCard,
+  question,
+  creditCard,
+  arrowLeft,
 }
 
 extension AppIconsExtension on AppIcons {

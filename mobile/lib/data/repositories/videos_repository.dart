@@ -99,4 +99,31 @@ class VideosRepository {
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, List<VideoModel>>> getListVideoOfCategory(
+      {required int categoryId, required int page, int? take}) async {
+    try {
+      String endpoint = ApiUrls.homeCategoriesNoLoginEndPoint;
+      if (SharedPrefer.sharedPrefer.getUserToken().isNotEmpty) {
+        endpoint = ApiUrls.homeCategoriesLoginEndPoint;
+      }
+      endpoint += categoryId.toString();
+      take = take ?? 12;
+      final response = await ApiService().request(
+        APIRequestMethod.get,
+        endpoint,
+        queryParameters: {'page': page, 'take': take},
+      );
+      if (response.data != null) {
+        List<dynamic> videosJson = response.data['data'] as List<dynamic>;
+        var videos =
+            videosJson.map((json) => VideoModel.fromJson(json)).toList();
+        return Right(videos);
+      } else {
+        return const Left(Constants.videoNotFound);
+      }
+    } catch (e) {
+      return Left(e.toString());
+    }
+  }
 }

@@ -1,9 +1,7 @@
 import { Video } from '@/entities/video.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { OPTION, URL_SHARING_CONSTRAINT } from '@/shared/constraints/sharing.constraint';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { VimeoService } from '@/shared/services/vimeo.service';
-import { fixIntNumberResponse } from '@/shared/utils/fix-number-response.util';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { stringToBoolean } from '@/shared/utils/stringToBool.util';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -19,6 +17,7 @@ import { Queue } from 'bullmq';
 import { plainToInstance } from 'class-transformer';
 import * as fs from 'fs';
 import { parseInt } from 'lodash';
+import { I18nService } from 'nestjs-i18n';
 import * as path from 'path';
 import { FindOptionsOrder } from 'typeorm';
 import { ApiConfigService } from '../../shared/services/api-config.service';
@@ -29,7 +28,13 @@ import { ChannelService } from '../channel/channel.service';
 import { ChannelItemDto } from '../channel/dto/response/channel-item.dto';
 import { ThumbnailService } from '../thumbnail/thumbnail.service';
 import { WatchingVideoHistoryService } from '../watching-video-history/watching-video-history.service';
-import { FilterWorkoutLevel, ShowBy, SortBy } from './../channel/dto/request/filter-video-channel.dto';
+import {
+  FilterWorkoutLevel,
+  GraphicType,
+  OrderBy,
+  ShowBy,
+  SortBy,
+} from './../channel/dto/request/filter-video-channel.dto';
 import { EditVideoDTO } from './dto/edit-video.dto';
 import { OptionSharingDTO } from './dto/option-sharing.dto';
 import { PaginationDto } from './dto/request/pagination.dto';
@@ -40,9 +45,9 @@ import { UploadVideoDTO } from './dto/upload-video.dto';
 import { VideoRepository } from './video.repository';
 import { ThumbnailRepository } from '../thumbnail/thumbnail.repository';
 import { ViewService } from '../view/view.service';
-import { DonationService } from '../donation/donation.service';
-import { channel } from 'diagnostics_channel';
 import { OverviewVideoResponseDto } from './dto/response/overview-video-response.dto';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class VideoService {
@@ -52,7 +57,6 @@ export class VideoService {
     private categoryService: CategoryService,
     private s3: AwsS3Service,
     private videoRepository: VideoRepository,
-    private thumbnailRepository: ThumbnailRepository,
     private vimeoService: VimeoService,
     private readonly categoryRepository: CategoryRepository,
     private readonly watchingVideoHistoryService: WatchingVideoHistoryService,
@@ -62,6 +66,8 @@ export class VideoService {
     @InjectQueue('upload-s3') private readonly uploadS3Queue: Queue,
     private readonly viewService: ViewService,
     // private readonly donationService: DonationService,
+    private readonly i18n: I18nService,
+    private readonly notificationService: NotificationService,
   ) {
     if (!fs.existsSync(this.videoUploadPath)) {
       fs.mkdirSync(this.videoUploadPath, { recursive: true });
@@ -73,7 +79,7 @@ export class VideoService {
       const videoURL = await this.videoRepository.findVideoUrlById(videoId);
       if (!videoURL) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
       return videoURL;
@@ -86,7 +92,7 @@ export class VideoService {
       const videoURL = await this.videoRepository.findVideoUrlById(videoId);
       if (!videoURL) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
       let shareUrl: string;
@@ -182,15 +188,17 @@ export class VideoService {
     const video = await this.videoRepository.createVideo(foundChannel.id, dto, isComment, isPublish);
     if (!video) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+        message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
+    foundChannel.numberOfVideos = foundChannel.numberOfVideos + 1;
+    await this.channelService.updateChannel(foundChannel);
     const selected = parseInt(dto.selectedThumbnail);
     //save thumbnails
     const newThumb = await this.thumbnailService.saveThumbnails(thumbnails, selected, video.id);
     if (!newThumb) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.UPLOAD_VIDEO_FAIL,
+        message: this.i18n.t('exceptions.video.UPLOAD_VIDEO_FAIL'),
       });
     }
     // await this.channelService.increaseTotalVideo(foundChannel.id);
@@ -203,6 +211,20 @@ export class VideoService {
     } catch (error) {
       throw new Error(error);
     }
+
+    const userFollowIds = await this.videoRepository.getUserIdsFollowedByChannelId(foundChannel.id);
+    const dataNotification = {
+      sender: {
+        id: userId,
+        username: foundChannel.name,
+        avatar: foundChannel.image,
+      },
+      type: NOTIFICATION_TYPE.UPLOAD,
+      videoId: video.id,
+      videoTitle: video.title,
+    };
+
+    await this.notificationService.sendOneToManyNotifications(userFollowIds, dataNotification);
     return video;
   }
 
@@ -211,7 +233,7 @@ export class VideoService {
       const video = await this.videoRepository.findVideoById(videoId);
       if (!video) {
         throw new NotFoundException({
-          message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+          message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
         });
       }
 
@@ -219,7 +241,7 @@ export class VideoService {
         const category = await this.categoryRepository.findCategoryById(dto.categoryId);
         if (!category) {
           throw new NotFoundException({
-            message: ERRORS_DICTIONARY.NOT_FOUND_CATEGORY,
+            message: this.i18n.t('exceptions.category.NOT_FOUND_CATEGORY'),
           });
         }
         video.category = category;
@@ -244,9 +266,10 @@ export class VideoService {
       }
 
       const updatedVideo = await this.videoRepository.save(video);
+
       if (!updatedVideo) {
         throw new BadRequestException({
-          message: ERRORS_DICTIONARY.UPDATE_VIDEO_FAIL,
+          message: this.i18n.t('exceptions.video.UPDATE_VIDEO_FAIL'),
         });
       }
 
@@ -262,7 +285,7 @@ export class VideoService {
 
   async deleteVideos(videoIds: number[]) {
     await this.videoRepository.deleteVideos(videoIds).catch((error) => {
-      throw new BadRequestException(ERRORS_DICTIONARY.CAN_NOT_DELETE_VIDEOS);
+      throw new BadRequestException(this.i18n.t('exceptions.category.CAN_NOT_DELETE_VIDEOS'));
     });
 
     videoIds.forEach(async (videoId) => {
@@ -301,7 +324,7 @@ export class VideoService {
     const foundVideo = await this.videoRepository.findVideoById(videoId);
     if (!foundVideo) {
       throw new NotFoundException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_VIDEO,
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
       });
     }
     return foundVideo;
@@ -336,7 +359,6 @@ export class VideoService {
       channel: {
         id: channelId,
       },
-      isPublish: true,
     };
 
     if (categoryId) {
@@ -356,38 +378,38 @@ export class VideoService {
         break;
       case SortBy.VIEWS_HIGH_TO_LOW:
         order = {
-          ...order,
           numberOfViews: 'DESC',
+          ...order,
         };
         break;
       case SortBy.VIEWS_LOW_TO_HIGH:
         order = {
-          ...order,
           numberOfViews: 'ASC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_HIGH_TO_LOW:
+      case SortBy.DURATION_LONG_TO_SHORT:
         order = {
-          ...order,
           durationsVideo: 'DESC',
+          ...order,
         };
         break;
-      case SortBy.DURATION_LOW_TO_HIGH:
+      case SortBy.DURATION_SHORT_TO_LONG:
         order = {
-          ...order,
           durationsVideo: 'ASC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_HIGH_TO_LOW:
         order = {
-          ...order,
           ratings: 'DESC',
+          ...order,
         };
         break;
       case SortBy.RATINGS_LOW_TO_HIGH:
         order = {
-          ...order,
           ratings: 'ASC',
+          ...order,
         };
         break;
       default:
@@ -481,12 +503,31 @@ export class VideoService {
   async getVideoDetails(videoId: number, userId?: number) {
     if (userId) {
       await this.watchingVideoHistoryService.createOrUpdate(userId, videoId).catch((error) => {
-        throw new NotFoundException(ERRORS_DICTIONARY.NOT_CREATE_VIDEO_HISTORY);
+        throw new NotFoundException(this.i18n.t('exceptions.videoHistory.NOT_CREATE_VIDEO_HISTORY'));
       });
     }
-    const video = await this.videoRepository.findVideoAndAlso(videoId, userId).catch((error) => {
-      throw new NotFoundException(ERRORS_DICTIONARY.NOT_FOUND_VIDEO);
-    });
+    const video = await this.videoRepository
+      .findVideoAndAlso(videoId, userId)
+      .then(async (data) => {
+        let canFollow = null;
+        if (userId) {
+          canFollow = true;
+
+          if ((await this.channelService.getChannelByUserId(userId)) !== null)
+            canFollow = !(data.channel.id === (await this.channelService.getChannelByUserId(userId)).id);
+        }
+
+        return {
+          ...data,
+          channel: {
+            ...data.channel,
+            canFollow,
+          },
+        };
+      })
+      .catch((error) => {
+        throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
+      });
     return video;
   }
 
@@ -495,11 +536,14 @@ export class VideoService {
   }
 
   async overviewVideoAnalytic(videoId: number, userId: number, showby?: ShowBy) {
-    const foundChannel = await this.channelService.getChannelByUserId(userId);
-    const foundVideo = await this.videoRepository.findOne(videoId, {
-      channel: true,
-      category: true,
-    });
+    const [foundChannel, foundVideo] = await Promise.all([
+      this.channelService.getChannelByUserId(userId),
+      this.videoRepository.findOne(videoId, {
+        channel: true,
+        category: true,
+      }),
+    ]);
+
     if (foundChannel.id !== foundVideo.channel.id) {
       throw new ForbiddenException();
     }
@@ -507,38 +551,34 @@ export class VideoService {
     const response = plainToInstance(OverviewVideoResponseDto, foundVideo, {
       excludeExtraneousValues: true,
     });
+
+    // Assign category and thumbnail info
     const thumbnail = await this.thumbnailService.getSelectedThumbnail(foundVideo.id);
     response.category = foundVideo.category.title;
-    response.thumbnail = thumbnail.image;
+    response.thumbnail = thumbnail?.image;
 
-    if (showby === ShowBy.ALL_TIME || !showby) {
-      const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, '1970-01-01');
-      response.numberOfReps = totalREPs;
-      response.rating = foundVideo.ratings;
-      response.numberOfViews = foundVideo.numberOfViews;
-      return response;
-    }
-
-    const time = new Date();
-    switch (showby) {
-      case ShowBy.LAST_7_DAYS:
-        time.setDate(time.getDate() - 7);
-        break;
-      case ShowBy.LAST_30_DAYS:
-        time.setDate(time.getDate() - 30);
-      case ShowBy.LAST_90_DAYS:
-        time.setDate(time.getDate() - 90);
-      default:
-        break;
-    }
-
+    // Set time based on showby selection
+    const time = this.calculateDateByShowBy(showby);
     const timeFomat = time.toISOString().split('T')[0];
-    const { totalREPs } = await this.videoRepository.getNumberOfRepByTime(videoId, timeFomat);
-    const view = await this.viewService.getTotalViewInOnTime(time, videoId);
-    const rating = await this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time);
-    response.numberOfReps = totalREPs;
-    response.numberOfViews = view;
+
+    // Fetch analytics data in parallel
+    const [sum, view, second, rating] = await Promise.all([
+      this.videoRepository.getNumberOfRepByTime(
+        videoId,
+        showby === ShowBy.ALL_TIME ? '1970-01-01' : timeFomat,
+      ),
+      this.viewService.getTotalViewInOnTime(time, videoId),
+      this.viewService.getTotalSecondByDate(time, videoId),
+      showby === ShowBy.ALL_TIME
+        ? Promise.resolve(foundVideo.ratings)
+        : this.watchingVideoHistoryService.getRatingAvgOfVideo(videoId, time),
+    ]);
+
+    response.numberOfReps = sum ? sum.totalreps : 0;
+    response.numberOfViews = showby === ShowBy.ALL_TIME ? foundVideo.numberOfViews : view;
     response.rating = rating;
+    response.avgWatched = view ? second / view : 0;
+    response.publishedOn = foundVideo.createdAt;
 
     return response;
   }
@@ -572,13 +612,137 @@ export class VideoService {
     if (!result) {
       return null;
     }
-    const numberOfReps = await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01');
-    const { image } = await this.thumbnailService.getSelectedThumbnail(result.id);
+    const numberOfReps = (await this.videoRepository.getNumberOfRepByTime(result.id, '1950-01-01')) || 0;
+    const thumbail = await this.thumbnailService.getSelectedThumbnail(result.id);
 
     return {
       ...result,
       ...numberOfReps,
-      image,
+      thumbnail: thumbail?.image,
     };
+  }
+
+  async getAll() {
+    return await this.videoRepository.findAll({ channel: true }).then(async (videos) => {
+      return await Promise.all(
+        videos.map(async (video) => {
+          const thumbnailURL = (await this.thumbnailService.getSelectedThumbnail(video.id))?.image;
+
+          return {
+            ...video,
+            thumbnail: thumbnailURL,
+          };
+        }),
+      );
+    });
+  }
+  async getGraphicAnalytic(videoId: number, userId: number, showBy: ShowBy, typeGraphic: GraphicType) {
+    const foundChannel = await this.channelService.getChannelByUserId(userId);
+    const foundVideo = await this.videoRepository.findOne(videoId, {
+      channel: true,
+      category: true,
+    });
+    if (foundChannel.id !== foundVideo.channel.id) {
+      throw new ForbiddenException();
+    }
+
+    const time = this.calculateDateByShowBy(showBy);
+    const timeFomat = time.toISOString().split('T')[0];
+
+    let result = null;
+    switch (typeGraphic) {
+      case GraphicType.AGE:
+        result = await this.graphicAgeAnalyticVideo(videoId, timeFomat);
+        break;
+      case GraphicType.GENDER:
+        result = await this.graphicGender(videoId, timeFomat);
+        break;
+      case GraphicType.NATION:
+        result = await this.getGraphicNation(videoId, timeFomat);
+      default:
+        break;
+    }
+    return result;
+  }
+
+  async getGraphicNation(videoId: number, time: string) {
+    const result = await this.videoRepository.getMostViewerNationality(videoId, time);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_users, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_users / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async getGraphicState(videoId: number, countryId: number, showBy: ShowBy) {
+    const time = this.calculateDateByShowBy(showBy);
+    const timeFomat = time.toISOString().split('T')[0];
+    const result = await this.videoRepository.getVideoViewersByState(videoId, timeFomat, countryId);
+    const totalUser = result.reduce((sum, group) => sum + parseInt(group.total_users, 10), 0);
+    const update = result.map((obj) => {
+      const percent = (+obj.total_users / totalUser) * 100;
+      return {
+        ...obj,
+        percent,
+      };
+    });
+    return {
+      totalUser,
+      update,
+    };
+  }
+
+  async videoAnalyticDashboard(
+    userId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    return await this.videoRepository.getVideoAnalytics(userId, time, orderBy, limit, offset);
+  }
+
+  async videoAnalyticDashboardByQuery(
+    userId: number,
+    time: string,
+    orderBy: OrderBy = { field: 'number_of_views', direction: 'DESC' },
+    limit: number = 10,
+    offset: number = 0,
+  ) {
+    return await this.videoRepository.getVideoAnalyticByQuery(userId, time, orderBy, limit, offset);
+  }
+  calculateDateByShowBy(showby: ShowBy): Date {
+    const time = new Date();
+    switch (showby) {
+      case ShowBy.LAST_7_DAYS:
+        time.setDate(time.getDate() - 7);
+        break;
+      case ShowBy.LAST_30_DAYS:
+        time.setDate(time.getDate() - 30);
+        break;
+      case ShowBy.LAST_90_DAYS:
+        time.setDate(time.getDate() - 90);
+        break;
+      case ShowBy.ONE_YEAR_AGO:
+        time.setDate(time.getDate() - 365);
+        break;
+      case ShowBy.ALL_TIME:
+      default:
+        time.setDate(time.getDate() - 9999); // Fallback for all-time or unspecified range
+        break;
+    }
+    return time;
+  }
+
+  async getTotalSecondsOfChannel(channelId: number) {
+    const result = await this.videoRepository.getTotalSecondsOfChannel(channelId);
+    return result || 0;
   }
 }

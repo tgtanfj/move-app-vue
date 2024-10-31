@@ -6,6 +6,7 @@ import '../../../../data/models/comment_model.dart';
 enum VideoDetailStatus {
   initial,
   processing,
+  loading,
   success,
   failure,
   rateSuccess,
@@ -34,6 +35,7 @@ class VideoDetailState extends Equatable {
   final String? facebookLink;
   final int? targetCommentId;
   final int? targetReplyId;
+  final DateTime? timeStarted;
 
   const VideoDetailState({this.video,
     this.status,
@@ -55,6 +57,7 @@ class VideoDetailState extends Equatable {
     this.option,
     this.twitterLink,
     this.facebookLink,
+    this.timeStarted,
     this.targetCommentId,
     this.targetReplyId});
 
@@ -84,7 +87,9 @@ class VideoDetailState extends Equatable {
     String? twitterLink,
     String? facebookLink,
     int? targetCommentId,
-    int? targetReplyId}) {
+    int? targetReplyId,
+    DateTime? timeStarted,
+  }) {
     return VideoDetailState(
         video: video ?? this.video,
         status: status ?? this.status,
@@ -108,7 +113,10 @@ class VideoDetailState extends Equatable {
         twitterLink: twitterLink ?? this.twitterLink,
         facebookLink: facebookLink ?? this.facebookLink,
         targetCommentId: targetCommentId ?? this.targetCommentId,
-        targetReplyId: targetReplyId ?? this.targetReplyId);
+        targetReplyId: targetReplyId ?? this.targetReplyId,
+      timeStarted: timeStarted ?? this.timeStarted,
+
+    );
   }
 
   @override
@@ -136,5 +144,6 @@ class VideoDetailState extends Equatable {
         facebookLink,
         targetCommentId,
         targetReplyId,
+        timeStarted,
       ];
 }

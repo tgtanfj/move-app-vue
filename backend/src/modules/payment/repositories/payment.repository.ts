@@ -2,7 +2,7 @@ import { Payment } from '@/entities/payment.entity';
 import { RepsPackage } from '@/entities/reps-package.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { Between, FindOptionsRelations, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
 @Injectable()
 export class PaymentRepository {
@@ -23,7 +23,7 @@ export class PaymentRepository {
       },
     });
 
-    return this.paymentRepository.save(paymentHistoryCreated);
+    return await this.paymentRepository.save(paymentHistoryCreated);
   }
 
   async findPaymentHistory(
@@ -53,6 +53,12 @@ export class PaymentRepository {
       },
       take: take,
       skip: (page - 1) * take,
+    });
+  }
+
+  async findAllPaymentHistories(relations?: FindOptionsRelations<Payment>): Promise<Payment[]> {
+    return await this.paymentRepository.find({
+      relations,
     });
   }
 }

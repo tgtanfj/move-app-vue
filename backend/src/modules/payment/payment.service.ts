@@ -1,11 +1,13 @@
 import { User } from '@/entities/user.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
+import { NotificationService } from '../notification/notification.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
@@ -30,6 +32,8 @@ export class PaymentService {
     private readonly redisService: RedisService,
     private readonly configService: ApiConfigService,
     private readonly cashOutRepository: CashOutRepository,
+    private readonly notificationService: NotificationService,
+    private readonly i18n: I18nService,
   ) {}
 
   async listRepsPackage() {
@@ -41,17 +45,26 @@ export class PaymentService {
   }
 
   async buyREPs(user: User, buyREPsDto: BuyREPsDto) {
-    const { paymentMethodId, repPackageId } = buyREPsDto;
+    const { paymentMethodId, repPackageId, save } = buyREPsDto;
 
     const repPackage = await this.repsPackageRepository.findOneRepPackage(repPackageId);
 
-    await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId);
+    const charge = await this.stripeService.charge(repPackage.price, paymentMethodId, user.stripeId, save);
 
     const repsOfUser = repPackage.numberOfREPs + Number(user.numberOfREPs);
 
     await this.userService.updateREPs(user.id, repsOfUser);
 
+    const dataNotification = {
+      sender: 'system',
+      type: NOTIFICATION_TYPE.PURCHASE,
+      purchase: +repPackage.numberOfREPs,
+    };
+    await this.notificationService.sendOneToOneNotification(user.id, dataNotification);
+
     this.paymentRepository.createPaymentHistory(user.id, repPackage.id);
+
+    return charge;
   }
 
   async getPaymentHistory(userId: number, queryPaymentHistoryDto: QueryPaymentHistoryDto) {
@@ -75,8 +88,6 @@ export class PaymentService {
 
           return [data, total];
         });
-
-      console.log(data);
 
       const totalPages = Math.ceil(+total / queryPaymentHistoryDto.take);
 
@@ -104,11 +115,11 @@ export class PaymentService {
     );
 
     if (timesWithdrawPerDay) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_ONE_WITHDRAW_PER_DAY);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_ONE_WITHDRAW_PER_DAY'));
     }
 
     if (timesWithdrawPerWeek >= 3) {
-      throw new BadRequestException(ERRORS_DICTIONARY.ONLY_THREE_WITHDRAW_PER_WEEK);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.ONLY_THREE_WITHDRAW_PER_WEEK'));
     }
 
     const { channel } = await this.userService.findChannelByUserId(userId);
@@ -118,7 +129,7 @@ export class PaymentService {
       channel.numberOfREPs < repsNeedToWithDraw ||
       channel.numberOfREPs < numberOfREPs
     ) {
-      throw new BadRequestException(ERRORS_DICTIONARY.NOT_ENOUGH_REPS);
+      throw new BadRequestException(this.i18n.t('exceptions.payment.NOT_ENOUGH_REPS'));
     }
 
     if (withDrawDto.isSave) {
@@ -130,11 +141,20 @@ export class PaymentService {
     const emailReceiveREPs = channel.emailPayPal ? channel.emailPayPal : email;
 
     try {
-      this.channelService.updateREPs(channel.id, repsAfterWithDraw);
+      await Promise.all([
+        this.channelService.updateREPs(channel.id, repsAfterWithDraw),
 
-      this.paypalService.createPayout(emailReceiveREPs, amountWithDraw);
+        this.paypalService.createPayout(emailReceiveREPs, amountWithDraw),
 
-      this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs);
+        this.cashOutRepository.createCashOutHistory(channel.id, numberOfREPs),
+      ]);
+
+      const dataNotification = {
+        sender: 'system',
+        type: NOTIFICATION_TYPE.CASHOUT,
+        cashout: +amountWithDraw,
+      };
+      await this.notificationService.sendOneToOneNotification(userId, dataNotification);
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -154,5 +174,30 @@ export class PaymentService {
     }
 
     return await this.channelService.getChannelReps(userId);
+  }
+
+  async findAllPaymentHistories() {
+    return await this.paymentRepository.findAllPaymentHistories({
+      user: true,
+      repsPackage: true,
+    });
+  }
+
+  async getAllCashOutHistories() {
+    return await this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
+  }
+
+  async getTotalWithdraw() {
+    const withDrawRate = this.configService.getNumber('WITHDRAW_RATE');
+
+    const withdraws = await this.cashOutRepository.getAllCashOutHistory();
+
+    const total = withdraws.reduce((sum, withdraw) => {
+      return sum + +withdraw.numberOfREPs;
+    }, 0);
+
+    return {
+      totalWithdraw: total * withDrawRate,
+    };
   }
 }

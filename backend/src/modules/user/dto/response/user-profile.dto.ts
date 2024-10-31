@@ -2,9 +2,15 @@ import { Country } from '@/entities/country.entity';
 import { Gender } from '@/entities/enums/gender.enum';
 import { State } from '@/entities/state.entity';
 import { Expose } from 'class-transformer';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsNumber } from 'class-validator';
 
 export class UserProfile {
+  @Expose()
+  readonly id: number;
+
+  @Expose()
+  channelId: number;
+
   @Expose()
   readonly avatar: string;
 
@@ -41,4 +47,7 @@ export class UserProfile {
 
   @Expose()
   isPinkBadge: boolean = false;
+
+  @Expose()
+  numberOfREPs: number;
 }

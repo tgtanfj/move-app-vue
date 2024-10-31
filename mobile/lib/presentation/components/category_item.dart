@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/data/models/category_model.dart';
+import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
 class CategoryItem extends StatefulWidget {
@@ -15,7 +16,17 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return VideosCategoryPage(
+                  categoryId: widget.categoryModel.id ?? 0);
+            },
+          ),
+        );
+      },
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.33,
         child: Column(

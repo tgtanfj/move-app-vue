@@ -1,3 +1,4 @@
+import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
@@ -10,10 +11,10 @@ export class SystemNotificationDto {
   sender: string;
 
   @ApiProperty({
-    description: 'content notification',
+    description: 'type notification',
   })
   @IsNotEmpty()
-  content: string;
+  type: NOTIFICATION_TYPE;
 
   @ApiPropertyOptional({
     description: 'id video',
@@ -32,6 +33,24 @@ export class SystemNotificationDto {
   })
   @IsOptional()
   cashout?: number;
+
+  @ApiPropertyOptional({
+    description: 'follow milestone',
+  })
+  @IsOptional()
+  followMilestone?: number;
+
+  @ApiPropertyOptional({
+    description: 'rep milestone',
+  })
+  @IsOptional()
+  repMilestone?: number;
+
+  @ApiPropertyOptional({
+    description: 'view video milestone',
+  })
+  @IsOptional()
+  viewVideoMilestone?: number;
 
   @ApiPropertyOptional({
     description: 'purchase',

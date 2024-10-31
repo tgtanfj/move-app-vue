@@ -58,7 +58,6 @@ export const commentServices = {
   },
   deleteCommentReaction: async (commentId) => {
     try {
-      console.log('typdfa', commentId, typeof commentId)
       const response = await apiAxios.delete(`/comment-reaction/${commentId}`)
       return response.data
     } catch (error) {
@@ -93,6 +92,23 @@ export const commentServices = {
       return response.data
     } catch (error) {
       console.error('Post reply error:', error)
+      throw error
+    }
+  },
+  getChannelComments: async (filter, sort, page) => {
+    const pageSize = 30
+    try {
+      const response = await apiAxios.get(`/channel/get-all-comments`, {
+        params: {
+          filter,
+          sort,
+          page,
+          pageSize
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Get channel comments error:', error)
       throw error
     }
   }

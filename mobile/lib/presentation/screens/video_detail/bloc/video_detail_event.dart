@@ -165,3 +165,9 @@ final class VideoDetailShareSocialEvent extends VideoDetailEvent {
         option,
       ];
 }
+
+final class VideoDetailPopEvent extends VideoDetailEvent {
+  const VideoDetailPopEvent();
+  @override
+  List<Object?> get props => [];
+}

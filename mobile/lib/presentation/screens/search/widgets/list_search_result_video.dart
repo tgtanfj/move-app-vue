@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/video_poster.dart';
+import 'package:move_app/presentation/screens/home/widgets/video_feature_description.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
-
-import '../../home/widgets/video_feature_description.dart';
-import '../../video_detail/page/video_detail_page.dart';
 
 class ListSearchResultVideo extends StatelessWidget {
   final List<VideoModel>? videoList;
@@ -13,8 +12,8 @@ class ListSearchResultVideo extends StatelessWidget {
 
   const ListSearchResultVideo({
     super.key,
-    required this.videoList,
-    required this.channelList,
+    this.videoList,
+    this.channelList,
   });
 
   @override
@@ -46,9 +45,9 @@ class ListSearchResultVideo extends StatelessWidget {
                       videoList?[index].durationsVideo?.toDurationFormat() ??
                           '00:00',
                   height: MediaQuery.of(context).size.height * 0.21,
-                  isViewText: true,
-                  image: videoList?[index].urlS3,
-                  numberOfViews: videoList?[index].numberOfViews.toString(),
+                  isDurationText: true,
+                  image: videoList?[index].thumbnailsModel?.firstOrNull?.image,
+                  numberOfViews: videoList?[index].numberOfViews?.toCompactViewCount(),
                 ),
                 const SizedBox(
                   height: 4.0,
@@ -56,6 +55,7 @@ class ListSearchResultVideo extends StatelessWidget {
                 VideoFeatureDescription(
                   videoModel: videoList?[index],
                   channelModel: videoList?[index].channel,
+                  category: videoList?[index].categories,
                 ),
               ],
             ),

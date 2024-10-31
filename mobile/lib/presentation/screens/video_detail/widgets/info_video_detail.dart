@@ -11,9 +11,8 @@ import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/star_and_text.dart';
 import 'package:move_app/presentation/components/type_label.dart';
-import 'package:move_app/utils/string_extentions.dart';
-
 import 'package:move_app/presentation/screens/video_detail/widgets/share_video_dialog.dart';
+import 'package:move_app/utils/string_extentions.dart';
 
 import '../../auth/widgets/dialog_authentication.dart';
 
@@ -23,7 +22,6 @@ class InfoVideoDetail extends StatefulWidget {
   final VoidCallback giftRepButton;
   final VoidCallback onTapRate;
   final VideoModel? video;
-  final bool? isFollowed;
   final VoidCallback facebookButton;
   final VoidCallback twitterButton;
   final VoidCallback copyLinkButton;
@@ -38,7 +36,6 @@ class InfoVideoDetail extends StatefulWidget {
     required this.copyLinkButton,
     required this.onTapRate,
     required this.video,
-    this.isFollowed,
   });
 
   @override
@@ -104,9 +101,22 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
             ),
             GestureDetector(
                 onTap: widget.followButton,
-                child: SvgPicture.asset(widget.isFollowed ?? false
-                    ? AppIcons.fillHeart.svgAssetPath
-                    : AppIcons.heart.svgAssetPath)),
+                child: (widget.video?.channel?.isFollowed == null &&
+                        widget.video?.channel?.canFollow == null)
+                    ? SvgPicture.asset(
+                        AppIcons.heart.svgAssetPath,
+                        width: 20,
+                        height: 18,
+                      )
+                    : widget.video?.channel?.canFollow ?? false
+                        ? SvgPicture.asset(
+                            widget.video?.channel?.isFollowed ?? false
+                                ? AppIcons.fillHeart.svgAssetPath
+                                : AppIcons.heart.svgAssetPath,
+                            width: 20,
+                            height: 18,
+                          )
+                        : const SizedBox()),
             PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(
@@ -163,11 +173,6 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                       );
                     }
                   },
-                ),
-                PopupMenuItem<String>(
-                  value: Constants.reportVideo,
-                  child: Text(Constants.reportVideo,
-                      style: AppTextStyles.montserratStyle.regular16Black),
                 ),
               ],
               child: SvgPicture.asset(AppIcons

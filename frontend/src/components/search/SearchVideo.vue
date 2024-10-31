@@ -1,10 +1,10 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import EyeIcon from '@assets/icons/EyeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { convertToTimeFormat } from '@utils/formatVideoLength.util'
+import { formatViews } from '@utils/formatViews.util'
 import { detectDuration } from '@utils/uploadVideo.util'
 
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
 })
 </script>
 <template>
-  <div class="flex flex-col cursor-pointer shadow-md border-gray-50 border-[.1px] p-5 rounded-sm">
+  <div class="flex flex-col cursor-pointer">
     <div class="aspect-w-1 aspect-h-1 h-[170px] relative">
       <router-link :to="`/video/${video.id}`">
         <img
@@ -25,30 +25,21 @@ const props = defineProps({
         />
       </router-link>
       <div
+        v-if="video.numberOfViews > 0"
         class="absolute bottom-4 left-4 text-white bg-black text-[12px] flex items-center gap-2 px-2 rounded-md"
       >
         <EyeIcon />
         <p class="font-bold">
-          {{ video.numberOfViews }}
+          {{ video.numberOfViews && formatViews(video.numberOfViews) }}
         </p>
       </div>
       <div class="absolute bottom-4 right-4 text-white bg-black text-[12px] px-2 rounded-md">
-        <p class="font-bold">{{ convertToTimeFormat(video.durationsVideo) || '0:00' }}</p>
+        <p class="font-bold">{{ convertToTimeFormat(video.durationsVideo) }}</p>
       </div>
     </div>
     <div class="flex items-start mt-2">
       <router-link :to="`/channel/${video.channel.id}`">
-        <img
-          class="w-[50px] h-[50px] rounded-full"
-          :src="video.channel.image"
-          :class="
-            video.channel.isBlueBadge
-              ? 'border-blue-300 border-[3px]'
-              : video.channel.isPinkBadge
-                ? 'border-pink-300 border-[3px]'
-                : ''
-          "
-        />
+        <img class="w-[50px] h-[50px] rounded-full shrink-0" :src="video.channel.image" />
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">
@@ -84,10 +75,11 @@ const props = defineProps({
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-1 ml-auto">
+      <div v-if="video?.ratings !== 0" class="flex items-center gap-1 ml-auto pr-1 pl-2">
         <StartIcon class="h-[16px] w-[16px] mr-1" />
         <p class="text-[14px] font-bold">{{ video.ratings }}</p>
       </div>
+      <div v-else class="flex items-center gap-1 ml-auto pr-1 pl-2"></div>
     </div>
   </div>
 </template>

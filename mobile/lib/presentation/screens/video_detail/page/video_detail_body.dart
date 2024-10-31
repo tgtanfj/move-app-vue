@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/constants/key_screen.dart';
@@ -11,9 +12,9 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_bloc.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
+import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
-import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
-
+import 'package:move_app/presentation/screens/video_detail/widgets/vimeo_player.dart';
 import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../constants/constants.dart';
@@ -37,12 +38,19 @@ class VideoDetailBody extends StatefulWidget {
 
 class _VideoDetailBodyState extends State<VideoDetailBody> {
   late ScrollController _scrollController;
+  final String username = SharedPrefer.sharedPrefer.getUsername();
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScrollComments);
+  }
+
+  @override
+  void deactivate() {
+    context.read<VideoDetailBloc>().add(const VideoDetailPopEvent());
+    super.deactivate();
   }
 
   @override
@@ -81,6 +89,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+
     return Dismissible(
       key: const Key(KeyScreen.videoDetail),
       direction: DismissDirection.startToEnd,
@@ -90,306 +99,406 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         appBar: AppBarWidget(
           prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu),
         ),
-        body: BlocConsumer<VideoDetailBloc, VideoDetailState>(
-          listener: (context, state) {
-            state.status == VideoDetailStatus.rateSuccess
-                ? showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const ThanksRateDialog();
-                    },
-                  )
-                : null;
-            if (state.targetCommentId != null) {
-              final comments = state.listComments;
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BlocBuilder<VideoDetailBloc, VideoDetailState>(
+              buildWhen: (previous, current) =>
+                  previous.isShowVideo != current.isShowVideo ||
+                  previous.video?.url != current.video?.url,
+              builder: (context, state) {
+                return state.isShowVideo
+                    ? _buildVideoPlayer(state.video?.url)
+                    : const SizedBox.shrink();
+              },
+            ),
+            Expanded(
+              child: BlocConsumer<VideoDetailBloc, VideoDetailState>(
+                listener: (context, state) {
+                  if (state.status == VideoDetailStatus.rateSuccess) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const ThanksRateDialog();
+                      },
+                    );
+                  }
+                  if (state.targetCommentId != null) {
+                    final comments = state.listComments;
 
-              if ((comments?.length ?? 0) > 2) {
-                double scrollToPosition = 100;
+                    if ((comments?.length ?? 0) > 2) {
+                      double scrollToPosition = 100;
 
-                Future.delayed(const Duration(seconds: 1), () {
-                  _scrollController.animateTo(
-                    scrollToPosition,
-                    duration: const Duration(seconds: 1),
-                    curve: Curves.linear,
-                  );
-                });
-              }
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                state.isShowVideo
-                    ? AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: VimeoPlayer(
-                          videoId: state.video?.url?.split('/').last ?? '',
-                        ),
-                      )
-                    : const SizedBox(),
-                if (state.listComments?.isEmpty ?? true) ...[
-                  buildInfoVideoPart(height, state),
-                  if (state.video?.isCommentable == false)
-                    Center(
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          Constants.isCommentable,
-                          style: AppTextStyles
-                              .montserratStyle.regular14GraniteGray,
-                        ),
-                      ),
-                    )
-                  else ...[
-                    buildWriteCommentPart(context, state),
-                    Center(
-                      child: Text(
-                        Constants.emptyComments,
-                        style:
-                            AppTextStyles.montserratStyle.regular14GraniteGray,
-                      ),
+                      Future.delayed(const Duration(seconds: 1), () {
+                        _scrollController.animateTo(
+                          scrollToPosition,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.linear,
+                        );
+                      });
+                    }
+                  }
+                },
+                builder: (context, state) {
+                  state.status == VideoDetailStatus.processing
+                      ? EasyLoading.show()
+                      : EasyLoading.dismiss();
+                  return state.status == VideoDetailStatus.processing
+                      ? const SizedBox.shrink()
+                      : state.isShowVideo
+                          ? SizedBox(
+                              child: state.listComments?.isEmpty ?? true
+                                  ? SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _buildEmptyCommentSection(
+                                              context, state, height),
+                                        ],
+                                      ),
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _buildCommentList(
+                                            context, state, height),
+                                        if (state.status ==
+                                            VideoDetailStatus.loading)
+                                          _buildLoadingIndicator(),
+                                      ],
+                                    ),
+                            )
+                          : Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    Constants.videoNotFound,
+                                    style: AppTextStyles
+                                        .montserratStyle.bold14Black,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  CustomButton(
+                                    title: Constants.goToHome,
+                                    titleStyle: AppTextStyles
+                                        .montserratStyle.bold14White,
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .pushNamed(AppRoutes.home);
+                                    },
+                                    width: 120,
+                                    padding: const EdgeInsets.all(5),
+                                    backgroundColor: AppColors.tiffanyBlue,
+                                  )
+                                ],
+                              ),
+                            );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoPlayer(String? videoUrl) {
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: VimeoPlayer(
+        videoId: videoUrl?.split('/').last ?? '',
+      ),
+    );
+  }
+
+  Widget _buildEmptyCommentSection(
+      BuildContext context, VideoDetailState state, double height) {
+    return Column(
+      children: [
+        buildInfoVideoPart(height, state),
+        if (state.video?.isCommentable == false)
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 16),
+              child: Text(
+                Constants.isCommentable,
+                style: AppTextStyles.montserratStyle.regular14GraniteGray,
+              ),
+            ),
+          )
+        else
+          Column(
+            children: [
+              buildWriteCommentPart(context, state),
+              Center(
+                child: Column(
+                  children: [
+                    Text(
+                      Constants.emptyComments,
+                      style: AppTextStyles.montserratStyle.bold14GraniteGray,
+                    ),
+                    Text(
+                      Constants.leaveAComment,
+                      style: AppTextStyles.montserratStyle.regular13GraniteGray,
                     ),
                   ],
-                ],
-                Expanded(
-                  child: (state.video?.isCommentable == false &&
-                          state.listComments?.isNotEmpty == true)
-                      ? Wrap(
-                          children: [
-                            buildInfoVideoPart(height, state),
-                            Center(
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 16),
-                                child: Text(
-                                  Constants.isCommentable,
-                                  style: AppTextStyles
-                                      .montserratStyle.regular14GraniteGray,
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      : ListView.separated(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.listComments?.length ?? 0,
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const Divider(),
-                          itemBuilder: (BuildContext context, int index) {
-                            final CommentModel? commentModel =
-                                state.listComments?[index];
-                            final replies =
-                                state.replies?[commentModel?.id] ?? [];
-                            final isHideRepliesForCurrentComment =
-                                state.isHiddenListReply?[commentModel?.id] ??
-                                    false;
-                            final hasTargetCommentId =
-                                state.targetCommentId == commentModel?.id &&
-                                    state.targetReplyId == 0;
-                            return Column(
-                              children: [
-                                if (index == 0) ...[
-                                  buildInfoVideoPart(height, state),
-                                  buildWriteCommentPart(context, state),
-                                ],
-                                ItemComment(
-                                  commentModel: commentModel,
-                                  onTapLike: () {
-                                    _handleCommentReaction(
-                                        context, commentModel,
-                                        isLike: true);
-                                  },
-                                  onTapDislike: () {
-                                    _handleCommentReaction(
-                                        context, commentModel,
-                                        isLike: false);
-                                  },
-                                  hasTargetCommentId: hasTargetCommentId,
-                                  isHideReplies: isHideRepliesForCurrentComment,
-                                  widgetHideListReplies: Visibility(
-                                    visible: isHideRepliesForCurrentComment,
-                                    child: CustomButton(
-                                      title:
-                                          "Hide ${commentModel?.numberOfReply} Replies",
-                                      titleStyle: AppTextStyles
-                                          .montserratStyle.bold16tiffanyBlue,
-                                      prefix: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12),
-                                        child: SvgPicture.asset(AppIcons
-                                            .arrowUpTiffany.svgAssetPath),
-                                      ),
-                                      isExpanded: false,
-                                      onTap: () {
-                                        if (commentModel?.id != null) {
-                                          final updatedIsRepliesHiddenMap = {
-                                            ...?state.isHiddenListReply,
-                                            commentModel!.id!: false,
-                                          };
-                                          context.read<VideoDetailBloc>().add(
-                                                VideoDetailHideRepliesCommentEvent(
-                                                    isHiddenListReplies:
-                                                        updatedIsRepliesHiddenMap,
-                                                    commentId:
-                                                        commentModel.id ?? 0),
-                                              );
-                                        }
-                                      },
-                                      borderColor: AppColors.white,
-                                      padding: const EdgeInsets.only(top: 12),
-                                      mainAxisSize: MainAxisSize.min,
-                                    ),
-                                  ),
-                                  widgetListReplies: Visibility(
-                                    visible: isHideRepliesForCurrentComment ||
-                                        state.isShowTemporaryListReply,
-                                    child: ListView.separated(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (BuildContext context,
-                                          int replyIndex) {
-                                        final replyCommentModel =
-                                            replies[replyIndex];
-                                        final hasTargetReplyId =
-                                            state.targetReplyId ==
-                                                replyCommentModel.id;
-                                        return ItemComment(
-                                          commentModel: replyCommentModel,
-                                          hasTargetReplyId: hasTargetReplyId,
-                                          isShowReplyButton: false,
-                                          onTapLike: () {
-                                            _handleCommentReaction(
-                                                context, replyCommentModel,
-                                                isLike: true);
-                                          },
-                                          onTapDislike: () {
-                                            _handleCommentReaction(
-                                                context, replyCommentModel,
-                                                isLike: false);
-                                          },
-                                        );
-                                      },
-                                      separatorBuilder: (BuildContext context,
-                                              int replyIndex) =>
-                                          const Divider(),
-                                      itemCount: replies.length,
-                                    ),
-                                  ),
-                                  onTapShowInputReply: () {
-                                    if (SharedPrefer.sharedPrefer
-                                        .getUserToken()
-                                        .isEmpty) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            const DialogAuthentication(),
-                                      );
-                                    } else {
-                                      context.read<VideoDetailBloc>().add(
-                                            VideoDetailHideInputReplyEvent(
-                                                commentId:
-                                                    commentModel?.id ?? 0,
-                                                isShowInput: true),
-                                          );
-                                    }
-                                  },
-                                  isShowTemporaryListReply:
-                                      state.isShowTemporaryListReply,
-                                  originalNumOfReply: state.originalNumOfReply?[
-                                      commentModel?.id ?? 0],
-                                  widgetReplyInput: Visibility(
-                                    visible: state.isHiddenInputReply?[
-                                            commentModel?.id] ??
-                                        false,
-                                    child: WriteComment(
-                                      isCancelReply: true,
-                                      onChanged: (value) {
-                                        context.read<VideoDetailBloc>().add(
-                                            VideoDetailReplyChangedEvent(
-                                                content: value));
-                                      },
-                                      onTapCancel: () {
-                                        context.read<VideoDetailBloc>().add(
-                                            VideoDetailHideInputReplyEvent(
-                                                commentId:
-                                                    commentModel?.id ?? 0,
-                                                isShowInput: false));
-                                      },
-                                      onTapSend: () {
-                                        context.read<VideoDetailBloc>().add(
-                                            VideoDetailPostCommentEvent(
-                                                content: state.inputReply ?? "",
-                                                commentId: commentModel?.id));
-
-                                        context.read<VideoDetailBloc>().add(
-                                            VideoDetailHideInputReplyEvent(
-                                                commentId:
-                                                    commentModel?.id ?? 0,
-                                                isShowInput: false));
-                                      },
-                                    ),
-                                  ),
-                                  widgetShowListReplies: Visibility(
-                                    visible: ((state.originalNumOfReply?[
-                                                        commentModel?.id ??
-                                                            0] ??
-                                                    0) >
-                                                replies.length &&
-                                            (commentModel?.numberOfReply ?? 0) >
-                                                0) ||
-                                        (!isHideRepliesForCurrentComment &&
-                                            (commentModel?.numberOfReply ?? 0) >
-                                                0),
-                                    child: CustomButton(
-                                      title: isHideRepliesForCurrentComment
-                                          ? Constants.showMoreReplies
-                                          : "Show ${commentModel?.numberOfReply} Replies",
-                                      titleStyle: AppTextStyles
-                                          .montserratStyle.bold16tiffanyBlue,
-                                      prefix: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 12),
-                                        child: SvgPicture.asset(AppIcons
-                                            .arrowDownTiffany.svgAssetPath),
-                                      ),
-                                      isExpanded: false,
-                                      onTap: () {
-                                        final currentReplies =
-                                            state.replies?[commentModel?.id] ??
-                                                [];
-                                        final lastIdReply =
-                                            currentReplies.isNotEmpty
-                                                ? currentReplies.last.id
-                                                : null;
-                                        context.read<VideoDetailBloc>().add(
-                                            VideoDetailLoadRepliesCommentEvent(
-                                                commentId:
-                                                    commentModel?.id ?? 0,
-                                                lastIdReply: lastIdReply ?? 0));
-                                      },
-                                      borderColor: AppColors.white,
-                                      padding: const EdgeInsets.only(top: 12),
-                                      mainAxisSize: MainAxisSize.min,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
                 ),
-                if (state.status == VideoDetailStatus.processing)
-                  Center(
-                      child: Container(
-                          margin: const EdgeInsets.only(bottom: 30),
-                          child: const CircularProgressIndicator())),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCommentList(
+      BuildContext context, VideoDetailState state, double height) {
+    return Expanded(
+      child: (state.video?.isCommentable == false &&
+              state.listComments?.isNotEmpty == true &&
+              state.video?.channel?.name != username)
+          ? _buildCommentSectionWithInfo(state, height)
+          : ListView.separated(
+              controller: _scrollController,
+              shrinkWrap: true,
+              itemCount: state.listComments?.length ?? 0,
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+              itemBuilder: (BuildContext context, int index) {
+                return _buildCommentItem(
+                    context, state.listComments![index], state, height);
+              },
+            ),
+    );
+  }
+
+  Widget _buildCommentSectionWithInfo(VideoDetailState state, double height) {
+    return Wrap(
+      children: [
+        buildInfoVideoPart(height, state),
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 16),
+            child: Text(
+              Constants.isCommentable,
+              style: AppTextStyles.montserratStyle.regular14GraniteGray,
+            ),
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildCommentItem(BuildContext context, CommentModel commentModel,
+      VideoDetailState state, double height) {
+    final replies = state.replies?[commentModel.id] ?? [];
+    final isHideRepliesForCurrentComment =
+        state.isHiddenListReply?[commentModel.id] ?? false;
+
+    return Column(
+      children: [
+        if (commentModel == state.listComments?.first) ...[
+          buildInfoVideoPart(height, state),
+          if (state.video?.isCommentable == true)
+            buildWriteCommentPart(context, state),
+        ],
+        ItemComment(
+          commentModel: commentModel,
+          onTapLike: state.video?.isCommentable == true
+              ? () =>
+                  _handleCommentReaction(context, commentModel, isLike: true)
+              : null,
+          onTapDislike: state.video?.isCommentable == true
+              ? () =>
+                  _handleCommentReaction(context, commentModel, isLike: false)
+              : null,
+          isHideReplies: isHideRepliesForCurrentComment,
+          widgetHideListReplies: _buildHideRepliesButton(
+              context, commentModel, state, isHideRepliesForCurrentComment),
+          widgetListReplies: _buildReplyList(
+              context, replies, isHideRepliesForCurrentComment, state),
+          onTapShowInputReply: state.video?.isCommentable == true
+              ? () => _onTapShowInputReply(context, commentModel)
+              : null,
+          isShowTemporaryListReply: state.isShowTemporaryListReply,
+          originalNumOfReply: state.originalNumOfReply?[commentModel.id] ?? 0,
+          widgetReplyInput: _buildReplyInput(
+            context,
+            commentModel,
+            state,
+          ),
+          widgetShowListReplies: _buildShowRepliesButton(context, commentModel,
+              replies, isHideRepliesForCurrentComment, state),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHideRepliesButton(BuildContext context,
+      CommentModel commentModel, VideoDetailState state, bool isHideReplies) {
+    return Visibility(
+      visible: isHideReplies,
+      child: CustomButton(
+        title:
+            "Hide ${(commentModel.numberOfReply ?? 0) > (state.originalNumOfReply?[commentModel.id] ?? 0) ? (commentModel.numberOfReply ?? 0) : (state.originalNumOfReply?[commentModel.id] ?? 0)} ${(state.originalNumOfReply?[commentModel.id] ?? 0) == 1 ? 'Reply' : 'Replies'}",
+        titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
+        prefix: Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: SvgPicture.asset(AppIcons.arrowUpTiffany.svgAssetPath),
+        ),
+        isExpanded: false,
+        onTap: () {
+          if (commentModel.id != null) {
+            final updatedIsRepliesHiddenMap = {
+              ...?state.isHiddenListReply,
+              commentModel.id!: false,
+            };
+            context.read<VideoDetailBloc>().add(
+                  VideoDetailHideRepliesCommentEvent(
+                    isHiddenListReplies: updatedIsRepliesHiddenMap,
+                    commentId: commentModel.id ?? 0,
+                  ),
+                );
+          }
+        },
+        borderColor: AppColors.white,
+        padding: const EdgeInsets.only(top: 12),
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+
+  Widget _buildReplyList(BuildContext context, List<CommentModel> replies,
+      bool isHideReplies, VideoDetailState state) {
+    return Visibility(
+      visible: isHideReplies || state.isShowTemporaryListReply,
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (BuildContext context, int replyIndex) {
+          final replyCommentModel = replies[replyIndex];
+          return ItemComment(
+            commentModel: replyCommentModel,
+            isShowReplyButton: false,
+            onTapLike: state.video?.isCommentable == true
+                ? () => _handleCommentReaction(context, replyCommentModel,
+                    isLike: true)
+                : null,
+            onTapDislike: state.video?.isCommentable == true
+                ? () => _handleCommentReaction(context, replyCommentModel,
+                    isLike: false)
+                : null,
+          );
+        },
+        separatorBuilder: (BuildContext context, int replyIndex) =>
+            const Divider(),
+        itemCount: replies.length,
+      ),
+    );
+  }
+
+  void _onTapShowInputReply(BuildContext context, CommentModel commentModel) {
+    if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => const DialogAuthentication(),
+      );
+    } else {
+      context.read<VideoDetailBloc>().add(
+            VideoDetailHideInputReplyEvent(
+              commentId: commentModel.id ?? 0,
+              isShowInput: true,
+            ),
+          );
+    }
+  }
+
+  Widget _buildReplyInput(
+      BuildContext context, CommentModel commentModel, VideoDetailState state) {
+    return Visibility(
+      visible: state.isHiddenInputReply?[commentModel.id] ?? false,
+      child: WriteComment(
+        hintText: Constants.writeReply,
+        isCancelReply: true,
+        onChanged: (value) {
+          context.read<VideoDetailBloc>().add(
+                VideoDetailReplyChangedEvent(content: value),
+              );
+        },
+        onTapCancel: () {
+          context.read<VideoDetailBloc>().add(
+                VideoDetailHideInputReplyEvent(
+                  commentId: commentModel.id ?? 0,
+                  isShowInput: false,
+                ),
+              );
+        },
+        onTapSend: () {
+          context.read<VideoDetailBloc>().add(
+                VideoDetailPostCommentEvent(
+                  content: state.inputReply ?? "",
+                  commentId: commentModel.id,
+                ),
+              );
+
+          context.read<VideoDetailBloc>().add(
+                VideoDetailHideInputReplyEvent(
+                  commentId: commentModel.id ?? 0,
+                  isShowInput: false,
+                ),
+              );
+        },
+      ),
+    );
+  }
+
+  Widget _buildShowRepliesButton(
+      BuildContext context,
+      CommentModel commentModel,
+      List<CommentModel> replies,
+      bool isHideReplies,
+      VideoDetailState state) {
+    return Visibility(
+      visible:
+          ((state.originalNumOfReply?[commentModel.id] ?? 0) > replies.length &&
+                  (commentModel.numberOfReply ?? 0) > 0) ||
+              (!isHideReplies && (commentModel.numberOfReply ?? 0) > 0),
+      child: CustomButton(
+        title: isHideReplies
+            ? Constants.showMoreReplies
+            : "Show ${commentModel.numberOfReply} ${commentModel.numberOfReply == 1 ? "Reply" : "Replies"}",
+        titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
+        prefix: Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: SvgPicture.asset(AppIcons.arrowDownTiffany.svgAssetPath),
+        ),
+        isExpanded: false,
+        onTap: () {
+          final currentReplies = state.replies?[commentModel.id] ?? [];
+          final lastIdReply =
+              currentReplies.isNotEmpty ? currentReplies.last.id : null;
+          context.read<VideoDetailBloc>().add(
+                VideoDetailLoadRepliesCommentEvent(
+                  commentId: commentModel.id ?? 0,
+                  lastIdReply: lastIdReply ?? 0,
+                ),
+              );
+        },
+        borderColor: AppColors.white,
+        padding: const EdgeInsets.only(top: 12),
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 30),
+        child: const CircularProgressIndicator(),
       ),
     );
   }
@@ -417,7 +526,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 ),
               );
             },
-            isFollowed: state.video?.channel?.isFollowed,
             followButton: () {
               if (token.isEmpty) {
                 showDialog(
@@ -432,7 +540,23 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         state.video?.channel?.id ?? 0));
               }
             },
-            giftRepButton: () {},
+            giftRepButton: () {
+              if (token.isEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const DialogAuthentication();
+                  },
+                );
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return GiftRepsDialog(videoId: state.video?.id ?? 0);
+                  },
+                );
+              }
+            },
             onTapRate: () {
               if (token.isEmpty) {
                 showDialog(

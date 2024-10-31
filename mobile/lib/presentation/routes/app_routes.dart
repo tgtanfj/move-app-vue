@@ -19,6 +19,7 @@ class AppRoutes {
   static const String routeCategory = '/category';
   static const String routeSearch = '/search';
   static const String routeNotification = '/notification';
+  static const String routeCategoryResult = '/category-result';
 
   static getInitialRoute() {
     return '/';

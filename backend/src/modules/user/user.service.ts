@@ -2,21 +2,21 @@ import { Account } from '@/entities/account.entity';
 import { TypeAccount } from '@/entities/enums/typeAccount.enum';
 import { RefreshToken } from '@/entities/refresh-token.entity';
 import { User } from '@/entities/user.entity';
-import { ERRORS_DICTIONARY } from '@/shared/constraints/error-dictionary.constraint';
 import { IFile } from '@/shared/interfaces/file.interface';
 import { AwsS3Service } from '@/shared/services/aws-s3.service';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { I18nService } from 'nestjs-i18n';
 import { DeleteResult, FindOptionsRelations, UpdateResult } from 'typeorm';
 import { SignUpEmailDto } from '../auth/dto/signup-email.dto';
 import { SignUpSocialDto } from '../auth/dto/signup-social.dto';
+import { ChannelRepository } from '../channel/channel.repository';
 import { CountryService } from '../country/country.service';
 import { UserProfile } from './dto/response/user-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AccountRepository } from './repositories/account.repository';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { UserRepository } from './repositories/user.repository';
-import { ChannelRepository } from '../channel/channel.repository';
 
 @Injectable()
 export class UserService {
@@ -27,10 +27,11 @@ export class UserService {
     private readonly awsS3Service: AwsS3Service,
     private readonly countryService: CountryService,
     private readonly channelRepository: ChannelRepository,
+    private readonly i18n: I18nService,
   ) {}
 
-  async findOne(id: number): Promise<User> {
-    return await this.userRepository.findOne(id).catch((error) => {
+  async findOne(id: number, relations?: FindOptionsRelations<User>): Promise<User> {
+    return await this.userRepository.findOne(id, relations).catch((error) => {
       throw new NotFoundException(error.message);
     });
   }
@@ -49,6 +50,7 @@ export class UserService {
 
     userProfile.isBlueBadge = foundUser.channel ? foundUser.channel.isBlueBadge : false;
     userProfile.isPinkBadge = foundUser.channel ? foundUser.channel.isPinkBadge : false;
+    userProfile.channelId = foundUser.channel ? foundUser.channel.id : null;
 
     return userProfile;
   }
@@ -86,7 +88,7 @@ export class UserService {
 
     if (!foundAccount) {
       throw new BadRequestException({
-        message: ERRORS_DICTIONARY.NOT_FOUND_ACCOUNT,
+        message: this.i18n.t('exceptions.account.NOT_FOUND_ACCOUNT'),
       });
     }
 
@@ -120,12 +122,12 @@ export class UserService {
       const refreshTokenEntity = await this.refreshTokenRepository.validateRefreshToken(refreshToken);
 
       if (!refreshTokenEntity) {
-        throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+        throw new BadRequestException(this.i18n.t('exceptions.authorization.TOKEN_ERROR'));
       }
 
       return refreshTokenEntity.id;
     } catch (error) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+      throw new BadRequestException(this.i18n.t('exceptions.authorization.TOKEN_ERROR'));
     }
   }
 
@@ -133,7 +135,7 @@ export class UserService {
     const result = await this.refreshTokenRepository.revokeRefreshToken(refreshToken);
 
     if (result.affected === 0) {
-      throw new BadRequestException(ERRORS_DICTIONARY.TOKEN_ERROR);
+      throw new BadRequestException(this.i18n.t('exceptions.authorization.TOKEN_ERROR'));
     }
 
     return result;
@@ -173,14 +175,14 @@ export class UserService {
         const isValidState = statesOfCountry.find((state) => state.id == dto.stateId);
 
         if (!isValidState) {
-          throw new BadRequestException(ERRORS_DICTIONARY.INVALID_STATE);
+          throw new BadRequestException(this.i18n.t('exceptions.user.INVALID_STATE'));
         }
       }
 
       const result = await this.userRepository.updateUser(userId, dataUpdate);
 
       if (result.affected === 0) {
-        throw new BadRequestException(ERRORS_DICTIONARY.USER_NOT_FOUND);
+        throw new BadRequestException(this.i18n.t('exceptions.users.USER_NOT_FOUND'));
       }
 
       return result;

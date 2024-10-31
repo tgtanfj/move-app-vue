@@ -4,10 +4,10 @@
       <Checkbox :id="item.id" :checked="isChecked" @update:checked="handleChange" />
     </TableCell>
     <TableCell>
-      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" />
+      <img :src="item.thumbnail_url" alt="" class="w-[124px] h-[70px]" @click="handleWatchVideo"/>
     </TableCell>
     <TableCell>
-      <div class="flex flex-col">
+      <div class="flex flex-col" @click="handleWatchVideo">
         <div class="font-bold text-base capitalize">{{ truncatedTitle }}</div>
         <div class="text-sm">{{ item.category.title }}</div>
         <div class="flex gap-1 mt-3">
@@ -19,10 +19,10 @@
       </div>
     </TableCell>
     <TableCell>{{ formatDateString(item.datePosted) }}</TableCell>
-    <TableCell>{{ item.numberOfViews }}</TableCell>
-    <TableCell>{{ item.numberOfComments }}</TableCell>
+    <TableCell class="text-center">{{ item.numberOfViews }}</TableCell>
+    <TableCell class="text-center">{{ item.numberOfComments }}</TableCell>
     <TableCell>
-      <div class="flex gap-1">{{ item.ratings }} <StartIcon /></div>
+      <div class="flex gap-2 justify-center">{{ item.ratings }} <StartIcon /></div>
     </TableCell>
     <TableCell>
       <div class="flex invisible gap-3 group-hover:visible">
@@ -84,15 +84,15 @@
 import StartIcon from '@assets/icons/startIcon.vue'
 import Button from '@common/ui/button/Button.vue'
 import { Checkbox } from '@common/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { TableCell, TableRow } from '@common/ui/table'
+import EditVideo from '@components/video-manage/EditVideo.vue'
+import ShareVideo from '@components/video-manage/ShareVideo.vue'
+import { detectDuration, formatDateString } from '@utils/uploadVideo.util'
 import { ArrowDownToLine, EllipsisVertical, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import BaseDialog from '../BaseDialog.vue'
-import ShareVideo from '@components/video-manage/ShareVideo.vue'
-import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
-import { formatDateString } from '@utils/uploadVideo.util'
-import { detectDuration } from '@utils/uploadVideo.util'
-import EditVideo from '@components/video-manage/EditVideo.vue'
 
 const props = defineProps({
   item: {
@@ -106,7 +106,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:selectedItems', 'delete:item', 'edit:item', 'download:item'])
-
+const router = useRouter()
 const showConfirmModal = ref(false)
 
 const truncatedTitle = computed(() => {
@@ -141,5 +141,9 @@ const handleEditDetails = () => {
 
 const handleDownloadVideo = () => {
   emit('download:item', props.item.id)
+}
+
+const handleWatchVideo = () => {
+  router.push(`/video/${props.item.id}`)
 }
 </script>

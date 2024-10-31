@@ -35,7 +35,14 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
           ContentMenu(
             followingButton: () {},
             browseButton: () {},
-            walletButton: () {},
+            walletButton: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogAuthentication();
+                },
+              );
+            },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },
@@ -51,7 +58,11 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
                 const SizedBox(
                   width: 12.0,
                 ),
-                SvgPicture.asset(AppIcons.arrowDown.svgAssetPath),
+                SvgPicture.asset(
+                  widget.isMoreEnable
+                      ? AppIcons.arrowUp.svgAssetPath
+                      : AppIcons.arrowDown.svgAssetPath,
+                ),
               ],
             ),
           ),

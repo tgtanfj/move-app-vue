@@ -11,6 +11,7 @@ import { StripeModule } from '../stripe/stripe.module';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AuthService } from './auth.service';
     MailModule,
     PassportModule,
     RedisModule,
+    NotificationModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
