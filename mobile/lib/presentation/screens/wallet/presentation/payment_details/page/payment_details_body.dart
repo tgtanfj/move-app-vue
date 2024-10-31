@@ -27,13 +27,9 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
   Widget build(BuildContext context) {
     return BlocListener<PaymentDetailsBloc, PaymentDetailsState>(
         listener: (context, state) {
-      if (state.status == PaymentDetailsStatus.processing) {
-        EasyLoading.show();
-      } else if (state.status == PaymentDetailsStatus.success) {
-        EasyLoading.dismiss();
-      } else if (state.status == PaymentDetailsStatus.failure) {
-        EasyLoading.dismiss();
-      }
+      state.status == PaymentDetailsStatus.processing
+          ? EasyLoading.show()
+          : EasyLoading.dismiss();
       if (state.status == PaymentDetailsStatus.added) {
         EasyLoading.dismiss();
         Navigator.pushNamed(context, AppRoutes.routeWallet, arguments: true);

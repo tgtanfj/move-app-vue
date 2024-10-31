@@ -24,16 +24,9 @@ class _PaymentMethodBodyState extends State<PaymentMethodBody>
     super.build(context);
     return BlocConsumer<PaymentMethodBloc, PaymentMethodState>(
         listener: (context, state) {
-      if (state.status == PaymentMethodStatus.processing) {
-        EasyLoading.show();
-      } else {
-        EasyLoading.dismiss();
-      }
-      if (state.status == PaymentMethodStatus.success) {
-        EasyLoading.dismiss();
-      } else if (state.status == PaymentMethodStatus.failure) {
-        EasyLoading.dismiss();
-      }
+      state.status == PaymentMethodStatus.processing
+          ? EasyLoading.show()
+          : EasyLoading.dismiss();
       if (state.status == PaymentMethodStatus.removed) {
         EasyLoading.dismiss();
         Navigator.pushNamed(context, AppRoutes.routeWallet);

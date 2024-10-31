@@ -108,7 +108,6 @@ class _MyAppState extends State<MyApp> {
       },
       initialRoute: AppRoutes.getInitialRoute(),
       routes: AppRoutes.getRoutes(),
-      // home: const WalletPage(),
     );
   }
 }

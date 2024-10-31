@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
 import 'package:move_app/data/repositories/payment_method_repository.dart';
@@ -90,17 +88,8 @@ class PaymentDetailsBloc
           },
         );
       } catch (e) {
-        if (e is DioException && e.response != null) {
-          final errorData = e.response?.data;
-          emit(state.copyWith(
-              status: PaymentDetailsStatus.failure,
-              errorMessage:
-                  errorData['message'] ?? Constants.unknownErrorOccurred));
-        } else {
-          emit(state.copyWith(
-              status: PaymentDetailsStatus.failure,
-              errorMessage: e.toString()));
-        }
+        emit(state.copyWith(
+            status: PaymentDetailsStatus.failure, errorMessage: e.toString()));
       }
     }
   }
