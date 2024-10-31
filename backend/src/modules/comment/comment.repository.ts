@@ -350,10 +350,13 @@ export class CommentRepository {
 
     const newComment = this.commentRepository.create(data);
     const comment = await this.commentRepository.save(newComment);
-    const commentRes = await this.getOneWithUser(comment.id);
-    const totalDonation = await this.getTotalDonations(userId, videoId);
+    const [commentRes, totalDonation, lastContentDonate] = await Promise.all([
+      this.getOneWithUser(comment.id),
+      this.getTotalDonations(userId, videoId),
+      this.getLastContentDonate(userId, videoId),
+    ]);
 
-    return { ...commentRes, totalDonation };
+    return { ...commentRes, totalDonation, lastContentDonate };
   }
 
   async update(commentId: number, dto: UpdateCommentDto | Partial<Comment>): Promise<UpdateResult> {
