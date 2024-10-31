@@ -25,12 +25,14 @@ export class ViewRepository {
         video: { id: videoId },
         viewDate: date,
         totalView: 1,
-        totalViewTime: viewTime,
+        totalViewTime: timeCountView,
       });
       await this.viewRepository.save(view);
       return view;
     }
-    !viewTime && existingView.totalView++ && (existingView.totalViewTime += timeCountView);
+    !viewTime &&
+      existingView.totalView++ &&
+      (existingView.totalViewTime = +existingView.totalViewTime + timeCountView);
     viewTime && (existingView.totalViewTime = +existingView.totalViewTime + viewTime - timeCountView);
 
     await this.viewRepository.save(existingView);
