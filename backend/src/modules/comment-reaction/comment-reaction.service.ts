@@ -58,7 +58,7 @@ export class CommentReactionService {
           videoId: comment.video.id,
           videoTitle: comment.video.title,
           commentId: comment?.parent ? comment.parent.id : comment.id,
-          replyId: comment?.parent ? comment.id : undefined,
+          replyId: comment?.parent ? comment.id : null,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }
