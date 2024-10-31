@@ -39,13 +39,14 @@ export class CommentReactionService {
       const comment = await this.commentRepository.getOne(dto.commentId, {
         user: true,
         video: true,
-        parent: true,
+        parent: { video: true },
       });
       const receiver = comment.user.id;
       comment.numberOfLike += dto.isLike ? 1 : 0;
 
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
+      const parent = comment?.parent;
       const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
         receiver,
         userInfo.id,
@@ -55,16 +56,17 @@ export class CommentReactionService {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
-          videoId: comment.video.id,
-          videoTitle: comment.video.title,
-          commentId: comment?.parent ? comment.parent.id : comment.id,
-          replyId: comment?.parent ? comment.id : null,
+          videoId: parent ? comment.video.id : parent.video.id,
+          videoTitle: parent ? comment.video.title : parent.video.title,
+          commentId: parent ? comment.parent.id : comment.id,
+          replyId: parent ? comment.id : null,
         };
         await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
       }
 
       return commentReaction;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT_REACTION'));
     }
   }
