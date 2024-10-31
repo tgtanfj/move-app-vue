@@ -56,8 +56,8 @@ export class CommentReactionService {
         const dataNotification = {
           sender: userInfo,
           type: NOTIFICATION_TYPE.LIKE,
-          videoId: parent ? comment.video.id : parent.video.id,
-          videoTitle: parent ? comment.video.title : parent.video.title,
+          videoId: parent ? parent.video.id : comment.video.id,
+          videoTitle: parent ? parent.video.title : comment.video.title,
           commentId: parent ? comment.parent.id : comment.id,
           replyId: parent ? comment.id : null,
         };
