@@ -68,8 +68,8 @@ export class SearchService {
 
     const [searchedVideos, totalCount] = await this.videoRepository
       .createQueryBuilder('video')
-      .leftJoinAndSelect('video.category', 'category')
-      .leftJoinAndSelect('video.channel', 'channel')
+      .innerJoinAndSelect('video.category', 'category')
+      .innerJoinAndSelect('video.channel', 'channel')
       .leftJoinAndSelect(
         'video.thumbnails',
         'thumbnail',
