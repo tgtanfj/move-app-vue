@@ -7,8 +7,6 @@ import 'package:move_app/data/services/api_service.dart';
 class ForgotPasswordRepository {
   final ApiService _apiService = ApiService();
 
-  // Check if the email exists
-
   Future<bool> checkEmailExists(String email) async {
     try {
       final response = await _apiService.request(

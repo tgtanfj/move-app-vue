@@ -6,7 +6,6 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/screens/notification/bloc/notification_bloc.dart';
 import 'package:move_app/presentation/screens/notification/bloc/notification_state.dart';
-import 'package:move_app/presentation/screens/notification/widgets/dialog_notice.dart';
 import 'package:move_app/presentation/screens/notification/widgets/item_notification.dart';
 
 import '../../../../config/theme/app_colors.dart';

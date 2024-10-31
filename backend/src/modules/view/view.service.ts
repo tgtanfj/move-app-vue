@@ -4,6 +4,7 @@ import { ViewRepository } from './view.repository';
 import { CreateUpdateViewDto } from './dto/create-update-view.dto';
 import { NotificationService } from '../notification/notification.service';
 import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
+import { CategoryRepository } from '../category/category.repository';
 
 @Injectable()
 export class ViewService {
@@ -11,20 +12,27 @@ export class ViewService {
     private viewRepository: ViewRepository,
     private videoRepository: VideoRepository,
     private notificationService: NotificationService,
+    private categoryRepository: CategoryRepository,
   ) {}
   async getTotalViewInOnTime(time: Date, videoId: number) {
     return await this.viewRepository.getTotalView(time, videoId);
   }
 
   async createUpdateViewDate(dto: CreateUpdateViewDto) {
-    await this.viewRepository.createUpdateVideoViewDate(dto);
-    const view = await this.viewRepository.createUpdateViewDate(dto);
+    const video = await this.videoRepository.findOne(dto.videoId, {
+      channel: { user: true },
+      category: true,
+    });
+    const timeCountView = video?.durationsVideo * 0.7;
+    const view = await this.viewRepository.createUpdateViewDate(dto, timeCountView);
+    const receiver = video.channel.user.id;
+    const systemId = 0;
+
     if (!dto.viewTime) {
-      const video = await this.videoRepository.findOne(dto.videoId, { channel: { user: true } });
-      const receiver = video.channel.user.id;
-      const systemId = 0;
       video.numberOfViews++;
+      video.category.numberOfViews++;
       await this.videoRepository.save(video);
+      await this.categoryRepository.save(video.category);
 
       const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
         receiver,

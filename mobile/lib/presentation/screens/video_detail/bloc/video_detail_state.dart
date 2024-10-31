@@ -6,6 +6,7 @@ import '../../../../data/models/comment_model.dart';
 enum VideoDetailStatus {
   initial,
   processing,
+  loading,
   success,
   failure,
   rateSuccess,

@@ -52,4 +52,12 @@ class SharedPrefer {
   String getUserAvatarUrl() {
     return _prefsInstance.getString(SharedPreferencesKey.avatarUrl) ?? "";
   }
+
+  Future<void> setUsername(String value) async {
+    await _prefsInstance.setString(SharedPreferencesKey.username, value);
+  }
+
+  String getUsername() {
+    return _prefsInstance.getString(SharedPreferencesKey.username) ?? "";
+  }
 }

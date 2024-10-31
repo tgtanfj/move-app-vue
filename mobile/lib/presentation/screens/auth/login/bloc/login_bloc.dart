@@ -35,6 +35,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         state.email != event.email ? false : state.isShowEmailMessage;
     final isShowPasswordMessage =
         state.password != event.password ? false : state.isShowPasswordMessage;
+
     emit(
       state.copyWith(
         email: event.email,

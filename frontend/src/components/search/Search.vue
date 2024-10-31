@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useSearchStore } from '../../stores/search'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const searchStore = useSearchStore()
 const router = useRouter()
@@ -205,7 +204,7 @@ const onSubmit = () => {
           >
             <div class="flex items-center" @click="redirectTo('video', item.id)">
               <img
-                :src="item.thumbnail"
+                :src="item.thumbnails[0]?.image"
                 :alt="item.title"
                 class="w-[60px] h-[50px] cursor-pointer"
               />

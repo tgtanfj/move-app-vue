@@ -152,8 +152,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                   child: Text(Constants.share,
                       style: AppTextStyles.montserratStyle.regular16Black),
                   onTap: () {
-                    String token = SharedPrefer.sharedPrefer.getUserToken();
-                    if (token.isNotEmpty) {
+                    if (SharedPrefer.sharedPrefer.getUserToken().isNotEmpty) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -172,7 +171,7 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return const DialogAuthentication();
+                          return const DialogAuthentication(isStayOnPage: true);
                         },
                       );
                     }

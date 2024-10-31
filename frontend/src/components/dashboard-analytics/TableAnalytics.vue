@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useRouter } from 'vue-router'
 import Star from '../../assets/icons/Star.vue'
 import { formatDate } from '../../utils/convertDate.util'
-import { truncateText } from '../../utils/truncateText.util'
+import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
 
 const props = defineProps({
   videos: {
@@ -39,18 +39,23 @@ const routeToInDepth = (videoId) => {
       >
         <TableCell class="w-40"> <img :src="video.thumbnail" /> </TableCell>
         <TableCell
-          ><p class="font-semibold">
-            {{ truncateText(video.video_title, 30) }}
+          ><p class="font-semibold w-[300px] truncate">
+            {{ video.video_title }}
           </p>
           <p class="mb-3">{{ video.category_title }}</p>
           <p>{{ formatDate(video.created_at) }}</p>
         </TableCell>
-        <TableCell class="text-center">{{ video.total_views ?? 0 }}</TableCell>
-        <TableCell class="text-center">{{ video.avg_watch ?? 0 }}</TableCell>
+        <TableCell class="text-center">{{ video.total_views }}</TableCell>
+        <TableCell class="text-center">
+          {{ video.avg_watch ? convertToTimeFormat(video.avg_watch) : 0 }}
+          <span>
+            ({{ video.avg_watch  ? Math.round((video.avg_watch / video.video_duration) * 100) : 0 }}%)
+          </span>
+        </TableCell>
         <TableCell class="text-center"
           >{{ video.video_ratings }} <Star class="inline ml-1 mt-[-3px]" />
         </TableCell>
-        <TableCell class="text-center">{{ video.total_reps ?? 0 }}</TableCell>
+        <TableCell class="text-center">{{ video.total_reps }}</TableCell>
         <TableCell class="text-center">{{ video.total_donators }}</TableCell>
       </TableRow>
     </TableBody>

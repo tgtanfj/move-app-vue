@@ -23,3 +23,4 @@ export const REGEX_INSTAGRAM_URL = new RegExp(
 export const REGEX_YOUTUBE_URL = new RegExp(
   /^https?:\/\/(www\.)?youtube\.com\/(channel\/[a-zA-Z0-9_-]+|@[\w-]+|watch\?v=[\w-]+)?\/?$/
 )
+export const REGEX_SELECT_CHANNEL_COMMENTS = new RegExp(/-([a-z])/g)

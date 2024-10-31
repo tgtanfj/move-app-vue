@@ -9,7 +9,6 @@ import { Comment } from './comment.entity';
 import { Category } from './category.entity';
 import { Thumbnail } from './thumbnail.entity';
 import { Views } from './views.entity';
-import { VideoViewHistorys } from './video-view-history.entity';
 
 @Entity('videos')
 export class Video extends BaseEntity {
@@ -118,9 +117,6 @@ export class Video extends BaseEntity {
 
   @OneToMany(() => Views, (view) => view.video)
   views: Views[];
-
-  @OneToMany(() => VideoViewHistorys, (videoViewHistory) => videoViewHistory.video)
-  viewHistories: VideoViewHistorys[];
 
   viewGrowthRate?: number;
 

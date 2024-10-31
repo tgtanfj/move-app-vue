@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_search_box.dart';
@@ -13,10 +17,7 @@ import 'package:move_app/presentation/screens/search/widgets/list_channels.dart'
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_categories.dart';
 import 'package:move_app/presentation/screens/search/widgets/list_search_result_video.dart';
 import 'package:move_app/presentation/screens/search/widgets/search_history_widgets.dart';
-
-import '../../../../config/theme/app_colors.dart';
-import '../../../../config/theme/app_icons.dart';
-import '../widgets/suggestion_search_box.dart';
+import 'package:move_app/presentation/screens/search/widgets/suggestion_search_box.dart';
 
 class SearchResultBody extends StatefulWidget {
   final String? searchQuery;
@@ -31,6 +32,7 @@ class SearchResultBody extends StatefulWidget {
 class _SearchResultBodyState extends State<SearchResultBody> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -58,6 +61,9 @@ class _SearchResultBodyState extends State<SearchResultBody> {
         (state.status == SearchResultStatus.processing)
             ? EasyLoading.show()
             : EasyLoading.dismiss();
+        if (state.status == SearchResultStatus.failure) {
+          EasyLoading.dismiss();
+        }
       },
       child: BlocBuilder<SearchResultBloc, SearchResultState>(
         builder: (context, state) {
@@ -84,9 +90,12 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               ),
               onValueChanged: (value) {
-                context
-                    .read<SearchResultBloc>()
-                    .add(SearchLoadSuggestionEvent(searchText: value));
+                if (_debounce?.isActive ?? false) _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 300), () {
+                  context
+                      .read<SearchResultBloc>()
+                      .add(SearchLoadSuggestionEvent(searchText: value));
+                });
               },
               onSubmitted: (value) {
                 if (_controller.text.trim().isNotEmpty) {
@@ -94,9 +103,10 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                       .read<SearchResultBloc>()
                       .add(SearchSaveHistoryEvent(searchText: value));
                   _focusNode.unfocus();
-                  context.read<SearchResultBloc>().add(SearchResultInitialEvent(
-                      searchQuery: _controller.text.trim()));
-                }else{
+                  context.read<SearchResultBloc>().add(
+                      SearchResultOnSubmittedEvent(
+                          searchQuery: _controller.text.trim()));
+                } else {
                   _focusNode.requestFocus();
                 }
               },
@@ -121,8 +131,16 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                             const SizedBox(
                               height: 16,
                             ),
-                            const CustomSectionTitle(
-                                title: Constants.searchResults),
+                            (state.categoryList.isNotEmpty &&
+                                    state.videoList.isNotEmpty &&
+                                    state.channelList.isNotEmpty)
+                                ? const CustomSectionTitle(
+                                    title: Constants.searchResults)
+                                : Center(
+                                    child: Text(state.searchResultFound ?? "",
+                                        style: AppTextStyles
+                                            .montserratStyle.bold14Black),
+                                  ),
                             const SizedBox(
                               height: 24,
                             ),
@@ -184,12 +202,10 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                                 },
                                                 icon: const Icon(
                                                     Icons.navigate_next),
-                                                color: (state.currentCategoriesPage ==
-                                                            state
-                                                                .totalCategoriesPages ||
-                                                        state.categoryList
-                                                                .length <
-                                                            2)
+                                                color: (state
+                                                            .currentCategoriesPage ==
+                                                        state
+                                                            .totalCategoriesPages)
                                                     ? AppColors.chineseSilver
                                                     : AppColors.tiffanyBlue,
                                               ),
@@ -245,11 +261,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                                 icon: const Icon(
                                                     Icons.navigate_next),
                                                 color: (state.page ==
-                                                            state
-                                                                .totalChannelPages ||
-                                                        state.channelList
-                                                                .length <
-                                                            8)
+                                                        state.totalChannelPages)
                                                     ? AppColors.chineseSilver
                                                     : AppColors.tiffanyBlue,
                                               ),
@@ -329,8 +341,10 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                     onTap: () {
                                       _focusNode.unfocus();
                                       context.read<SearchResultBloc>().add(
-                                          SearchResultInitialEvent(
+                                          SearchResultOnSubmittedEvent(
                                               searchQuery: searchItem.content));
+                                      _controller.text =
+                                          searchItem.content ?? "";
                                     },
                                   );
                                 },

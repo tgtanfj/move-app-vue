@@ -29,13 +29,13 @@ class _CustomTileState extends State<CustomTile> {
           borderRadius: BorderRadius.circular(8.0),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFD6D5D5).withOpacity(0.5),
+              color: AppColors.lightGrey.withOpacity(0.5),
               spreadRadius: 3,
               blurRadius: 6,
               offset: const Offset(-3, 3),
             ),
             BoxShadow(
-              color: const Color(0xFFD6D5D5).withOpacity(0.5),
+              color: AppColors.lightGrey.withOpacity(0.5),
               spreadRadius: 3,
               blurRadius: 6,
               offset: const Offset(3, 3),

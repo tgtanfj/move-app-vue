@@ -4,16 +4,16 @@ import { ViewController } from './view.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Views } from '@/entities/views.entity';
 import { ViewRepository } from './view.repository';
-import { VideoViewHistorys } from '@/entities/video-view-history.entity';
 import { VideoModule } from '../video/video.module';
 import { NotificationModule } from '../notification/notification.module';
-import { UserModule } from '../user/user.module';
+import { CategoryModule } from '../category/category.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Views, VideoViewHistorys]),
+    TypeOrmModule.forFeature([Views]),
     forwardRef(() => VideoModule),
     NotificationModule,
+    CategoryModule,
   ],
   controllers: [ViewController],
   providers: [ViewService, ViewRepository],

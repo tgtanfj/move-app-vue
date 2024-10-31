@@ -5,9 +5,17 @@ sealed class SearchResultEvent extends Equatable{
 }
 
 final class SearchResultInitialEvent extends SearchResultEvent {
+  const SearchResultInitialEvent();
+
+  @override
+  List<Object?> get props =>
+      [
+      ];
+}
+final class SearchResultOnSubmittedEvent extends SearchResultEvent {
   final String? searchQuery;
 
-  const SearchResultInitialEvent({this.searchQuery});
+  const SearchResultOnSubmittedEvent({this.searchQuery});
 
   @override
   List<Object?> get props =>

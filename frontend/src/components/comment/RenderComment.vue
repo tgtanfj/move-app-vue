@@ -3,8 +3,9 @@ import DislikeOffIcon from '@assets/icons/DislikeOffIcon.vue'
 import DislikeOnIcon from '@assets/icons/DislikeOnIcon.vue'
 import LikeOffIcon from '@assets/icons/LikeOffIcon.vue'
 import LikeOnIcon from '@assets/icons/LikeOnIcon.vue'
+import LikeOffDisabledIcon from '@assets/icons/LikeOffDisabledIcon.vue'
+import DislikeOffDisabledIcon from '@assets/icons/DislikeOffDisabledIcon.vue'
 import RepsSenderIcon from '@assets/icons/RepsSenderIcon.vue'
-import YellowRepsIcon from '@assets/icons/YellowRepsIcon.vue'
 import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
@@ -18,6 +19,7 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
+import RenderIconsReps from '../../components/channel-comments/RenderIconsReps.vue'
 
 const props = defineProps({
   comments: {
@@ -255,14 +257,24 @@ const isReplyValid = computed(() => {
         />
         <div class="px-3 w-full pb-2" :id="item.id">
           <div class="flex flex-col gap-1 w-full">
-            <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+            <div class="flex items-center justify-start gap-2">
+              <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+              <div
+                class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                v-if="item?.lastContentDonate"
+              >
+                <span class="m-auto text-white text-[10px] font-bold">{{
+                  item?.lastContentDonate
+                }}</span>
+              </div>
+            </div>
             <div class="flex items-center gap-3">
               <p class="text-[13px] font-bold">{{ item.user.username }}</p>
               <div v-if="item.user.channel" class="flex items-center">
                 <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
               </div>
               <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
-                <YellowRepsIcon />
+                <RenderIconsReps :numberOfReps="item.totalDonation" />
                 <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                   Gifted {{ item.totalDonation }} REPs
                 </p>
@@ -294,7 +306,7 @@ const isReplyValid = computed(() => {
             </div>
             <div class="flex items-center gap-8 mt-1">
               <div class="flex items-center gap-3 justify-start">
-                <div class="-mt-1">
+                <div v-if="!commentToggleStore.isDisabledActions" class="-mt-1">
                   <LikeOnIcon
                     @click="handleUnLike(item)"
                     class="cursor-pointer"
@@ -306,12 +318,15 @@ const isReplyValid = computed(() => {
                     v-if="!item.isLike === true"
                   />
                 </div>
+                <div v-else class="-mt-1">
+                  <LikeOffDisabledIcon />
+                </div>
                 <p class="text-primary text-[13px]">
                   {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
                 </p>
               </div>
               <div class="flex items-center gap-4 justify-start">
-                <div class="-mb-[9px]">
+                <div v-if="!commentToggleStore.isDisabledActions" class="-mb-[9px]">
                   <DislikeOnIcon
                     @click="handleUnDislike(item)"
                     class="cursor-pointer"
@@ -328,7 +343,17 @@ const isReplyValid = computed(() => {
                     v-if="!item.hasOwnProperty('isLike')"
                   />
                 </div>
-                <p @click="showReplyInput(item.id)" class="text-primary text-[13px] cursor-pointer">
+                <div v-else class="-mb-[9px]">
+                  <DislikeOffDisabledIcon />
+                </div>
+                <p
+                  v-if="!commentToggleStore.isDisabledActions"
+                  @click="showReplyInput(item.id)"
+                  class="text-primary text-[13px] cursor-pointer"
+                >
+                  {{ $t('comment.reply') }}
+                </p>
+                <p v-else class="text-[#A9A9A9]">
                   {{ $t('comment.reply') }}
                 </p>
               </div>
@@ -386,9 +411,13 @@ const isReplyValid = computed(() => {
                 class="flex items-center gap-1 justify-start"
               >
                 <ChevronUp class="text-primary w-[20px] transition-all" />
-                <p class="text-primary text-[13px] font-semibold">
-                  {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
+                <p v-if="item?.numberOfReply > 1" class="text-primary text-[13px] font-semibold">
+                  {{ $t('comment.hide') }} {{ item?.numberOfReply }}
                   {{ $t('comment.replies') }}
+                </p>
+                <p v-else class="text-primary text-[13px] font-semibold">
+                  {{ $t('comment.hide') }} {{ item?.numberOfReply }}
+                  {{ $t('comment.reply') }}
                 </p>
               </div>
             </div>
@@ -400,10 +429,20 @@ const isReplyValid = computed(() => {
                   class="object-cover w-[40px] h-[40px] rounded-full"
                 />
                 <div class="flex flex-col gap-1">
-                  <RepsSenderIcon
-                    class="mb-1"
-                    v-if="myReplyPerComment[item.id].totalDonation !== 0"
-                  />
+                  <div class="flex items-center justify-start gap-2">
+                    <RepsSenderIcon
+                      class="mb-1"
+                      v-if="myReplyPerComment[item.id]?.totalDonation !== 0"
+                    />
+                    <div
+                      class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                      v-if="myReplyPerComment[item.id]?.lastContentDonate"
+                    >
+                      <span class="m-auto text-white text-[10px] font-bold">{{
+                        myReplyPerComment[item.id]?.lastContentDonate
+                      }}</span>
+                    </div>
+                  </div>
                   <div class="flex items-center gap-3">
                     <p class="text-[13px] font-bold">
                       {{ myReplyPerComment[item.id].user.username }}
@@ -415,7 +454,7 @@ const isReplyValid = computed(() => {
                       v-if="myReplyPerComment[item.id].totalDonation !== 0"
                       class="flex items-end gap-2"
                     >
-                      <YellowRepsIcon />
+                      <RenderIconsReps :numberOfReps="myReplyPerComment[item.id].totalDonation" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                         Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
                       </p>
@@ -511,14 +550,24 @@ const isReplyValid = computed(() => {
               >
                 <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
                 <div class="flex flex-col gap-1">
-                  <RepsSenderIcon class="mb-1" v-if="reply.totalDonation !== 0" />
+                  <div class="flex items-center justify-start gap-2">
+                    <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
+                    <div
+                      class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                      v-if="reply?.lastContentDonate"
+                    >
+                      <span class="m-auto text-white text-[10px] font-bold">{{
+                        reply?.lastContentDonate
+                      }}</span>
+                    </div>
+                  </div>
                   <div class="flex items-center gap-3">
                     <p class="text-[13px] font-bold">{{ reply.user.username }}</p>
                     <div v-if="reply.user.channel" class="flex items-center">
                       <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                     </div>
                     <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
-                      <YellowRepsIcon />
+                      <RenderIconsReps :numberOfReps="reply?.totalDonation" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                         Gifted {{ reply.totalDonation }} REPs
                       </p>
@@ -550,7 +599,7 @@ const isReplyValid = computed(() => {
                   </div>
                   <div class="flex items-center gap-8 mt-1">
                     <div class="flex items-center gap-3 justify-start">
-                      <div class="-mt-1">
+                      <div v-if="!commentToggleStore.isDisabledActions" class="-mt-1">
                         <LikeOnIcon
                           @click="handleUnLike(reply)"
                           class="cursor-pointer"
@@ -562,12 +611,15 @@ const isReplyValid = computed(() => {
                           v-if="!reply.isLike === true"
                         />
                       </div>
+                      <div v-else class="-mt-1">
+                        <LikeOffDisabledIcon />
+                      </div>
                       <p class="text-primary text-[13px]">
                         {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
                       </p>
                     </div>
                     <div class="flex items-center gap-4 justify-start">
-                      <div class="-mb-[9px]">
+                      <div v-if="!commentToggleStore.isDisabledActions" class="-mb-[9px]">
                         <DislikeOnIcon
                           @click="handleUnDislike(reply)"
                           class="cursor-pointer"
@@ -583,6 +635,9 @@ const isReplyValid = computed(() => {
                           class="cursor-pointer"
                           v-if="!reply.hasOwnProperty('isLike')"
                         />
+                      </div>
+                      <div v-else class="-mb-[9px]">
+                        <DislikeOffDisabledIcon />
                       </div>
                       <p></p>
                     </div>

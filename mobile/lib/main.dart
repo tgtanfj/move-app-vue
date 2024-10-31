@@ -4,17 +4,24 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 
+import '.env.dart';
 import 'config/app_config.dart';
 import 'constants/constants.dart';
 
 void main() async {
   await AppConfig.init();
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = stripePublishableKey;
+  Stripe.merchantIdentifier = 'merchant.flutter.stripe.test';
+  Stripe.urlScheme = 'flutterstripe';
+  await Stripe.instance.applySettings();
   runApp(const MyApp());
   AppConfigLoading.configLoading();
 }

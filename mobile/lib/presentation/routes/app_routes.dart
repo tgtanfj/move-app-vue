@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:move_app/presentation/screens/auth/login/page/login_page.dart';
 import 'package:move_app/presentation/screens/category/page/category_page.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
 import 'package:move_app/presentation/screens/forgot_password/page/forgot_password/forgot_password_page.dart';
@@ -8,9 +7,11 @@ import 'package:move_app/presentation/screens/menu/page/menu_page.dart';
 import 'package:move_app/presentation/screens/notification/page/notification_page.dart';
 import 'package:move_app/presentation/screens/setting/page/setting_page.dart';
 import 'package:move_app/presentation/screens/view_FAQs/page/view_FAQs_page.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_page.dart';
 
 class AppRoutes {
   static const String routeProfile = '/profile';
+  static const String routeWallet = '/wallet';
   static const String routeMenu = '/menu';
   static const String logIn = '/login';
   static const String routeviewFAQs = '/view-FAQs';
@@ -37,8 +38,8 @@ class AppRoutes {
       routeCreateNewPassword: (BuildContext context) =>
           const CreateNewPasswordPage(),
       routeCategory: (BuildContext context) => const CategoryPage(),
-      routeNotification:  (BuildContext context) => const NotificationPage(),
-      logIn: (BuildContext context) => const LoginPage(),
+      routeNotification: (BuildContext context) => const NotificationPage(),
+      routeWallet: (BuildContext context) => const WalletPage(),
     };
   }
 }

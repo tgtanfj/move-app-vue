@@ -33,7 +33,7 @@ export class CommentService {
     return await this.commentRepository.getReplyComments(id, limit, cursor, userId);
   }
 
-  async getOneDetails(id: number, userId?: number): Promise<Comment> {
+  async getOneDetails(id: number, userId?: number) {
     return await this.commentRepository.getOneDetails(id, userId);
   }
 
@@ -49,6 +49,10 @@ export class CommentService {
 
       dto.videoId && (videoId = dto.videoId);
       const ownerVideo = await this.videoRepository.getOwnerVideo(videoId);
+
+      if (ownerVideo.isCommentable === false) {
+        throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
+      }
 
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOneWithVideo(dto.commentId);

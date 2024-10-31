@@ -80,39 +80,25 @@ export class CommentRepository {
       );
     }
 
-    switch (sortBy) {
-      case 'createdAt':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      case 'totalDonation':
-        queryBuilder.orderBy('comment.createdAt', 'DESC').addOrderBy('comment.numberOfLike', 'DESC');
-        break;
-
-      default:
-        queryBuilder.orderBy('comment.createdAt', 'DESC');
-        break;
-    }
-
-    const totalItemCount = await queryBuilder.getCount();
-
-    queryBuilder.skip((page - 1) * pageSize).take(pageSize);
-
     const comments = await queryBuilder.getMany();
 
-    const totalPages = Math.ceil(totalItemCount / pageSize);
-    const itemFrom = (page - 1) * pageSize + 1;
-    const itemTo = Math.min(itemFrom + comments.length - 1, totalItemCount);
-
-    const data = await Promise.all(
+    const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
         const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
         return { ...comment, totalDonation };
       }),
     );
 
-    if (sortBy === 'receivedReps') {
-      data.sort((a, b) => {
+    enrichedComments.sort((a, b) => {
+      if (sortBy === 'createdAt') {
+        if (b.createdAt.getTime() !== a.createdAt.getTime()) {
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        }
+        if (b.totalDonation !== a.totalDonation) {
+          return b.totalDonation - a.totalDonation;
+        }
+        return b.numberOfLike - a.numberOfLike;
+      } else if (sortBy === 'receivedReps') {
         if (b.totalDonation !== a.totalDonation) {
           return b.totalDonation - a.totalDonation;
         }
@@ -120,11 +106,20 @@ export class CommentRepository {
           return b.createdAt.getTime() - a.createdAt.getTime();
         }
         return b.numberOfLike - a.numberOfLike;
-      });
-    }
+      }
+      return 0;
+    });
+
+    const totalItemCount = enrichedComments.length;
+    const totalPages = Math.ceil(totalItemCount / pageSize);
+
+    const paginatedData = enrichedComments.slice((page - 1) * pageSize, page * pageSize);
+
+    const itemFrom = (page - 1) * pageSize + 1;
+    const itemTo = Math.min(itemFrom + paginatedData.length - 1, totalItemCount);
 
     return {
-      data,
+      data: paginatedData,
       totalItemCount,
       totalPages,
       itemFrom,
@@ -189,7 +184,7 @@ export class CommentRepository {
   async getOneDetails(id: number, userId?: number) {
     const comment = await this.commentRepository.findOne({
       where: { id: id },
-      relations: ['user', 'user.channel', 'video'],
+      relations: ['user', 'user.channel', 'video', 'parent', 'parent.video'],
       order: { createdAt: 'DESC' },
       select: {
         user: {
@@ -202,12 +197,20 @@ export class CommentRepository {
             isBlueBadge: true,
           },
         },
+        parent: {
+          id: true,
+          video: {
+            id: true,
+          },
+        },
         video: {
           id: true,
         },
       },
     });
-    return await this.addInformation(comment, comment.video.id, userId);
+    const videoId = comment.parent ? comment.parent.video.id : comment.video.id;
+    const { parent, video, ...commentDetails } = await this.addInformation(comment, videoId, userId);
+    return commentDetails;
   }
 
   async getComments(condition: any, videoId: number, limit: number, order: boolean, userId?: number) {
@@ -347,10 +350,13 @@ export class CommentRepository {
 
     const newComment = this.commentRepository.create(data);
     const comment = await this.commentRepository.save(newComment);
-    const commentRes = await this.getOneWithUser(comment.id);
-    const totalDonation = await this.getTotalDonations(userId, videoId);
+    const [commentRes, totalDonation, lastContentDonate] = await Promise.all([
+      this.getOneWithUser(comment.id),
+      this.getTotalDonations(userId, videoId),
+      this.getLastContentDonate(userId, videoId),
+    ]);
 
-    return { ...commentRes, totalDonation };
+    return { ...commentRes, totalDonation, lastContentDonate };
   }
 
   async update(commentId: number, dto: UpdateCommentDto | Partial<Comment>): Promise<UpdateResult> {

@@ -72,7 +72,7 @@ class UserModel {
           : null,
       country: json['country'] != null
           ? CountryModel.fromJson(json['country'])
-          : CountryModel(id: 0, name: ''),
+          : CountryModel(id: 0, name: '', countryCode: ''),
       state: json['state'] != null
           ? StateModel.fromJson(json['state'])
           : StateModel(id: 0, name: ''),

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import defaultAvatar from '@assets/icons/default-avatar.png'
 import AvaSystem from '@assets/icons/AvaSystem.vue'
@@ -28,10 +28,9 @@ const timestamp = props.notifyData.timestamp
 const { commentId, sender, videoId, type, videoTitle, replyId, purchase, donation, rep_milestone, cashout
 } = props.notifyData.data
 
-const content = ref('')
-const timeAgo = ref('')
+const setTimeInterval = ref(null)
 
-const truncateString = (str, length = 100) => {
+const truncateString = (str, length = 60) => {
   return str.length > length ? str.slice(0, length) + '...' : str
 }
 
@@ -82,11 +81,12 @@ const getContentByType = () => {
   }
 }
 
-content.value = getContentByType()
-
 const formatTimeAgo = (timestamp) => {
   const now = Date.now()
   const secondsElapsed = Math.floor((now - timestamp) / 1000)
+  
+  const validSecondsElapsed = Math.max(secondsElapsed, 0)
+
   const minutesElapsed = Math.floor(secondsElapsed / 60)
   const hoursElapsed = Math.floor(minutesElapsed / 60)
   const daysElapsed = Math.floor(hoursElapsed / 24)
@@ -94,28 +94,25 @@ const formatTimeAgo = (timestamp) => {
   const monthsElapsed = Math.floor(daysElapsed / 30)
   const yearsElapsed = Math.floor(daysElapsed / 365)
 
-  if (secondsElapsed < 60) {
-    return `${secondsElapsed} seconds ago`
+  if (validSecondsElapsed < 60) {
+    return `${validSecondsElapsed} seconds ago`;
   } else if (minutesElapsed < 60) {
-    return `${minutesElapsed} minutes ago`
+    return `${minutesElapsed} minutes ago`;
   } else if (hoursElapsed < 24) {
-    return `${hoursElapsed} hours ago`
+    return `${hoursElapsed} hours ago`;
   } else if (daysElapsed < 7) {
-    return `${daysElapsed} days ago`
+    return `${daysElapsed} days ago`;
   } else if (daysElapsed < 30) {
-    return `${weeksElapsed} weeks ago`
+    return `${weeksElapsed} weeks ago`;
   } else if (daysElapsed < 365) {
-    return `${monthsElapsed} months ago`
+    return `${monthsElapsed} months ago`;
   } else {
-    return `${yearsElapsed} years ago`
+    return `${yearsElapsed} years ago`;
   }
 }
 
-timeAgo.value = formatTimeAgo(timestamp)
-
-setInterval(() => {
-  timeAgo.value = formatTimeAgo(timestamp)
-}, 60000)
+const timeAgo = ref(formatTimeAgo(timestamp))
+const content = ref(getContentByType())
 
 const handleModalPopup = () => {
   if (props.modalPopup && !isSystemType(type)) {
@@ -159,6 +156,16 @@ const handleModalPopup = () => {
       return 'performed an action'
   }
 }
+
+onMounted(() => {
+  setTimeInterval.value = setInterval(() => {
+    timeAgo.value = formatTimeAgo(timestamp)
+  }, 60000)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(setTimeInterval.value)
+})
 </script>
 
 <template>

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:move_app/presentation/screens/notification/bloc/notification_bloc.dart';
-import 'package:move_app/presentation/screens/notification/bloc/notification_bloc.dart';
 import 'package:move_app/presentation/screens/notification/bloc/notification_event.dart';
 import 'package:move_app/presentation/screens/notification/page/notification_body.dart';
 

@@ -26,6 +26,7 @@ final class SearchResultState extends Equatable {
   final SuggestionModel? suggestionList;
   final int? totalCategoriesPages;
   final int? totalChannelPages;
+  final String? searchResultFound;
 
   const SearchResultState({
     this.status,
@@ -40,10 +41,10 @@ final class SearchResultState extends Equatable {
     this.totalCategoriesPages,
     this.totalChannelPages,
     this.currentCategoriesPage,
+    this.searchResultFound,
   });
 
-  static SearchResultState initial() =>
-      const SearchResultState(
+  static SearchResultState initial() => const SearchResultState(
         status: SearchResultStatus.initial,
         searchQuery: '',
         errorMessage: '',
@@ -53,6 +54,7 @@ final class SearchResultState extends Equatable {
         categoryList: [],
         channelList: [],
         videoList: [],
+        searchResultFound: '',
       );
 
   SearchResultState copyWith({
@@ -68,13 +70,15 @@ final class SearchResultState extends Equatable {
     List<ChannelModel>? channelList,
     List<VideoModel>? videoList,
     SuggestionModel? suggestionList,
+    String? searchResultFound,
   }) {
     return SearchResultState(
       status: status ?? this.status,
       searchQuery: searchQuery ?? this.searchQuery,
       errorMessage: errorMessage ?? this.errorMessage,
       page: page ?? this.page,
-      currentCategoriesPage: currentCategoriesPage ?? this.currentCategoriesPage,
+      currentCategoriesPage:
+          currentCategoriesPage ?? this.currentCategoriesPage,
       searchHistory: searchHistory ?? this.searchHistory,
       categoryList: categoryList ?? this.categoryList,
       channelList: channelList ?? this.channelList,
@@ -82,12 +86,12 @@ final class SearchResultState extends Equatable {
       suggestionList: suggestionList ?? this.suggestionList,
       totalCategoriesPages: totalCategoriesPages ?? this.totalCategoriesPages,
       totalChannelPages: totalChannelPages ?? this.totalChannelPages,
+      searchResultFound: searchResultFound ?? this.searchResultFound,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         searchQuery,
         page,
         currentCategoriesPage,
@@ -99,5 +103,7 @@ final class SearchResultState extends Equatable {
         channelList,
         videoList,
         suggestionList,
+        searchResultFound,
+    status
       ];
 }

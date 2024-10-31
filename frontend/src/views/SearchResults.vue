@@ -13,7 +13,7 @@ const searchStore = useSearchStore()
 
 const route = useRoute()
 const searchQuery = computed(() => route.query.query)
-const numberOfVideos = ref(6)
+const numberOfVideos = ref(8)
 const currentVideoPage = ref(1)
 const currentCategoryPage = ref(1)
 const currentChannelPage = ref(1)

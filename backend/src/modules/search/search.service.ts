@@ -1,12 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Category } from '@/entities/category.entity';
 import { Channel } from '@/entities/channel.entity';
 import { Video } from '@/entities/video.entity';
-import { CreateSearchHistoryDto } from './dto/create-search.dto';
 import { SearchHistory } from '@/entities/search-history.entity';
-import { VimeoService } from '@/shared/services/vimeo.service';
 
 @Injectable()
 export class SearchService {
@@ -15,7 +13,6 @@ export class SearchService {
     @InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video) private readonly videoRepository: Repository<Video>,
     @InjectRepository(SearchHistory) private readonly searchHistoryRepository: Repository<SearchHistory>,
-    private vimeoService: VimeoService,
   ) {}
 
   async searchCategories(params: {
@@ -49,8 +46,8 @@ export class SearchService {
     const [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
-      .orderBy('channel.isBlueBadge', 'DESC')
-      .addOrderBy('channel.isPinkBadge', 'DESC')
+      .orderBy('channel.numberOfFollowers', 'DESC')
+      .addOrderBy('channel.isBlueBadge', 'DESC')
       .addOrderBy('channel.id', 'ASC')
       .skip(offset)
       .take(limit)
@@ -58,13 +55,7 @@ export class SearchService {
 
     return { channels, totalCount };
   }
-  async searchVideos(params: { query: string; page: number; limit: number }): Promise<{
-    videos: Video[];
-    totalItemCount: number;
-    totalPages: number;
-    itemFrom: number;
-    itemTo: number;
-  }> {
+  async searchVideos(params: { query: string; page: number; limit: number }) {
     const { query, page, limit } = params;
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
@@ -104,26 +95,26 @@ export class SearchService {
     return { videos: limitedVideos, totalItemCount: totalCount, totalPages, itemFrom, itemTo };
   }
 
-  private async getVideosWithHighestViewsYesterday(
-    keyword: string,
-    offset: number,
-    limit: number,
-  ): Promise<Video[]> {
+  private async getVideosWithHighestViewsYesterday(keyword: string, offset: number, limit: number) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDateString = yesterday.toISOString().split('T')[0];
 
-    const videosWithHighestViews = await this.videoRepository
-      .createQueryBuilder('video')
-      .leftJoinAndSelect('video.viewHistories', 'viewHistory')
-      .where('video.title ILIKE :keyword', { keyword })
-      .andWhere('viewHistory.viewDate = :yesterdayDate', { yesterdayDate: yesterdayDateString })
-      .orderBy('viewHistory.views', 'DESC')
-      .skip(offset)
-      .take(limit)
-      .getMany();
-
-    return videosWithHighestViews;
+    const videosWithHighestViews = await this.videoRepository.find({
+      relations: { views: true, thumbnails: true },
+      where: { title: ILike(keyword), views: { viewDate: yesterday } },
+      order: { views: { totalView: 'DESC' } },
+      skip: offset,
+      take: limit,
+    });
+    const dataRes = videosWithHighestViews.map((video) => {
+      const { views, ...data } = video;
+      const thumbnails = video.thumbnails.find((thumbnail) => thumbnail.selected === true);
+      return {
+        ...data,
+        thumbnails: [thumbnails],
+      };
+    });
+    return dataRes;
   }
 
   async suggestion(query: string) {
