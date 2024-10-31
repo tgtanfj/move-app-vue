@@ -22,7 +22,7 @@
             alt="Avatar"
             class="w-[40px] h-[40px] rounded-full"
           />
-          <p class="font-semibold text-lg group-hover:text-primary duration-100">
+          <p class="font-semibold text-lg group-hover:text-primary duration-100 truncate w-[190px]">
             {{
               authStore.usernameUser ||
               authStore.user.username ||
@@ -102,7 +102,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'

@@ -102,7 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('userInfo', userInfo.data.data.username)
       localStorage.setItem('userEmail', userInfo.data.data.email)
     } catch (error) {
-      errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
+      errorMsg.value = error.response?.data?.message || 'Login failed'
       console.error('Error during token submission:', error)
       await logout()
       throw error

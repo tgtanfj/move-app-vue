@@ -233,11 +233,11 @@ onMounted(() => {
       </div>
 
       <div class="flex gap-2 mt-2">
-        <p class="text-red-500 font-semibold">
+        <p class="text-red-500 font-semibold" v-if="videoDetail.numberOfViews > 0">
           <span class="font-semibold">{{ formatViews(videoDetail.numberOfViews) }}</span>
           {{ $t('video_detail.views') }}
         </p>
-        <p class="font-semibold text-primary">• {{ videoDetail.category?.title }}</p>
+        <p class="font-semibold text-primary"><span v-if="videoDetail.numberOfViews > 0">•</span> {{ videoDetail.category?.title }}</p>
       </div>
 
       <div class="flex justify-between items-center mt-4">

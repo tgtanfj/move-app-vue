@@ -73,7 +73,7 @@ const handleClick = () => {
           class="flex items-center w-full gap-1 cursor-pointer"
           @click="router.push(`/channel/${channel.id}`)"
         >
-          <img :src="channel.image" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
+          <img :src="channel.image" alt="Avatar" class="w-10 h-10 rounded-full object-cover shrink-0" />
           <div class="flex flex-col gap-0 w-full">
             <div class="flex gap-2 ">
               <span

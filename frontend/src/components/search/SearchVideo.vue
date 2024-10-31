@@ -39,7 +39,9 @@ const props = defineProps({
     </div>
     <div class="flex items-start mt-2">
       <router-link :to="`/channel/${video.channel.id}`">
-        <img class="w-[50px] h-[50px] rounded-full shrink-0" :src="video.channel.image" />
+        <div class="w-[40px] h-[40px] rounded-full">
+          <img class="w-full h-full rounded-full" :src="video.channel.image" />
+        </div>
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">
