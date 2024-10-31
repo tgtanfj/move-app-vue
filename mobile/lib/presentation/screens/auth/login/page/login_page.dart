@@ -7,7 +7,8 @@ import '../bloc/login_event.dart';
 import 'login_body.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  final bool isStayOnPage;
+  const LoginPage({super.key, this.isStayOnPage = false});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,9 @@ class LoginPage extends StatelessWidget {
         bloc.add(LoginInitialEvent());
         return bloc;
       },
-      child: const LoginBody(),
+      child: LoginBody(
+        isStayOnPage: isStayOnPage,
+      ),
     );
   }
 }

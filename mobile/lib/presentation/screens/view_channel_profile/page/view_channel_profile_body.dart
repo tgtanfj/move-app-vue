@@ -30,7 +30,7 @@ class ViewChannelProfileBody extends StatefulWidget {
 class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
   @override
   Widget build(BuildContext context) {
-    String token = SharedPrefer.sharedPrefer.getUserToken();
+    
     return BlocListener<ViewChannelProfileBloc, ViewChannelProfileState>(
         listener: (context, state) {
       state.status == ViewChannelProfileStatus.processing
@@ -107,11 +107,13 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     child: InkWell(
                         splashFactory: NoSplash.splashFactory,
                         onTap: () {
-                          if (token.isEmpty) {
+                          if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return const DialogAuthentication();
+                                return const DialogAuthentication(
+                                  isStayOnPage: true,
+                                );
                               },
                             );
                           } else {

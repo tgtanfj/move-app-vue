@@ -45,16 +45,15 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailInitialEvent(
       VideoDetailInitialEvent event, Emitter<VideoDetailState> emit) async {
-    emit(state.copyWith(status: VideoDetailStatus.processing));
     final now = DateTime.now();
+    emit(state.copyWith(
+      status: VideoDetailStatus.processing,
+      timeStarted: now,
+    ));
     final result = await Future.wait([
       commentRepository.getListCommentVideo(event.videoId, limit: 30),
       videoRepository.getRateByVideoId(event.videoId),
       videoRepository.getVideoDetail(event.videoId),
-      videoRepository.postViewVideo(
-          videoId: event.videoId,
-          date: DateFormat('yyyy-MM-dd').format(now),
-          viewTime: 0),
     ]);
     final listCommentVideo = result[0] as Either<String, List<CommentModel>>;
     listCommentVideo.fold(
@@ -91,17 +90,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       emit(state.copyWith(
         video: r,
         isShowVideo: true,
-      ));
-    });
-
-    (result[3] as Either<String, bool>).fold((l) {
-      emit(state.copyWith(
-        status: VideoDetailStatus.failure,
-      ));
-    }, (r) {
-      emit(state.copyWith(
-        timeStarted: now,
-        status: VideoDetailStatus.success,
       ));
     });
   }
@@ -571,26 +559,33 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     final now = DateTime.now();
     var viewTime =
         now.difference(state.timeStarted ?? DateTime.now()).inSeconds;
-    if (viewTime > (state.video?.durationsVideo ?? 0)) {
-      viewTime = state.video?.durationsVideo ?? 0;
+    if (viewTime > (state.video?.durationsVideo ?? 0 * 0.7)) {
+      await videoRepository.postViewVideo(
+        videoId: state.video?.id ?? 0,
+        date: DateFormat('yyyy-MM-dd')
+            .format(state.timeStarted ?? DateTime.now()),
+        viewTime: 0,
+      );
+      if (viewTime > (state.video?.durationsVideo ?? 0)) {
+        viewTime = state.video?.durationsVideo ?? 0;
+      }
+      final result = await videoRepository.postViewVideo(
+        videoId: state.video?.id ?? 0,
+        date: DateFormat('yyyy-MM-dd')
+            .format(state.timeStarted ?? DateTime.now()),
+        viewTime: viewTime,
+      );
+      result.fold((l) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          timeStarted: null,
+          status: VideoDetailStatus.success,
+        ));
+      });
     }
-    final result = await videoRepository.postViewVideo(
-      videoId: state.video?.id ?? 0,
-      date:
-          DateFormat('yyyy-MM-dd').format(state.timeStarted ?? DateTime.now()),
-      viewTime: viewTime,
-    );
-
-    result.fold((l) {
-      emit(state.copyWith(
-        status: VideoDetailStatus.failure,
-        errorMessage: l,
-      ));
-    }, (r) {
-      emit(state.copyWith(
-        timeStarted: null,
-        status: VideoDetailStatus.success,
-      ));
-    });
   }
 }
