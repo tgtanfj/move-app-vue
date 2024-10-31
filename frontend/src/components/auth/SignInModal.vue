@@ -9,6 +9,8 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { signinSchema } from '../../validation/schema'
 import { useFollowerStore } from '../../stores/follower.store'
+import { auth } from '@services/firebaseConfig'
+import { signOut } from 'firebase/auth'
 
 const props = defineProps({
   closeModal: Function
@@ -67,6 +69,7 @@ const handleGoogleSignIn = async () => {
     }
   } catch (error) {
     console.log('Error during Google login or backend token submission:', error)
+    await signOut(auth)
     toast({
       description:
         authStore.errorMsg ||

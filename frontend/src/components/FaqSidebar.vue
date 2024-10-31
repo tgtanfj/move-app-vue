@@ -5,10 +5,10 @@ import { useRoute } from 'vue-router'
 const router = useRoute()
 const path = computed(() => router.path)
 const sidebarList = [
-  {
-    name: 'FAQ',
-    path: '/move/faq'
-  }
+  // {
+  //   name: 'FAQ',
+  //   path: '/move/faq'
+  // }
 ]
 </script>
 
