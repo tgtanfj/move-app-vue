@@ -23,7 +23,7 @@ export class Views extends BaseEntity {
   totalView: number;
 
   @Column({
-    type: 'bigint',
+    type: 'float',
     default: 0,
   })
   totalViewTime: number;
