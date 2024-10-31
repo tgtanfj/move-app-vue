@@ -16,6 +16,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import QueryAdminPaymentHistoryDto from './dto/admin-query-payment-history.dto';
 import { BuyREPsDto } from './dto/buy-reps.dto';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import { WithDrawDto } from './dto/withdraw.dto';
@@ -60,15 +61,21 @@ export class PaymentController {
   @Get('/admin/payment-histories')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  async getAllPaymentHistories() {
-    return await this.paymentService.findAllPaymentHistories();
+  async getAllPaymentHistories(@Query() queryAdminPaymentHistoryDto: QueryAdminPaymentHistoryDto) {
+    try {
+      validateDate(queryAdminPaymentHistoryDto.startDate, queryAdminPaymentHistoryDto.endDate);
+
+      return await this.paymentService.findAllPaymentHistories(queryAdminPaymentHistoryDto);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   @Get('/admin/cashout-histories')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
-  async getAllCashOutHistories() {
-    return await this.paymentService.getAllCashOutHistories();
+  async getAllCashOutHistories(@Query() queryCashOutHistoryDto: QueryAdminPaymentHistoryDto) {
+    return await this.paymentService.getAllCashOutHistories(queryCashOutHistoryDto);
   }
 
   @Get('/admin/total-withdraw')

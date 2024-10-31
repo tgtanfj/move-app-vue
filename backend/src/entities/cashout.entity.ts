@@ -24,7 +24,6 @@ export class Cashout extends BaseEntity {
   @Column({
     type: 'varchar',
     nullable: true,
-    default: '',
   })
   reason: string;
 }

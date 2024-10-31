@@ -66,30 +66,32 @@ export class StripeService {
   }
 
   async charge(amount: number, paymentMethodId: string, customerId: string, saveCard: boolean = false) {
-    return await this.stripe.paymentIntents.create({
-      amount: amount * 100,
-      customer: customerId,
-      payment_method: paymentMethodId,
-      currency: this.configService.get('STRIPE_CURRENCY'),
-      off_session: saveCard ? false : true,
-      confirm: saveCard ? false : true,
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      payment_method_options: {
-        card: {
-          setup_future_usage: saveCard ? 'off_session' : undefined,
+    return await this.stripe.paymentIntents
+      .create({
+        amount: amount * 100,
+        customer: customerId,
+        payment_method: paymentMethodId,
+        currency: this.configService.get('STRIPE_CURRENCY'),
+        off_session: saveCard ? false : true,
+        confirm: saveCard ? false : true,
+        automatic_payment_methods: {
+          enabled: true,
         },
-      },
-    }).catch ((error) =>  {
-    if (error instanceof Stripe.errors.StripeError) {
-      console.error('Stripe Error:', error.message); // log the Stripe error for tracking
-      throw error; // rethrow the error to be caught by the calling function
-    } else {
-      console.error('Unexpected Error:', error);
-      throw new Error('An unexpected error occurred while processing payment');
-    }
-  });
+        payment_method_options: {
+          card: {
+            setup_future_usage: saveCard ? 'off_session' : undefined,
+          },
+        },
+      })
+      .catch((error) => {
+        if (error instanceof Stripe.errors.StripeError) {
+          console.error('Stripe Error:', error.message); // log the Stripe error for tracking
+          throw error; // rethrow the error to be caught by the calling function
+        } else {
+          console.error('Unexpected Error:', error);
+          throw new Error('An unexpected error occurred while processing payment');
+        }
+      });
   }
 
   async getBalance() {

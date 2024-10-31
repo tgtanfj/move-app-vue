@@ -12,6 +12,7 @@ import { NotificationService } from '../notification/notification.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
+import QueryAdminPaymentHistoryDto from './dto/admin-query-payment-history.dto';
 import { BuyREPsDto } from './dto/buy-reps.dto';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import PaymentDto, { RepsPackageDto } from './dto/response/payment.dto';
@@ -160,10 +161,7 @@ export class PaymentService {
 
     // Step 1: Perform necessary validations
     await this.validateWithdrawLimits(userId);
-    const { channel, withDrawRate } = await this.validateAndGetChannel(
-      userId,
-      numberOfREPs,
-    );
+    const { channel, withDrawRate } = await this.validateAndGetChannel(userId, numberOfREPs);
 
     // Step 2: Save PayPal email if required
     if (isSave) await this.channelService.updateEmailPayPal(channel.id, email);
@@ -268,15 +266,33 @@ export class PaymentService {
     );
   }
 
-  async findAllPaymentHistories() {
-    return await this.paymentRepository.findAllPaymentHistories({
-      user: true,
-      repsPackage: true,
-    });
+  async findAllPaymentHistories({
+    startDate,
+    endDate,
+    search,
+    take,
+    page,
+    status,
+  }: QueryAdminPaymentHistoryDto) {
+    return await this.paymentRepository.findPaymentHistoriesAndFilters(
+      startDate,
+      endDate,
+      search,
+      take,
+      page,
+      status,
+    );
   }
 
-  async getAllCashOutHistories() {
-    return await this.cashOutRepository.getAllCashOutHistory({ channel: { user: true } });
+  async getAllCashOutHistories({
+    startDate,
+    endDate,
+    search,
+    take,
+    page,
+    status,
+  }: QueryAdminPaymentHistoryDto) {
+    return await this.cashOutRepository.getAllCashOutHistory(startDate, endDate, search, take, page, status);
   }
 
   async getTotalWithdraw() {
@@ -284,7 +300,7 @@ export class PaymentService {
 
     const withdraws = await this.cashOutRepository.getAllCashOutHistory();
 
-    const total = withdraws.reduce((sum, withdraw) => {
+    const total = withdraws.items.reduce((sum, withdraw) => {
       return sum + +withdraw.numberOfREPs;
     }, 0);
 
