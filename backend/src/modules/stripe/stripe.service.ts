@@ -81,7 +81,15 @@ export class StripeService {
           setup_future_usage: saveCard ? 'off_session' : undefined,
         },
       },
-    });
+    }).catch ((error) =>  {
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error('Stripe Error:', error.message); // log the Stripe error for tracking
+      throw error; // rethrow the error to be caught by the calling function
+    } else {
+      console.error('Unexpected Error:', error);
+      throw new Error('An unexpected error occurred while processing payment');
+    }
+  });
   }
 
   async getBalance() {

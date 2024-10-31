@@ -1,19 +1,24 @@
 import { Payment } from '@/entities/payment.entity';
-import { RepsPackage } from '@/entities/reps-package.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindOptionsRelations, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  Between,
+  DeepPartial,
+  FindOptionsRelations,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 
 @Injectable()
 export class PaymentRepository {
   constructor(
-    @InjectRepository(RepsPackage)
-    private readonly repsPackageRepository: Repository<RepsPackage>,
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async createPaymentHistory(userId: number, repPackageId: number) {
+  async createPaymentHistory(userId: number, repPackageId: number): Promise<Payment> {
     const paymentHistoryCreated = await this.paymentRepository.create({
       user: {
         id: userId,
@@ -60,5 +65,9 @@ export class PaymentRepository {
     return await this.paymentRepository.find({
       relations,
     });
+  }
+
+  async updatePaymentHistory(id: number, updateData: DeepPartial<Payment>): Promise<UpdateResult> {
+    return await this.paymentRepository.update(id, updateData);
   }
 }
