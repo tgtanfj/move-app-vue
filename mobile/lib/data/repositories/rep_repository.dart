@@ -57,7 +57,6 @@ class RepRepository {
         if (response.data['data']['status'] == Constants.requiresConfirmation) {
           var paymentMethod = await stripeService.confirmPayment(
               paymentIntentClientSecret: clientSecret);
-          print('Confirm payment method: ${paymentMethod.id}');
         }
         if (clientSecret != null) {
           return const Right(Constants.success);

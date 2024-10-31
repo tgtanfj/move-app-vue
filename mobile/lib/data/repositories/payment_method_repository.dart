@@ -32,15 +32,10 @@ class PaymentMethodRepository {
         return Left("${response.statusCode}");
       }
     } catch (e) {
-      if (e is DioException) {
-        if (e.response != null) {
-          final errorData = e.response?.data;
-          final errorMessage =
-              errorData['message'] ?? Constants.unknownErrorOccurred;
-          return Left(errorMessage);
-        } else {
-          return Left(e.message.toString());
-        }
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
       }
       return Left(e.toString());
     }

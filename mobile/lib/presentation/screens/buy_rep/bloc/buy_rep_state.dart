@@ -32,12 +32,10 @@ final class BuyRepState extends Equatable {
   final String messageInputCardNumber;
   final String messageInputExpiryDate;
   final String messageInputCvv;
-  final String messageInputCountry;
   final bool isShowCardNameMessage;
   final bool isShowCardNumberMessage;
   final bool isShowExpiryDateMessage;
   final bool isShowCvvMessage;
-  final bool isShowCountryMessage;
 
   const BuyRepState({
     this.status,
@@ -57,12 +55,10 @@ final class BuyRepState extends Equatable {
     this.messageInputCardNumber = '',
     this.messageInputExpiryDate = '',
     this.messageInputCvv = '',
-    this.messageInputCountry = '',
     this.isShowCardNameMessage = false,
     this.isShowCardNumberMessage = false,
     this.isShowExpiryDateMessage = false,
     this.isShowCvvMessage = false,
-    this.isShowCountryMessage = false,
   });
 
   static BuyRepState initial() => const BuyRepState(
@@ -114,7 +110,6 @@ final class BuyRepState extends Equatable {
       messageInputExpiryDate:
           messageInputExpiryDate ?? this.messageInputExpiryDate,
       messageInputCvv: messageInputCvv ?? this.messageInputCvv,
-      messageInputCountry: messageInputCountry ?? this.messageInputCountry,
       isShowCardNameMessage:
           isShowCardNameMessage ?? this.isShowCardNameMessage,
       isShowCardNumberMessage:
@@ -122,7 +117,6 @@ final class BuyRepState extends Equatable {
       isShowExpiryDateMessage:
           isShowExpiryDateMessage ?? this.isShowExpiryDateMessage,
       isShowCvvMessage: isShowCvvMessage ?? this.isShowCvvMessage,
-      isShowCountryMessage: isShowCountryMessage ?? this.isShowCountryMessage,
     );
   }
 
@@ -145,11 +139,9 @@ final class BuyRepState extends Equatable {
         messageInputCardNumber,
         messageInputExpiryDate,
         messageInputCvv,
-        messageInputCountry,
         isShowCardNameMessage,
         isShowCardNumberMessage,
         isShowExpiryDateMessage,
         isShowCvvMessage,
-        isShowCountryMessage,
       ];
 }

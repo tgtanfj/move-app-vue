@@ -27,7 +27,7 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
 
   void _onBuyRepInitialEvent(
       BuyRepInitialEvent event, Emitter<BuyRepState> emit) async {
-    emit(state.copyWith(rep: event.rep));
+    emit(state.copyWith(rep: event.rep, status: BuyRepStatus.processing));
     final result = await paymentRepository.getCard();
     result.fold((l) {
       emit(state.copyWith(status: BuyRepStatus.failure));
@@ -42,7 +42,7 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
       countries.fold((l) {
         emit(state.copyWith(errorMessage: l));
       }, (r) {
-        emit(state.copyWith(countries: r));
+        emit(state.copyWith(countries: r, countryCode: "VN"));
       });
     }
   }
@@ -63,7 +63,8 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
 
   void _onBuyRepCountryEvent(
       BuyRepCountryEvent event, Emitter<BuyRepState> emit) {
-    emit(state.copyWith(countryCode: event.countryCode));
+    emit(state.copyWith(
+        countryCode: event.countryCode, isShowCountryMessage: false));
   }
 
   void _onBuyRepCardNumberEvent(
@@ -140,14 +141,15 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
           InputValidationHelper.validateExpiryDate(state.expiryDate ?? '');
       final validateCvv = InputValidationHelper.validateCvv(state.cvv ?? '');
       emit(state.copyWith(
-          isShowCardNameMessage: validateCardName != null,
-          isShowCardNumberMessage: validateCardNumber != null,
-          isShowExpiryDateMessage: validateExpiryDate != null,
-          isShowCvvMessage: validateCvv != null,
-          messageInputCardName: validateCardName,
-          messageInputCardNumber: validateCardNumber,
-          messageInputExpiryDate: validateExpiryDate,
-          messageInputCvv: validateCvv));
+        isShowCardNameMessage: validateCardName != null,
+        isShowCardNumberMessage: validateCardNumber != null,
+        isShowExpiryDateMessage: validateExpiryDate != null,
+        isShowCvvMessage: validateCvv != null,
+        messageInputCardName: validateCardName,
+        messageInputCardNumber: validateCardNumber,
+        messageInputExpiryDate: validateExpiryDate,
+        messageInputCvv: validateCvv,
+      ));
       if (validateCardName == null ||
           validateCardNumber == null ||
           validateExpiryDate == null ||

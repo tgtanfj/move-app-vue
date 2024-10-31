@@ -32,7 +32,7 @@ class OrderSuccessDialog extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(true);
                   },
                   child: SvgPicture.asset(
                     AppIcons.close.svgAssetPath,
@@ -53,7 +53,7 @@ class OrderSuccessDialog extends StatelessWidget {
               title: Constants.okay,
               titleStyle: AppTextStyles.montserratStyle.bold16White,
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop(true);
               },
             )
           ],

@@ -8,6 +8,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
+import 'package:move_app/utils/card_date_formatter.dart';
 
 class WithoutSavedPayment extends StatelessWidget {
   final Function(String)? onChangeCardName;
@@ -21,12 +22,11 @@ class WithoutSavedPayment extends StatelessWidget {
   final String messageInputCardNumber;
   final String messageInputExpiryDate;
   final String messageInputCvv;
-  final String messageInputCountry;
   final bool isShowCardNameMessage;
   final bool isShowCardNumberMessage;
   final bool isShowExpiryDateMessage;
   final bool isShowCvvMessage;
-  final bool isShowCountryMessage;
+  final int? initialCountry;
 
   const WithoutSavedPayment({
     super.key,
@@ -41,12 +41,11 @@ class WithoutSavedPayment extends StatelessWidget {
     this.messageInputCardNumber = '',
     this.messageInputExpiryDate = '',
     this.messageInputCvv = '',
-    this.messageInputCountry = '',
     this.isShowCardNameMessage = false,
     this.isShowCardNumberMessage = false,
     this.isShowExpiryDateMessage = false,
     this.isShowCvvMessage = false,
-    this.isShowCountryMessage = false,
+    this.initialCountry,
   });
 
   @override
@@ -84,15 +83,16 @@ class WithoutSavedPayment extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         CustomDropdownButton(
-            hintText: Constants.pleaseSelectCountry,
-            items: countries?.map((country) {
-              return {'id': country.id, 'name': country.name};
-            }).toList(),
-            onChanged: (value) {
-              if (value != null) {
-                onChangedCountry?.call(value);
-              }
-            }),
+          initialValue: initialCountry,
+          items: countries?.map((country) {
+            return {'id': country.id, 'name': country.name};
+          }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              onChangedCountry?.call(value);
+            }
+          },
+        ),
         const SizedBox(height: 12),
         Text(
           Constants.cardNumber,
@@ -132,6 +132,7 @@ class WithoutSavedPayment extends StatelessWidget {
                     textInputType: TextInputType.number,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(5),
+                      CardDateFormatter(),
                     ],
                     onChanged: onChangeExpiryDate,
                     isShowMessage: isShowExpiryDateMessage,

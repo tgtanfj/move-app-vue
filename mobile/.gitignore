@@ -121,3 +121,4 @@ app.*.symbols
 /linux/flutter/ephemeral/
 /linux/flutter/generated_plugin_registrant.cc
 /linux/flutter/generated_plugins.cmake
+/lib/.env.dart

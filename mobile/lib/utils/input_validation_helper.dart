@@ -153,41 +153,46 @@ class InputValidationHelper {
   }
 
   static String? validateCardHolderName(String cardHolderName) {
-    if (cardHolderName.length < 2 ||
-        cardHolderName.length > 50 ||
-        !RegExp(r'^[a-zA-Z\s]+$').hasMatch(cardHolderName.trim())) {
+    if (cardHolderName.length < 2) {
       return Constants.incorrectlyFormattedCardHolderName;
     }
     return null;
   }
 
-  static String? validateCardNumber(String cardNumber) {
-    if (cardNumber.length != 16 ||
-        !RegExp(r'^[0-9]{16}$').hasMatch(cardNumber)) {
-      return Constants.invalidCardNumber;
-    }
-    return null;
-  }
-
   static String? validateExpiryDate(String expiryDate) {
-    if (!RegExp(r'^(0[1-9]|1[0-2])/([0-9]{2})$').hasMatch(expiryDate)) {
+    final parts = expiryDate.split('/');
+
+    if (parts.length != 2) {
       return Constants.checkYourExpirationDate;
     }
-    final month = int.parse(expiryDate.split('/')[0]);
-    final year = int.parse('20${expiryDate.split('/')[1]}');
-    final currentYear = DateTime.now().year;
-    if (month < 1 ||
-        month > 12 ||
-        year < currentYear ||
-        !RegExp(r'^(0[1-9]|1[0-2])/([0-9]{2})$').hasMatch(expiryDate)) {
+
+    int month = int.parse(parts[0]);
+    int year = int.parse(parts[1]) + 2000;
+
+    final now = DateTime.now();
+    final currentYear = now.year;
+    final currentMonth = now.month;
+    if (year < currentYear) {
+      return Constants.checkYourExpirationDate;
+    } else if (year == currentYear && month < currentMonth) {
+      return Constants.checkYourExpirationDate;
+    } else if (month < 1 || month > 12) {
       return Constants.checkYourExpirationDate;
     }
+
     return null;
   }
 
   static String? validateCvv(String cvv) {
-    if (cvv.length != 3 || !RegExp(r'^[0-9]{3}$').hasMatch(cvv)) {
+    if (cvv.length < 3) {
       return Constants.invalidCardVerificationCode;
+    }
+    return null;
+  }
+
+  static String? validateCardNumber(String value) {
+    if (value.length < 16) {
+      return Constants.invalidCardNumber;
     }
     return null;
   }
