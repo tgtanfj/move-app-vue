@@ -285,7 +285,7 @@ const handleRidirect = (commentId, videoId) => {
           </div>
           <div>
             <div
-              class="flex flex-col items-start"
+              class="flex flex-col items-start content-container"
               v-if="item.content.length > 300 && !showFullContentIds.includes(item.id)"
             >
               {{ item.content.slice(0, 300) }}...
@@ -293,7 +293,7 @@ const handleRidirect = (commentId, videoId) => {
                 {{ $t('comment.read_more') }}
               </button>
             </div>
-            <div class="flex flex-col items-start" v-else>
+            <div class="flex flex-col items-start content-container" v-else>
               {{ item.content }}
               <button
                 v-if="item.content.length > 300"
@@ -475,7 +475,7 @@ const handleRidirect = (commentId, videoId) => {
                 </div>
                 <div>
                   <div
-                    class="flex flex-col items-start"
+                    class="flex flex-col items-start content-container"
                     v-if="
                       myReplyPerComment[item.id].content.length > 300 &&
                       !showFullReplyIds.includes(myReplyPerComment[item.id].id)
@@ -489,7 +489,7 @@ const handleRidirect = (commentId, videoId) => {
                       {{ $t('comment.read_more') }}
                     </button>
                   </div>
-                  <div class="flex flex-col items-start" v-else>
+                  <div class="flex flex-col items-start content-container" v-else>
                     {{ myReplyPerComment[item.id].content }}
                     <button
                       v-if="myReplyPerComment[item.id].content.length > 300"
@@ -583,7 +583,7 @@ const handleRidirect = (commentId, videoId) => {
                 </div>
                 <div>
                   <div
-                    class="flex flex-col items-start"
+                    class="flex flex-col items-start content-container"
                     v-if="reply.content.length > 300 && !showFullReplyIds.includes(reply.id)"
                   >
                     {{ reply.content.slice(0, 300) }}...
@@ -591,7 +591,7 @@ const handleRidirect = (commentId, videoId) => {
                       {{ $t('comment.read_more') }}
                     </button>
                   </div>
-                  <div class="flex flex-col items-start" v-else>
+                  <div class="flex flex-col items-start content-container" v-else>
                     {{ reply.content }}
                     <button
                       v-if="reply.content.length > 300"
@@ -697,7 +697,7 @@ const handleRidirect = (commentId, videoId) => {
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
         </template>
-        <span v-else>-</span>
+        <span class="font-bold" v-else>-</span>
       </div>
     </TableCell>
     <TableCell class="w-[25%] align-top">
@@ -721,3 +721,10 @@ const handleRidirect = (commentId, videoId) => {
     </TableCell>
   </TableRow>
 </template>
+
+<style>
+.content-container {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+</style>

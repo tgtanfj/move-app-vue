@@ -80,6 +80,13 @@ const toggleCommentContent = (commentId) => {
   }
 }
 
+function formattedContent(content) {
+  if (content.length > 50 && !content.includes(' ')) {
+    return content.replace(/(.{50})/g, '$1 ')
+  }
+  return content
+}
+
 const handleLike = async (item) => {
   try {
     if (!checkIsAuth()) return
@@ -285,7 +292,7 @@ const isReplyValid = computed(() => {
             </div>
             <div>
               <div
-                class="flex flex-col items-start"
+                class="flex flex-col items-start content-container"
                 v-if="item.content.length > 300 && !showFullContentIds.includes(item.id)"
               >
                 {{ item.content.slice(0, 300) }}...
@@ -293,7 +300,7 @@ const isReplyValid = computed(() => {
                   {{ $t('comment.read_more') }}
                 </button>
               </div>
-              <div class="flex flex-col items-start" v-else>
+              <div class="flex flex-col items-start content-container" v-else>
                 {{ item.content }}
                 <button
                   v-if="item.content.length > 300"
@@ -469,7 +476,7 @@ const isReplyValid = computed(() => {
                   </div>
                   <div>
                     <div
-                      class="flex flex-col items-start"
+                      class="flex flex-col items-start content-container"
                       v-if="
                         myReplyPerComment[item.id].content.length > 300 &&
                         !showFullReplyIds.includes(myReplyPerComment[item.id].id)
@@ -483,7 +490,7 @@ const isReplyValid = computed(() => {
                         {{ $t('comment.read_more') }}
                       </button>
                     </div>
-                    <div class="flex flex-col items-start" v-else>
+                    <div class="flex flex-col items-start content-container" v-else>
                       {{ myReplyPerComment[item.id].content }}
                       <button
                         v-if="myReplyPerComment[item.id].content.length > 300"
@@ -494,6 +501,7 @@ const isReplyValid = computed(() => {
                       </button>
                     </div>
                   </div>
+
                   <div class="flex items-center gap-8 mt-1">
                     <div class="flex items-center gap-3 justify-start">
                       <div class="-mt-1">
@@ -578,7 +586,7 @@ const isReplyValid = computed(() => {
                   </div>
                   <div>
                     <div
-                      class="flex flex-col items-start"
+                      class="flex flex-col items-start content-container"
                       v-if="reply.content.length > 300 && !showFullReplyIds.includes(reply.id)"
                     >
                       {{ reply.content.slice(0, 300) }}...
@@ -586,7 +594,7 @@ const isReplyValid = computed(() => {
                         {{ $t('comment.read_more') }}
                       </button>
                     </div>
-                    <div class="flex flex-col items-start" v-else>
+                    <div class="flex flex-col items-start content-container" v-else>
                       {{ reply.content }}
                       <button
                         v-if="reply.content.length > 300"
@@ -671,5 +679,10 @@ const isReplyValid = computed(() => {
   background-color: #f7f7f7;
   border: 2px solid #13d0b4;
   border-radius: 10px;
+}
+
+.content-container {
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 </style>
