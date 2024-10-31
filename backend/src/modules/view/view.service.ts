@@ -17,11 +17,13 @@ export class ViewService {
   }
 
   async createUpdateViewDate(dto: CreateUpdateViewDto) {
-    const view = await this.viewRepository.createUpdateViewDate(dto);
+    const video = await this.videoRepository.findOne(dto.videoId, { channel: { user: true } });
+    const timeCountView = video?.durationsVideo * 0.7;
+    const view = await this.viewRepository.createUpdateViewDate(dto, timeCountView);
+    const receiver = video.channel.user.id;
+    const systemId = 0;
+
     if (!dto.viewTime) {
-      const video = await this.videoRepository.findOne(dto.videoId, { channel: { user: true } });
-      const receiver = video.channel.user.id;
-      const systemId = 0;
       video.numberOfViews++;
       await this.videoRepository.save(video);
 
