@@ -45,7 +45,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Future<void> _onNotificationsLoadMoreEvent(
       NotificationsLoadMoreEvent event, Emitter<NotificationState> emit) async {
-    if (state.status == NotificationStatus.processing || _lastTimestamp == null) {
+    if (state.status == NotificationStatus.processing ||
+        _lastTimestamp == null) {
       return;
     }
 

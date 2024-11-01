@@ -1,8 +1,6 @@
 import 'package:move_app/data/models/category_model.dart';
 
-import '../models/notification_model.dart';
 import '../models/rep_model.dart';
-import '../models/user_model.dart';
 
 List<CategoryModel> dummyCategories = [
   CategoryModel(

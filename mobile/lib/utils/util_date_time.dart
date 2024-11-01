@@ -15,6 +15,9 @@ extension UtilDateTime on DateTime {
   static String formatTimestamp(int timestamp) {
     final notificationTime = DateTime.fromMillisecondsSinceEpoch(timestamp).toUtc();
     final difference = DateTime.now().difference(notificationTime);
+    if (difference.isNegative) {
+      return "0 ${Constants.secondAgo}";
+    }
     return _formatTimeDifference(difference);
   }
 

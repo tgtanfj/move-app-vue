@@ -39,6 +39,7 @@ class VideoDetailBody extends StatefulWidget {
 class _VideoDetailBodyState extends State<VideoDetailBody> {
   late ScrollController _scrollController;
   final String username = SharedPrefer.sharedPrefer.getUsername();
+  bool _hasScrolledToPosition = false;
 
   @override
   void initState() {
@@ -123,11 +124,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                       },
                     );
                   }
-                  if (state.targetCommentId != null) {
+                  if (state.targetCommentId != null &&
+                      !_hasScrolledToPosition) {
                     final comments = state.listComments;
 
                     if ((comments?.length ?? 0) > 2) {
                       double scrollToPosition = 100;
+                      _hasScrolledToPosition = true;
 
                       Future.delayed(const Duration(seconds: 1), () {
                         _scrollController.animateTo(
@@ -265,8 +268,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               controller: _scrollController,
               shrinkWrap: true,
               itemCount: state.listComments?.length ?? 0,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
+              separatorBuilder: (BuildContext context, int index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  child: const Divider()),
               itemBuilder: (BuildContext context, int index) {
                 return _buildCommentItem(
                     context, state.listComments![index], state, height);
@@ -297,7 +301,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     final replies = state.replies?[commentModel.id] ?? [];
     final isHideRepliesForCurrentComment =
         state.isHiddenListReply?[commentModel.id] ?? false;
-
+    final hasTargetCommentId =
+        state.targetCommentId == commentModel.id && state.targetReplyId == 0;
     return Column(
       children: [
         if (commentModel == state.listComments?.first) ...[
@@ -307,6 +312,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         ],
         ItemComment(
           commentModel: commentModel,
+          hasTargetCommentId: hasTargetCommentId,
           onTapLike: state.video?.isCommentable == true
               ? () =>
                   _handleCommentReaction(context, commentModel, isLike: true)
@@ -380,8 +386,10 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int replyIndex) {
           final replyCommentModel = replies[replyIndex];
+          final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           return ItemComment(
             commentModel: replyCommentModel,
+            hasTargetReplyId: hasTargetReplyId,
             isShowReplyButton: false,
             onTapLike: state.video?.isCommentable == true
                 ? () => _handleCommentReaction(context, replyCommentModel,
@@ -423,6 +431,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       child: WriteComment(
         hintText: Constants.writeReply,
         isCancelReply: true,
+        marginRight: 0,
         onChanged: (value) {
           context.read<VideoDetailBloc>().add(
                 VideoDetailReplyChangedEvent(content: value),

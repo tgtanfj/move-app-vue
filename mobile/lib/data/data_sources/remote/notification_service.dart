@@ -38,10 +38,10 @@ class NotificationService {
   }
 
   Future<List<NotificationModel>> getLatestUserNotifications(
-      int userId,
-      int limit, {
-        int? lastTimestamp,
-      }) async {
+    int userId,
+    int limit, {
+    int? lastTimestamp,
+  }) async {
     final ref = _database.child('notifications/$userId');
 
     Query query = ref.orderByChild('timestamp').limitToLast(limit);
@@ -67,20 +67,21 @@ class NotificationService {
   }
 
   Future<List<NotificationModel>> loadMoreNotifications(
-      int userId,
-      int limit,
-      int lastTimestamp,
-      ) async {
-    return getLatestUserNotifications(userId, limit, lastTimestamp: lastTimestamp);
+    int userId,
+    int limit,
+    int lastTimestamp,
+  ) async {
+    return getLatestUserNotifications(userId, limit,
+        lastTimestamp: lastTimestamp);
   }
 
-  Future<bool> markNotificationAsRead(int userId, String notificationKey) async {
-    final ref = _database
-        .child('notifications/$userId/$notificationKey/isRead');
+  Future<bool> markNotificationAsRead(
+      int userId, String notificationKey) async {
+    final ref =
+        _database.child('notifications/$userId/$notificationKey/isRead');
 
     try {
       await ref.set(true);
-
       final snapshot = await ref.get();
       return snapshot.exists && snapshot.value == true;
     } catch (e) {
