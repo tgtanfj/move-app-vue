@@ -16,7 +16,7 @@ export const usePaymentStore = defineStore('payment', () => {
   const stripeErr = ref('')
   const reps = ref(0)
   const isBuying = ref(false)
-
+  const selectedPackage = ref(null)
   const repsPackageList = ref([])
 
   onMounted(async () => {
@@ -44,6 +44,9 @@ export const usePaymentStore = defineStore('payment', () => {
     notificationTimeout = setTimeout(() => {
       hideNotify()
     }, 5000)
+  }
+  const setSelectedPackage = (item) => {
+    selectedPackage.value = item
   }
 
   const fetchUserPaymentMethod = async () => {
@@ -267,6 +270,8 @@ export const usePaymentStore = defineStore('payment', () => {
     stripeErr,
     repsPackageList,
     reps,
+    selectedPackage,
+    setSelectedPackage,
     checkForSavedPayment,
     getListRepsPackage,
     hideNotify,

@@ -183,7 +183,6 @@ const onSubmit = async () => {
                   <FormControl>
                     <Input
                       maxlength="50"
-                      placeholder="Card Holder Name"
                       class="border-[#CCCCCC] h-[40px] w-full"
                       type="text"
                       v-bind="componentField"
@@ -223,7 +222,6 @@ const onSubmit = async () => {
                   <FormControl>
                     <Input
                       maxlength="16"
-                      placeholder="Card Number"
                       class="border-[#CCCCCC] h-[40px] w-full"
                       type="text"
                       v-bind="componentField"
@@ -298,7 +296,7 @@ const onSubmit = async () => {
                     <Tooltip>
                       <TooltipTrigger
                         asChild
-                        class="cursor-pointer rounded-full border-[2px] py-[1px] px-[4px] border-black font-semibold"
+                        class="cursor-pointer rounded-full border-[2px] py-[0.8px] px-[4px] border-black font-semibold ml-2"
                       >
                         <span>?</span>
                       </TooltipTrigger>
@@ -326,7 +324,7 @@ const onSubmit = async () => {
             </div>
           </div>
           <div>
-            <div class="text-[12px] text-[#777777] w-full mt-2">
+            <div class="text-[10px] w-full mt-2">
               {{ t('wallet.by_submit') }}
               <span class="text-primary text-[12px]">{{ t('wallet.end_user_license') }}</span
               >,
