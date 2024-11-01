@@ -1,7 +1,5 @@
-import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:move_app/data/models/payment_model.dart';
 
 enum PaymentHistoryStatus {

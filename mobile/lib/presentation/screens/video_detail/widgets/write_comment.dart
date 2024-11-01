@@ -15,6 +15,7 @@ class WriteComment extends StatefulWidget {
   final VoidCallback? onTapSend;
   final ValueChanged<String>? onChanged;
   final double marginLeft;
+  final double marginRight;
   final CommentModel? commentModel;
   final String? hintText;
   final bool isCancelReply;
@@ -25,6 +26,7 @@ class WriteComment extends StatefulWidget {
     this.onTapSend,
     this.onChanged,
     this.marginLeft = 12,
+    this.marginRight = 12,
     this.commentModel,
     this.hintText,
     this.isCancelReply = false,
@@ -228,6 +230,7 @@ class _WriteCommentState extends State<WriteComment> {
                 _buildAvatar(),
                 const SizedBox(width: 12),
                 Expanded(child: _buildTextField()),
+                SizedBox(width: widget.marginRight),
               ],
             ),
             const SizedBox(height: 8),

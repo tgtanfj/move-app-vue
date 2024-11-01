@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/repositories/user_repository.dart';
 
@@ -135,8 +136,14 @@ class AuthRepository {
           },
         ),
       );
+      String accessToken = response.data['data']['accessToken'];
+
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+      int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+      await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
       await SharedPrefer.sharedPrefer
-          .setUserToken(response.data['data']['accessToken']);
+          .setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -199,8 +206,14 @@ class AuthRepository {
           },
         ),
       );
+      String accessToken = response.data['data']['accessToken'];
+
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+      int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+      await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
       await SharedPrefer.sharedPrefer
-          .setUserToken(response.data['data']['accessToken']);
+          .setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -224,9 +237,15 @@ class AuthRepository {
         ),
       );
       if (response.data['data']['accessToken'] != null) {
+        String accessToken = response.data['data']['accessToken'];
+
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+        int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+        await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
         await UserRepository().getUserProfile();
         await SharedPrefer.sharedPrefer
-            .setUserToken(response.data['data']['accessToken']);
+            .setUserToken(accessToken);
         await SharedPrefer.sharedPrefer
             .setUserRefreshToken(response.data['data']['refreshToken']);
         return Right(response.data['data']['accessToken']);
@@ -261,6 +280,8 @@ class AuthRepository {
           },
         ),
       );
+      await SharedPrefer.sharedPrefer.setUnreadNotificationCount(0);
+      await SharedPrefer.sharedPrefer.setUserId(0);
       await SharedPrefer.sharedPrefer.setUserToken('');
       await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
       await SharedPrefer.sharedPrefer.setUsername('');

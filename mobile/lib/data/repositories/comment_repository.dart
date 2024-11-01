@@ -33,29 +33,60 @@ class CommentRepository {
     }
   }
 
-  Future<Either<String, List<CommentModel>>> getListRepliesComment(int commentId,
-      {int? limit, int? cursor}) async {
+  Future<Either<String, List<CommentModel>>> getListRepliesComment(
+      int commentId,
+      {int? limit,
+      int? cursor}) async {
     try {
       final response = await apiService.request(
         APIRequestMethod.get,
         'comment/$commentId/reply',
         queryParameters: {
           if (limit != null) 'limit': limit,
-          if (cursor != null && cursor !=0) 'cursor': cursor,
+          if (cursor != null && cursor != 0) 'cursor': cursor,
         },
       );
       if (response.data != null) {
         List<dynamic> replyJson = response.data['data'] as List<dynamic>;
         var reply =
-        replyJson.map((json) => CommentModel.fromJson(json)).toList();
+            replyJson.map((json) => CommentModel.fromJson(json)).toList();
         return Right(reply);
       } else {
         return const Left(Constants.notFound);
       }
     } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, CommentModel>> getComment(int commentId) async {
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.get,
+        "${ApiUrls.getCommentEndPoint}$commentId",
+      );
+
+      if (response.statusCode == 200) {
+        final comment = CommentModel.fromJson(response.data['data']);
+        return Right(comment);
+      } else {
+        return const Left(Constants.notFound);
+      }
+    } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
+      return Left(e.toString());
+    }
+  }
+
   Future<Either<String, Response>> postComment(
       CommentModel commentModel) async {
     try {
@@ -80,7 +111,6 @@ class CommentRepository {
         final errorData = e.response?.data;
         final errorMessage = errorData['message'] ?? 'Unknown error occurred';
         return Left(errorMessage);
-
       }
       return Left(e.toString());
     }
