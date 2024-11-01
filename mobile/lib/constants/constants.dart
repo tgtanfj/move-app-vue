@@ -391,4 +391,7 @@ class Constants {
   static const String repsNotFound = 'Reps not found';
   static const String requiresConfirmation = 'requires_confirmation';
   static const String refreshTokenExpired = 'Refresh token expired';
+  static const String repsNotFound = 'Reps not found';
+  static const String requiresConfirmation = 'requires_confirmation';
+  static const String shareSocial = "share-social";
 }

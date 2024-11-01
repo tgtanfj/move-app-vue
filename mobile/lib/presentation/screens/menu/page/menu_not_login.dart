@@ -8,6 +8,7 @@ import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_page.dart';
 
 import '../../auth/widgets/dialog_authentication.dart';
 
@@ -41,7 +42,10 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
                 builder: (BuildContext context) {
                   return const DialogAuthentication();
                 },
-              );
+              ).then((value) {
+                Navigator.push(value,
+                    MaterialPageRoute(builder: (context) => const WalletPage()));
+              });
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);

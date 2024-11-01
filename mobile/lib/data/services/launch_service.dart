@@ -8,3 +8,5 @@ Future<void> openExternalApplication(String url) async {
     }
   }
 }
+
+

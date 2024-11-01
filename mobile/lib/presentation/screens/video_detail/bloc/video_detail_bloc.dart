@@ -177,6 +177,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   void _onVideoDetailShareSocialEvent(
       VideoDetailShareSocialEvent event, Emitter<VideoDetailState> emit) async {
+    emit(state.copyWith(status: VideoDetailStatus.processing));
     final result =
         await shareRepository.sharingVideo(event.videoId, event.option);
     if (event.option == Constants.twitterOption) {

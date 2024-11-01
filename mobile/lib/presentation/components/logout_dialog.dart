@@ -53,27 +53,27 @@ class LogoutDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 CustomLogoutButton(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  title: Constants.no,
+                  titleStyle: AppTextStyles.montserratStyle.regular14TiffanyBlue,
+                  backgroundColor: AppColors.white,
+                  borderColor: AppColors.white,
+                ),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                CustomLogoutButton(
                   onTap: () async {
                     await AuthRepository().logOut();
                     yesButton();
                     Navigator.of(context).pop();
                   },
                   title: Constants.yes,
-                  titleStyle: AppTextStyles.montserratStyle.regular14Black,
+                  titleStyle: AppTextStyles.montserratStyle.regular14White,
                   backgroundColor: AppColors.tiffanyBlue,
-                  borderColor: AppColors.chineseSilver,
-                ),
-                const SizedBox(
-                  width: 8.0,
-                ),
-                CustomLogoutButton(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  title: Constants.no,
-                  titleStyle: AppTextStyles.montserratStyle.regular14Black,
-                  backgroundColor: AppColors.chineseSilver,
-                  borderColor: AppColors.chineseSilver,
+                  borderColor: AppColors.tiffanyBlue,
                 ),
               ],
             )

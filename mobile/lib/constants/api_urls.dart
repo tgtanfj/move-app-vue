@@ -46,4 +46,9 @@ class ApiUrls {
       "payment/list-reps-package";
   static const String paymentBuyRepsEndPoint = "payment/buy-reps";
   static const String refreshTokenEndpoint = "auth/refresh";
+  static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String paymentListRepsPackageEndPoint =
+      "payment/list-reps-package";
+  static const String paymentBuyRepsEndPoint = "payment/buy-reps";
+  static const String deepLink = "https://api.training-move-intern.madlab.tech/deep-link";
 }

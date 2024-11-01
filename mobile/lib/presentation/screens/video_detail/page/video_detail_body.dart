@@ -4,8 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/key_screen.dart';
-import 'package:move_app/data/services/launch_url_service.dart';
+import 'package:move_app/data/services/launch_service.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
@@ -118,6 +119,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
             Expanded(
               child: BlocConsumer<VideoDetailBloc, VideoDetailState>(
                 listener: (context, state) {
+                  (state.status == VideoDetailStatus.processing) ?
+                      EasyLoading.show():
+                      EasyLoading.dismiss();
                   if (state.status == VideoDetailStatus.rateSuccess) {
                     showDialog(
                       context: context,
@@ -142,6 +146,15 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         );
                       });
                     }
+                  }
+                  if (state.facebookLink != null &&
+                      state.facebookLink!.isNotEmpty) {
+                    openExternalApplication(
+                        "${state.facebookLink?.split('?').first}?u=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
+                  }
+                  if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
+                    openExternalApplication(
+                        "${state.twitterLink?.split('?').first}?url=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
                   }
                 },
                 builder: (context, state) {
@@ -604,21 +617,16 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.facebookOption));
-              if (state.facebookLink != null &&
-                  state.facebookLink!.isNotEmpty) {
-                openExternalApplication(state.facebookLink ?? "");
-              }
             },
             twitterButton: () {
               context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
                   videoId: state.video?.id ?? 0,
                   option: Constants.twitterOption));
-              if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
-                openExternalApplication(state.twitterLink ?? "");
-              }
             },
             copyLinkButton: () {
-              Clipboard.setData(ClipboardData(text: state.video?.url ?? ""));
+              Clipboard.setData(ClipboardData(
+                  text:
+                      "${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}"));
             },
           ),
         ),
