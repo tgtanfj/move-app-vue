@@ -14,8 +14,7 @@ class ListPaymentHistories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.57,
+    return Expanded(
       child: ListView.separated(
         itemCount: paymentHistoryList?.length ?? 0,
         itemBuilder: (BuildContext context, int index) {

@@ -27,9 +27,9 @@ class SuggestionModel {
 
   factory SuggestionModel.fromJson(Map<String, dynamic> json) {
     return SuggestionModel(
-      topCategory: json['topCategory'] != null
+      topCategory: json['topCategory'] != "Notfound" && json['topCategory'] != null
           ? CategoryModel.fromJson(json['topCategory'])
-          : CategoryModel(title: " "),
+          : null,
       topInstructors: (json['topInstructors'] is List?)
           ? (json['topInstructors'] as List?)
               ?.map((e) => ChannelModel.fromJson(e))

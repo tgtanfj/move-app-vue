@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
@@ -83,6 +84,9 @@ class _CustomSearchBoxState extends State<CustomSearchBox> {
                 hintStyle: widget.hintTextStyle,
                 suffixIcon: widget.suffix,
               ),
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(255),
+              ],
               textInputAction: TextInputAction.search,
               onSubmitted: widget.onSubmitted,
               onChanged: widget.onValueChanged,
