@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AdminRepository } from './admin.repository';
 import { RevenueDto } from './dto/response/revenue.dto';
+import { PaginationDto } from '../video/dto/request/pagination.dto';
+import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
+import { DurationType } from '@/entities/enums/durationType.enum';
+import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 
 @Injectable()
 export class AdminService {
@@ -30,6 +34,23 @@ export class AdminService {
       if (row.totalTopUp != 0 || row.totalDonations != 0 || row.totalEarnings != 0) data.push(row);
     }
 
+    return data;
+  }
+
+  async getVideoAdmin(
+    query: string,
+    workoutLevel: WorkoutLevel,
+    duration: DurationType,
+    sortBy: SortVideoAdmin,
+    paginationDto: PaginationDto,
+  ) {
+    const data = await this.adminRepository.getVideoAdmin(
+      query,
+      workoutLevel,
+      duration,
+      sortBy,
+      paginationDto,
+    );
     return data;
   }
 }
