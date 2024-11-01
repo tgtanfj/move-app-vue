@@ -1,32 +1,15 @@
 <script setup>
 import { usePaymentStore } from '../../stores/payment'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { t } from '@helpers/i18n.helper'
-import { X } from 'lucide-vue-next'
 import { Button } from '@common/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@common/ui/dialog'
-import { useForm } from 'vee-validate'
-import { walletSchema } from '../../validation/schema'
-import { loadStripe } from '@stripe/stripe-js'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@common/ui/form'
-import { Input } from '@common/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@common/ui/select'
-import { Checkbox } from '@common/ui/checkbox'
-import { walletServices } from '@services/wallet.services'
-import { formatDateToDDMMMYYYY, validateCard } from '@utils/wallet.util'
 import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
-import { STRIPE_KEY } from '@constants/api.constant'
-import VisaCardIcon from '@assets/icons/VisaCardIcon.vue'
-import MasterCardIcon from '@assets/icons/MasterCardIcon.vue'
 import ListRepPackage from './ListRepPackage.vue'
+import { useRoute } from 'vue-router'
+import { walletServices } from '@services/wallet.services'
+
+const route = useRoute()
 
 const props = defineProps({
   isInStreamerPage: {
@@ -34,12 +17,7 @@ const props = defineProps({
     required: true
   }
 })
-const { values, errors } = useForm({
-  initialValues: {
-    cardholderName: ''
-  },
-  validationSchema: walletSchema
-})
+
 const paymentStore = usePaymentStore()
 const authStore = useAuthStore()
 const openLoginStore = useOpenLoginStore()
@@ -78,8 +56,12 @@ onMounted(async () => {
   }
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('click', handleCloseModal)
+watch(route, (newValue) => {
+  if (newValue.query.redirectFrom === 'add-payment' && paymentStore.selectedPackage) {
+    setTimeout(() => {
+      paymentStore.setShowPurchaseModal(true)
+    }, 500)
+  } else paymentStore.setShowPurchaseModal(false)
 })
 </script>
 <template>

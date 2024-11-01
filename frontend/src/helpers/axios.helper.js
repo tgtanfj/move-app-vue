@@ -28,7 +28,7 @@ apiAxios.interceptors.response.use(
   async (error) => {
     const { response } = error
     const authStore = useAuthStore()
-    if (response && response.data.message === 'jwt') {
+    if (response && response.data.message === 'jwt expired') {
       try {
         const refreshToken = localStorage.getItem('refreshToken')
         const res = await axios.get(`${ADMIN_BASE}/auth/refresh`, {

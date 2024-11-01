@@ -71,6 +71,21 @@ watch(cardNumber, (newValue) => {
   }
 })
 
+watch(cardNumber, (newValue) => {
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
+})
+
 watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
 
 onMounted(async () => {
@@ -159,17 +174,15 @@ const onSubmit = async () => {
       type: values.cardType
     }
 
-    await paymentStore.createUserPaymentMethod(cardData)
-    // .then(() => {
-    //   const { query } = route
-    //   if (query.returnTo) router.push(`${query.returnTo}`)
-    // })
+    await paymentStore.createUserPaymentMethod(cardData).then(() => {
+      const { query } = route
+      if (query.source) router.push({ path: query.source, query: { redirectFrom: 'add-payment' } })
+    })
   }
 }
 
 const handleTrim = (e) => {
   cardholderName.value = e.target.value.trim()
-  console.log(`${cardholderName.value}hello`)
   setValues({ ...values, cardholderName: cardholderName.value.trim() })
 }
 
@@ -177,7 +190,7 @@ const handleCheckExpMonth = (event) => {
   const input = event.target.value
   const filteredInput = input.replace(/[^0-9]/g, '')
   if (Number(filteredInput) > 12) {
-    expMonth.value = filteredInput.charAt(0)
+    expMonth.value = 12
   } else {
     expMonth.value = filteredInput
   }
@@ -238,6 +251,8 @@ const handleCheckCardName = (event) => {
                       v-model.trim="cardholderName"
                       @input="handleCheckCardName"
                       @blur="handleTrim"
+                      @input="handleCheckCardName"
+                      @blur="handleTrim"
                     />
                   </FormControl>
                   <FormMessage :class="{ hidden: !showError }" />
@@ -277,6 +292,7 @@ const handleCheckCardName = (event) => {
                       type="text"
                       v-bind="componentField"
                       v-model.trim="cardNumber"
+                      @input="handleCheckCardNumber"
                       @input="handleCheckCardNumber"
                     />
                   </FormControl>
@@ -326,6 +342,7 @@ const handleCheckCardName = (event) => {
                       type="text"
                       v-model.trim="expMonth"
                       @input="handleCheckExpMonth"
+                      @input="handleCheckExpMonth"
                     />
                     <input
                       maxlength="2"
@@ -333,6 +350,7 @@ const handleCheckCardName = (event) => {
                       class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
                       type="text"
                       v-model.trim="expYear"
+                      @input="handleCheckExpYear"
                       @input="handleCheckExpYear"
                     />
                   </div>
@@ -368,6 +386,7 @@ const handleCheckCardName = (event) => {
                       type="text"
                       v-bind="componentField"
                       v-model.trim="cvc"
+                      @input="handleCheckCVC"
                       @input="handleCheckCVC"
                     />
                   </FormItem>
