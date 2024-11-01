@@ -25,7 +25,17 @@ const props = defineProps({
 
 const router = useRouter()
 const timestamp = props.notifyData.timestamp
-const { commentId, sender, videoId, type, videoTitle, replyId, purchase, donation, rep_milestone, cashout
+const {
+  commentId,
+  sender,
+  videoId,
+  type,
+  videoTitle,
+  replyId,
+  purchase,
+  donation,
+  rep_milestone,
+  cashout
 } = props.notifyData.data
 
 const setTimeInterval = ref(null)
@@ -59,7 +69,9 @@ const getContentByType = () => {
     case 'upload':
       return truncateString(`just uploaded a new video '<strong>${videoTitle}</strong>'`)
     case 'donation':
-      return truncateString(`has donated ${donation} to your video '<strong>${videoTitle}</strong>'`)
+      return truncateString(
+        `has donated ${donation} to your video '<strong>${videoTitle}</strong>'`
+      )
 
     // System
     case 'cashout':
@@ -84,7 +96,7 @@ const getContentByType = () => {
 const formatTimeAgo = (timestamp) => {
   const now = Date.now()
   const secondsElapsed = Math.floor((now - timestamp) / 1000)
-  
+
   const validSecondsElapsed = Math.max(secondsElapsed, 0)
 
   const minutesElapsed = Math.floor(secondsElapsed / 60)
@@ -95,19 +107,19 @@ const formatTimeAgo = (timestamp) => {
   const yearsElapsed = Math.floor(daysElapsed / 365)
 
   if (validSecondsElapsed < 60) {
-    return `${validSecondsElapsed} seconds ago`;
+    return `${validSecondsElapsed} seconds ago`
   } else if (minutesElapsed < 60) {
-    return `${minutesElapsed} minutes ago`;
+    return `${minutesElapsed} minutes ago`
   } else if (hoursElapsed < 24) {
-    return `${hoursElapsed} hours ago`;
+    return `${hoursElapsed} hours ago`
   } else if (daysElapsed < 7) {
-    return `${daysElapsed} days ago`;
+    return `${daysElapsed} days ago`
   } else if (daysElapsed < 30) {
-    return `${weeksElapsed} weeks ago`;
+    return `${weeksElapsed} weeks ago`
   } else if (daysElapsed < 365) {
-    return `${monthsElapsed} months ago`;
+    return `${monthsElapsed} months ago`
   } else {
-    return `${yearsElapsed} years ago`;
+    return `${yearsElapsed} years ago`
   }
 }
 
@@ -146,12 +158,26 @@ const handleModalPopup = () => {
     case 'upload':
       router.push({ name: 'videoDetail', params: { id: videoId } })
       break
+    case 'follow':
+      router.push('/streamer/analytics/overview')
+      break
 
     // System
-    case 'cashout':
-      return 'You have successfully withdrawn'
     case 'donation':
-      return 'has donated ${reps} to your video'
+      router.push('/streamer/analytics/overview')
+      break
+    case 'follow_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'view_video_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'rep_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'password_change_reminder':
+      router.push('/profile')
+      break
     default:
       return 'performed an action'
   }

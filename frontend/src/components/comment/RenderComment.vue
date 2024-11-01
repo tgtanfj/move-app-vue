@@ -20,6 +20,15 @@ import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
 import RenderIconsReps from '../../components/channel-comments/RenderIconsReps.vue'
+import {
+  showRepliesByComment,
+  isShowedReplies,
+  repliesPerComment,
+  hasMoreRepliesPerComment,
+  cursorReplies,
+  repliesCountPerComment,
+  myReplyPerComment
+} from '../../helpers/useReplies'
 
 const props = defineProps({
   comments: {
@@ -36,16 +45,10 @@ const commentToggleStore = useCommentToggleStore()
 
 const showFullContentIds = ref([])
 const showFullReplyIds = ref([])
-const isShowedReplies = ref({})
-const cursorReplies = ref(null)
-const hasMoreRepliesPerComment = ref({})
-const repliesPerComment = ref({})
-const repliesCountPerComment = ref({})
 const replyData = ref(null)
 const replyInputId = ref(null)
 const isFocused = ref(false)
 const isCancelComment = ref(false)
-const myReplyPerComment = ref({})
 
 const userAvatar = ref(localStorage.getItem('userAvatar'))
 
@@ -78,13 +81,6 @@ const toggleCommentContent = (commentId) => {
   } else {
     showFullContentIds.value.push(commentId)
   }
-}
-
-function formattedContent(content) {
-  if (content.length > 50 && !content.includes(' ')) {
-    return content.replace(/(.{50})/g, '$1 ')
-  }
-  return content
 }
 
 const handleLike = async (item) => {
@@ -157,22 +153,22 @@ const handleUnDislike = async (item) => {
   }
 }
 
-const showRepliesByComment = async (commentId) => {
-  const response = await commentServices.getRepliesByComment(commentId)
-  if (response.message === 'success') {
-    isShowedReplies.value[commentId] = true
-    const repliesArray = response.data
-    cursorReplies.value = repliesArray[repliesArray.length - 1].id
-    repliesPerComment.value[commentId] = repliesArray
-    hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 10
-    if (!repliesCountPerComment.value[commentId]) {
-      repliesCountPerComment.value[commentId] = repliesArray.length
-    } else {
-      repliesCountPerComment.value[commentId] += repliesArray.length
-    }
-    if (myReplyPerComment.value[commentId]) myReplyPerComment.value = {}
-  }
-}
+// const showRepliesByComment = async (commentId) => {
+//   const response = await commentServices.getRepliesByComment(commentId)
+//   if (response.message === 'success') {
+//     isShowedReplies.value[commentId] = true
+//     const repliesArray = response.data
+//     cursorReplies.value = repliesArray[repliesArray.length - 1].id
+//     repliesPerComment.value[commentId] = repliesArray
+//     hasMoreRepliesPerComment.value[commentId] = repliesArray.length >= 10
+//     if (!repliesCountPerComment.value[commentId]) {
+//       repliesCountPerComment.value[commentId] = repliesArray.length
+//     } else {
+//       repliesCountPerComment.value[commentId] += repliesArray.length
+//     }
+//     if (myReplyPerComment.value[commentId]) myReplyPerComment.value = {}
+//   }
+// }
 
 const hideRepliesByComment = (commentId, item) => {
   if (item.numberOfReply < repliesCountPerComment.value[commentId]) {
@@ -554,7 +550,7 @@ const isReplyValid = computed(() => {
                 v-for="reply in repliesPerComment[item.id]"
                 :key="reply.id"
                 :id="reply.id"
-                class="flex gap-4 items-start"
+                class="flex gap-4 items-start py-2"
               >
                 <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
                 <div class="flex flex-col gap-1">
