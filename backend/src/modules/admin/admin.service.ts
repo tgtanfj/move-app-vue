@@ -48,14 +48,20 @@ export class AdminService {
     sortBy: SortVideoAdmin,
     paginationDto: PaginationDto,
   ) {
-    const data = await this.adminRepository.getVideoAdmin(
+    const [data, count] = await this.adminRepository.getVideoAdmin(
       query,
       workoutLevel,
       duration,
       sortBy,
       paginationDto,
     );
-    return data;
+    const meta: PaginationMetadata = {
+      page: paginationDto.page,
+      take: paginationDto.take,
+      total: count,
+      totalPages: Math.ceil(count / paginationDto.take),
+    };
+    return objectResponse(data, meta);
   }
 
   async getUsers(userQueryDto: UserQueryDto): Promise<{ data: User[]; meta: PaginationDto }> {
