@@ -553,9 +553,6 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         replies: updatedReplies,
         isHiddenListReply: updateIsHiddenListReply,
         listComments: updatedComments,
-        targetCommentId:
-            state.targetCommentId != null ? 0 : state.targetCommentId,
-        targetReplyId: state.targetReplyId != null ? 0 : state.targetReplyId,
         isShowTemporaryListReply: false));
   }
 
@@ -665,26 +662,33 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     final now = DateTime.now();
     var viewTime =
         now.difference(state.timeStarted ?? DateTime.now()).inSeconds;
-    if (viewTime > (state.video?.durationsVideo ?? 0)) {
-      viewTime = state.video?.durationsVideo ?? 0;
+    if (viewTime > (state.video?.durationsVideo ?? 0 * 0.7)) {
+      await videoRepository.postViewVideo(
+        videoId: state.video?.id ?? 0,
+        date: DateFormat('yyyy-MM-dd')
+            .format(state.timeStarted ?? DateTime.now()),
+        viewTime: 0,
+      );
+      if (viewTime > (state.video?.durationsVideo ?? 0)) {
+        viewTime = state.video?.durationsVideo ?? 0;
+      }
+      final result = await videoRepository.postViewVideo(
+        videoId: state.video?.id ?? 0,
+        date: DateFormat('yyyy-MM-dd')
+            .format(state.timeStarted ?? DateTime.now()),
+        viewTime: viewTime,
+      );
+      result.fold((l) {
+        emit(state.copyWith(
+          status: VideoDetailStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          timeStarted: null,
+          status: VideoDetailStatus.success,
+        ));
+      });
     }
-    final result = await videoRepository.postViewVideo(
-      videoId: state.video?.id ?? 0,
-      date:
-          DateFormat('yyyy-MM-dd').format(state.timeStarted ?? DateTime.now()),
-      viewTime: viewTime,
-    );
-
-    result.fold((l) {
-      emit(state.copyWith(
-        status: VideoDetailStatus.failure,
-        errorMessage: l,
-      ));
-    }, (r) {
-      emit(state.copyWith(
-        timeStarted: null,
-        status: VideoDetailStatus.success,
-      ));
-    });
   }
 }

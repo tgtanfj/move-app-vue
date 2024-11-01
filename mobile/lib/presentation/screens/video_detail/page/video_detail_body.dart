@@ -76,7 +76,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(),
+        builder: (context) => const DialogAuthentication(
+          isStayOnPage: true,
+        ),
       );
     } else {
       final event = isLike
@@ -516,7 +518,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     double height,
     VideoDetailState state,
   ) {
-    String token = SharedPrefer.sharedPrefer.getUserToken();
     return Column(
       children: [
         const SizedBox(
@@ -536,11 +537,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               );
             },
             followButton: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -550,11 +553,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             giftRepButton: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -567,11 +572,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             onTapRate: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -584,7 +591,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   },
                 ).then((onValue) {
                   if (onValue != null) {
-                    if (context.mounted && onValue != null) {
+                    if (mounted) {
                       context
                           .read<VideoDetailBloc>()
                           .add(VideoDetailRateSubmitEvent(onValue));

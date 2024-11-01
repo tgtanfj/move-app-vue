@@ -2,7 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/ui/card'
 import Star from '../../assets/icons/Star.vue'
 import Button from '../../common/ui/button/Button.vue'
-import { truncateText } from '../../utils/truncateText.util'
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -25,8 +24,8 @@ const routeToInDepth = (videoId) => {
     </CardHeader>
     <CardContent class="pb-5">
       <img :src="video.thumbnail" class="h-[265px] w-full object-cover">
-      <h3 class="my-3 font-bold">
-        {{ truncateText(video.title, 65) }}
+      <h3 class="my-3 font-bold truncate text-nowrap">
+        {{ video.title  }}
       </h3>
 
       <p class="flex justify-between mb-3">

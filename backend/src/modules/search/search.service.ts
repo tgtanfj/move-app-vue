@@ -5,6 +5,7 @@ import { Category } from '@/entities/category.entity';
 import { Channel } from '@/entities/channel.entity';
 import { Video } from '@/entities/video.entity';
 import { SearchHistory } from '@/entities/search-history.entity';
+import { channel } from 'diagnostics_channel';
 
 @Injectable()
 export class SearchService {
@@ -68,8 +69,8 @@ export class SearchService {
 
     const [searchedVideos, totalCount] = await this.videoRepository
       .createQueryBuilder('video')
-      .leftJoinAndSelect('video.category', 'category')
-      .leftJoinAndSelect('video.channel', 'channel')
+      .innerJoinAndSelect('video.category', 'category')
+      .innerJoinAndSelect('video.channel', 'channel')
       .leftJoinAndSelect(
         'video.thumbnails',
         'thumbnail',
@@ -100,20 +101,23 @@ export class SearchService {
     yesterday.setDate(yesterday.getDate() - 1);
 
     const videosWithHighestViews = await this.videoRepository.find({
-      relations: { views: true, thumbnails: true },
+      relations: { views: true, thumbnails: true, channel: true },
       where: { title: ILike(keyword), views: { viewDate: yesterday } },
       order: { views: { totalView: 'DESC' } },
       skip: offset,
       take: limit,
     });
+
     const dataRes = videosWithHighestViews.map((video) => {
       const { views, ...data } = video;
       const thumbnails = video.thumbnails.find((thumbnail) => thumbnail.selected === true);
       return {
         ...data,
         thumbnails: [thumbnails],
+        channel: video.channel,
       };
     });
+
     return dataRes;
   }
 

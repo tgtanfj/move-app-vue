@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useSearchStore } from '../../stores/search'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const searchStore = useSearchStore()
 const router = useRouter()
@@ -54,6 +53,7 @@ const handleCloseResultModal = (event) => {
 }
 
 const redirectToSearch = (query) => {
+  searchStore.text = query
   router.push({
     path: '/search',
     query: {

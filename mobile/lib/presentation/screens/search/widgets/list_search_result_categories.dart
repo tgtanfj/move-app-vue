@@ -40,12 +40,10 @@ class ListSearchResultCategories extends StatelessWidget {
                 text: TextSpan(children: [
               TextSpan(
                   text: categoryList[index].numberOfViews.toString(),
-                  style:
-                      AppTextStyles.montserratStyle.regular14graniteGray),
+                  style: AppTextStyles.montserratStyle.regular14graniteGray),
               TextSpan(
                   text: " views",
-                  style:
-                      AppTextStyles.montserratStyle.regular14graniteGray),
+                  style: AppTextStyles.montserratStyle.regular14graniteGray),
             ]))
           ],
         );

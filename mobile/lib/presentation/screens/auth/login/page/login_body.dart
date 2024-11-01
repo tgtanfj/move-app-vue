@@ -18,7 +18,8 @@ import '../../widgets/divider_authentication.dart';
 import '../bloc/login_event.dart';
 
 class LoginBody extends StatefulWidget {
-  const LoginBody({super.key});
+  final bool isStayOnPage;
+  const LoginBody({super.key, this.isStayOnPage = false});
 
   @override
   State<LoginBody> createState() => _LoginBodyState();
@@ -36,11 +37,16 @@ class _LoginBodyState extends State<LoginBody>
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
           Fluttertoast.showToast(msg: Constants.loginSuccessful);
-          Navigator.pushAndRemoveUntil(
+          if (widget.isStayOnPage) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
             (Route<dynamic> route) => false,
           );
+          }
+          
         }
       },
       child: BlocBuilder<LoginBloc, LoginState>(

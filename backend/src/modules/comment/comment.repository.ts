@@ -80,7 +80,7 @@ export class CommentRepository {
       );
     }
 
-    const comments = await queryBuilder.getMany(); 
+    const comments = await queryBuilder.getMany();
 
     const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
@@ -184,7 +184,7 @@ export class CommentRepository {
   async getOneDetails(id: number, userId?: number) {
     const comment = await this.commentRepository.findOne({
       where: { id: id },
-      relations: ['user', 'user.channel', 'video'],
+      relations: ['user', 'user.channel', 'video', 'parent', 'parent.video'],
       order: { createdAt: 'DESC' },
       select: {
         user: {
@@ -197,12 +197,20 @@ export class CommentRepository {
             isBlueBadge: true,
           },
         },
+        parent: {
+          id: true,
+          video: {
+            id: true,
+          },
+        },
         video: {
           id: true,
         },
       },
     });
-    return await this.addInformation(comment, comment.video.id, userId);
+    const videoId = comment.parent ? comment.parent.video.id : comment.video.id;
+    const { parent, video, ...commentDetails } = await this.addInformation(comment, videoId, userId);
+    return commentDetails;
   }
 
   async getComments(condition: any, videoId: number, limit: number, order: boolean, userId?: number) {
@@ -342,10 +350,13 @@ export class CommentRepository {
 
     const newComment = this.commentRepository.create(data);
     const comment = await this.commentRepository.save(newComment);
-    const commentRes = await this.getOneWithUser(comment.id);
-    const totalDonation = await this.getTotalDonations(userId, videoId);
+    const [commentRes, totalDonation, lastContentDonate] = await Promise.all([
+      this.getOneWithUser(comment.id),
+      this.getTotalDonations(userId, videoId),
+      this.getLastContentDonate(userId, videoId),
+    ]);
 
-    return { ...commentRes, totalDonation };
+    return { ...commentRes, totalDonation, lastContentDonate };
   }
 
   async update(commentId: number, dto: UpdateCommentDto | Partial<Comment>): Promise<UpdateResult> {

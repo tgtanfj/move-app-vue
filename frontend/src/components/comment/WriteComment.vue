@@ -27,7 +27,7 @@ const openLoginStore = useOpenLoginStore()
 const isCancelComment = ref(false)
 const isFocused = ref(false)
 const comment = ref('')
-const userAvatar = ref(localStorage.getItem('userAvatar'))
+const userAvatar = localStorage.getItem('userAvatar')
 
 const isCommentValid = computed(() => {
   return comment.value.trim() !== ''
@@ -86,7 +86,7 @@ const handleClickInput = () => {
 <template>
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
-      <img :src="userAvatar ?? defaultAvatar" class="w-[40px] h-[40px] rounded-full object-cover" />
+      <img :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar" class="w-[40px] h-[40px] rounded-full object-cover" />
       <Input
         v-model="comment"
         @click="handleClickInput"

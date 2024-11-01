@@ -29,4 +29,8 @@ export class CategoryRepository {
       .where('category.name ILIKE :keyword', { keyword: `%${keyword}%` })
       .getMany();
   }
+
+  async save(category: Category) {
+    return await this.categoryRepository.save(category);
+  }
 }

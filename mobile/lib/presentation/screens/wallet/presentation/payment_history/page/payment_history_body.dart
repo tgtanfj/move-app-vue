@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -20,9 +19,13 @@ class PaymentHistoryBody extends StatefulWidget {
   State<PaymentHistoryBody> createState() => _PaymentHistoryBodyState();
 }
 
-class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
+class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<PaymentHistoryBloc, PaymentHistoryState>(
       listener: (context, state) {
         (state.status == PaymentHistoryStatus.processing)
