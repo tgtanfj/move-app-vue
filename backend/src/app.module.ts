@@ -64,6 +64,7 @@ import { AdminModule } from './modules/admin/admin.module';
         connection: {
           host: apiConfig.getString('REDIS_HOST'),
           port: apiConfig.getNumber('REDIS_PORT'),
+          password: apiConfig.getString('REDIS_PASSWORD'),
           connectTimeout: 200000,
         },
         
