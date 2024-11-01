@@ -283,6 +283,7 @@ class AuthRepository {
       await SharedPrefer.sharedPrefer.setUnreadNotificationCount(0);
       await SharedPrefer.sharedPrefer.setUserId(0);
       await SharedPrefer.sharedPrefer.setUserToken('');
+      await SharedPrefer.sharedPrefer.setUserRefreshToken('');
       await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
       await SharedPrefer.sharedPrefer.setUsername('');
       final GoogleSignIn googleSignIn = GoogleSignIn();
