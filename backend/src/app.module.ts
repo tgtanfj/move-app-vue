@@ -65,14 +65,8 @@ import { AdminModule } from './modules/admin/admin.module';
           host: apiConfig.getString('REDIS_HOST'),
           port: apiConfig.getNumber('REDIS_PORT'),
           connectTimeout: 200000,
-          defaultJobOptions: {
-            removeOnComplete: true,
-            removeOnFail: true,
-          },
-          settings: {
-            lockDuration: 300000,
-          },
         },
+        
       }),
     }),
     FaqsModule,
