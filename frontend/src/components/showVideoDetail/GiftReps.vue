@@ -92,13 +92,14 @@ function handleClickReps(value) {
 
 const canGiftReps = computed(() => {
   console.log(
-    'can gift',
+    'can gift11',
     paymentStore.reps,
     listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
   )
   return (
-    paymentStore.reps >
-    listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
+    giftReps.giftPackageId &&
+    paymentStore.reps >=
+      listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
   )
 })
 
