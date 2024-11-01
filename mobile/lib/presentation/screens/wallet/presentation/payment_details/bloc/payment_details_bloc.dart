@@ -24,19 +24,11 @@ class PaymentDetailsBloc
     on<PaymentDetailsCvvEvent>(_onPaymentDetailsCvvEvent);
   }
 
-  bool _shouldEnableSubmit() {
-    return (state.cardHolderName?.isNotEmpty ?? false) &&
-        (state.cardNumber?.isNotEmpty ?? false) &&
-        (state.expiryDate?.isNotEmpty ?? false) &&
-        (state.cvv?.isNotEmpty ?? false);
-  }
-
   Future<void> _onPaymentDetailsInitialEvent(PaymentDetailsInitialEvent event,
       Emitter<PaymentDetailsState> emit) async {
     emit(state.copyWith(
         selectedCountry: event.selectedCountry,
         status: PaymentDetailsStatus.processing));
-    emit(state.copyWith(isEnableSubmitPaymentMethod: _shouldEnableSubmit()));
     add(const PaymentDetailsCountrySelectEvent());
   }
 
@@ -129,9 +121,9 @@ class PaymentDetailsBloc
         state.cardHolderName != event.cardHolderName
             ? false
             : state.isShowCardHolderNameMessage;
+
     emit(state.copyWith(
         cardHolderName: event.cardHolderName,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
         isShowCardHolderNameMessage: isShowCardHolderNameMessage));
   }
 
@@ -143,7 +135,6 @@ class PaymentDetailsBloc
         : state.isShowCardNumberMessage;
     emit(state.copyWith(
         cardNumber: event.cardNumber,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
         isShowCardNumberMessage: isShowCardNumberMessage));
   }
 
@@ -155,7 +146,6 @@ class PaymentDetailsBloc
         : state.isShowExpiryDateMessage;
     emit(state.copyWith(
         expiryDate: event.expiryDate,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
         isShowExpiryDateMessage: isShowExpiryDateMessage));
   }
 
@@ -163,9 +153,6 @@ class PaymentDetailsBloc
       PaymentDetailsCvvEvent event, Emitter<PaymentDetailsState> emit) async {
     final isShowCvvMessage =
         state.cvv != event.cvv ? false : state.isShowCvvMessage;
-    emit(state.copyWith(
-        cvv: event.cvv,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
-        isShowCvvMessage: isShowCvvMessage));
+    emit(state.copyWith(cvv: event.cvv, isShowCvvMessage: isShowCvvMessage));
   }
 }

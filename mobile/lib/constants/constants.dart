@@ -331,7 +331,7 @@ class Constants {
   static const String close = 'Close';
   static const String favorites = 'Favorites';
   static const String downloads = 'Downloads';
-  static const String visaEndingWith = 'Visa ending with';
+  static const String endingWith = 'ending with';
   static const String change = 'Change';
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
@@ -388,4 +388,6 @@ class Constants {
       'Your payment method has been setup successfully.';
   static const String guideLineCVV =
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
+  static const String repsNotFound = 'Reps not found';
+  static const String requiresConfirmation = 'requires_confirmation';
 }

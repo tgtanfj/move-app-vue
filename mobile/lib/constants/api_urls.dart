@@ -42,4 +42,7 @@ class ApiUrls {
   static const String stripeListCardsEndPoint = "stripe/list-cards";
   static const String viewEndPoint = "view";
   static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String paymentListRepsPackageEndPoint =
+      "payment/list-reps-package";
+  static const String paymentBuyRepsEndPoint = "payment/buy-reps";
 }

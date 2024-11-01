@@ -4,10 +4,12 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/rep_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 
 class OrderFailedDialog extends StatelessWidget {
-  const OrderFailedDialog({super.key});
+  final RepModel? rep;
+  const OrderFailedDialog({super.key, required this.rep});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class OrderFailedDialog extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).pop(true);
                   },
                   child: SvgPicture.asset(
                     AppIcons.close.svgAssetPath,
@@ -44,7 +46,7 @@ class OrderFailedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${Constants.yourPurchaseOf} ${Constants.rep} ${Constants.isNotSuccessful}',
+              '${Constants.yourPurchaseOf} ${rep?.numberOfREPs}${Constants.rep} ${Constants.isNotSuccessful}',
               style: AppTextStyles.montserratStyle.regular16DarkSilver,
             ),
             const SizedBox(height: 10),
@@ -53,7 +55,7 @@ class OrderFailedDialog extends StatelessWidget {
               title: Constants.okay,
               titleStyle: AppTextStyles.montserratStyle.bold16White,
               onTap: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop(true);
               },
             )
           ],

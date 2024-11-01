@@ -4,9 +4,13 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/card_model.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
 
 class WithSavedPayment extends StatelessWidget {
-  const WithSavedPayment({super.key});
+  final CardModel? card;
+
+  const WithSavedPayment({super.key, this.card});
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +22,22 @@ class WithSavedPayment extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             masterCard(),
-            Text(
-              Constants.visaEndingWith,
-              style: AppTextStyles.montserratStyle.regular16Black,
-            ),
+            Text.rich(TextSpan(
+                text: '${card?.brand} ${Constants.endingWith} ',
+                style: AppTextStyles.montserratStyle.regular16Black,
+                children: [
+                  TextSpan(
+                    text: '${card?.last4}',
+                    style: AppTextStyles.montserratStyle.bold16black,
+                  )
+                ]))
           ],
         ),
         InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const WalletBody()));
+            },
             child: Text(
               Constants.change,
               style: AppTextStyles.montserratStyle.regular16tiffanyBlue,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +15,7 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
+import 'package:move_app/utils/card_date_formatter.dart';
 
 class PaymentDetailsBody extends StatefulWidget {
   const PaymentDetailsBody({super.key});
@@ -68,12 +70,24 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                       CustomEditText(
                         initialValue: state.cardHolderName,
                         title: Constants.cardholderName,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r"[a-zA-Z\s]")),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
                         titleStyle:
                             AppTextStyles.montserratStyle.regular14Black,
                         onChanged: (value) => {
                           BlocProvider.of<PaymentDetailsBloc>(context).add(
                             PaymentDetailsCardHolderNameEvent(
                               cardHolderName: value,
+                            ),
+                          )
+                        },
+                        onLostFocus: (value) => {
+                          BlocProvider.of<PaymentDetailsBloc>(context).add(
+                            PaymentDetailsCardHolderNameEvent(
+                              cardHolderName: value.trim(),
                             ),
                           )
                         },
@@ -115,6 +129,11 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         height: 12,
                       ),
                       CustomEditText(
+                        textInputType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(16),
+                        ],
                         initialValue: state.cardNumber,
                         title: Constants.cardNumber,
                         titleStyle:
@@ -146,8 +165,13 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                           Expanded(
                             child: CustomEditText(
                               initialValue: state.expiryDate,
-                              hintText: Constants.formatExpiryDate,
+                              hintText: Constants.mmyy,
                               title: Constants.expiryDate,
+                              textInputType: TextInputType.number,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(5),
+                                CardDateFormatter(),
+                              ],
                               titleStyle:
                                   AppTextStyles.montserratStyle.regular14Black,
                               onChanged: (value) => {
@@ -179,6 +203,11 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                           ),
                           Expanded(
                               child: CustomEditText(
+                            textInputType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(3),
+                            ],
                             initialValue: state.cvv,
                             title: Constants.cvv,
                             titleStyle:
@@ -264,18 +293,16 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         height: 24,
                       ),
                       CustomButton(
-                          isEnabled: state.isEnableSubmitPaymentMethod ?? false,
+                          isEnabled: state.isEnableSubmitPaymentMethod,
                           title: Constants.submit,
                           titleStyle: AppTextStyles.montserratStyle.bold16White,
-                          backgroundColor:
-                              (state.isEnableSubmitPaymentMethod ?? false)
-                                  ? AppColors.tiffanyBlue
-                                  : AppColors.spanishGray,
-                          borderColor:
-                              (state.isEnableSubmitPaymentMethod ?? false)
-                                  ? AppColors.tiffanyBlue
-                                  : AppColors.spanishGray,
-                          onTap: (state.isEnableSubmitPaymentMethod ?? false)
+                          backgroundColor: (state.isEnableSubmitPaymentMethod)
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          borderColor: (state.isEnableSubmitPaymentMethod)
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          onTap: (state.isEnableSubmitPaymentMethod)
                               ? () {
                                   FocusScope.of(context).unfocus();
                                   context
