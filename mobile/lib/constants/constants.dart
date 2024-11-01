@@ -203,6 +203,7 @@ class Constants {
   static const String lorem =
       "Lorem ipsumcicing elitr, am voluptua. At vero eduo dolores.";
   static const String readMore = "Read More";
+  static const String readLess = "Show Less";
   static const String showLess = "Show Less";
   static const String cancelComment = "Cancel Comment?";
   static const String areUSure =
@@ -228,7 +229,8 @@ class Constants {
   static const String notFound = "Not Found";
   static const String anonymous = "Anonymous";
   static const String showMoreReplies = "Show more replies";
-  static const String emptyComments = "No comments to  display";
+  static const String emptyComments = "No comments to display";
+  static const String leaveAComment = "Leave a comment to get started";
 
   static const String editedProfileSuccessfully = "Edited profile successfully";
   static const String rateTheVideo = "Rate the video";
@@ -290,6 +292,8 @@ class Constants {
   static const String loginToWebsite =
       "Please log in to the website to view this notice!";
   static const String okay = "Okay";
+  static const String emptyNotification =
+      "Your notifications will be displayed here. Follow your favorite channels to receive notifications about new videos.";
   static const String buyREP = 'Buy REP\$';
   static const String rep = 'REP\$';
   static const String us = 'US\$';
@@ -327,7 +331,7 @@ class Constants {
   static const String close = 'Close';
   static const String favorites = 'Favorites';
   static const String downloads = 'Downloads';
-  static const String visaEndingWith = 'Visa ending with';
+  static const String endingWith = 'ending with';
   static const String change = 'Change';
   static const String cvv2Explain =
       'CVV2/CVC2: this is a 3-digit number typically found on the back of Visa, MasterCard. It\'s used for additional security during transactions';
@@ -337,7 +341,6 @@ class Constants {
   static const String startDate = "START DATE";
   static const String endDate = "END DATE";
   static const String time = "TIME";
-  static const String leaveAComment = "Leave a comment to get started";
   static const String noPaymentHistory = "No payment history found";
   static const String haveNotPurchased =
       "You have not purchased any REPs during this period of time.";
@@ -385,5 +388,7 @@ class Constants {
       'Your payment method has been setup successfully.';
   static const String guideLineCVV =
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
+  static const String repsNotFound = 'Reps not found';
+  static const String requiresConfirmation = 'requires_confirmation';
   static const String refreshTokenExpired = 'Refresh token expired';
 }

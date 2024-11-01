@@ -19,6 +19,10 @@ const props = defineProps({
   open: {
     type: Boolean,
     default: false
+  },
+  width: {
+    type: Number,
+    required: false
   }
 })
 
@@ -32,7 +36,7 @@ const open = defineModel('open', {
 
 <template>
   <Dialog v-model:open="open">
-    <DialogContent class="max-w-[568px]">
+    <DialogContent :class="['max-w-[568px]', width ? `w-[${width}px]` : '']">
       <DialogHeader v-if="title">
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription>

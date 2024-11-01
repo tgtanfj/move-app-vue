@@ -55,7 +55,7 @@ watchEffect(() => {
             />
             <FiguresCard
               :title="$t('streamer_analysis.average_view_time')"
-              :figures="convertToTimeFormat(figures.avgTime)"
+              :figures="convertToTimeFormat(Math.round(figures.avgTime))"
             />
           </div>
         </div>

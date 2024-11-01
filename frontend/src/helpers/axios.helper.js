@@ -28,7 +28,7 @@ apiAxios.interceptors.response.use(
   async (error) => {
     const { response } = error
     const authStore = useAuthStore()
-    if (response && response.data.message === 'jwt expired') {
+    if (response && response.data.message === 'jwt') {
       try {
         const refreshToken = localStorage.getItem('refreshToken')
         const res = await axios.get(`${ADMIN_BASE}/auth/refresh`, {
@@ -40,8 +40,10 @@ apiAxios.interceptors.response.use(
         if (res.status === 200) {
           const { accessToken } = res.data.data
           localStorage.setItem('token', accessToken)
+          if (authStore) {
+            authStore.accessToken = accessToken
+          }
           apiAxios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-          authStore.user.accessToken = accessToken
         }
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError)

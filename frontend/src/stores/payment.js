@@ -4,8 +4,10 @@ import { apiAxios } from '@helpers/axios.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { toast } = useToast()
+const route = useRoute()
 
 export const usePaymentStore = defineStore('payment', () => {
   const isLoading = ref(false)
@@ -15,9 +17,8 @@ export const usePaymentStore = defineStore('payment', () => {
   const showSucessNotify = ref(false)
   const stripeErr = ref('')
   const reps = ref(0)
-  const hasCheckedForPayment = ref(false)
   const isBuying = ref(false)
-
+  const selectedPackage = ref(null)
   const repsPackageList = ref([])
 
   onMounted(async () => {
@@ -46,14 +47,17 @@ export const usePaymentStore = defineStore('payment', () => {
       hideNotify()
     }, 5000)
   }
+  const setSelectedPackage = (item) => {
+    selectedPackage.value = item
+  }
 
   const fetchUserPaymentMethod = async () => {
     try {
       isLoading.value = true
       const response = await apiAxios.get('/stripe/list-cards')
-      if (response.status === 200) {
-        userPaymentList.value = response.data.data
-      } else throw new Error(response.data.error)
+      if (response.status === 200 && response.data.data.id) {
+        userPaymentList.value = { ...response.data.data }
+      } else throw new Error(response.data.error || 'Error getting payment information')
     } catch (error) {
       console.error('Error fetching user payment:', error)
     } finally {
@@ -187,7 +191,7 @@ export const usePaymentStore = defineStore('payment', () => {
       isBuying.value = false
     }
   }
-  const buyRepsPackageWithoutSavedPayment = async (stripe, card, item, isChecked, path) => {
+  const buyRepsPackageWithoutSavedPaymentMethod = async (stripe, card, item, isChecked, path) => {
     try {
       isBuying.value = true
       const { token, error: tokenError } = await createToken(card)
@@ -215,12 +219,15 @@ export const usePaymentStore = defineStore('payment', () => {
             save: isChecked
           })
           if (response.status === 200) {
+            if (isChecked) {
+              await fetchUserPaymentMethod()
+            }
             const { client_secret, status } = response.data.data
             if (status !== 'succeeded') {
               await stripe.value.confirmCardPayment(client_secret)
             }
             reps.value += item.numberOfREPs
-            if (path === '/wallet') {
+            if (path && path === '/wallet') {
               await fetchUserPaymentMethod()
             }
           } else {
@@ -243,18 +250,16 @@ export const usePaymentStore = defineStore('payment', () => {
     if (userPaymentList.value) {
       return true
     }
-    if (!hasCheckedForPayment.value) {
-      hasCheckedForPayment.value = true
-      try {
-        const response = await apiAxios.get('/stripe/list-cards')
-        if (response.status === 200 && response.data.data) {
-          userPaymentList.value = { ...response.data.data }
-          return true
-        }
-      } catch (error) {
-        return false
+    try {
+      const response = await apiAxios.get('/stripe/list-cards')
+      if (response.status === 200 && response.data.data) {
+        userPaymentList.value = { ...response.data.data }
+        return true
       }
+    } catch (error) {
+      return false
     }
+
     return false
   }
   return {
@@ -267,7 +272,8 @@ export const usePaymentStore = defineStore('payment', () => {
     stripeErr,
     repsPackageList,
     reps,
-    hasCheckedForPayment,
+    selectedPackage,
+    setSelectedPackage,
     checkForSavedPayment,
     getListRepsPackage,
     hideNotify,
@@ -276,6 +282,6 @@ export const usePaymentStore = defineStore('payment', () => {
     createUserPaymentMethod,
     sendPaymentIdToServer,
     buyRepsPackageWithSavedPayment,
-    buyRepsPackageWithoutSavedPayment
+    buyRepsPackageWithoutSavedPaymentMethod
   }
 })

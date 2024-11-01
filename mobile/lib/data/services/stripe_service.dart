@@ -48,4 +48,21 @@ class StripeService {
       throw Exception(e.toString());
     }
   }
+
+  Future<PaymentIntent> confirmPayment({
+    required String paymentIntentClientSecret,
+    PaymentMethodParams? data,
+    PaymentMethodOptions? options,
+  }) async {
+    try {
+      final paymentMethod = await Stripe.instance.confirmPayment(
+        paymentIntentClientSecret: paymentIntentClientSecret,
+        data: data,
+        options: options,
+      );
+      return paymentMethod;
+    } on StripeError {
+      rethrow;
+    }
+  }
 }

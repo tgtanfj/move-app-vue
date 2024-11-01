@@ -367,7 +367,7 @@
   },
   "wallet": {
     "card_number": "Card Number",
-    "card_holder": "Card Holder",
+    "card_holder": "Cardholder Name",
     "card_type": "Card type",
     "card_info": "Card Information",
     "your_payment_method": "Your payment method",

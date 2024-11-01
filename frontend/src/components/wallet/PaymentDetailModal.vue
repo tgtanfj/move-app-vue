@@ -42,8 +42,9 @@ const showError = ref(false)
 const cardholderName = ref('')
 const cvc = ref('')
 const cardNumber = ref('')
+const coun = ref('')
 
-const { values, setValues, errors } = useForm({
+const { values, setValues, errors, resetForm } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -55,13 +56,30 @@ const { values, setValues, errors } = useForm({
   validationSchema: walletSchema
 })
 
+watch(cardNumber, (newValue) => {
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
+})
+
+watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
+
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
     if (response) countries.value = response?.data
   })
   const handleCallAPis = async () => {
     await walletServices.fetchUserLocation().then((response) => {
-      if (response) userCountryIso.value = response?.country
+      if (response) coun.value = response?.country
     })
   }
   isLoading.value = true
@@ -69,14 +87,14 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
-
 watch(isOpen, async (newValue) => {
   if (newValue) {
     stripe.value = await loadStripe(STRIPE_KEY)
+    resetForm()
+    userCountryIso.value = coun.value
+    setValues({ ...values, country: coun.value })
   }
 })
-
 watch(cardType, (newValue) => {
   if (newValue) {
     setValues({ ...values, cardType: cardType.value })
@@ -108,15 +126,22 @@ watch([expMonth, expYear], (newValue) => {
   }
 })
 
+const resetFormOnClose = () => {
+  cardNumber.value = ''
+  cardholderName.value = ''
+  cardType.value = ''
+  expMonth.value = ''
+  expYear.value = ''
+  cvc.value = ''
+  userCountryIso.value = ''
+  showError.value = false
+}
+
 const isSubmitEnabled = computed(() => {
   const isFormDataEmpty = hasEmptyProperty(values)
 
   return !isFormDataEmpty
 })
-
-const setCardType = (type) => {
-  cardType.value = type
-}
 
 const onSubmit = async () => {
   if (Object.keys(errors.value).length > 0) {
@@ -134,15 +159,62 @@ const onSubmit = async () => {
       type: values.cardType
     }
 
-    await paymentStore.createUserPaymentMethod(cardData).then(() => {
-      const { query } = route
-      if (query.returnTo) router.push(`${query.returnTo}`)
-    })
+    await paymentStore.createUserPaymentMethod(cardData)
+    // .then(() => {
+    //   const { query } = route
+    //   if (query.returnTo) router.push(`${query.returnTo}`)
+    // })
   }
+}
+
+const handleTrim = (e) => {
+  cardholderName.value = e.target.value.trim()
+  console.log(`${cardholderName.value}hello`)
+  setValues({ ...values, cardholderName: cardholderName.value.trim() })
+}
+
+const handleCheckExpMonth = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  if (Number(filteredInput) > 12) {
+    expMonth.value = filteredInput.charAt(0)
+  } else {
+    expMonth.value = filteredInput
+  }
+}
+const handleCheckExpYear = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  expYear.value = filteredInput
+}
+const handleCheckCardNumber = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 16)
+  cardNumber.value = filteredInput
+  setValues({ ...values, cardNumber: filteredInput })
+}
+const handleCheckCVC = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 3)
+  cvc.value = filteredInput
+  setValues({ ...values, cvc: filteredInput })
+}
+const handleCheckCardName = (event) => {
+  const input = event.target.value
+  const trimmedInput = input.replace(/\s+/g, ' ').trim()
+  cardholderName.value = trimmedInput
+  setValues({ ...values, cardholderName: trimmedInput })
 }
 </script>
 <template>
-  <Dialog v-model:open="isOpen">
+  <Dialog
+    v-model:open="isOpen"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <DialogTrigger aschild>
       <Button>{{ t('wallet.setup_payment') }}</Button>
     </DialogTrigger>
@@ -160,11 +232,12 @@ const onSubmit = async () => {
                   <FormControl>
                     <Input
                       maxlength="50"
-                      placeholder="Card Holder Name"
                       class="border-[#CCCCCC] h-[40px] w-full"
                       type="text"
                       v-bind="componentField"
                       v-model.trim="cardholderName"
+                      @input="handleCheckCardName"
+                      @blur="handleTrim"
                     />
                   </FormControl>
                   <FormMessage :class="{ hidden: !showError }" />
@@ -200,11 +273,11 @@ const onSubmit = async () => {
                   <FormControl>
                     <Input
                       maxlength="16"
-                      placeholder="Card Number"
                       class="border-[#CCCCCC] h-[40px] w-full"
                       type="text"
                       v-bind="componentField"
                       v-model.trim="cardNumber"
+                      @input="handleCheckCardNumber"
                     />
                   </FormControl>
                   <FormMessage class="mt-2" :class="{ hidden: !showError }" />
@@ -222,7 +295,6 @@ const onSubmit = async () => {
                         'opacity-100': values.cardType === 'visa',
                         'opacity-30': values.cardType !== 'visa'
                       }"
-                      @click="setCardType('visa')"
                     >
                       <VisaCardIcon />
                     </div>
@@ -232,7 +304,6 @@ const onSubmit = async () => {
                         'opacity-100': values.cardType === 'mastercard',
                         'opacity-30': values.cardType !== 'mastercard'
                       }"
-                      @click="setCardType('mastercard')"
                     >
                       <MasterCardIcon class="w-7 h-5" />
                     </div>
@@ -254,6 +325,7 @@ const onSubmit = async () => {
                       class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
                       type="text"
                       v-model.trim="expMonth"
+                      @input="handleCheckExpMonth"
                     />
                     <input
                       maxlength="2"
@@ -261,9 +333,10 @@ const onSubmit = async () => {
                       class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
                       type="text"
                       v-model.trim="expYear"
+                      @input="handleCheckExpYear"
                     />
                   </div>
-                  <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+                  <FormMessage class="!mt-0" :class="{ hidden: !showError }" />
                 </FormItem>
               </FormField>
             </div>
@@ -275,7 +348,7 @@ const onSubmit = async () => {
                     <Tooltip>
                       <TooltipTrigger
                         asChild
-                        class="cursor-pointer rounded-full border-[2px] py-[1px] px-[4px] border-black font-semibold"
+                        class="cursor-pointer rounded-full border-[2px] py-[0.8px] px-[4px] border-black font-semibold ml-2"
                       >
                         <span>?</span>
                       </TooltipTrigger>
@@ -295,6 +368,7 @@ const onSubmit = async () => {
                       type="text"
                       v-bind="componentField"
                       v-model.trim="cvc"
+                      @input="handleCheckCVC"
                     />
                   </FormItem>
                   <FormMessage class="mt-2" :class="{ hidden: !showError }" />
@@ -303,7 +377,7 @@ const onSubmit = async () => {
             </div>
           </div>
           <div>
-            <div class="text-[12px] text-[#777777] w-full mt-2">
+            <div class="text-[10px] w-full mt-2">
               {{ t('wallet.by_submit') }}
               <span class="text-primary text-[12px]">{{ t('wallet.end_user_license') }}</span
               >,

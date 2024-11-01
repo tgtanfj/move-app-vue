@@ -1,19 +1,19 @@
 <script setup>
-import StartIcon from '@assets/icons/startIcon.vue'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/ui/card'
+import StartIcon from '@assets/icons/startIcon.vue'
 import { BarChart } from '@common/ui/chart-bar'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
 import CustomSelection from '@components/channel-view/CustomSelection.vue'
 import FiguresCard from '@components/dashboard-analytics/FiguresCard.vue'
-import { SHOW_ANALYTICS } from '@constants/view-channel.constant'
-import { ChevronLeft, Percent } from 'lucide-vue-next'
-import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
-import { ADMIN_BASE } from '@constants/api.constant'
-import { apiAxios } from '@helpers/axios.helper'
-import { convertDatePublish } from '@utils/convertTimePostVideo.util'
 import LoadingTable from '@components/LoadingTable.vue'
+import { ADMIN_BASE } from '@constants/api.constant'
+import { SHOW_ANALYTICS } from '@constants/view-channel.constant'
+import { apiAxios } from '@helpers/axios.helper'
 import { convertToTimeFormat } from '@utils/formatVideoLength.util'
+import { ChevronLeft } from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { formatDateLong } from '../../utils/convertDate.util'
 
 const router = useRouter()
 const route = useRoute()
@@ -130,9 +130,7 @@ onMounted(() => {
     <div class="flex gap-14 mt-2" v-if="videoInDepth && videoInDepthGraphic">
       <!-- Left content -->
       <div>
-        <div class="w-[250px] h-[150px]">
-          <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full h-full" />
-        </div>
+        <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full object-cover h-[150px]" />
         <p class="font-bold text-lg mt-2">{{ videoInDepth.title }}</p>
         <p class="text-lg text-gray-500 font-medium">{{ videoInDepth.category }}</p>
 
@@ -158,7 +156,7 @@ onMounted(() => {
             <p class="font-semibold uppercase text-gray-500">
               {{ $t('video_in_depth.publish_on') }}
             </p>
-            <p>{{ convertDatePublish(videoInDepth.publishedOn) }}</p>
+            <p>{{ formatDateLong(videoInDepth.publishedOn) }}</p>
           </li>
         </ul>
       </div>

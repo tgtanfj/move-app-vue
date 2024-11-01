@@ -21,7 +21,6 @@ final class PaymentDetailsState extends Equatable {
   final String? cardNumber;
   final String? expiryDate;
   final String? cvv;
-  final bool? isEnableSubmitPaymentMethod;
   final bool? isShowCardHolderNameMessage;
   final bool? isShowCardNumberMessage;
   final bool? isShowExpiryDateMessage;
@@ -32,6 +31,12 @@ final class PaymentDetailsState extends Equatable {
   final String? cvvErrorMessage;
   final String? paymentMethodId;
   final dynamic responseData;
+
+  bool get isEnableSubmitPaymentMethod =>
+      (cardHolderName?.isNotEmpty ?? false) &&
+      (cardNumber?.isNotEmpty ?? false) &&
+      (expiryDate?.isNotEmpty ?? false) &&
+      (cvv?.isNotEmpty ?? false);
 
   const PaymentDetailsState({
     this.status,
@@ -44,7 +49,6 @@ final class PaymentDetailsState extends Equatable {
     this.cardNumber,
     this.expiryDate,
     this.cvv,
-    this.isEnableSubmitPaymentMethod,
     this.isShowCardHolderNameMessage,
     this.isShowCardNumberMessage,
     this.isShowExpiryDateMessage,
@@ -68,7 +72,6 @@ final class PaymentDetailsState extends Equatable {
         cardNumber: '',
         expiryDate: '',
         cvv: '',
-        isEnableSubmitPaymentMethod: false,
         isShowCardHolderNameMessage: false,
         isShowCardNumberMessage: false,
         isShowExpiryDateMessage: false,
@@ -92,7 +95,6 @@ final class PaymentDetailsState extends Equatable {
     String? cardNumber,
     String? expiryDate,
     String? cvv,
-    bool? isEnableSubmitPaymentMethod,
     bool? isShowCardHolderNameMessage,
     bool? isShowCardNumberMessage,
     bool? isShowExpiryDateMessage,
@@ -115,8 +117,6 @@ final class PaymentDetailsState extends Equatable {
       cardNumber: cardNumber ?? this.cardNumber,
       expiryDate: expiryDate ?? this.expiryDate,
       cvv: cvv ?? this.cvv,
-      isEnableSubmitPaymentMethod:
-          isEnableSubmitPaymentMethod ?? this.isEnableSubmitPaymentMethod,
       isShowCardHolderNameMessage:
           isShowCardHolderNameMessage ?? this.isShowCardHolderNameMessage,
       isShowCardNumberMessage:
@@ -148,7 +148,6 @@ final class PaymentDetailsState extends Equatable {
         cardNumber,
         expiryDate,
         cvv,
-        isEnableSubmitPaymentMethod,
         isShowCardHolderNameMessage,
         isShowCardNumberMessage,
         isShowExpiryDateMessage,

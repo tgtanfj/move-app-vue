@@ -233,9 +233,13 @@ class _GiftRepsBodyState extends State<GiftRepsBody> {
                           Navigator.pop(context);
                           showDialog(
                             context: context,
-                            builder: (context) => const BuyRepDialog(
-                              isBack: true,
-                            ),
+                            builder: (BuildContext context) {
+                              return BuyRepDialog(
+                                isBack: true,
+                                numberOfREPs: state.user?.numberOfREPs ?? 0,
+                                reps: state.reps ?? [],
+                              );
+                            },
                           );
                         },
                       ),

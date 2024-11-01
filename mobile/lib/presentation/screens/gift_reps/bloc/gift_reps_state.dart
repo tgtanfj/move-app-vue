@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/gift_model.dart';
+import 'package:move_app/data/models/rep_model.dart';
 import 'package:move_app/data/models/user_model.dart';
 
 enum GiftRepsStatus {
@@ -43,6 +44,7 @@ class GiftRepsState extends Equatable {
   final bool isSendEnabled;
   final int? videoId;
   final UserModel? user;
+  final List<RepModel>? reps;
 
   const GiftRepsState({
     this.giftRepMessageType,
@@ -53,6 +55,7 @@ class GiftRepsState extends Equatable {
     this.isSendEnabled = false,
     this.user,
     this.videoId,
+    this.reps,
   });
 
   static GiftRepsState initial() => const GiftRepsState(
@@ -63,6 +66,7 @@ class GiftRepsState extends Equatable {
         titleGiftIdSelected: -1,
         isSendEnabled: false,
       );
+
   GiftRepsState copyWith({
     GiftRepMessageType? giftRepMessageType,
     List<GiftModel>? listGifts,
@@ -72,6 +76,7 @@ class GiftRepsState extends Equatable {
     bool? isSendEnabled,
     UserModel? user,
     int? videoId,
+    List<RepModel>? reps,
   }) {
     return GiftRepsState(
       giftRepMessageType: giftRepMessageType ?? this.giftRepMessageType,
@@ -82,6 +87,7 @@ class GiftRepsState extends Equatable {
       isSendEnabled: isSendEnabled ?? this.isSendEnabled,
       user: user ?? this.user,
       videoId: videoId ?? this.videoId,
+      reps: reps ?? this.reps,
     );
   }
 
@@ -95,5 +101,6 @@ class GiftRepsState extends Equatable {
         isSendEnabled,
         user,
         videoId,
+        reps,
       ];
 }

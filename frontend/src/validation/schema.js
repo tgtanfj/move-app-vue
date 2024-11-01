@@ -115,6 +115,7 @@ export const walletSchema = yup.object().shape({
   expDate: yup
     .string()
     .required('This field is required')
+    .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Check your expiration date')
     .test('valid-expiration-date', 'Check your expiration date', (value) => {
       if (!value) return false
       const [month, year] = value.split('/').map(Number)

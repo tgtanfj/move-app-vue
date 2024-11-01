@@ -27,7 +27,7 @@ export class UploadS3Processor extends WorkerHost {
         } finally {
           fs.unlinkSync(job.data.path);
         }
-
+        break;
       default:
         throw new Error('No job name match');
     }
