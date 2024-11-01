@@ -94,7 +94,7 @@ export class AdminRepository {
     sortBy: SortVideoAdmin,
     paginationDto: PaginationDto,
   ) {
-    const data = await this.videoRepository.find({
+    const data = await this.videoRepository.findAndCount({
       where: {
         workoutLevel,
         duration,
