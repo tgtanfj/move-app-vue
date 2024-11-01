@@ -385,4 +385,5 @@ class Constants {
       'Your payment method has been setup successfully.';
   static const String guideLineCVV =
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
+  static const String refreshTokenExpired = 'Refresh token expired';
 }

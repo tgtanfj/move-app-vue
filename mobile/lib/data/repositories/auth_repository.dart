@@ -262,6 +262,7 @@ class AuthRepository {
         ),
       );
       await SharedPrefer.sharedPrefer.setUserToken('');
+      await SharedPrefer.sharedPrefer.setUserRefreshToken('');
       await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
       await SharedPrefer.sharedPrefer.setUsername('');
       final GoogleSignIn googleSignIn = GoogleSignIn();

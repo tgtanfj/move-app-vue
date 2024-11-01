@@ -38,5 +38,6 @@ class ApiUrls {
   static const String donationEndPoint = "donation";
   static const String stripeListCardsEndPoint = "stripe/list-cards";
   static const String viewEndPoint = "view";
-   static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String refreshTokenEndpoint = "auth/refresh";
 }
