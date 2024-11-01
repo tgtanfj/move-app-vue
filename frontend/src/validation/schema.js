@@ -97,24 +97,24 @@ export const walletSchema = yup.object().shape({
   cardholderName: yup
     .string()
     .trim()
-    .required('This field is required')
+    .required()
     .matches(/^[A-Za-z\s]+$/, t('wallet.no_special_characters'))
     .max(50, t('Max 50 characters')),
   cardNumber: yup
     .string()
     .trim()
-    .required('This field is required')
+    .required()
     .length(16, 'Invalid card number')
     .matches(/^\d{16}$/, 'Invalid card number'),
   cvc: yup
     .string()
     .trim()
-    .required('This field is required')
+    .required()
     .length(3, 'Invalid card verification code')
     .matches(/^\d{3}$/, 'Invalid card verification code'),
   expDate: yup
     .string()
-    .required('This field is required')
+    .required()
     .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Check your expiration date')
     .test('valid-expiration-date', 'Check your expiration date', (value) => {
       if (!value) return false
@@ -132,5 +132,5 @@ export const walletSchema = yup.object().shape({
 
       return true
     }),
-  cardType: yup.string().trim().required(t('user_profile.field_required'))
+  cardType: yup.string().trim()
 })

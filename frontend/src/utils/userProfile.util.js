@@ -13,7 +13,7 @@ export const denormalizeGender = (gender) => {
 export const hasEmptyProperty = (obj) => {
   for (let key in obj) {
     if (obj.hasOwnProperty(key)) {
-      if (key === 'city') {
+      if (key === 'city' || key === 'cardType') {
         continue
       }
 
