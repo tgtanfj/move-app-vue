@@ -130,9 +130,7 @@ onMounted(() => {
     <div class="flex gap-14 mt-2" v-if="videoInDepth && videoInDepthGraphic">
       <!-- Left content -->
       <div>
-        <div class="w-[250px] h-[150px]">
-          <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full h-full" />
-        </div>
+        <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full object-cover h-[150px]" />
         <p class="font-bold text-lg mt-2">{{ videoInDepth.title }}</p>
         <p class="text-lg text-gray-500 font-medium">{{ videoInDepth.category }}</p>
 
