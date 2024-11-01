@@ -124,6 +124,21 @@ watch(expDate, (newValue) => {
   }
 })
 
+watch(cardNumber, (newValue) => {
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
+})
+
 onMounted(() => {
   paymentStore.getListRepsPackage()
 })
@@ -154,10 +169,6 @@ const { values, setValues, errors, resetForm } = useForm({
   },
   validationSchema: walletSchema
 })
-
-const setCardType = (type) => {
-  cardType.value = type
-}
 
 const handelBuyRepsPackage = async (item) => {
   selectedPackage.value = item
@@ -239,7 +250,7 @@ const onSubmit = async () => {
         country: userCountryIso.value,
         type: values.cardType
       }
-      await paymentStore.buyRepsPackageWithoutSavedPayment(
+      await paymentStore.buyRepsPackageWithoutSavedPaymentMethod(
         stripe,
         cardData,
         selectedPackage.value,
@@ -269,6 +280,64 @@ const resetFormOnClose = () => {
 const handleCloseSuccessModal = () => {
   showSuccessModal.value = false
   emit('success-buy')
+}
+
+const handleTrim = (e) => {
+  cardholderName.value = e.target.value.trim()
+  setValues({ ...values, cardholderName: cardholderName.value.trim() })
+}
+
+const handleCheckCardNumber = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 16)
+  cardNumber.value = filteredInput
+  setValues({ ...values, cardNumber: filteredInput })
+}
+const handleCheckCVC = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 3)
+  cvc.value = filteredInput
+  setValues({ ...values, cvc: filteredInput })
+}
+const handleCheckCardName = (event) => {
+  const input = event.target.value
+  const trimmedInput = input.replace(/\s+/g, ' ').trim()
+  cardholderName.value = trimmedInput
+  setValues({ ...values, cardholderName: trimmedInput })
+}
+
+const handleCheckExpDate = (event) => {
+  let input = event.target.value
+
+  // Remove non-numeric characters
+  input = input.replace(/\D/g, '')
+
+  // Ensure the month is between 01 and 12
+  if (input.length >= 2) {
+    let month = parseInt(input.substring(0, 2), 10)
+    if (month > 12) {
+      month = 12
+    }
+    input = month.toString().padStart(2, '0') + input.substring(2)
+  }
+
+  // Add '/' after the month
+  if (input.length > 2) {
+    input = input.substring(0, 2) + '/' + input.substring(2)
+  }
+
+  // Limit input to 5 characters (MM/YY)
+  if (input.length > 5) {
+    input = input.substring(0, 5)
+  }
+
+  // Handle backspace
+  if (event.inputType === 'deleteContentBackward' && input.length === 3) {
+    input = input.substring(0, 2)
+  }
+
+  expDate.value = input
+  setValues({ ...values, expDate: input })
 }
 </script>
 
@@ -362,6 +431,8 @@ const handleCloseSuccessModal = () => {
                           type="text"
                           v-bind="componentField"
                           v-model.trim="cardholderName"
+                          @input="handleCheckCardName"
+                          @blur="handleTrim"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -402,6 +473,7 @@ const handleCloseSuccessModal = () => {
                           type="text"
                           v-bind="componentField"
                           v-model.trim="cardNumber"
+                          @input="handleCheckCardNumber"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -419,7 +491,6 @@ const handleCloseSuccessModal = () => {
                             'opacity-100': values.cardType === 'visa',
                             'opacity-30': values.cardType !== 'visa'
                           }"
-                          @click="setCardType('visa')"
                         >
                           <VisaCardIcon />
                         </div>
@@ -429,7 +500,6 @@ const handleCloseSuccessModal = () => {
                             'opacity-100': values.cardType === 'mastercard',
                             'opacity-30': values.cardType !== 'mastercard'
                           }"
-                          @click="setCardType('mastercard')"
                         >
                           <MasterCardIcon class="w-7 h-5" />
                         </div>
@@ -449,7 +519,8 @@ const handleCloseSuccessModal = () => {
                         maxlength="5"
                         placeholder="MM/YY"
                         class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[120px] !m-0 p-2"
-                        v-model.trim="expDate"
+                        v-model="expDate"
+                        @input="handleCheckExpDate"
                       />
                     </div>
                     <FormMessage :class="{ hidden: !showError }" />
@@ -483,6 +554,7 @@ const handleCloseSuccessModal = () => {
                           type="text"
                           v-bind="componentField"
                           v-model.trim="cvc"
+                          @input="handleCheckCVC"
                         />
                       </FormItem>
                       <FormMessage :class="{ hidden: !showError }" />

@@ -4,8 +4,10 @@ import { apiAxios } from '@helpers/axios.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { toast } = useToast()
+const route = useRoute()
 
 export const usePaymentStore = defineStore('payment', () => {
   const isLoading = ref(false)
@@ -189,7 +191,7 @@ export const usePaymentStore = defineStore('payment', () => {
       isBuying.value = false
     }
   }
-  const buyRepsPackageWithoutSavedPayment = async (stripe, card, item, isChecked, path) => {
+  const buyRepsPackageWithoutSavedPaymentMethod = async (stripe, card, item, isChecked, path) => {
     try {
       isBuying.value = true
       const { token, error: tokenError } = await createToken(card)
@@ -225,9 +227,9 @@ export const usePaymentStore = defineStore('payment', () => {
               await stripe.value.confirmCardPayment(client_secret)
             }
             reps.value += item.numberOfREPs
-            // if (path === '/wallet') {
-            //   await fetchUserPaymentMethod()
-            // }
+            if (path && path === '/wallet') {
+              await fetchUserPaymentMethod()
+            }
           } else {
             throw new Error('Error purchasing. Please try again.')
           }
@@ -280,6 +282,6 @@ export const usePaymentStore = defineStore('payment', () => {
     createUserPaymentMethod,
     sendPaymentIdToServer,
     buyRepsPackageWithSavedPayment,
-    buyRepsPackageWithoutSavedPayment
+    buyRepsPackageWithoutSavedPaymentMethod
   }
 })

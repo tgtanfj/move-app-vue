@@ -24,15 +24,17 @@ const onDeleteItem = (id) => {
 </script>
 <template>
   <div class="flex flex-col gap-2 border-1 shadow-lg p-4 min-w-[450px] rounded-lg">
-    <div class="flex justify-between items-start">
-      <div class="text-sm">{{ t('wallet.card_holder') }}</div>
+    <div class="flex justify-between items-start gap-2">
+      <div>
+        <div class="text-sm">{{ t('wallet.card_holder') }}</div>
+        <p class="font-semibold text-xl">{{ paymentStore.userPaymentList?.name }}</p>
+      </div>
       <div class="flex gap-4">
         <span class="text-base text-red-500 cursor-pointer" @click="isOpen = true">{{
           t('button.remove')
         }}</span>
       </div>
     </div>
-    <p class="font-semibold text-xl">{{ paymentStore.userPaymentList?.name }}</p>
     <p class="text-sm">{{ t('wallet.card_number') }}</p>
     <div class="flex justify-start gap-8 items-center">
       <div class="flex items-center gap-3">
