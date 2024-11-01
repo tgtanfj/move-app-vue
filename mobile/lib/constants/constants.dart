@@ -390,4 +390,5 @@ class Constants {
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
   static const String repsNotFound = 'Reps not found';
   static const String requiresConfirmation = 'requires_confirmation';
+  static const String refreshTokenExpired = 'Refresh token expired';
 }

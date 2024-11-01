@@ -45,4 +45,5 @@ class ApiUrls {
   static const String paymentListRepsPackageEndPoint =
       "payment/list-reps-package";
   static const String paymentBuyRepsEndPoint = "payment/buy-reps";
+  static const String refreshTokenEndpoint = "auth/refresh";
 }
