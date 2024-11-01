@@ -22,24 +22,25 @@ class ItemComment extends StatefulWidget {
   final int? originalNumOfReply;
   final bool hasTargetReplyId;
   final bool hasTargetCommentId;
+  final bool isCommentable;
 
-  const ItemComment({
-    super.key,
-    this.commentModel,
-    this.onTapLike,
-    this.onTapDislike,
-    this.widgetListReplies,
-    this.widgetShowListReplies,
-    this.widgetHideListReplies,
-    this.isHideReplies = true,
-    this.widgetReplyInput,
-    this.onTapShowInputReply,
-    this.isShowReplyButton = true,
-    this.isShowTemporaryListReply = false,
-    this.originalNumOfReply,
-    this.hasTargetReplyId = false,
-    this.hasTargetCommentId = false,
-  });
+  const ItemComment(
+      {super.key,
+      this.commentModel,
+      this.onTapLike,
+      this.onTapDislike,
+      this.widgetListReplies,
+      this.widgetShowListReplies,
+      this.widgetHideListReplies,
+      this.isHideReplies = true,
+      this.widgetReplyInput,
+      this.onTapShowInputReply,
+      this.isShowReplyButton = true,
+      this.isShowTemporaryListReply = false,
+      this.originalNumOfReply,
+      this.hasTargetReplyId = false,
+      this.hasTargetCommentId = false,
+      this.isCommentable = true});
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -47,6 +48,20 @@ class ItemComment extends StatefulWidget {
 
 class _ItemCommentState extends State<ItemComment> {
   bool isSeeMore = false;
+
+  String getRepImage(int totalDonation) {
+    if (totalDonation == 100) {
+      return AppIcons.grayRep.svgAssetPath;
+    } else if (totalDonation > 100 && totalDonation <= 1000) {
+      return AppIcons.tiffanyRep.svgAssetPath;
+    } else if (totalDonation > 1000 && totalDonation <= 5000) {
+      return AppIcons.pinkRep.svgAssetPath;
+    } else if (totalDonation > 5000 && totalDonation <= 10000) {
+      return AppIcons.blueRep.svgAssetPath;
+    } else {
+      return AppIcons.locReps.svgAssetPath;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,24 +154,30 @@ class _ItemCommentState extends State<ItemComment> {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      width: 143,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: AppColors.rajah,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-        child: Row(
-          children: [
-            SvgPicture.asset(AppIcons.moveReps.svgAssetPath),
-            const SizedBox(width: 6),
-            Text(Constants.repSender,
-                style: AppTextStyles.montserratStyle.bold12White),
-            const SizedBox(width: 19),
-          ],
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      runSpacing: 2,
+      children: [
+        SvgPicture.asset(
+          AppIcons.repsSender.svgAssetPath,
         ),
-      ),
+        const SizedBox(
+          width: 5,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: AppColors.rajah,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+            child: Text(widget.commentModel?.lastContentDonate ?? "",
+                maxLines: null,
+                overflow: TextOverflow.visible,
+                style: AppTextStyles.montserratStyle.bold12White),
+          ),
+        ),
+      ],
     );
   }
 
@@ -190,7 +211,10 @@ class _ItemCommentState extends State<ItemComment> {
             crossAxisAlignment: WrapCrossAlignment.center,
             runSpacing: 4,
             children: [
-              SvgPicture.asset(AppIcons.locReps.svgAssetPath, width: 14),
+              SvgPicture.asset(
+                getRepImage(widget.commentModel?.totalDonation ?? 0),
+                width: 14,
+              ),
               const SizedBox(width: 8),
               Text(
                 "Gifted '${widget.commentModel?.totalDonation}' REPs",
@@ -247,7 +271,9 @@ class _ItemCommentState extends State<ItemComment> {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(widget.commentModel?.numberOfLike.toString() ?? "0",
-                  style: AppTextStyles.montserratStyle.regular16TiffanyBlue),
+                  style: widget.isCommentable
+                      ? AppTextStyles.montserratStyle.regular16TiffanyBlue
+                      : AppTextStyles.montserratStyle.regular16DarkSilver),
             ),
             const SizedBox(width: 15),
             _buildDislikeButton(),
@@ -263,9 +289,13 @@ class _ItemCommentState extends State<ItemComment> {
     return GestureDetector(
       onTap: widget.onTapLike,
       child: SvgPicture.asset(
-          widget.commentModel?.likeStatus == LikeStatus.liked
-              ? AppIcons.likeFiled.svgAssetPath
-              : AppIcons.like.svgAssetPath),
+        widget.commentModel?.likeStatus == LikeStatus.liked
+            ? AppIcons.likeFiled.svgAssetPath
+            : AppIcons.like.svgAssetPath,
+        colorFilter: widget.isCommentable
+            ? null
+            : const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+      ),
     );
   }
 
@@ -275,9 +305,13 @@ class _ItemCommentState extends State<ItemComment> {
       child: Padding(
         padding: const EdgeInsets.only(top: 8),
         child: SvgPicture.asset(
-            widget.commentModel?.likeStatus == LikeStatus.unliked
-                ? AppIcons.dislikeFilled.svgAssetPath
-                : AppIcons.dislike.svgAssetPath),
+          widget.commentModel?.likeStatus == LikeStatus.unliked
+              ? AppIcons.dislikeFilled.svgAssetPath
+              : AppIcons.dislike.svgAssetPath,
+          colorFilter: widget.isCommentable
+              ? null
+              : const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+        ),
       ),
     );
   }
@@ -288,7 +322,9 @@ class _ItemCommentState extends State<ItemComment> {
       child: Padding(
         padding: const EdgeInsets.only(top: 4),
         child: Text(Constants.reply,
-            style: AppTextStyles.montserratStyle.regular16TiffanyBlue),
+            style: widget.isCommentable
+                ? AppTextStyles.montserratStyle.regular16TiffanyBlue
+                : AppTextStyles.montserratStyle.regular16DarkSilver),
       ),
     );
   }

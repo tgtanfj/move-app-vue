@@ -18,22 +18,23 @@ class CommentModel {
   final int? totalDonation;
   final int? numberOfReply;
   final ChannelModel? channel;
+  final String? lastContentDonate;
 
-  CommentModel({
-    this.id,
-    this.updatedAt,
-    this.createdAt,
-    this.deletedAt,
-    this.content,
-    this.numberOfLike,
-    this.user,
-    this.videoId,
-    this.likeStatus,
-    this.isLike,
-    this.totalDonation,
-    this.numberOfReply,
-    this.channel,
-  });
+  CommentModel(
+      {this.id,
+      this.updatedAt,
+      this.createdAt,
+      this.deletedAt,
+      this.content,
+      this.numberOfLike,
+      this.user,
+      this.videoId,
+      this.likeStatus,
+      this.isLike,
+      this.totalDonation,
+      this.numberOfReply,
+      this.channel,
+      this.lastContentDonate});
 
   String getTimeSinceCreated() {
     if (createdAt != null) {
@@ -70,6 +71,8 @@ class CommentModel {
       likeStatus: status,
       totalDonation: json['totalDonation'] as int?,
       numberOfReply: json['numberOfReply'] as int?,
+      lastContentDonate:
+          json['lastContentDonate'] is String ? json['lastContentDonate'] : '',
     );
   }
 
@@ -84,7 +87,8 @@ class CommentModel {
       LikeStatus? likeStatus,
       int? totalDonation,
       bool? isLike,
-      int? numberOfReply}) {
+      int? numberOfReply,
+      String? lastContentDonate}) {
     return CommentModel(
         id: id ?? this.id,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -96,7 +100,8 @@ class CommentModel {
         likeStatus: likeStatus ?? this.likeStatus,
         totalDonation: totalDonation ?? this.totalDonation,
         isLike: isLike ?? this.isLike,
-        numberOfReply: numberOfReply ?? this.numberOfReply);
+        numberOfReply: numberOfReply ?? this.numberOfReply,
+        lastContentDonate: lastContentDonate ?? this.lastContentDonate);
   }
 
   Map<String, dynamic> toJson() {
@@ -114,6 +119,5 @@ class CommentModel {
     };
   }
 }
-
 
 enum LikeStatus { liked, unliked, unknown }
