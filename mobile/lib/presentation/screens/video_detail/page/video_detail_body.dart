@@ -327,6 +327,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         ],
         ItemComment(
           commentModel: commentModel,
+          isCommentable: state.video?.isCommentable ?? false,
           hasTargetCommentId: hasTargetCommentId,
           onTapLike: state.video?.isCommentable == true
               ? () =>
@@ -404,6 +405,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           return ItemComment(
             commentModel: replyCommentModel,
+            isCommentable: state.video?.isCommentable ?? false,
             hasTargetReplyId: hasTargetReplyId,
             isShowReplyButton: false,
             onTapLike: state.video?.isCommentable == true
@@ -427,7 +429,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(),
+        builder: (context) => const DialogAuthentication(
+          isStayOnPage: true,
+        ),
       );
     } else {
       context.read<VideoDetailBloc>().add(

@@ -165,7 +165,9 @@ class _WriteCommentState extends State<WriteComment> {
   void _showAuthenticationDialog() {
     showDialog(
       context: context,
-      builder: (_) => const DialogAuthentication(),
+      builder: (_) => const DialogAuthentication(
+        isStayOnPage: true,
+      ),
     );
   }
 

@@ -99,6 +99,8 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 ],
               ),
             ),
+            if (SharedPrefer.sharedPrefer.getUsername() !=
+                widget.video?.channel?.name)
             GestureDetector(
                 onTap: widget.followButton,
                 child: (widget.video?.channel?.isFollowed == null &&
@@ -206,24 +208,26 @@ class _InfoVideoDetailState extends State<InfoVideoDetail> {
                 ],
               ),
             ),
-            CustomButton(
-              onTap: widget.giftRepButton,
-              isExpanded: false,
-              borderRadius: 8.0,
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-              backgroundColor: AppColors.tiffanyBlue,
-              title: Constants.giftReps,
-              titleStyle: AppTextStyles.montserratStyle.bold14White,
-              suffix: Wrap(
-                children: [
-                  const SizedBox(
-                    width: 6.0,
-                  ),
-                  SvgPicture.asset(AppIcons.arrowRight.svgAssetPath),
-                ],
+            if (SharedPrefer.sharedPrefer.getUsername() !=
+                widget.video?.channel?.name)
+              CustomButton(
+                onTap: widget.giftRepButton,
+                isExpanded: false,
+                borderRadius: 8.0,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                backgroundColor: AppColors.tiffanyBlue,
+                title: Constants.giftReps,
+                titleStyle: AppTextStyles.montserratStyle.bold14White,
+                suffix: Wrap(
+                  children: [
+                    const SizedBox(
+                      width: 6.0,
+                    ),
+                    SvgPicture.asset(AppIcons.arrowRight.svgAssetPath),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(width: 12.0),
           ],
         ),
