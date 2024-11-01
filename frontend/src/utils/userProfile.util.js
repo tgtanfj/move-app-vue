@@ -9,3 +9,19 @@ export const denormalizeGender = (gender) => {
   if (gender === 'O') return 'rather not say'
   return ''
 }
+
+export const hasEmptyProperty = (obj) => {
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (key === 'city') {
+        continue
+      }
+
+      const value = obj[key]
+      if (value === undefined || value === null || value === '') {
+        return true
+      }
+    }
+  }
+  return false
+}

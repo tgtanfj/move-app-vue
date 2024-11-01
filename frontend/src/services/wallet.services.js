@@ -9,7 +9,7 @@ export const walletServices = {
       const response = await apiAxios.get(`https://ipinfo.io?token=${ipinforToken}`)
       return response.data
     } catch (err) {
-      console.error('Error fetching location data:', err)
+      return Error('Error fetching location data:')
     }
   },
   getCountries: async () => {

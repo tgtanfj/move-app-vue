@@ -15,14 +15,16 @@
 
       <DropdownMenuContent align="end" class="mt-3 p-4 pt-5 w-[260px]">
         <DropdownMenuItem
-          class="flex items-center gap-2 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex items-center gap-1 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
-          <img
-            :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
-            alt="Avatar"
-            class="w-[40px] h-[40px] rounded-full"
-          />
-          <p class="font-semibold text-lg group-hover:text-primary duration-100 truncate w-[190px]">
+          <div class="w-[40px] h-[40px] rounded-full">
+            <img
+              :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
+              alt="Avatar"
+              class="w-full h-full rounded-full object-cover"
+            />
+          </div>
+          <p class="ml-2 font-semibold text-lg group-hover:text-primary duration-100 truncate w-[150px]">
             {{
               authStore.usernameUser ||
               authStore.user.username ||
@@ -30,6 +32,7 @@
               storedUserInfo
             }}
           </p>
+          <BlueBadgeIcon v-if="authStore.user.isBlueBadge" />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <RouterLink @click="createChannel" to="/streamer/videos">
@@ -48,7 +51,9 @@
             class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
           >
             <WalletIcon class="group-hover:text-primary duration-100" />
-            <p class="font-semibold group-hover:text-primary duration-100">Wallet (0 REPs)</p>
+            <p class="font-semibold group-hover:text-primary duration-100">
+              Wallet ({{ paymentStore.reps }} REPs)
+            </p>
           </RouterLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -102,13 +107,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
 import { videoService } from '@services/video.services'
 import Notification from '@components/notificataion/Notification.vue'
 import GetRep from './rep/GetRep.vue'
+import { usePaymentStore } from '../stores/payment'
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 
 const props = defineProps({
   isInStreamerPage: {
@@ -118,6 +125,7 @@ const props = defineProps({
 })
 
 const authStore = useAuthStore()
+const paymentStore = usePaymentStore()
 const router = useRouter()
 const showLogoutModal = ref(false)
 const userAvatar = ref(localStorage.getItem('userAvatar'))

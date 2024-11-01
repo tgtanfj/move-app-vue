@@ -23,6 +23,7 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -36,8 +37,9 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
         builder: (context, state) {
           return GestureDetector(
             onTap: () {
-              context.read<PaymentHistoryBloc>().add(
-                  PaymentHistoryOnTapOutSideEvent());
+              context
+                  .read<PaymentHistoryBloc>()
+                  .add(PaymentHistoryOnTapOutSideEvent());
               FocusScope.of(context).unfocus();
             },
             child: Stack(
@@ -165,8 +167,10 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
                                           child: RichText(
                                               text: TextSpan(children: [
                                             TextSpan(
-                                              text:
-                                                  "${state.startResult}-${state.endResult}",
+                                              text: (state.paymentHistoryList !=
+                                                          null && state.paymentHistoryList!.length > 1)
+                                                  ? "${state.startResult}-${state.endResult}"
+                                                  : "${state.startResult}",
                                               style: AppTextStyles
                                                   .montserratStyle.bold14Grey,
                                             ),
@@ -192,7 +196,9 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
                                               },
                                               icon: const Icon(
                                                   Icons.navigate_before),
-                                              color: (state.currentPage != null && state.currentPage! <= 1)
+                                              color: (state.currentPage !=
+                                                          null &&
+                                                      state.currentPage! <= 1)
                                                   ? AppColors.spanishGray
                                                   : AppColors.tiffanyBlue,
                                               padding: EdgeInsets.zero,
@@ -269,7 +275,6 @@ class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
                         : DateTime.now(),
                     minDate: state.startDate,
                     onDateSelected: (endDate) {
-                      print(state.currentPage);
                       context.read<PaymentHistoryBloc>().add(
                           PaymentHistorySelectionEndDateEvent(
                               endDate: endDate));

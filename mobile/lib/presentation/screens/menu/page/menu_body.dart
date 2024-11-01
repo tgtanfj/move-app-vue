@@ -5,11 +5,13 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/buy_rep_dialog.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_state.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_had_login.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_not_login.dart';
+
 import '../../../routes/app_routes.dart';
 
 class MenuBody extends StatefulWidget {
@@ -52,6 +54,17 @@ class _MenuBodyState extends State<MenuBody> {
                         moreButton: () => context.read<MenuBloc>().add(
                             MenuSelectMoreEvent(
                                 isMoreEnable: !state.isEnableMore)),
+                        onBuyRep: () {
+                          Navigator.of(context).pushNamed(AppRoutes.home);
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BuyRepDialog(
+                                  numberOfREPs: state.user?.numberOfREPs ?? 0,
+                                  reps: state.reps ?? [],
+                                );
+                              });
+                        },
                       )
                     : MenuNotLogin(
                         isMoreEnable: state.isEnableMore,

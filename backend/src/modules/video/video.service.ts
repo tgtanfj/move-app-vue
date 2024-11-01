@@ -204,10 +204,17 @@ export class VideoService {
     // await this.channelService.increaseTotalVideo(foundChannel.id);
     // await this.uploadVideoUrlS3(video.id, urlS3);
     try {
-      await this.uploadS3Queue.add('upload', {
-        path: pathVideo,
-        videoId: video.id,
-      });
+      await this.uploadS3Queue.add(
+        'upload',
+        {
+          path: pathVideo,
+          videoId: video.id,
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: false,
+        },
+      );
     } catch (error) {
       throw new Error(error);
     }

@@ -114,7 +114,7 @@ class SuggestionSearchBox extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Avatar(
-                        imageUrl: suggestionModel?.topVideos?[index].url ?? "",
+                        imageUrl: suggestionModel?.topVideos?[index].thumbnailsModel?.firstOrNull?.image ?? "",
                         widthAvatar: 40,
                         heightAvatar: 40,
                         radiusAvatar: 50),

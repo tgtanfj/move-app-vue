@@ -61,9 +61,6 @@ class _SearchResultBodyState extends State<SearchResultBody> {
         (state.status == SearchResultStatus.processing)
             ? EasyLoading.show()
             : EasyLoading.dismiss();
-        if (state.status == SearchResultStatus.failure) {
-          EasyLoading.dismiss();
-        }
       },
       child: BlocBuilder<SearchResultBloc, SearchResultState>(
         builder: (context, state) {
@@ -131,8 +128,8 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                             const SizedBox(
                               height: 16,
                             ),
-                            (state.categoryList.isNotEmpty &&
-                                    state.videoList.isNotEmpty &&
+                            (state.categoryList.isNotEmpty ||
+                                    state.videoList.isNotEmpty ||
                                     state.channelList.isNotEmpty)
                                 ? const CustomSectionTitle(
                                     title: Constants.searchResults)

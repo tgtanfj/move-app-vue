@@ -120,6 +120,4 @@ app.*.symbols
 /linux/flutter/ephemeral/
 /linux/flutter/generated_plugin_registrant.cc
 /linux/flutter/generated_plugins.cmake
-
-#key
-lib/.env.dart
+/lib/.env.dart

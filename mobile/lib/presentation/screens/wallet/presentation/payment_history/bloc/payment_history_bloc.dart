@@ -68,10 +68,52 @@ class PaymentHistoryBloc
 
   void _onPaymentHistorySelectionStartDateEvent(
       PaymentHistorySelectionStartDateEvent event,
-      Emitter<PaymentHistoryState> emit) {
+      Emitter<PaymentHistoryState> emit) async {
     emit(state.copyWith(
-      startDate: event.startDate,
+      status: PaymentHistoryStatus.processing,
     ));
+    final PaymentModel paymentModel = PaymentModel(
+      startDate: event.startDate.toString(),
+      endDate: state.endDate.toString(),
+      take: 10,
+      page: 1,
+    );
+    final result = await paymentRepository.getPaymentHistory(paymentModel);
+    result.fold((l) {
+      emit(state.copyWith(
+        status: PaymentHistoryStatus.failure,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        status: PaymentHistoryStatus.success,
+        paymentHistoryList: r,
+        startDate: event.startDate,
+        isPickedStartDate: !(state.isPickedStartDate),
+      ));
+    });
+    final totalResult =
+    await paymentRepository.getTotalPaymentHistoryPages(PaymentModel(
+      startDate: event.startDate.toString(),
+      endDate: state.endDate.toString(),
+      take: 10,
+      page: 1,
+    ));
+    totalResult.fold((l) {
+      emit(state.copyWith(
+        status: PaymentHistoryStatus.failure,
+        errorMessage: l,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        total: r,
+        currentPage: 1,
+        startResult: 1,
+        endResult: (state.startResult != null && r?.totalResult != null)
+            ? (((r!.totalResult!) > 10) ? 10 : r.totalResult)
+            : 0,
+        status: PaymentHistoryStatus.success,
+      ));
+    });
   }
 
   void _onPaymentHistorySelectionEndDateEvent(

@@ -44,8 +44,8 @@ const router = useRouter()
       <div class="w-[32px] h-[32px] rounded-full flex-shrink-0">
         <img class="w-full h-full rounded-full" :src="video.channel.image" />
       </div>
-      <div class="ml-3">
-        <p class="text-[16px] font-bold line-clamp-2">{{ video.title }}</p>
+      <div class="ml-3 overflow-hidden">
+        <p class="text-[16px] font-bold line-clamp-2 break-words">{{ video.title }}</p>
         <div class="flex flex-col items-start justify-start mt-auto">
           <div class="flex items-center gap-3">
             <p

@@ -1,14 +1,16 @@
 <script setup>
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
-import { ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
+import ListRepPackage from '@components/rep/ListRepPackage.vue'
+import { ChevronRight, X } from 'lucide-vue-next'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { Button } from '../../common/ui/button/index'
 import { PRESET_MESSAGE } from '../../constants/giftreps.constanst'
 import { useDonation, useGiftPackages, useUserReps } from '../../services/giftreps.services'
 import { useAuthStore } from '../../stores/auth'
-import { useOpenLoginStore } from '../../stores/openLogin'
-import BaseDialog from '../BaseDialog.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
+import { useOpenLoginStore } from '../../stores/openLogin'
+import { usePaymentStore } from '../../stores/payment'
+import BaseDialog from '../BaseDialog.vue'
 
 const props = defineProps({
   videoId: {
@@ -21,6 +23,7 @@ const isOpenBuyReps = ref(false)
 const openDonationSuccess = ref(false)
 const donateSuccessReps = ref(0)
 const userStore = useAuthStore()
+const paymentStore = usePaymentStore()
 const openLoginStore = useOpenLoginStore()
 const commentToggleStore = useCommentToggleStore()
 const listReps = ref([])
@@ -31,8 +34,19 @@ const giftReps = reactive({
 })
 const { data, isLoading } = useGiftPackages()
 const { data: dataUser, isLoading: isLoadingUser } = useUserReps()
-const availableReps = ref(0)
 const { isPending, mutate } = useDonation()
+
+const showListReps = ref(false)
+
+const handleCloseModal = () => {
+  showListReps.value = false
+  giftReps.giftPackageId = 0
+  giftReps.content = PRESET_MESSAGE[0]
+}
+const handleBackGiftModal = () => {
+  showListReps.value = false
+  isOpenBuyReps.value = false
+}
 
 watchEffect(() => {
   if (!isLoading.value && data.value) {
@@ -41,7 +55,6 @@ watchEffect(() => {
 })
 watchEffect(() => {
   if (!isLoadingUser.value && dataUser.value) {
-    availableReps.value = dataUser.value.data?.numberOfREPs
     commentToggleStore.setChannelId(dataUser.value.data?.channelId)
   }
 })
@@ -67,18 +80,26 @@ const handleOpen = () => {
 }
 const handleGetReps = () => {
   isOpenBuyReps.value = true
+  showListReps.value = true
 }
 function handleClickMessage(value) {
   giftReps.content = value
 }
 function handleClickReps(value) {
   giftReps.giftPackageId = value.id
+  console.log('value', value.id)
 }
 
 const canGiftReps = computed(() => {
-  return (
-    availableReps.value >
+  console.log(
+    'can gift11',
+    paymentStore.reps,
     listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
+  )
+  return (
+    giftReps.giftPackageId &&
+    paymentStore.reps >=
+      listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
   )
 })
 
@@ -94,7 +115,7 @@ const handleDonation = () => {
         donateSuccessReps.value = listReps.value.find(
           (item) => item.id === giftReps.giftPackageId
         ).numberOfREPs
-        availableReps.value -= donateSuccessReps.value
+        paymentStore.reps -= donateSuccessReps.value
       },
       onError: (error) => {
         // errorMessage.value = error.response?.data?.message
@@ -110,8 +131,8 @@ const handleDonation = () => {
         >{{ $t('gift_reps.gift_reps') }} <ChevronRight class="ml-2"
       /></Button>
     </PopoverTrigger>
-    <PopoverContent class="p-0 w-[480px] rounded-lg">
-      <div v-if="!isOpenBuyReps">
+    <PopoverContent class="p-0 w-[480px] rounded-lg border-none">
+      <div v-show="!isOpenBuyReps">
         <div class="flex justify-between p-5 py-4 border-b-2 border-lightGray">
           <div>
             <h3 class="text-[16px] font-semibold mb-1">{{ $t('gift_reps.support') }}</h3>
@@ -162,23 +183,30 @@ const handleDonation = () => {
             class="text-[17px]"
             v-html="
               $t('gift_reps.have', {
-                amount: `<strong>${availableReps} REPs</strong>`
+                amount: `<strong>${paymentStore.reps} REPs</strong>`
               })
             "
           ></p>
           <Button @click="handleGetReps">{{ $t('gift_reps.get') }}</Button>
         </div>
       </div>
+      <ListRepPackage
+        :showListReps="showListReps"
+        @close-modal="handleCloseModal"
+        @back-giftrep="handleBackGiftModal"
+        @success-buy="closePopover"
+        :isGiftReps="true"
+      />
 
       <!--BUY REPS-->
-      <div v-else class="p-3">
+      <!-- <div v-else class="p-3">
         <div class="flex items-center justify-between">
           <Button variant="link" @click="isOpenBuyReps = false" class="text-black text-[14px] p-0"
             ><ChevronLeft class="mr-1" />Back</Button
           >
           <X @click="closePopover" class="cursor-pointer" />
         </div>
-      </div>
+      </div> -->
     </PopoverContent>
   </Popover>
 
@@ -189,6 +217,7 @@ const handleDonation = () => {
         if (!val) closeDialog()
       }
     "
+    :width="450"
   >
     <div class="text-center">
       <h3 class="font-bold my-4 text-xl">{{ $t('gift_reps.success') }}</h3>

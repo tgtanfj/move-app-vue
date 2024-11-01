@@ -272,7 +272,7 @@ const onSubmit = async () => {
           if (authStore.user.username) authStore.user.username = values.username
           authStore.user.avatar = res.data.data.avatar
           localStorage.setItem('userInfo', values.username)
-          // localStorage.setItem('userAvatar', values.avatar)
+          localStorage.setItem('userAvatar', res.data.data.avatar)
         } else throw new Error(response.error)
       } catch (err) {
         toast({ description: err.message, variant: 'destructive' })
@@ -311,12 +311,14 @@ const onErrorMessage = (msg) => {
         <FormField v-slot="componentField" name="avatar">
           <FormItem>
             <p>{{ $t('user_profile.profile_pic') }}</p>
+            <div class="w-[56px] h-[56px] rounded-full">
             <img
-              class="w-[56px] h-[56px] rounded-full"
+              class="w-full h-full object-cover rounded-full"
               :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
               v-bind="componentField"
               alt=""
             />
+          </div>
             <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>
             <UploadAvatarFile
               :buttonText="$t('user_profile.update_profile_pic')"

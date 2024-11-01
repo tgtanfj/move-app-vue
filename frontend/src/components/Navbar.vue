@@ -1,7 +1,6 @@
 <script setup>
 import LogoBlack from '@assets/icons/LogoBlack.vue'
 import LogoWhite from '@assets/icons/LogoWhite.vue'
-import SearchIcon from '@assets/icons/SearchIcon.vue'
 import {
   Dialog,
   DialogContent,
@@ -11,14 +10,13 @@ import {
   DialogTrigger
 } from '@common/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@common/ui/tabs'
-import MoreMenuNav from '@components/MoreMenuNav.vue'
 import NavbarLogged from '@components/NavbarLogged.vue'
 import ForgotPassword from '@components/auth/ForgotPassword.vue'
 import OTPVerificationModal from '@components/auth/OTPVerificationModal.vue'
 import SignInModal from '@components/auth/SignInModal.vue'
 import SignUpModal from '@components/auth/SignUpModal.vue'
-import { computed, onMounted, ref, triggerRef, watch, watchEffect } from 'vue'
-import { onBeforeRouteLeave, useRoute } from 'vue-router'
+import { computed, ref, watch, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 import Button from '../common/ui/button/Button.vue'
 import { useAuthStore } from '../stores/auth'
 import { useOpenLoginStore } from '../stores/openLogin'
@@ -122,10 +120,9 @@ watchEffect(() => {
       :class="{ 'justify-center': isInResetPWPage, 'justify-between': !isInResetPWPage }"
     >
       <ul v-if="!isInResetPWPage" class="flex flex-1 items-center gap-[35px]">
-        <li class="font-semibold text-[16px]">Following</li>
-        <li class="my-auto">
-          <MoreMenuNav />
-        </li>
+        <RouterLink to="/move/faq">
+          <li class="font-semibold text-[16px]">FAQ</li>
+        </RouterLink>
       </ul>
 
       <div class="w-[20%]">

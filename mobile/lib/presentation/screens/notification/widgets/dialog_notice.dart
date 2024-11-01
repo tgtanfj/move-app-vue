@@ -27,7 +27,7 @@ class DialogNotice extends StatelessWidget {
             children: [
               GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pop;
+                    Navigator.of(context).pop();
                   },
                   child: SvgPicture.asset(
                     AppIcons.close.svgAssetPath,
@@ -48,7 +48,7 @@ class DialogNotice extends StatelessWidget {
                   titleStyle: AppTextStyles.montserratStyle.bold16White,
                   backgroundColor: AppColors.tiffanyBlue,
                   onTap: () {
-                    Navigator.of(context).pop;
+                    Navigator.of(context).pop();
                   })
             ],
           ),

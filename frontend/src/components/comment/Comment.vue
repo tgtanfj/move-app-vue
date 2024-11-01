@@ -5,6 +5,8 @@ import { useRoute } from 'vue-router'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
+import LoadingTable from '@components/LoadingTable.vue'
+import Loading from '@components/Loading.vue'
 
 const props = defineProps({
   isCommentable: {
@@ -22,6 +24,7 @@ const commentToggleStore = useCommentToggleStore()
 const commentData = ref([])
 const isLoading = ref(false)
 const hasMoreComments = ref(true)
+const isInitialLoading = ref(true)
 const cursor = ref(null)
 const commentFromChild = ref(null)
 const route = useRoute()
@@ -31,6 +34,7 @@ const videoId = route.params.id
 onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
   await loadComments()
+  isInitialLoading.value = false
 })
 
 onUnmounted(() => {
@@ -50,20 +54,22 @@ const updateReplyCount = (id, newReplyCount) => {
 }
 
 const loadComments = async () => {
-  if (!hasMoreComments.value || isLoading.value) return;
+  if (!hasMoreComments.value || isLoading.value) return
   isLoading.value = true
 
   try {
-    const response = await commentServices.getCommentsByVideoId(cursor.value, videoId);
+    const response = await commentServices.getCommentsByVideoId(cursor.value, videoId)
     const newComments = response.data
 
     if (newComments.length > 0) {
-      newComments.forEach(comment => {
-        const exists = commentData.value.some(existingComment => existingComment.id === comment.id)
+      newComments.forEach((comment) => {
+        const exists = commentData.value.some(
+          (existingComment) => existingComment.id === comment.id
+        )
         if (!exists) {
           commentData.value.push(comment)
         }
-      });
+      })
       cursor.value = newComments[newComments.length - 1].id
     } else {
       hasMoreComments.value = false
@@ -73,7 +79,7 @@ const loadComments = async () => {
   } finally {
     isLoading.value = false
   }
-};
+}
 
 const handleScroll = () => {
   const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 10
@@ -82,19 +88,22 @@ const handleScroll = () => {
   }
 }
 
-watch(() => props.commentFirst, (newComment) => {
-  if (newComment) {
-    const exists = commentData.value.some(comment => comment.id === newComment.id)
-    if (!exists) {
-      commentData.value.unshift(newComment)
+watch(
+  () => props.commentFirst,
+  (newComment) => {
+    if (newComment) {
+      const exists = commentData.value.some((comment) => comment.id === newComment.id)
+      if (!exists) {
+        commentData.value.unshift(newComment)
+      }
     }
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 const handleUpdateComments = (updatedComments) => {
   commentData.value = updatedComments
 }
-
 </script>
 
 <template>
@@ -107,8 +116,11 @@ const handleUpdateComments = (updatedComments) => {
       />
     </div>
     <div class="w-full mt-10">
+      <div v-if="isInitialLoading" class="w-full flex flex-col items-center justify-center pt-6">
+        <Loading />
+      </div>
       <RenderComment
-        v-if="commentData.length !== 0"
+        v-else-if="commentData.length !== 0"
         :videoId="videoId"
         :comments="commentData"
         @update-comments="handleUpdateComments"

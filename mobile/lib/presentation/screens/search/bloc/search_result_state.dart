@@ -104,6 +104,6 @@ final class SearchResultState extends Equatable {
         videoList,
         suggestionList,
         searchResultFound,
-    status
+        status,
       ];
 }

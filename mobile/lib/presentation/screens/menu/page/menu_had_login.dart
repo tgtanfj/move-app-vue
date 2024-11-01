@@ -8,7 +8,6 @@ import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
-import 'package:move_app/presentation/screens/buy_rep/page/buy_rep_page.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
 import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
@@ -19,6 +18,7 @@ class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
+  final VoidCallback onBuyRep;
 
   final String avatarPath;
   final String userName;
@@ -34,6 +34,7 @@ class MenuHadLogin extends StatefulWidget {
     required this.userName,
     required this.isBlueBadge,
     required this.isPinkBadge,
+    required this.onBuyRep,
   });
 
   @override
@@ -71,13 +72,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             height: 8.0,
           ),
           GestureDetector(
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const BuyRepPage();
-                  });
-            },
+            onTap: widget.onBuyRep,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 5.0),
               decoration: BoxDecoration(

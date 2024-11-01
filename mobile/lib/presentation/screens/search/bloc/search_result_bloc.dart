@@ -4,7 +4,6 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
-import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/categories_repository.dart';
 import 'package:move_app/data/repositories/channels_repository.dart';
@@ -91,9 +90,8 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           state.categoryList.isEmpty &&
           state.videoList.isEmpty) {
         emit(state.copyWith(
-          searchResultFound: Constants.notFoundResult,
-          status: SearchResultStatus.failure
-        ));
+            searchResultFound: Constants.notFoundResult,
+            status: SearchResultStatus.failure));
       }
 
       final totalChannelPages =
