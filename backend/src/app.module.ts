@@ -67,7 +67,6 @@ import { AdminModule } from './modules/admin/admin.module';
           password: apiConfig.getString('REDIS_PASSWORD'),
           connectTimeout: 200000,
         },
-        
       }),
     }),
     FaqsModule,

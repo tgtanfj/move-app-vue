@@ -5,6 +5,10 @@ import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
 import { DurationType } from '@/entities/enums/durationType.enum';
 import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
+import UserQueryDto from './dto/request/user-query.dto';
+import { User } from '@/entities/user.entity';
+import { objectResponse } from '@/shared/utils/response-metadata.function';
+import { PaginationMetadata } from '../video/dto/response/pagination.meta';
 
 @Injectable()
 export class AdminService {
@@ -52,5 +56,16 @@ export class AdminService {
       paginationDto,
     );
     return data;
+  }
+
+  async getUsers(userQueryDto: UserQueryDto): Promise<{ data: User[]; meta: PaginationDto }> {
+    const [data, count] = await this.adminRepository.filterUsers(userQueryDto);
+    const meta: PaginationMetadata = {
+      page: userQueryDto.page,
+      take: userQueryDto.take,
+      total: count,
+      totalPages: Math.ceil(count / userQueryDto.take),
+    };
+    return objectResponse(data, meta);
   }
 }

@@ -6,10 +6,12 @@ import { Payment } from '@/entities/payment.entity';
 import { User } from '@/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
 import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { Video } from '@/entities/video.entity';
+import { FindOptionsOrder, FindOptionsWhere, ILike, Like, Repository } from 'typeorm';
+import UserQueryDto from './dto/request/user-query.dto';
+import UserRepository from './repositories/user.repository';
 
 @Injectable()
 export class AdminRepository {
@@ -18,8 +20,7 @@ export class AdminRepository {
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(Donation)
     private readonly donationRepository: Repository<Donation>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: UserRepository,
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video)
@@ -27,7 +28,7 @@ export class AdminRepository {
   ) {}
 
   async getUsers() {
-    return await this.userRepository.find();
+    return await this.userRepository.getUsers();
   }
 
   async getChannels() {
@@ -140,5 +141,9 @@ export class AdminRepository {
       },
     });
     return data;
+  }
+
+  async filterUsers(userQueryDto: UserQueryDto): Promise<[User[], number]> {
+    return this.userRepository.filterUsers(userQueryDto);
   }
 }
