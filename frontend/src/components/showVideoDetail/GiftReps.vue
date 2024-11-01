@@ -1,16 +1,16 @@
 <script setup>
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
-import { ChevronLeft, ChevronRight, X } from 'lucide-vue-next'
+import ListRepPackage from '@components/rep/ListRepPackage.vue'
+import { ChevronRight, X } from 'lucide-vue-next'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { Button } from '../../common/ui/button/index'
 import { PRESET_MESSAGE } from '../../constants/giftreps.constanst'
 import { useDonation, useGiftPackages, useUserReps } from '../../services/giftreps.services'
 import { useAuthStore } from '../../stores/auth'
-import { useOpenLoginStore } from '../../stores/openLogin'
-import BaseDialog from '../BaseDialog.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
-import ListRepPackage from '@components/rep/ListRepPackage.vue'
+import { useOpenLoginStore } from '../../stores/openLogin'
 import { usePaymentStore } from '../../stores/payment'
+import BaseDialog from '../BaseDialog.vue'
 
 const props = defineProps({
   videoId: {
@@ -87,9 +87,15 @@ function handleClickMessage(value) {
 }
 function handleClickReps(value) {
   giftReps.giftPackageId = value.id
+  console.log('value', value.id)
 }
 
 const canGiftReps = computed(() => {
+  console.log(
+    'can gift',
+    paymentStore.reps,
+    listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
+  )
   return (
     paymentStore.reps >
     listReps.value.find((item) => item.id === giftReps.giftPackageId).numberOfREPs
@@ -125,7 +131,7 @@ const handleDonation = () => {
       /></Button>
     </PopoverTrigger>
     <PopoverContent class="p-0 w-[480px] rounded-lg border-none">
-      <div v-if="!isOpenBuyReps">
+      <div v-show="!isOpenBuyReps">
         <div class="flex justify-between p-5 py-4 border-b-2 border-lightGray">
           <div>
             <h3 class="text-[16px] font-semibold mb-1">{{ $t('gift_reps.support') }}</h3>
