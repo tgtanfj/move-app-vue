@@ -9,6 +9,8 @@ import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
 import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { Role } from '@/entities/enums/role.enum';
 import { Roles } from '@/shared/decorators/roles.decorator';
+import UserQueryDto from './dto/request/user-query.dto';
+import { User } from '@/entities/user.entity';
 
 @ApiTags('admin')
 @ApiBearerAuth('jwt')
@@ -48,5 +50,11 @@ export class AdminController {
       take,
       page,
     });
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('users')
+  async getUsers(@Query() userQueryDto: UserQueryDto) {
+    return await this.adminService.getUsers(userQueryDto);
   }
 }

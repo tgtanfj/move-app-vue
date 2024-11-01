@@ -10,10 +10,11 @@ import { Channel } from '@/entities/channel.entity';
 import { JwtService } from '@nestjs/jwt';
 import { Donation } from '@/entities/donation.entity';
 import { Video } from '@/entities/video.entity';
+import UserRepository from './repositories/user.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Payment, User, Channel, Donation, Video]), UserModule],
   controllers: [AdminController],
-  providers: [AdminService, AdminRepository, JwtService],
+  providers: [AdminService, AdminRepository, JwtService, UserRepository],
 })
 export class AdminModule {}

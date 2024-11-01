@@ -12,7 +12,10 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@entities/*": [
+        "./src/entities/*"
+      ],
     },
     "baseUrl": "./",
     "incremental": true,
