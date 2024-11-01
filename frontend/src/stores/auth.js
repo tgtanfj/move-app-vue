@@ -10,6 +10,7 @@ import { auth } from '../services/firebaseConfig.js'
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { ADMIN_BASE } from '@constants/api.constant.js'
+import defaultAvatar from '@assets/icons/default-avatar.png'
 
 export const useAuthStore = defineStore('auth', () => {
   // States
@@ -27,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Login with Google
     const provider = new GoogleAuthProvider()
     provider.addScope('email')
+    provider.setCustomParameters({ prompt: 'select_account' })
     try {
       const result = await signInWithPopup(auth, provider)
       user.value = result.user
@@ -49,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Login with Facebook
     const provider = new FacebookAuthProvider()
     provider.addScope('email')
+    provider.setCustomParameters({ prompt: 'select_account' })
     try {
       const result = await signInWithPopup(auth, provider)
       user.value = result.user
@@ -102,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('userInfo', userInfo.data.data.username)
       localStorage.setItem('userEmail', userInfo.data.data.email)
     } catch (error) {
-      errorMsg.value = error.response?.data?.message || 'Error sending token to backend.'
+      errorMsg.value = error.response?.data?.message || 'Login failed'
       console.error('Error during token submission:', error)
       await logout()
       throw error
@@ -128,7 +131,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('userEmail', userInfo.data.data.email)
-        localStorage.setItem('userAvatar', userInfo?.data?.data?.avatar)
+        localStorage.setItem('userAvatar', userInfo.data.data.avatar || defaultAvatar)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
         localStorage.setItem('refreshToken', refreshToken.value)
@@ -143,6 +146,7 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = false
     }
   }
+  
   const logout = async () => {
     const loginMethod = localStorage.getItem('loginMethod')
     try {
@@ -234,7 +238,7 @@ export const useAuthStore = defineStore('auth', () => {
         })
 
         user.value = userInfo.data.data
-        localStorage.setItem('userAvatar', userInfo?.data?.data?.avatar)
+        localStorage.setItem('userAvatar', userInfo.data.data.avatar || defaultAvatar)
       } catch (error) {
         console.error('Error get profile: ', error)
       }

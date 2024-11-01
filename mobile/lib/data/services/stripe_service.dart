@@ -45,7 +45,7 @@ class StripeService {
           ));
       return paymentMethod;
     } catch (e) {
-      throw Exception('Unable to create payment method: $e');
+      throw Exception(e.toString());
     }
   }
 

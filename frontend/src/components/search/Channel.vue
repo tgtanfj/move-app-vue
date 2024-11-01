@@ -1,6 +1,5 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import { formatFollowers } from '@utils/formatViews.util'
 
 const props = defineProps({

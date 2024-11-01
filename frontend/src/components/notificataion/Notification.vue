@@ -138,7 +138,7 @@ onUnmounted(() => {
 
       <div
         v-else
-        class="max-h-[340px] overflow-y-auto custom-scrollbar"
+        class="h-auto max-h-[344px] overflow-y-auto custom-scrollbar"
         @scroll="handleScrollLoadMoreNotify"
       >
         <NotifyItem

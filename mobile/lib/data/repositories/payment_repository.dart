@@ -4,7 +4,6 @@ import 'package:move_app/data/models/payment_model.dart';
 
 import '../../constants/api_urls.dart';
 import '../../constants/constants.dart';
-import '../models/category_model.dart';
 import '../services/api_service.dart';
 
 class PaymentRepository {

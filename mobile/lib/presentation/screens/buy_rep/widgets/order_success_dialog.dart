@@ -4,10 +4,12 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/rep_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 
 class OrderSuccessDialog extends StatelessWidget {
-  const OrderSuccessDialog({super.key});
+  final RepModel? rep;
+  const OrderSuccessDialog({super.key, required this.rep});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class OrderSuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${Constants.yourPurchaseOf} ${Constants.rep} ${Constants.isSuccessful}',
+              '${Constants.yourPurchaseOf} ${rep?.numberOfREPs}${Constants.rep} ${Constants.isSuccessful}',
               style: AppTextStyles.montserratStyle.regular16DarkSilver,
             ),
             const SizedBox(height: 10),

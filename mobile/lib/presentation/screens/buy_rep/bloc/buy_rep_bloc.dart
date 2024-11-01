@@ -51,14 +51,10 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
       BuyRepCardNameEvent event, Emitter<BuyRepState> emit) {
     final isShowCardNameMessage =
         state.cardName != event.cardName ? false : state.isShowCardNameMessage;
-    final isEnablePayNow = (event.cardName?.isNotEmpty ?? false) &&
-        (state.cardNumber?.isNotEmpty ?? false) &&
-        (state.expiryDate?.isNotEmpty ?? false) &&
-        (state.cvv?.isNotEmpty ?? false);
     emit(state.copyWith(
-        cardName: event.cardName,
-        isShowCardNameMessage: isShowCardNameMessage,
-        isEnablePayNow: isEnablePayNow));
+      cardName: event.cardName,
+      isShowCardNameMessage: isShowCardNameMessage,
+    ));
   }
 
   void _onBuyRepCountryEvent(
@@ -72,14 +68,10 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
     final isShowCardNumberMessage = state.cardNumber != event.cardNumber
         ? false
         : state.isShowCardNumberMessage;
-    final isEnablePayNow = (state.cardName?.isNotEmpty ?? false) &&
-        (event.cardNumber?.isNotEmpty ?? false) &&
-        (state.expiryDate?.isNotEmpty ?? false) &&
-        (state.cvv?.isNotEmpty ?? false);
     emit(state.copyWith(
-        cardNumber: event.cardNumber,
-        isShowCardNumberMessage: isShowCardNumberMessage,
-        isEnablePayNow: isEnablePayNow));
+      cardNumber: event.cardNumber,
+      isShowCardNumberMessage: isShowCardNumberMessage,
+    ));
   }
 
   void _onBuyRepCardExpiryDateEvent(
@@ -87,27 +79,20 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
     final isShowExpiryDateMessage = state.expiryDate != event.expiryDate
         ? false
         : state.isShowExpiryDateMessage;
-    final isEnablePayNow = (state.cardName?.isNotEmpty ?? false) &&
-        (state.cardNumber?.isNotEmpty ?? false) &&
-        (event.expiryDate?.isNotEmpty ?? false) &&
-        (state.cvv?.isNotEmpty ?? false);
+
     emit(state.copyWith(
-        expiryDate: event.expiryDate,
-        isShowExpiryDateMessage: isShowExpiryDateMessage,
-        isEnablePayNow: isEnablePayNow));
+      expiryDate: event.expiryDate,
+      isShowExpiryDateMessage: isShowExpiryDateMessage,
+    ));
   }
 
   void _onBuyRepCvvEvent(BuyRepCvvEvent event, Emitter<BuyRepState> emit) {
     final isShowCvvMessage =
         state.cvv != event.cvv ? false : state.isShowCvvMessage;
-    final isEnablePayNow = (state.cardName?.isNotEmpty ?? false) &&
-        (state.cardNumber?.isNotEmpty ?? false) &&
-        (state.expiryDate?.isNotEmpty ?? false) &&
-        (event.cvv?.isNotEmpty ?? false);
     emit(state.copyWith(
-        cvv: event.cvv,
-        isShowCvvMessage: isShowCvvMessage,
-        isEnablePayNow: isEnablePayNow));
+      cvv: event.cvv,
+      isShowCvvMessage: isShowCvvMessage,
+    ));
   }
 
   void _onBuyRepSavePaymentEvent(

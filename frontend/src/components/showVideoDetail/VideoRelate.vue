@@ -5,6 +5,7 @@ import StartIcon from '@assets/icons/startIcon.vue'
 import { convertTimePostVideo } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { convertToTimeFormat } from '../../utils/formatVideoLength.util'
+import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 
 const props = defineProps({
   video: {
@@ -58,9 +59,17 @@ const workoutLevelLite =
         </div>
       </div>
       <div class="flex items-start mt-2">
-        <img class="w-[32px] h-[32px] rounded-full" :src="video?.channel?.image" />
-        <div class="ml-3">
-          <p class="text-[16px] font-bold line-clamp-2">{{ video?.title }}</p>
+        <div class="w-[30px] h-[30px] rounded-full flex-shrink-0">
+          <img class="w-full h-full rounded-full" :src="video?.channel?.image" />
+        </div>
+        <div class="ml-3 overflow-hidden">
+          <p class="text-[16px] font-bold line-clamp-2 break-words">{{ video?.title }}</p>
+          <div class="flex items-center gap-2">
+            <p class="text-[14px] text-[#666666]">{{ video?.channel.name }}</p>
+            <div>
+              <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
+            </div>
+          </div>
           <div class="flex flex-col items-start justify-start mt-1.5">
             <div class="flex items-center gap-3">
               <p class="text-[#666666] text-[14px]">{{ video.name }}</p>

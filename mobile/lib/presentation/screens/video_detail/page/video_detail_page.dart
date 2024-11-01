@@ -6,18 +6,23 @@ import 'package:move_app/presentation/screens/video_detail/page/video_detail_bod
 
 class VideoDetailPage extends StatelessWidget {
   final int videoId;
-  const VideoDetailPage({
-    super.key,
-    required this.videoId,
-  });
+  final int? targetCommentId;
+  final int? targetReplyId;
+
+  const VideoDetailPage(
+      {super.key,
+      required this.videoId,
+      this.targetCommentId,
+      this.targetReplyId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VideoDetailBloc>(
       create: (context) => VideoDetailBloc()
         ..add(VideoDetailInitialEvent(
-          videoId: videoId,
-        )),
+            videoId: videoId,
+            targetCommentId: targetCommentId,
+            targetReplyId: targetReplyId)),
       child: const VideoDetailBody(),
     );
   }

@@ -96,6 +96,8 @@ onMounted(() => {
     updateViewTime()
     isOverlayVisible.value = true
     clearInterval(interval)
+
+    sendViewTime()
   })
 
   const updateViewTime = () => {

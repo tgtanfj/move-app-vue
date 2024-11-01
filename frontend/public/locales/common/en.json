@@ -115,7 +115,8 @@
     "loading": "Loading...",
     "rate": "Rate",
     "remove": "Remove",
-    "go_to_video_analysis": "Go to video analytics"
+    "go_to_video_analysis": "Go to video analytics",
+    "pay": "Pay now"
   },
   "label": {
     "password": "Password",
@@ -258,7 +259,7 @@
   },
   "comment": {
     "cancel": "Cancel",
-    "cancel_reservation": "Cancel Reservation?",
+    "cancel_reservation": "Cancel Comment?",
     "are_you_sure": "Are you sure you want to cancel this comment?",
     "no": "No",
     "yes": "Yes",
@@ -366,7 +367,8 @@
   },
   "wallet": {
     "card_number": "Card Number",
-    "card_holder": "Card Holder",
+    "card_holder": "Cardholder Name",
+    "card_type": "Card type",
     "card_info": "Card Information",
     "your_payment_method": "Your payment method",
     "no_payment_method_setup": "No payment method setup",
@@ -381,8 +383,26 @@
     "remove_card": "Remove card",
     "remove_card_description": "You card information will be removed and payment will not be made. Are you sure you want to remove payment method?",
     "cardholder_name_4_50_long": "The card hodlder name must be 4-50 characters",
-    "no_special_characters": "The cardholder name must  must contain only alphabetic characters and spaces",
+    "no_special_characters": "Incorrectly formatted cardholder name",
     "remove_success": "Payment method removed successfully",
+    "setup_success": "Your payment has been setup successfully.",
+    "cvc": "This is a 3-digit number typically found on the back of Visa, MasterCard. It's used for additional security during transactions"
+  },
+  "buyreps": {
+    "get_reps": "Get REP$",
+    "buy_reps": "Buy REP$",
+    "you_have": "You have",
+    "reps": "REP$",
+    "price_in_usd": "Prices are shown in USD",
+    "us$": "US$",
+    "complete_purchase": "Complete Purchase",
+    "order_summary": "Order Summary",
+    "one_time_charge": "One time charge on",
+    "total": "Total",
+    "save_detail": "Save my payment details for faster checkout in the future.",
+    "processing": "Processing your payment...",
+    "order_success": "Order success",
+    "by_submit": "By submitting payment information you acknowledge that you have read, understood and agree to be bound by MOVE’s End User License Agreement, Privacy Policy and Refund Policy.",
     "setup_success": "Your payment has been setup successfully."
   },
   "gift_reps": {

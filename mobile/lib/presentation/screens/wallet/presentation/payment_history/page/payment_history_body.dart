@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,9 +11,6 @@ import 'package:move_app/presentation/screens/wallet/presentation/payment_histor
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/widgets/date_picker_widgets.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_history/widgets/list_payment_histories.dart';
 import 'package:move_app/utils/util_date_time_format.dart';
-import 'package:move_app/utils/util_date_time.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:intl/intl.dart';
 
 class PaymentHistoryBody extends StatefulWidget {
   const PaymentHistoryBody({super.key});
@@ -23,9 +19,13 @@ class PaymentHistoryBody extends StatefulWidget {
   State<PaymentHistoryBody> createState() => _PaymentHistoryBodyState();
 }
 
-class _PaymentHistoryBodyState extends State<PaymentHistoryBody> {
+class _PaymentHistoryBodyState extends State<PaymentHistoryBody>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocListener<PaymentHistoryBloc, PaymentHistoryState>(
       listener: (context, state) {
         (state.status == PaymentHistoryStatus.processing)

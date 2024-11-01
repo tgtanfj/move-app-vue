@@ -26,7 +26,6 @@ final class BuyRepState extends Equatable {
   final String? cardNumber;
   final String? expiryDate;
   final String? cvv;
-  final bool isEnablePayNow;
   final PaymentMethodModel? paymentMethodModel;
   final String messageInputCardName;
   final String messageInputCardNumber;
@@ -49,7 +48,6 @@ final class BuyRepState extends Equatable {
     this.cardNumber,
     this.expiryDate,
     this.cvv,
-    this.isEnablePayNow = false,
     this.paymentMethodModel,
     this.messageInputCardName = '',
     this.messageInputCardNumber = '',
@@ -102,7 +100,6 @@ final class BuyRepState extends Equatable {
       cardNumber: cardNumber ?? this.cardNumber,
       expiryDate: expiryDate ?? this.expiryDate,
       cvv: cvv ?? this.cvv,
-      isEnablePayNow: isEnablePayNow ?? this.isEnablePayNow,
       paymentMethodModel: paymentMethodModel ?? this.paymentMethodModel,
       messageInputCardName: messageInputCardName ?? this.messageInputCardName,
       messageInputCardNumber:
@@ -131,7 +128,6 @@ final class BuyRepState extends Equatable {
         cardName,
         cardNumber,
         countryCode,
-        isEnablePayNow,
         expiryDate,
         cvv,
         paymentMethodModel,
@@ -144,4 +140,9 @@ final class BuyRepState extends Equatable {
         isShowExpiryDateMessage,
         isShowCvvMessage,
       ];
+  bool get isEnablePayNow =>
+      (cardName?.isNotEmpty ?? false) &&
+      (cardNumber?.isNotEmpty ?? false) &&
+      (expiryDate?.isNotEmpty ?? false) &&
+      (cvv?.isNotEmpty ?? false);
 }

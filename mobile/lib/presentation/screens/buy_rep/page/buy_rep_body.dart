@@ -46,7 +46,7 @@ class _BuyRepBodyState extends State<BuyRepBody> {
           showDialog(
               context: context,
               builder: (BuildContext build) {
-                return const OrderSuccessDialog();
+                return OrderSuccessDialog(rep: state.rep);
               }).then((onValue) {
             if (onValue) {
               if (!context.mounted) return;
@@ -59,7 +59,7 @@ class _BuyRepBodyState extends State<BuyRepBody> {
           showDialog(
               context: context,
               builder: (BuildContext build) {
-                return const OrderFailedDialog();
+                return OrderFailedDialog(rep: state.rep);
               }).then((onValue) {
             if (onValue) {
               if (!context.mounted) return;
@@ -293,8 +293,12 @@ class _BuyRepBodyState extends State<BuyRepBody> {
                                     ])),
                                 const SizedBox(width: 30),
                                 CustomLogoutButton(
-                                  isEnabled: state.isEnablePayNow,
-                                  borderColor: state.isEnablePayNow
+                                  isEnabled: state.cardPaymentMethod != null
+                                      ? true
+                                      : state.isEnablePayNow,
+                                  borderColor: (state.cardPaymentMethod != null
+                                          ? true
+                                          : state.isEnablePayNow)
                                       ? AppColors.tiffanyBlue
                                       : AppColors.spanishGray,
                                   onTap: () {
@@ -304,9 +308,12 @@ class _BuyRepBodyState extends State<BuyRepBody> {
                                   },
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15, vertical: 10),
-                                  backgroundColor: state.isEnablePayNow
-                                      ? AppColors.tiffanyBlue
-                                      : AppColors.spanishGray,
+                                  backgroundColor:
+                                      (state.cardPaymentMethod != null
+                                              ? true
+                                              : state.isEnablePayNow)
+                                          ? AppColors.tiffanyBlue
+                                          : AppColors.spanishGray,
                                   title: Constants.payNow,
                                   titleStyle:
                                       AppTextStyles.montserratStyle.bold16White,

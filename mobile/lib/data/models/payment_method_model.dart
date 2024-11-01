@@ -6,9 +6,9 @@ class PaymentMethodModel {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': paymentMethodId,
+        'paymentMethodId': paymentMethodId,
       };
 
   @override
-  String toString() => 'PaymentMethodModel(paymentMethodId: $paymentMethodId)';
+  String toString() => paymentMethodId;
 }

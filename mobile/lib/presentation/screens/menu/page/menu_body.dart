@@ -55,7 +55,7 @@ class _MenuBodyState extends State<MenuBody> {
                             MenuSelectMoreEvent(
                                 isMoreEnable: !state.isEnableMore)),
                         onBuyRep: () {
-                          Navigator.pop(context);
+                          Navigator.of(context).pushNamed(AppRoutes.home);
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {

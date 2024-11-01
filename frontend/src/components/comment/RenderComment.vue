@@ -6,7 +6,6 @@ import LikeOnIcon from '@assets/icons/LikeOnIcon.vue'
 import LikeOffDisabledIcon from '@assets/icons/LikeOffDisabledIcon.vue'
 import DislikeOffDisabledIcon from '@assets/icons/DislikeOffDisabledIcon.vue'
 import RepsSenderIcon from '@assets/icons/RepsSenderIcon.vue'
-import YellowRepsIcon from '@assets/icons/YellowRepsIcon.vue'
 import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
@@ -20,6 +19,7 @@ import { useOpenLoginStore } from '../../stores/openLogin'
 import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
+import RenderIconsReps from '../../components/channel-comments/RenderIconsReps.vue'
 
 const props = defineProps({
   comments: {
@@ -78,6 +78,13 @@ const toggleCommentContent = (commentId) => {
   } else {
     showFullContentIds.value.push(commentId)
   }
+}
+
+function formattedContent(content) {
+  if (content.length > 50 && !content.includes(' ')) {
+    return content.replace(/(.{50})/g, '$1 ')
+  }
+  return content
 }
 
 const handleLike = async (item) => {
@@ -257,14 +264,24 @@ const isReplyValid = computed(() => {
         />
         <div class="px-3 w-full pb-2" :id="item.id">
           <div class="flex flex-col gap-1 w-full">
-            <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+            <div class="flex items-center justify-start gap-2">
+              <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+              <div
+                class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                v-if="item?.lastContentDonate"
+              >
+                <span class="m-auto text-white text-[10px] font-bold">{{
+                  item?.lastContentDonate
+                }}</span>
+              </div>
+            </div>
             <div class="flex items-center gap-3">
               <p class="text-[13px] font-bold">{{ item.user.username }}</p>
               <div v-if="item.user.channel" class="flex items-center">
                 <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
               </div>
               <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
-                <YellowRepsIcon />
+                <RenderIconsReps :numberOfReps="item.totalDonation" />
                 <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                   Gifted {{ item.totalDonation }} REPs
                 </p>
@@ -275,7 +292,7 @@ const isReplyValid = computed(() => {
             </div>
             <div>
               <div
-                class="flex flex-col items-start"
+                class="flex flex-col items-start content-container"
                 v-if="item.content.length > 300 && !showFullContentIds.includes(item.id)"
               >
                 {{ item.content.slice(0, 300) }}...
@@ -283,7 +300,7 @@ const isReplyValid = computed(() => {
                   {{ $t('comment.read_more') }}
                 </button>
               </div>
-              <div class="flex flex-col items-start" v-else>
+              <div class="flex flex-col items-start content-container" v-else>
                 {{ item.content }}
                 <button
                   v-if="item.content.length > 300"
@@ -419,10 +436,20 @@ const isReplyValid = computed(() => {
                   class="object-cover w-[40px] h-[40px] rounded-full"
                 />
                 <div class="flex flex-col gap-1">
-                  <RepsSenderIcon
-                    class="mb-1"
-                    v-if="myReplyPerComment[item.id].totalDonation !== 0"
-                  />
+                  <div class="flex items-center justify-start gap-2">
+                    <RepsSenderIcon
+                      class="mb-1"
+                      v-if="myReplyPerComment[item.id]?.totalDonation !== 0"
+                    />
+                    <div
+                      class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                      v-if="myReplyPerComment[item.id]?.lastContentDonate"
+                    >
+                      <span class="m-auto text-white text-[10px] font-bold">{{
+                        myReplyPerComment[item.id]?.lastContentDonate
+                      }}</span>
+                    </div>
+                  </div>
                   <div class="flex items-center gap-3">
                     <p class="text-[13px] font-bold">
                       {{ myReplyPerComment[item.id].user.username }}
@@ -434,7 +461,7 @@ const isReplyValid = computed(() => {
                       v-if="myReplyPerComment[item.id].totalDonation !== 0"
                       class="flex items-end gap-2"
                     >
-                      <YellowRepsIcon />
+                      <RenderIconsReps :numberOfReps="myReplyPerComment[item.id].totalDonation" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                         Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
                       </p>
@@ -449,7 +476,7 @@ const isReplyValid = computed(() => {
                   </div>
                   <div>
                     <div
-                      class="flex flex-col items-start"
+                      class="flex flex-col items-start content-container"
                       v-if="
                         myReplyPerComment[item.id].content.length > 300 &&
                         !showFullReplyIds.includes(myReplyPerComment[item.id].id)
@@ -463,7 +490,7 @@ const isReplyValid = computed(() => {
                         {{ $t('comment.read_more') }}
                       </button>
                     </div>
-                    <div class="flex flex-col items-start" v-else>
+                    <div class="flex flex-col items-start content-container" v-else>
                       {{ myReplyPerComment[item.id].content }}
                       <button
                         v-if="myReplyPerComment[item.id].content.length > 300"
@@ -474,6 +501,7 @@ const isReplyValid = computed(() => {
                       </button>
                     </div>
                   </div>
+
                   <div class="flex items-center gap-8 mt-1">
                     <div class="flex items-center gap-3 justify-start">
                       <div class="-mt-1">
@@ -530,14 +558,24 @@ const isReplyValid = computed(() => {
               >
                 <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
                 <div class="flex flex-col gap-1">
-                  <RepsSenderIcon class="mb-1" v-if="reply.totalDonation !== 0" />
+                  <div class="flex items-center justify-start gap-2">
+                    <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
+                    <div
+                      class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                      v-if="reply?.lastContentDonate"
+                    >
+                      <span class="m-auto text-white text-[10px] font-bold">{{
+                        reply?.lastContentDonate
+                      }}</span>
+                    </div>
+                  </div>
                   <div class="flex items-center gap-3">
                     <p class="text-[13px] font-bold">{{ reply.user.username }}</p>
                     <div v-if="reply.user.channel" class="flex items-center">
                       <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                     </div>
                     <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
-                      <YellowRepsIcon />
+                      <RenderIconsReps :numberOfReps="reply?.totalDonation" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                         Gifted {{ reply.totalDonation }} REPs
                       </p>
@@ -548,7 +586,7 @@ const isReplyValid = computed(() => {
                   </div>
                   <div>
                     <div
-                      class="flex flex-col items-start"
+                      class="flex flex-col items-start content-container"
                       v-if="reply.content.length > 300 && !showFullReplyIds.includes(reply.id)"
                     >
                       {{ reply.content.slice(0, 300) }}...
@@ -556,7 +594,7 @@ const isReplyValid = computed(() => {
                         {{ $t('comment.read_more') }}
                       </button>
                     </div>
-                    <div class="flex flex-col items-start" v-else>
+                    <div class="flex flex-col items-start content-container" v-else>
                       {{ reply.content }}
                       <button
                         v-if="reply.content.length > 300"
@@ -641,5 +679,10 @@ const isReplyValid = computed(() => {
   background-color: #f7f7f7;
   border: 2px solid #13d0b4;
   border-radius: 10px;
+}
+
+.content-container {
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 </style>

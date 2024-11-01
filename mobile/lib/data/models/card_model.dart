@@ -1,27 +1,27 @@
 class CardModel {
   final String? brand;
   final String? last4;
-  final int? exp_month;
-  final int? exp_year;
+  final int? expMonth;
+  final int? expYear;
 
   CardModel({
     this.brand,
     this.last4,
-    this.exp_month,
-    this.exp_year,
+    this.expMonth,
+    this.expYear,
   });
 
   CardModel copyWith({
     String? brand,
     String? last4,
-    int? exp_month,
-    int? exp_year,
+    int? expMonth,
+    int? expYear,
   }) {
     return CardModel(
       brand: brand ?? this.brand,
       last4: last4 ?? this.last4,
-      exp_month: exp_month ?? this.exp_month,
-      exp_year: exp_year ?? this.exp_year,
+      expMonth: expMonth ?? this.expMonth,
+      expYear: expYear ?? this.expYear,
     );
   }
 
@@ -29,8 +29,8 @@ class CardModel {
     return CardModel(
       brand: json['brand'] is String? ? json['brand'] : '',
       last4: json['last4'] is String? ? json['last4'] : '',
-      exp_month: json['exp_month'] is int? ? json['exp_month'] : 0,
-      exp_year: json['exp_year'] is int? ? json['exp_year'] : 0,
+      expMonth: json['exp_month'] is int? ? json['exp_month'] : 0,
+      expYear: json['exp_year'] is int? ? json['exp_year'] : 0,
     );
   }
 }
