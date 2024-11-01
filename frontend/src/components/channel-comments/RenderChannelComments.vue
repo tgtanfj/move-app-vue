@@ -321,7 +321,10 @@ const handleRidirect = (commentId, videoId) => {
               <div v-else class="-mt-1">
                 <LikeOffDisabledIcon />
               </div>
-              <p class="text-primary text-[13px]">
+              <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
+              </p>
+              <p v-else class="text-[#A9A9A9] text-[13px]">
                 {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
               </p>
             </div>
@@ -619,7 +622,10 @@ const handleRidirect = (commentId, videoId) => {
                     <div v-else class="-mt-1">
                       <LikeOffDisabledIcon />
                     </div>
-                    <p class="text-primary text-[13px]">
+                    <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                      {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
+                    </p>
+                    <p v-else class="text-[#A9A9A9] text-[13px]">
                       {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
                     </p>
                   </div>
