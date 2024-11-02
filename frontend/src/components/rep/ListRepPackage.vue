@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { STRIPE_KEY } from '@constants/api.constant'
 
 import { Button } from '@common/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@common/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@common/ui/dialog'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@common/ui/form'
 import { Input } from '@common/ui/input'
 import {
