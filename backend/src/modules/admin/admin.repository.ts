@@ -1,17 +1,14 @@
 import { Channel } from '@/entities/channel.entity';
 import { Donation } from '@/entities/donation.entity';
-import { DurationType } from '@/entities/enums/durationType.enum';
-import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import { Payment } from '@/entities/payment.entity';
 import { User } from '@/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
-import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { Video } from '@/entities/video.entity';
 import { FindOptionsOrder, FindOptionsWhere, ILike, Like, Repository } from 'typeorm';
 import UserQueryDto from './dto/request/user-query.dto';
 import UserRepository from './repositories/user.repository';
+import VideoAdminQueryDto from './dto/request/video-admin-query.dto';
 
 @Injectable()
 export class AdminRepository {
@@ -87,13 +84,20 @@ export class AdminRepository {
     }, 0);
   }
 
-  async getVideoAdmin(
-    query: string,
-    workoutLevel: WorkoutLevel,
-    duration: DurationType,
-    sortBy: SortVideoAdmin,
-    paginationDto: PaginationDto,
-  ) {
+  async getVideoAdmin(dto: VideoAdminQueryDto) {
+    const { query, workoutLevel, duration, sortBy, sortType, take, page } = dto;
+
+    let order: FindOptionsOrder<Video> = { createdAt: 'desc' };
+
+    if (sortBy) {
+      order = {
+        [sortBy]: sortType,
+        ...order,
+      };
+    }
+
+    const skip = (page - 1) * take;
+
     const data = await this.videoRepository.findAndCount({
       where: {
         workoutLevel,
@@ -103,26 +107,9 @@ export class AdminRepository {
         },
         title: query ? ILike(`%${query}%`) : undefined,
       },
-      order: {
-        title: sortBy?.includes('title') ? (sortBy === SortVideoAdmin.TITLE_ASC ? 'ASC' : 'DESC') : undefined,
-        numberOfViews: sortBy?.includes('views')
-          ? sortBy === SortVideoAdmin.VIEWS_ASC
-            ? 'ASC'
-            : 'DESC'
-          : undefined,
-        numberOfComments: sortBy?.includes('comment')
-          ? sortBy === SortVideoAdmin.COMMENT_ASC
-            ? 'ASC'
-            : 'DESC'
-          : undefined,
-        ratings: sortBy?.includes('ratings')
-          ? sortBy === SortVideoAdmin.RATINGS_ASC
-            ? 'ASC'
-            : 'DESC'
-          : undefined,
-      },
-      take: paginationDto.take,
-      skip: PaginationDto.getSkip(paginationDto.take, paginationDto.page),
+      order: order,
+      take: take,
+      skip: skip,
       relations: { thumbnails: true },
       select: {
         id: true,
@@ -137,7 +124,7 @@ export class AdminRepository {
           image: true,
           selected: true,
         },
-        views: true,
+        createdAt: true,
       },
     });
     return data;

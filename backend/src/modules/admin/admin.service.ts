@@ -2,13 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { AdminRepository } from './admin.repository';
 import { RevenueDto } from './dto/response/revenue.dto';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
-import { SortVideoAdmin } from './dto/request/sort-video-admin.dto';
-import { DurationType } from '@/entities/enums/durationType.enum';
-import { WorkoutLevel } from '@/entities/enums/workoutLevel.enum';
 import UserQueryDto from './dto/request/user-query.dto';
 import { User } from '@/entities/user.entity';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
+import VideoAdminQueryDto from './dto/request/video-admin-query.dto';
 
 @Injectable()
 export class AdminService {
@@ -41,25 +39,13 @@ export class AdminService {
     return data;
   }
 
-  async getVideoAdmin(
-    query: string,
-    workoutLevel: WorkoutLevel,
-    duration: DurationType,
-    sortBy: SortVideoAdmin,
-    paginationDto: PaginationDto,
-  ) {
-    const [data, count] = await this.adminRepository.getVideoAdmin(
-      query,
-      workoutLevel,
-      duration,
-      sortBy,
-      paginationDto,
-    );
+  async getVideoAdmin(dto: VideoAdminQueryDto) {
+    const [data, count] = await this.adminRepository.getVideoAdmin(dto);
     const meta: PaginationMetadata = {
-      page: paginationDto.page,
-      take: paginationDto.take,
+      page: dto.page,
+      take: dto.take,
       total: count,
-      totalPages: Math.ceil(count / paginationDto.take),
+      totalPages: Math.ceil(count / dto.take),
     };
     return objectResponse(data, meta);
   }
