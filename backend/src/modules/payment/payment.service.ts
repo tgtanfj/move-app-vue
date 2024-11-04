@@ -159,7 +159,6 @@ export class PaymentService {
     const { email, numberOfREPs, isSave } = withDrawDto;
 
     // Step 1: Perform necessary validations
-    await this.validateWithdrawLimits(userId);
     const { channel, withDrawRate } = await this.validateAndGetChannel(userId, numberOfREPs);
 
     // Step 2: Save PayPal email if required
@@ -185,9 +184,6 @@ export class PaymentService {
     } catch (error) {
       throw new InternalServerErrorException(`${this.i18n.t('exceptions.paypal.WITHDRAW_FAILED')}`);
     }
-
-    // Step 8: Update Redis limits after successful withdrawal
-    await this.updateRedisLimits(userId);
 
     return await this.channelService.getChannelReps(userId);
   }
@@ -265,5 +261,4 @@ export class PaymentService {
       expireTimeWithdrawPerWeek,
     );
   }
-
 }
