@@ -236,9 +236,8 @@ class AuthRepository {
           },
         ),
       );
-      if (response.data['data']['accessToken'] != null) {
+      if (response.statusCode == 200) {
         String accessToken = response.data['data']['accessToken'];
-
         Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
         int? userId = decodedToken['userId'] ?? decodedToken['sub'];
         await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
@@ -253,16 +252,12 @@ class AuthRepository {
         return const Left("Login Error");
       }
     } catch (e) {
-      if (e is DioException) {
-        if (e.response != null) {
+      if (e is DioException && e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage = errorData["message"] ?? 'Unknown error occurred';
           return Left(errorMessage);
-        } else {
-          return Left(e.message.toString());
         }
-      }
-      rethrow;
+      return Left(e.toString());
     }
   }
 

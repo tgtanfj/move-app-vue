@@ -17,11 +17,14 @@ class WalletBody extends StatefulWidget {
 
 class _WalletBodyState extends State<WalletBody> {
   bool isShowSuccessMessage = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final success = ModalRoute.of(context)?.settings.arguments as bool;
+      final success = ModalRoute.of(context)?.settings.arguments is bool
+          ? ModalRoute.of(context)?.settings.arguments
+          : false;
       if (success == true) {
         setState(() {
           isShowSuccessMessage = true;

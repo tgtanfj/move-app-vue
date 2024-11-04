@@ -618,14 +618,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             facebookButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.facebookOption));
+              context.read<VideoDetailBloc>().add(VideoDetailShareFacebookEvent(
+                  videoId: state.video?.id ?? 0));
             },
             twitterButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.twitterOption));
+              context.read<VideoDetailBloc>().add(VideoDetailShareTwitterEvent(
+                  videoId: state.video?.id ?? 0,));
             },
             copyLinkButton: () {
               Clipboard.setData(ClipboardData(
