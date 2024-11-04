@@ -142,8 +142,7 @@ class AuthRepository {
       int? userId = decodedToken['userId'] ?? decodedToken['sub'];
       await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
 
-      await SharedPrefer.sharedPrefer
-          .setUserToken(accessToken);
+      await SharedPrefer.sharedPrefer.setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -212,8 +211,7 @@ class AuthRepository {
       int? userId = decodedToken['userId'] ?? decodedToken['sub'];
       await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
 
-      await SharedPrefer.sharedPrefer
-          .setUserToken(accessToken);
+      await SharedPrefer.sharedPrefer.setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -244,8 +242,7 @@ class AuthRepository {
         await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
 
         await UserRepository().getUserProfile();
-        await SharedPrefer.sharedPrefer
-            .setUserToken(accessToken);
+        await SharedPrefer.sharedPrefer.setUserToken(accessToken);
         await SharedPrefer.sharedPrefer
             .setUserRefreshToken(response.data['data']['refreshToken']);
         return Right(response.data['data']['accessToken']);
@@ -269,7 +266,7 @@ class AuthRepository {
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
     try {
-      await apiServiceAdditional.request(
+      final response = await apiServiceAdditional.request(
         Method.get,
         ApiUrls.endPointLogout,
         options: Options(
@@ -280,16 +277,18 @@ class AuthRepository {
           },
         ),
       );
-      await SharedPrefer.sharedPrefer.setUnreadNotificationCount(0);
-      await SharedPrefer.sharedPrefer.setUserId(0);
-      await SharedPrefer.sharedPrefer.setUserToken('');
-      await SharedPrefer.sharedPrefer.setUserRefreshToken('');
-      await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
-      await SharedPrefer.sharedPrefer.setUsername('');
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      await googleSignIn.signOut();
-      await FacebookAuth.instance.logOut();
-      await FirebaseAuth.instance.signOut();
+      if (response.statusCode == 200) {
+        await SharedPrefer.sharedPrefer.setUnreadNotificationCount(0);
+        await SharedPrefer.sharedPrefer.setUserId(0);
+        await SharedPrefer.sharedPrefer.setUserToken('');
+        await SharedPrefer.sharedPrefer.setUserRefreshToken('');
+        await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
+        await SharedPrefer.sharedPrefer.setUsername('');
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        await googleSignIn.signOut();
+        await FacebookAuth.instance.logOut();
+        await FirebaseAuth.instance.signOut();
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {

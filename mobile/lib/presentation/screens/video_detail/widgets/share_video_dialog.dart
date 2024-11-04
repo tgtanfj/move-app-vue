@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -12,7 +11,12 @@ class ShareVideoDialog extends StatefulWidget {
   final VoidCallback? onFacebookTap;
   final VoidCallback? onTwitterTap;
   final VoidCallback? onCopyLinkTap;
-  const ShareVideoDialog({super.key, this.onFacebookTap, this.onTwitterTap, this.onCopyLinkTap,});
+  const ShareVideoDialog({
+    super.key,
+    this.onFacebookTap,
+    this.onTwitterTap,
+    this.onCopyLinkTap,
+  });
 
   @override
   State<ShareVideoDialog> createState() => _ShareVideoDialogState();

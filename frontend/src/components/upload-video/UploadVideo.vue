@@ -403,7 +403,7 @@ const thirdButton = async (tab) => {
       formData.append('workoutLevel', workoutLevel.value.toLowerCase())
       formData.append('duration', durationText)
       formData.append('keywords', tags.value)
-      formData.append('selectedThumbnail', selectedIndex.value)
+      formData.append('selectedThumbnail', 0)
       formData.append('isCommentable', isCommentable.value === 'enabled' ? 'true' : 'false')
       formData.append('url', linkVideoInput.value)
       formData.append('isPublish', 'true')
@@ -423,6 +423,10 @@ const thirdButton = async (tab) => {
         queryClient.invalidateQueries('videos-analytics')
       } else {
         uploadLoading.value = false
+        toast({
+          description: 'Upload video failed',
+          variant: 'destructive'
+        })
       }
     }
   }

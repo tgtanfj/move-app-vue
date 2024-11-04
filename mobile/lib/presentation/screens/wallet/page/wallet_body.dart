@@ -39,7 +39,11 @@ class _WalletBodyState extends State<WalletBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWidget(),
+      appBar: AppBarWidget(
+        prefixButton: (){
+          Navigator.of(context).pop();
+        },
+      ),
       backgroundColor: AppColors.white,
       body: SafeArea(
         child: Padding(

@@ -12,6 +12,8 @@ import 'package:move_app/presentation/screens/videos_category/bloc/videos_catego
 import 'package:move_app/presentation/screens/videos_category/bloc/videos_category_state.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
+import '../../../routes/app_routes.dart';
+
 class VideosCategoryBody extends StatefulWidget {
   const VideosCategoryBody({super.key});
 
@@ -25,7 +27,10 @@ class _VideosCategoryBodyState extends State<VideosCategoryBody> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: const AppBarWidget(),
+      appBar: AppBarWidget(
+        prefixButton: () =>
+            Navigator.pushNamed(context, AppRoutes.routeMenu, arguments: true),
+      ),
       body: BlocConsumer<VideosCategoryBloc, VideosCategoryState>(
           listener: (context, state) {},
           builder: (context, state) {

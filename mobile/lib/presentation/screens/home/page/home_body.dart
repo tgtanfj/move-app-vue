@@ -27,7 +27,7 @@ class _HomeBodyState extends State<HomeBody> {
     final double width = MediaQuery.of(context).size.width;
     return BlocListener<HomeBloc, HomeState>(
       listener: (context, state) {
-        state.status == HomeStatus.processing
+        state.status == HomeStatus.processing && state.isLoadingPage == true
             ? EasyLoading.show()
             : EasyLoading.dismiss();
       },
