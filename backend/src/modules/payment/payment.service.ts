@@ -12,7 +12,6 @@ import { NotificationService } from '../notification/notification.service';
 import { StripeService } from '../stripe/stripe.service';
 import { UserService } from '../user/user.service';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
-import QueryAdminPaymentHistoryDto from './dto/admin-query-payment-history.dto';
 import { BuyREPsDto } from './dto/buy-reps.dto';
 import QueryPaymentHistoryDto from './dto/query-payment-history.dto';
 import PaymentDto, { RepsPackageDto } from './dto/response/payment.dto';
@@ -266,8 +265,6 @@ export class PaymentService {
       expireTimeWithdrawPerWeek,
     );
   }
-
-
 
   async getTotalWithdraw() {
     const withDrawRate = this.configService.getNumber('WITHDRAW_RATE');
