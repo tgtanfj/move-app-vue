@@ -41,7 +41,7 @@ export class HomeService {
     // this.timeCronJob = this.apiConfig.getString('TIME_CRON_JOB');
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
