@@ -2,15 +2,7 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Brackets,
-  FindOptionsRelations,
-  LessThan,
-  MoreThan,
-  Repository,
-  TreeRepository,
-  UpdateResult,
-} from 'typeorm';
+import { FindOptionsRelations, LessThan, MoreThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -145,7 +137,7 @@ export class CommentRepository {
         content: true,
         numberOfReply: true,
         numberOfLike: true,
-        parent: { id: true, numberOfReply: true },
+        parent: { id: true, numberOfReply: true, video: { id: true } },
         video: {
           id: true,
           title: true,

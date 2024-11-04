@@ -35,6 +35,7 @@ export class PaymentRepository {
     // relations
     const relations: FindOptionsRelations<Payment> = {
       user: true,
+      repsPackage: true
     };
 
     // Build the search filter
