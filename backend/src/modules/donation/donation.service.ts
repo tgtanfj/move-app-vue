@@ -38,7 +38,6 @@ export class DonationService {
       }
       const { channel, title } = await this.videoService.findChannel(videoId);
 
-
       const channelREPs: number = +channel.numberOfREPs + +giftPackage.numberOfREPs;
       const totalREPs: number = +channel.totalREPs + +giftPackage.numberOfREPs;
       const userREPs: number = userInfo.numberOfREPs - giftPackage.numberOfREPs;
@@ -53,8 +52,13 @@ export class DonationService {
 
       const receiver = await this.channelService.findOne(channel.id, { user: true });
 
+      const sender = {
+        id: userId,
+        username: userInfo.username,
+        avatar: userInfo.avatar,
+      };
       const dataNotification = {
-        sender: userInfo,
+        sender: sender,
         type: NOTIFICATION_TYPE.DONATION,
         videoId: videoId,
         videoTitle: title,

@@ -23,9 +23,8 @@ class _WalletBodyState extends State<WalletBody> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final success =
-          ModalRoute.of(context)?.settings.arguments as WalletArguments;
-      if (success.isTrue == true) {
+      final success = widget.arguments;
+      if (success?.isTrue == true) {
         setState(() {
           isShowSuccessMessage = true;
         });

@@ -104,9 +104,7 @@ export class UserService {
   }
 
   async findOneAccount(userId: number): Promise<Account> {
-    return this.accountRepository.findOneAccount(userId).catch((error) => {
-      throw new BadRequestException(error.message);
-    });
+    return await this.accountRepository.findOneAccount(userId);
   }
 
   async saveRefreshToken(userId: number, deviceInfo: any, refreshToken: string): Promise<RefreshToken> {

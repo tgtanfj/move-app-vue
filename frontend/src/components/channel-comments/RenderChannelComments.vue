@@ -408,6 +408,8 @@ const handleRidirect = (commentId, videoId) => {
             <Input
               v-model="replyData"
               @focus="isFocused = true"
+              @keydown.enter="createReply(item.id)"
+              @keydown.esc="createReply(item.id)"
               placeholder="Reply comment"
               class="w-full outline-none bg-transparent rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
             />

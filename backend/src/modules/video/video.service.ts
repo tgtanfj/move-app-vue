@@ -752,4 +752,8 @@ export class VideoService {
     const result = await this.videoRepository.getTotalSecondsOfChannel(channelId);
     return result || 0;
   }
+
+  async downloadMultiVideos(urlS3: string[]) {
+    return await this.s3.downloadMultiFiles(urlS3)
+  }
 }

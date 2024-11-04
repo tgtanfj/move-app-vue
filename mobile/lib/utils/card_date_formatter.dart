@@ -27,12 +27,14 @@ class CardDateFormatter extends TextInputFormatter {
     }
 
     final int selectionIndexFromRight =
-        newValue.text.length - newValue.selection.end;
+        (newValue.text.length - newValue.selection.end)
+            .clamp(0, newTextBuffer.length);
 
     return TextEditingValue(
       text: newTextBuffer.toString(),
       selection: TextSelection.collapsed(
-          offset: newTextBuffer.length - selectionIndexFromRight + offset),
+          offset: (newTextBuffer.length - selectionIndexFromRight + offset)
+              .clamp(0, newTextBuffer.length)),
     );
   }
 }

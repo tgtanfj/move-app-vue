@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -8,7 +7,8 @@ class SearchHistoryWidgets extends StatelessWidget {
   final String? searchItem;
   final VoidCallback? onPress;
   final VoidCallback? onTap;
-  const SearchHistoryWidgets({super.key, this.searchItem, this.onPress, this.onTap});
+  const SearchHistoryWidgets(
+      {super.key, this.searchItem, this.onPress, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +18,8 @@ class SearchHistoryWidgets extends StatelessWidget {
       trailing: IconButton(
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
-        style: const ButtonStyle(
-            tapTargetSize: MaterialTapTargetSize
-                .shrinkWrap),
+        style:
+            const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
         icon: SvgPicture.asset(
           AppIcons.closeCircle.svgAssetPath,
           color: AppColors.chineseSilver,

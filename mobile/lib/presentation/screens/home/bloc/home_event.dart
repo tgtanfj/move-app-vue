@@ -5,6 +5,10 @@ sealed class HomeEvent extends Equatable {
 }
 
 final class HomeInitialEvent extends HomeEvent {
+  final bool isLoadingPage;
+
+  const HomeInitialEvent({required this.isLoadingPage});
+
   @override
   List<Object?> get props => [];
 }

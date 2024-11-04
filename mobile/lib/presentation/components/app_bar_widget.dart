@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -45,6 +47,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
   String token = SharedPrefer.sharedPrefer.getUserToken();
   int userId = SharedPrefer.sharedPrefer.getUserId();
   late NotificationService _notificationService;
+  late StreamSubscription<int> _unreadCountSubscription;
   int unreadCount = 0;
 
   @override
@@ -53,16 +56,20 @@ class _AppBarWidgetState extends State<AppBarWidget> {
     _notificationService = NotificationService();
 
     if (token.isNotEmpty) {
-      _listenForUnreadNotifications();
+      _unreadCountSubscription = _notificationService.listenForUnreadCount(userId).listen((count) {
+        if (mounted) {
+          setState(() {
+            unreadCount = count;
+          });
+        }
+      });
     }
   }
 
-  void _listenForUnreadNotifications() {
-    _notificationService.listenForUnreadCount(userId).listen((count) {
-      setState(() {
-        unreadCount = count;
-      });
-    });
+  @override
+  void dispose() {
+    _unreadCountSubscription.cancel();
+    super.dispose();
   }
 
   @override

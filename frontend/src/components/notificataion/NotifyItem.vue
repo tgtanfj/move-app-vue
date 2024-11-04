@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
     >
       <div class="min-w-[40px] w-[40px] h-[40px] rounded-full">
         <div v-if="isSystemType(type)">
-          <AvaSystem />
+          <AvaSystem width="40px" height="40px"/>
         </div>
 
         <img

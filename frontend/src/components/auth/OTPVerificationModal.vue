@@ -57,11 +57,25 @@ const handleResendOTP = async () => {
 }
 
 const blockInvalidKeys = (event) => {
+  if (event.ctrlKey) {
+    return
+  }
+
   if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
     event.preventDefault()
   }
 
   if (code.value.length >= 6 && event.key !== 'Backspace') {
+    event.preventDefault()
+  }
+}
+
+const handlePaste = (event) => {
+  const pasteData = event.clipboardData.getData('text').slice(0, 6)
+  if (!/^\d+$/.test(pasteData)) {
+    event.preventDefault()
+  } else {
+    code.value = pasteData
     event.preventDefault()
   }
 }
@@ -101,7 +115,7 @@ const resetFormOnClose = () => {
             </p>
           </div>
         </div>
-        <Input v-model="code" type="text" @keydown="blockInvalidKeys" />
+        <Input v-model="code" type="text" @keydown="blockInvalidKeys" @paste="handlePaste" />
         <p v-if="isError" class="text-red-500">
           {{ errorMessage }}
         </p>

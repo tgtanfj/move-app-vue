@@ -71,8 +71,18 @@ export class PayPalService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error creating payout:', error.response?.data || error);
-      throw new InternalServerErrorException(this.i18n.t('exceptions.paypal.WITHDRAW_FAILED'));
+      // Check if the error is an Axios error to access the response details
+      if (axios.isAxiosError(error) && error.response) {
+        // Extract error message from the PayPal API response if available
+        const paypalErrorMessage =
+          error.response.data?.message || error.response.data?.name || 'An error occurred with PayPal';
+        console.error('PayPal API Error:', error.response.data);
+        throw paypalErrorMessage;
+      } else {
+        // Log and throw a generic error message if it's not a PayPal-specific error
+        console.error('Unexpected error creating payout:', error);
+        throw this.i18n.t('exceptions.paypal.WITHDRAW_FAILED');
+      }
     }
   }
 }

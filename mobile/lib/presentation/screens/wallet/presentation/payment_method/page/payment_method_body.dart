@@ -30,11 +30,11 @@ class _PaymentMethodBodyState extends State<PaymentMethodBody>
           : EasyLoading.dismiss();
       if (state.status == PaymentMethodStatus.removed) {
         EasyLoading.dismiss();
-        Navigator.pushNamed(context, AppRoutes.routeWallet,
-            arguments: WalletArguments(
-              rep: state.rep,
-              isTrue: false,
-            ));
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.routeWallet,
+            arguments: WalletArguments(rep: state.rep, isTrue: false),
+            (route) => false);
       }
     }, builder: (context, state) {
       return state.cardPaymentModel == null

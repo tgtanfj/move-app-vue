@@ -38,20 +38,23 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
           : EasyLoading.dismiss();
 
       if (state.status == PaymentDetailsStatus.added &&
-          state.walletArguments?.rep != null) {
+          state.walletArguments?.rep?.id != null) {
         Navigator.pushNamedAndRemoveUntil(
             context, AppRoutes.home, (route) => false);
         showDialog(
             context: context,
             builder: (BuildContext build) {
-              return BuyRepPage(rep: state.walletArguments?.rep ?? RepModel());
+              return BuyRepPage(rep: state.walletArguments!.rep!);
             });
         return;
       }
       if (state.status == PaymentDetailsStatus.added) {
         EasyLoading.dismiss();
-        Navigator.pushNamed(context, AppRoutes.routeWallet,
-            arguments: WalletArguments(rep: RepModel(), isTrue: true));
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.routeWallet,
+            arguments: WalletArguments(rep: RepModel(), isTrue: true),
+            (route) => false);
       }
     }, child: BlocBuilder<PaymentDetailsBloc, PaymentDetailsState>(
             builder: (context, state) {
@@ -190,7 +193,7 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                               title: Constants.expiryDate,
                               textInputType: TextInputType.number,
                               inputFormatters: [
-                                LengthLimitingTextInputFormatter(4),
+                                LengthLimitingTextInputFormatter(5),
                                 CardDateFormatter(),
                               ],
                               titleStyle:

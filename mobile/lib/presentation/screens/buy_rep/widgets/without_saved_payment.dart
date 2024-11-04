@@ -139,7 +139,7 @@ class WithoutSavedPayment extends StatelessWidget {
                     hintText: Constants.mmyy,
                     textInputType: TextInputType.number,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(4),
+                      LengthLimitingTextInputFormatter(5),
                       CardDateFormatter(),
                     ],
                     onChanged: onChangeExpiryDate,
