@@ -1,12 +1,12 @@
 import { Category } from '@/entities/category.entity';
 import { Video } from '@/entities/video.entity';
 import { WatchingVideoHistory } from '@/entities/watching-video-history.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
 import { User } from '@/entities/user.entity';
 import { ChannelItem, VideoItemDto } from './dto/video-item.dto';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { VideoTrendService } from '../video-trend/video-trend.service';
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { Channel } from '@/entities/channel.entity';
@@ -36,16 +36,23 @@ export class HomeService {
     private thumbnailService: ThumbnailService,
     private channelService: ChannelService,
     private categoryService: CategoryService,
-  ) {}
+    @Inject('TIME_CRON_JOB') private readonly timeCronJob: number,
+  ) {
+    // this.timeCronJob = this.apiConfig.getString('TIME_CRON_JOB');
+  }
 
-  // @Cron('* 1 0 * *')
-  // @Cron('0 30 * * * *')
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async createListVideoHotTrend() {
     // clear video hot trend
     await this.videoTrendService.deleteAll();
 
     //The video was posted 14 days ago
     const numberDayValid = this.apiConfig.getNumber('NUMBER_DAY_VALID');
+    const viewDailyValid = this.apiConfig.getNumber('VIEW_DAILY_VALID');
+    const viewTotalValid = this.apiConfig.getNumber('VIEW_TOTAL_VALID');
+
+    const ratingValid = this.apiConfig.getNumber('RATING_VALID');
+
     const postedDateValid = new Date();
     postedDateValid.setDate(postedDateValid.getDate() - numberDayValid);
 
@@ -55,16 +62,17 @@ export class HomeService {
 
     const result = await this.videoRepository
       .createQueryBuilder('video')
-      .limit(10)
       .leftJoinAndSelect('video.views', 'views')
       .innerJoinAndSelect('video.channel', 'channel')
       .innerJoinAndSelect('video.category', 'category')
       .where('video.createdAt <= :postedDateValid', { postedDateValid: postedDateValid })
       .andWhere('video.isPublish = true')
       .andWhere('views.viewDate = :yesterday', { yesterday: formattedYesterday })
-      .andWhere('video.ratings >= 4')
-      .andWhere('video.numberOfViews >= 1000')
-      .orderBy('video.numberOfViews', 'DESC')
+      .andWhere('views.totalView >= :totalView', { totalView: viewDailyValid })
+      .andWhere('video.ratings >= :rating', { rating: ratingValid })
+      .andWhere('video.numberOfViews >= :total', { total: viewTotalValid })
+      .orderBy('views.totalView', 'DESC', 'NULLS LAST')
+      .limit(10)
       .select([
         'video.id',
         'video.title',
