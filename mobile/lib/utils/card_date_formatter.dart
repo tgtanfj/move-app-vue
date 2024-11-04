@@ -6,36 +6,33 @@ class CardDateFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    String newText = newValue.text.replaceAll(RegExp(r'\D'), '');
+    final String newTextFiltered = newValue.text.replaceAll(RegExp(r'\D'), '');
+    int offset = 0;
 
-    if (newText.length > 4) {
-      return oldValue;
-    }
-    if (newText.length == 1 &&
-        int.tryParse(newText) != null &&
-        newText != '0' &&
-        oldValue.text.isEmpty &&
-        newText != '1') {
-      newText = '0$newText';
-    }
-    if (newText.length >= 2) {
-      int month = int.tryParse(newText.substring(0, 2)) ?? 0;
+    if (newTextFiltered.length >= 2) {
+      int month = int.parse(newTextFiltered.substring(0, 2));
       if (month > 12) {
-        newText = '01${newText.substring(2)}';
+        return oldValue;
       }
     }
-    StringBuffer newTextBuffer = StringBuffer();
-    for (int i = 0; i < newText.length; i++) {
+
+    final StringBuffer newTextBuffer = StringBuffer();
+
+    for (int i = 0; i < newTextFiltered.length; i++) {
       if (i == 2) {
         newTextBuffer.write('/');
+        offset++;
       }
-      newTextBuffer.write(newText[i]);
+      newTextBuffer.write(newTextFiltered[i]);
     }
 
-    int selectionIndex = newTextBuffer.length;
+    final int selectionIndexFromRight =
+        newValue.text.length - newValue.selection.end;
+
     return TextEditingValue(
       text: newTextBuffer.toString(),
-      selection: TextSelection.collapsed(offset: selectionIndex),
+      selection: TextSelection.collapsed(
+          offset: newTextBuffer.length - selectionIndexFromRight + offset),
     );
   }
 }

@@ -30,7 +30,6 @@ class ViewChannelProfileBody extends StatefulWidget {
 class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
   @override
   Widget build(BuildContext context) {
-    
     return BlocListener<ViewChannelProfileBloc, ViewChannelProfileState>(
         listener: (context, state) {
       state.status == ViewChannelProfileStatus.processing
@@ -73,7 +72,10 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          runSpacing: 4,
                           children: [
                             Text(
                               state.channel?.name ?? '',
@@ -107,7 +109,9 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     child: InkWell(
                         splashFactory: NoSplash.splashFactory,
                         onTap: () {
-                          if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
+                          if (SharedPrefer.sharedPrefer
+                              .getUserToken()
+                              .isEmpty) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {

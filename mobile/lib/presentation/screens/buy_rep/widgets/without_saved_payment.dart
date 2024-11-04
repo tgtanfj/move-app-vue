@@ -8,7 +8,9 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/card_item.dart';
 import 'package:move_app/utils/card_date_formatter.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 
 class WithoutSavedPayment extends StatelessWidget {
   final Function(String)? onChangeCardName;
@@ -27,6 +29,7 @@ class WithoutSavedPayment extends StatelessWidget {
   final bool isShowExpiryDateMessage;
   final bool isShowCvvMessage;
   final int? initialCountry;
+  final CardType cardType;
 
   const WithoutSavedPayment({
     super.key,
@@ -46,6 +49,7 @@ class WithoutSavedPayment extends StatelessWidget {
     this.isShowExpiryDateMessage = false,
     this.isShowCvvMessage = false,
     this.initialCountry,
+    this.cardType = CardType.unknown,
   });
 
   @override
@@ -106,6 +110,10 @@ class WithoutSavedPayment extends StatelessWidget {
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(16),
           ],
+          suffix: Padding(
+            padding: const EdgeInsets.all(12),
+            child: CardItem(cardType: cardType),
+          ),
           textStyle: isShowCardNumberMessage
               ? AppTextStyles.montserratStyle.regular14BrinkPink
               : AppTextStyles.montserratStyle.regular14Black,
@@ -131,7 +139,7 @@ class WithoutSavedPayment extends StatelessWidget {
                     hintText: Constants.mmyy,
                     textInputType: TextInputType.number,
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(5),
+                      LengthLimitingTextInputFormatter(4),
                       CardDateFormatter(),
                     ],
                     onChanged: onChangeExpiryDate,
@@ -195,26 +203,6 @@ class WithoutSavedPayment extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget masterCard() {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Container(
-          height: 25,
-          width: 34,
-          padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.chineseSilver,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: SvgPicture.asset(
-            AppIcons.masterCard.svgAssetPath,
-          )),
     );
   }
 
