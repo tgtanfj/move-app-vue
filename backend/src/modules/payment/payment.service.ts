@@ -266,17 +266,4 @@ export class PaymentService {
     );
   }
 
-  async getTotalWithdraw() {
-    const withDrawRate = this.configService.getNumber('WITHDRAW_RATE');
-
-    const withdraws = await this.cashOutRepository.getAllCashOutHistory();
-
-    const total = withdraws.items.reduce((sum, withdraw) => {
-      return sum + +withdraw.numberOfREPs;
-    }, 0);
-
-    return {
-      totalWithdraw: total * withDrawRate,
-    };
-  }
 }
