@@ -52,17 +52,15 @@ export class UpdateUserDto {
 
   @ApiProperty({ example: 1, required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
   countryId?: number;
 
   @ApiProperty({ example: 10, required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
   stateId?: number;
 
   @ApiProperty({ example: 'New York', required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Transform(({ value }) => (value === '' ? null : value))
   city?: string;
 
   @IsOptional()

@@ -108,6 +108,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
           ContentMenu(
             walletButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeWallet);
+              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
