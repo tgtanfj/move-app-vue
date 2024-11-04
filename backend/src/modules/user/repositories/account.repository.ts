@@ -32,9 +32,11 @@ export class AccountRepository {
   }
 
   async findOneAccount(userId: number): Promise<Account> {
-    return await this.accountRepository.findOneByOrFail({
-      user: {
-        id: userId,
+    return await this.accountRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
       },
     });
   }

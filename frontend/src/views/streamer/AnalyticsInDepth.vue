@@ -129,8 +129,8 @@ onMounted(() => {
 
     <div class="flex gap-14 mt-2" v-if="videoInDepth && videoInDepthGraphic">
       <!-- Left content -->
-      <div>
-        <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full object-cover h-[150px]" />
+      <div class="flex-[0.5]">
+        <img :src="videoInDepth.thumbnail" alt="thumbnail" class="w-full object-cover h-[160px]" />
         <p class="font-bold text-lg mt-2">{{ videoInDepth.title }}</p>
         <p class="text-lg text-gray-500 font-medium">{{ videoInDepth.category }}</p>
 
@@ -162,7 +162,7 @@ onMounted(() => {
       </div>
 
       <!-- Right content -->
-      <div class="w-full">
+      <div class="flex-[1.5]">
         <div class="flex gap-7">
           <FiguresCard title="Total REPs earned" :figures="videoInDepth.numberOfReps" />
         </div>

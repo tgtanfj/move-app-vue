@@ -43,6 +43,7 @@ const cardholderName = ref('')
 const cvc = ref('')
 const cardNumber = ref('')
 const coun = ref('')
+const wrongCardType = ref('')
 
 const { values, setValues, errors, resetForm } = useForm({
   initialValues: {
@@ -54,6 +55,21 @@ const { values, setValues, errors, resetForm } = useForm({
     expDate: ''
   },
   validationSchema: walletSchema
+})
+
+watch(cardNumber, (newValue) => {
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
 })
 
 watch(cardNumber, (newValue) => {
@@ -148,28 +164,33 @@ const onSubmit = async () => {
     showError.value = true
     return
   } else {
-    const expirationParts = values.expDate.split('/').map(Number)
-    const cardData = {
-      number: values.cardNumber,
-      exp_month: expirationParts[0],
-      exp_year: expirationParts[1],
-      cvc: values.cvc,
-      name: values.cardholderName,
-      country: userCountryIso.value,
-      type: values.cardType
-    }
+    const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
+    console.log(isAccepted)
+    if (!isAccepted) {
+      wrongCardType.value = 'Please enter a valid Visa or credit card number only'
+    } else {
+      const expirationParts = values.expDate.split('/').map(Number)
+      const cardData = {
+        number: values.cardNumber,
+        exp_month: expirationParts[0],
+        exp_year: expirationParts[1],
+        cvc: values.cvc,
+        name: values.cardholderName,
+        country: userCountryIso.value,
+        type: values.cardType
+      }
 
-    await paymentStore.createUserPaymentMethod(cardData)
-    // .then(() => {
-    //   const { query } = route
-    //   if (query.returnTo) router.push(`${query.returnTo}`)
-    // })
+      await paymentStore.createUserPaymentMethod(cardData).then(() => {
+        const { query } = route
+        if (query.source)
+          router.push({ path: query.source, query: { redirectFrom: 'add-payment' } })
+      })
+    }
   }
 }
 
 const handleTrim = (e) => {
   cardholderName.value = e.target.value.trim()
-  console.log(`${cardholderName.value}hello`)
   setValues({ ...values, cardholderName: cardholderName.value.trim() })
 }
 
@@ -177,7 +198,7 @@ const handleCheckExpMonth = (event) => {
   const input = event.target.value
   const filteredInput = input.replace(/[^0-9]/g, '')
   if (Number(filteredInput) > 12) {
-    expMonth.value = filteredInput.charAt(0)
+    expMonth.value = 12
   } else {
     expMonth.value = filteredInput
   }
@@ -278,6 +299,7 @@ const handleCheckCardName = (event) => {
                       v-bind="componentField"
                       v-model.trim="cardNumber"
                       @input="handleCheckCardNumber"
+                      @focus="wrongCardType = ''"
                     />
                   </FormControl>
                   <FormMessage class="mt-2" :class="{ hidden: !showError }" />
@@ -313,6 +335,7 @@ const handleCheckCardName = (event) => {
               </FormField>
             </div>
           </div>
+          <p class="text-red-500 text-sm" v-if="wrongCardType">{{ wrongCardType }}</p>
           <div class="grid grid-cols-2 w-full gap-3">
             <div>
               <label>Expiration date</label>

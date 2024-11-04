@@ -321,7 +321,10 @@ const handleRidirect = (commentId, videoId) => {
               <div v-else class="-mt-1">
                 <LikeOffDisabledIcon />
               </div>
-              <p class="text-primary text-[13px]">
+              <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
+              </p>
+              <p v-else class="text-[#A9A9A9] text-[13px]">
                 {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
               </p>
             </div>
@@ -405,6 +408,8 @@ const handleRidirect = (commentId, videoId) => {
             <Input
               v-model="replyData"
               @focus="isFocused = true"
+              @keydown.enter="createReply(item.id)"
+              @keydown.esc="createReply(item.id)"
               placeholder="Reply comment"
               class="w-full outline-none bg-transparent rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
             />
@@ -619,7 +624,10 @@ const handleRidirect = (commentId, videoId) => {
                     <div v-else class="-mt-1">
                       <LikeOffDisabledIcon />
                     </div>
-                    <p class="text-primary text-[13px]">
+                    <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                      {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
+                    </p>
+                    <p v-else class="text-[#A9A9A9] text-[13px]">
                       {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
                     </p>
                   </div>

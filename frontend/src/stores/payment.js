@@ -20,6 +20,7 @@ export const usePaymentStore = defineStore('payment', () => {
   const isBuying = ref(false)
   const selectedPackage = ref(null)
   const repsPackageList = ref([])
+  const showPurchaseModal = ref(false)
 
   onMounted(async () => {
     try {
@@ -51,13 +52,17 @@ export const usePaymentStore = defineStore('payment', () => {
     selectedPackage.value = item
   }
 
+  const setShowPurchaseModal = (value) => {
+    showPurchaseModal.value = value
+  }
+
   const fetchUserPaymentMethod = async () => {
     try {
       isLoading.value = true
       const response = await apiAxios.get('/stripe/list-cards')
-      if (response.status === 200 && response.data.data.id) {
+      if (response.status === 200 && response.data?.data?.id) {
         userPaymentList.value = { ...response.data.data }
-      } else throw new Error(response.data.error || 'Error getting payment information')
+      } else return
     } catch (error) {
       console.error('Error fetching user payment:', error)
     } finally {
@@ -273,6 +278,8 @@ export const usePaymentStore = defineStore('payment', () => {
     repsPackageList,
     reps,
     selectedPackage,
+    showPurchaseModal,
+    setShowPurchaseModal,
     setSelectedPackage,
     checkForSavedPayment,
     getListRepsPackage,

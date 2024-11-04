@@ -33,7 +33,15 @@ class _MenuBodyState extends State<MenuBody> {
             children: [
               AppBarWidget(
                 prefixIconPath: AppIcons.closeWhite.svgAssetPath,
-                prefixButton: () => Navigator.of(context).pop(),
+                prefixButton: () {
+                  state.isStateAtCurrentPage
+                      ? Navigator.of(context).pop()
+                      : Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.home,
+                          (route) => false,
+                        );
+                },
                 isEnableSuffixIcon: token.isNotEmpty,
                 suffixIconPath: AppIcons.notification.svgAssetPath,
                 suffixButton: () {
@@ -47,6 +55,7 @@ class _MenuBodyState extends State<MenuBody> {
                         userName: state.user?.username ?? Constants.userName,
                         isBlueBadge: state.user?.isBlueBadge ?? false,
                         isPinkBadge: state.user?.isPinkBadge ?? false,
+                        numberOfREPs: state.user?.numberOfREPs ?? 0,
                         logoutSuccessEvent: () => context
                             .read<MenuBloc>()
                             .add(const MenuLogoutSuccessEvent()),
@@ -67,6 +76,7 @@ class _MenuBodyState extends State<MenuBody> {
                         },
                       )
                     : MenuNotLogin(
+                        isStateAtCurrentPage: state.isStateAtCurrentPage,
                         isMoreEnable: state.isEnableMore,
                         moreButton: () => context.read<MenuBloc>().add(
                             MenuSelectMoreEvent(

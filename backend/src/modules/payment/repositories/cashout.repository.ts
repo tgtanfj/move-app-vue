@@ -1,7 +1,7 @@
 import { Cashout } from '@/entities/cashout.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { DeepPartial, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class CashOutRepository {
@@ -20,9 +20,7 @@ export class CashOutRepository {
     return await this.cashOutRepository.save(cashOutCreated);
   }
 
-  async getAllCashOutHistory(relations?: FindOptionsRelations<Cashout>) {
-    return this.cashOutRepository.find({
-      relations,
-    });
+  async updateCashoutHistory(id: number, updateData: DeepPartial<Cashout>): Promise<UpdateResult> {
+    return await this.cashOutRepository.update(id, updateData);
   }
 }

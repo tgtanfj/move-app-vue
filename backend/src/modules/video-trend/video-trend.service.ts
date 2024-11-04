@@ -15,7 +15,7 @@ export class VideoTrendService {
       duration: obj.duration,
       videoLength: obj.videoLength,
       ratings: obj.ratings,
-      numberOfViews: obj.numberOfView,
+      numberOfViews: obj.numberOfViews,
       categoryId: obj.category.id,
       channelId: obj.channel.id,
     });

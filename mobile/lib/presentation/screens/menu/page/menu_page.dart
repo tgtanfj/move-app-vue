@@ -9,8 +9,11 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isStayAtCurrentPage =
+        ModalRoute.of(context)?.settings.arguments as bool? ?? false;
     return BlocProvider<MenuBloc>(
-      create: (context) => MenuBloc()..add(MenuInitialEvent()),
+      create: (context) => MenuBloc()
+        ..add(MenuInitialEvent(isStateAtCurrentPage: isStayAtCurrentPage)),
       child: const MenuBody(),
     );
   }

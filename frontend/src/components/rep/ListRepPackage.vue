@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { STRIPE_KEY } from '@constants/api.constant'
 
 import { Button } from '@common/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@common/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@common/ui/dialog'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@common/ui/form'
 import { Input } from '@common/ui/input'
 import {
@@ -38,9 +38,7 @@ const queryClient = useQueryClient()
 
 const router = useRouter()
 
-const selectedPackage = ref(null)
 const isPaymentRequired = ref(false)
-const showPurchaseModal = ref(false)
 const stripe = ref(null)
 const countries = ref(null)
 const isLoading = ref(false)
@@ -56,8 +54,8 @@ const showSuccessModal = ref(false)
 const showFailureModal = ref(false)
 const purchaseError = ref('')
 const isChecked = ref(false)
-const path = ref('')
 const coun = ref('')
+const wrongCardType = ref('')
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -68,10 +66,6 @@ const isSubmitEnabled = computed(() => {
 })
 
 const route = useRoute()
-
-watch(route, (newValue) => {
-  if (newValue) path.value = newValue.path
-})
 
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
@@ -87,13 +81,16 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-watch(showPurchaseModal, (newValue) => {
-  if (newValue) {
-    resetForm()
-    userCountryIso.value = coun.value
-    setValues({ ...values, country: coun.value })
+watch(
+  () => paymentStore.showPurchaseModal,
+  (newValue) => {
+    if (newValue) {
+      resetForm()
+      userCountryIso.value = coun.value
+      setValues({ ...values, country: coun.value })
+    }
   }
-})
+)
 
 watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
 watch(cardType, (newValue) => {
@@ -139,6 +136,15 @@ watch(cardNumber, (newValue) => {
   }
 })
 
+watch(
+  () => paymentStore.showPurchaseModal,
+  (newValue) => {
+    if (!newValue) {
+      resetFormOnClose()
+    }
+  }
+)
+
 onMounted(() => {
   paymentStore.getListRepsPackage()
 })
@@ -171,22 +177,24 @@ const { values, setValues, errors, resetForm } = useForm({
 })
 
 const handelBuyRepsPackage = async (item) => {
-  selectedPackage.value = item
+  paymentStore.setSelectedPackage(item)
   const hasSavedPayment = await paymentStore.checkForSavedPayment()
   isPaymentRequired.value = !hasSavedPayment
   emit('buy-package', item)
-  showPurchaseModal.value = true
+  paymentStore.setShowPurchaseModal(true)
 }
 
 const handleShowConfirmModal = () => {
   if (!isPaymentRequired.value) showConfirmModal.value = true
   else {
     if (Object.keys(errors.value).length > 0) {
-      showError.value = true
-      return
-    } else {
-      showConfirmModal.value = true
+      return (showError.value = true)
     }
+    const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
+    if (!isAccepted) {
+      return (wrongCardType.value = 'Please enter a valid Visa or credit card number only')
+    }
+    showConfirmModal.value = true
   }
 }
 
@@ -199,14 +207,15 @@ const handleBackGiftModal = () => {
 }
 
 const handleRedirectToAddPayment = () => {
+  const currentPath = route.path
   emit('close-modal')
-  showPurchaseModal.value = false
-  router.push({ name: 'wallet', query: { source: 'purchaseModal', returnTo: `${path.value}` } })
+  paymentStore.setShowPurchaseModal(false)
+  router.push({ name: 'wallet', query: { source: currentPath } })
 }
 
 const resetAfterSuccess = () => {
   showConfirmModal.value = false
-  showPurchaseModal.value = false
+  paymentStore.setShowPurchaseModal(false)
   isChecked.value = false
   emit('close-modal')
   showError.value = false
@@ -225,7 +234,7 @@ const resetAfterFailure = () => {
 
 const reset = () => {
   showConfirmModal.value = false
-  showPurchaseModal.value = false
+  paymentStore.setShowPurchaseModal(false)
   emit('close-modal')
   showSuccessModal.value = true
 }
@@ -235,7 +244,7 @@ const onSubmit = async () => {
     if (!isPaymentRequired.value) {
       await paymentStore.buyRepsPackageWithSavedPayment(
         paymentStore.userPaymentList.id,
-        selectedPackage.value
+        paymentStore.selectedPackage
       )
       queryClient.invalidateQueries('payment_history')
       reset()
@@ -253,14 +262,13 @@ const onSubmit = async () => {
       await paymentStore.buyRepsPackageWithoutSavedPaymentMethod(
         stripe,
         cardData,
-        selectedPackage.value,
+        paymentStore.selectedPackage,
         isChecked.value,
-        path.value
+        route.path
       )
       resetAfterSuccess()
+      queryClient.invalidateQueries('payment_history')
     }
-    // emit('success-buy')
-    queryClient.invalidateQueries('payment_history')
   } catch (error) {
     purchaseError.value = error
     resetAfterFailure()
@@ -279,7 +287,16 @@ const resetFormOnClose = () => {
 
 const handleCloseSuccessModal = () => {
   showSuccessModal.value = false
+  setTimeout(() => {
+    paymentStore.setSelectedPackage(null)
+  }, 300)
   emit('success-buy')
+}
+const handleCloseFailureModal = () => {
+  showFailureModal.value = false
+  setTimeout(() => {
+    paymentStore.setSelectedPackage(null)
+  }, 300)
 }
 
 const handleTrim = (e) => {
@@ -383,14 +400,7 @@ const handleCheckExpDate = (event) => {
         </li>
       </ul>
     </div>
-    <Dialog
-      v-model:open="showPurchaseModal"
-      @update:open="
-        (val) => {
-          if (!val) resetFormOnClose()
-        }
-      "
-    >
+    <Dialog v-model:open="paymentStore.showPurchaseModal">
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-[20px] font-bold">
@@ -401,9 +411,9 @@ const handleCheckExpDate = (event) => {
           <h3 class="text-xl font-bold text-[#666666] my-3">{{ t('buyreps.order_summary') }}</h3>
           <div class="flex justify-between">
             <p class="font-sans font-bold text-lg">
-              {{ selectedPackage?.numberOfREPs }} {{ t('buyreps.reps') }}
+              {{ paymentStore.selectedPackage?.numberOfREPs }} {{ t('buyreps.reps') }}
             </p>
-            <p>{{ t('buyreps.us$') }}{{ selectedPackage?.price }}</p>
+            <p>{{ t('buyreps.us$') }}{{ paymentStore.selectedPackage?.price }}</p>
           </div>
           <div class="text-[11px]">
             {{ t('buyreps.one_time_charge') }} {{ formatDateToDDMMMYYYY(new Date(Date.now())) }}
@@ -411,7 +421,9 @@ const handleCheckExpDate = (event) => {
           <div class="w-full h-[.7px] bg-slate-200 my-2"></div>
           <div class="flex items-center justify-end gap-4">
             <p class="text-xs">{{ t('buyreps.total') }}</p>
-            <p class="font-semibold">{{ t('buyreps.us$') }}{{ selectedPackage?.price }}</p>
+            <p class="font-semibold">
+              {{ t('buyreps.us$') }}{{ paymentStore.selectedPackage?.price }}
+            </p>
           </div>
         </div>
         <h3 class="mb-3 text-xl font-bold text-[#666666]">{{ t('wallet.payment_detail') }}</h3>
@@ -474,6 +486,7 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cardNumber"
                           @input="handleCheckCardNumber"
+                          @focus="wrongCardType = ''"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -509,6 +522,7 @@ const handleCheckExpDate = (event) => {
                   </FormField>
                 </div>
               </div>
+              <p class="text-red-500 text-sm" v-if="wrongCardType">{{ wrongCardType }}</p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
@@ -607,7 +621,9 @@ const handleCheckExpDate = (event) => {
         <div class="flex items-center justify-center gap-10">
           <p>
             {{ t('buyreps.total') }}
-            <span class="font-semibold">{{ t('buyreps.us$') }}{{ selectedPackage.price }}</span>
+            <span class="font-semibold"
+              >{{ t('buyreps.us$') }}{{ paymentStore.selectedPackage.price }}</span
+            >
           </p>
           <Button @click="handleShowConfirmModal" type="submit" :disabled="!isSubmitEnabled">{{
             $t('button.pay')
@@ -619,7 +635,10 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Confirm Purchase</DialogTitle>
-          <DialogDescription>Are you sure?</DialogDescription>
+          <DialogDescription
+            >Are you sure you want to purchase {{ paymentStore.selectedPackage.numberOfREPs }} reps
+            with {{ paymentStore.selectedPackage.price }}$ ?</DialogDescription
+          >
         </DialogHeader>
         <div class="flex items-center justify-center gap-4">
           <Button
@@ -642,13 +661,8 @@ const handleCheckExpDate = (event) => {
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order success</DialogTitle>
           <p class="text-lg font-semibold">
-            You purchase of {{ selectedPackage.numberOfREPs }} is successfully
+            You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} reps is successfully
           </p>
-          <DialogDescription
-            >Lorem ipsum dolor sit, amet consectetur adipisicing elit. Veritatis vitae commodi
-            laborum cumque fugit voluptatum, dolores assumenda iste sint
-            similique.</DialogDescription
-          >
         </DialogHeader>
         <div class="flex items-center justify-center gap-4">
           <Button @click="handleCloseSuccessModal">{{ t('button.ok') }}</Button>
@@ -660,12 +674,12 @@ const handleCheckExpDate = (event) => {
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order failed</DialogTitle>
           <p class="text-lg font-semibold">
-            You purchase of {{ selectedPackage.numberOfREPs }} is not successfully
+            You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} is not successfully
           </p>
           <DialogDescription>{{ purchaseError }}</DialogDescription>
         </DialogHeader>
         <div class="flex items-center justify-center gap-4">
-          <Button @click="showFailureModal = false">{{ t('button.ok') }}</Button>
+          <Button @click="handleCloseFailureModal">{{ t('button.ok') }}</Button>
         </div>
       </DialogContent>
     </Dialog>
