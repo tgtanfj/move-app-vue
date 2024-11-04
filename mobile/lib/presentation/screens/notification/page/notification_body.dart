@@ -34,6 +34,9 @@ class _NotificationBodyState extends State<NotificationBody> {
                   title: Constants.notifications,
                   titleStyle: AppTextStyles.montserratStyle.bold20White,
                   titleAlign: TextAlign.center,
+                  prefixButton: (){
+                    Navigator.of(context).pop();
+                  },
                   prefixIconPath: AppIcons.closeWhite.svgAssetPath,
                   paddingTitle: const EdgeInsets.only(right: 20),
                   isEnableSuffixIcon: false,

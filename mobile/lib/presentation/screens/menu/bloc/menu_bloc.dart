@@ -40,9 +40,13 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
           reps: r,
         ));
       });
-      emit(state.copyWith(status: MenuStatus.hadlogin));
+      emit(state.copyWith(
+          status: MenuStatus.hadlogin,
+          isStateAtCurrentPage: event.isStateAtCurrentPage));
     } else {
-      emit(state.copyWith(status: MenuStatus.notlogin));
+      emit(state.copyWith(
+          status: MenuStatus.notlogin,
+          isStateAtCurrentPage: event.isStateAtCurrentPage));
     }
   }
 
