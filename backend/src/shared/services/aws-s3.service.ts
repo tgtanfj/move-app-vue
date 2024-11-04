@@ -19,6 +19,8 @@ import { getKeyS3 } from '../utils/get-key-s3.util';
 import { validateAvatarFile } from '../utils/validate-avatar.utils';
 import { ApiConfigService } from './api-config.service';
 import { GeneratorService } from './generator.service';
+import * as archiver from 'archiver';
+import { PassThrough } from 'stream';
 @Injectable()
 export class AwsS3Service {
   private readonly s3Client: S3Client;
@@ -185,12 +187,48 @@ export class AwsS3Service {
       ResponseContentDisposition: `attachment; filename="${title}${path.extname(key)}"`,
     };
 
-    // Tạo signed URL
     const command = new GetObjectCommand(params);
     const url = await getSignedUrl(this.s3Client, command, {
-      expiresIn: this.expiresIn, // Thời gian link có hiệu lực (seconds)
+      expiresIn: this.expiresIn, 
     });
 
-    return url; // Trả về URL tải về
+    return url; 
+  }
+
+  async downloadMultiFiles(urlS3: string[]) {
+    const archive = archiver('zip', { zlib: { level: 5 } });
+    const passthrough = new PassThrough();
+
+    archive.on('error', (err) => {
+      console.error('Archive error:', err);
+      passthrough.destroy(err); 
+    });
+
+  
+    archive.pipe(passthrough);
+
+    for (const url of urlS3) {
+      const key = getKeyS3(url);
+      const command = new GetObjectCommand({ Bucket: this.bucketName, Key: key });
+
+      try {
+        const response = await this.s3Client.send(command);
+
+        if (response.Body) {
+          const filename = path.basename(url);
+          const partName = filename.split('-')[2];
+          archive.append(response.Body as NodeJS.ReadableStream, {
+            name: partName,
+          });
+        }
+      } catch (error) {
+        console.error(`Error fetching ${key} from S3`, error);
+      }
+    }
+
+    
+    archive.finalize();
+
+    return passthrough; 
   }
 }
