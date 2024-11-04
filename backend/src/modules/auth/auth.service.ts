@@ -206,6 +206,9 @@ export class AuthService {
     // check password
     const account = await this.userService.findOneAccount(user.id);
 
+    if (account.type != TypeAccount.NORMAL)
+      throw new BadRequestException(this.i18n.t('exceptions.social.TRY_ANOTHER_LOGIN_METHOD'));
+
     if (!account) {
       return null;
     }
