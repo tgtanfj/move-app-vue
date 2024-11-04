@@ -2,38 +2,70 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Employee } from '@/constants/data';
-import { fakeUsers } from '@/constants/mock-api';
-import { searchParamsCache } from '@/lib/searchparams';
 import VideoTable from './video-tables';
-import { use } from 'react';
 import { useGetAllVideosQuery } from '@/store/queries/videoManagement';
+import { useState } from 'react';
+import { useVideoTableFilters } from './video-tables/use-video-table-filters';
 
-type TVideosListingPage = {};
+export default function VideoListingPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-export default async function VideoListingPage({}: TVideosListingPage) {
+  const { searchQuery, workoutLevelFilter, setPage } = useVideoTableFilters();
+
   const {
-    result = [],
-    total = 0,
-    isFetching,
-    refetch
-  } = useGetAllVideosQuery(null, {
-    selectFromResult: ({ data, isFetching }) => ({
-      result: data?.data || [],
-      total: data?.data?.length ?? 0,
-      isFetching
-    })
-  });
-  console.log(result);
+    result: videosData = [],
+    meta = { total: 0, page: currentPage, take: pageSize, totalPages: 1 },
+    isFetching
+  } = useGetAllVideosQuery(
+    {
+      page: currentPage,
+      take: pageSize,
+      query: searchQuery,
+      workoutLevel: workoutLevelFilter,
+      sortBy: ''
+    },
+    {
+      selectFromResult: ({ data, isFetching }) => ({
+        result: data?.data || [],
+        meta: data?.meta || {
+          total: 0,
+          page: currentPage,
+          take: pageSize,
+          totalPages: 1
+        },
+        isFetching
+      }),
+      refetchOnMountOrArgChange: true
+    }
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setPage(page);
+  };
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Videos (${total})`} description="Manage videos" />
+          <Heading
+            title={`Videos (${meta.total})`}
+            description="Manage videos"
+          />
         </div>
         <Separator />
-        <VideoTable data={result} totalData={total} />
+        <VideoTable
+          key={`${currentPage}-${pageSize}`}
+          data={videosData}
+          totalData={meta.total}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          totalPages={meta.totalPages}
+          isLoading={isFetching}
+          onPageChange={handlePageChange}
+          onPageSizeChange={setPageSize}
+        />
       </div>
     </PageContainer>
   );
