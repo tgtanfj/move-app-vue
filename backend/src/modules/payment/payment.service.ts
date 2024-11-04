@@ -4,7 +4,7 @@ import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.con
 import { ApiConfigService } from '@/shared/services/api-config.service';
 import { RedisService } from '@/shared/services/redis/redis.service';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
@@ -184,7 +184,7 @@ export class PaymentService {
       // Step 7: Send cashout notification
       await this.sendCashOutNotification(userId, amountWithDraw);
     } catch (error) {
-      throw new BadRequestException(error.message || 'Failed to process withdrawal');
+      throw new InternalServerErrorException(`${this.i18n.t('exceptions.paypal.WITHDRAW_FAILED')}`);
     }
 
     // Step 8: Update Redis limits after successful withdrawal
@@ -235,6 +235,7 @@ export class PaymentService {
     } catch (error) {
       await this.cashOutRepository.updateCashoutHistory(cashOutHistoryId, {
         status: TransactionStatus.FAILED,
+        reason: error,
       });
       throw error;
     }
@@ -266,34 +267,7 @@ export class PaymentService {
     );
   }
 
-  async findAllPaymentHistories({
-    startDate,
-    endDate,
-    search,
-    take,
-    page,
-    status,
-  }: QueryAdminPaymentHistoryDto) {
-    return await this.paymentRepository.findPaymentHistoriesAndFilters(
-      startDate,
-      endDate,
-      search,
-      take,
-      page,
-      status,
-    );
-  }
 
-  async getAllCashOutHistories({
-    startDate,
-    endDate,
-    search,
-    take,
-    page,
-    status,
-  }: QueryAdminPaymentHistoryDto) {
-    return await this.cashOutRepository.getAllCashOutHistory(startDate, endDate, search, take, page, status);
-  }
 
   async getTotalWithdraw() {
     const withDrawRate = this.configService.getNumber('WITHDRAW_RATE');

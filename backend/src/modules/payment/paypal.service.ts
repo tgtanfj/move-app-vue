@@ -77,13 +77,11 @@ export class PayPalService {
         const paypalErrorMessage =
           error.response.data?.message || error.response.data?.name || 'An error occurred with PayPal';
         console.error('PayPal API Error:', error.response.data);
-        throw new InternalServerErrorException(
-          `${this.i18n.t('exceptions.paypal.WITHDRAW_FAILED')}: ${paypalErrorMessage}`,
-        );
+        throw paypalErrorMessage;
       } else {
         // Log and throw a generic error message if it's not a PayPal-specific error
         console.error('Unexpected error creating payout:', error);
-        throw new InternalServerErrorException(this.i18n.t('exceptions.paypal.WITHDRAW_FAILED'));
+        throw this.i18n.t('exceptions.paypal.WITHDRAW_FAILED');
       }
     }
   }

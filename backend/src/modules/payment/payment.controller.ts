@@ -58,25 +58,25 @@ export class PaymentController {
     return await this.paymentService.withDraw(user.id, withDrawDto);
   }
 
-  @Get('/admin/payment-histories')
-  @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
-  async getAllPaymentHistories(@Query() queryAdminPaymentHistoryDto: QueryAdminPaymentHistoryDto) {
-    try {
-      validateDate(queryAdminPaymentHistoryDto.startDate, queryAdminPaymentHistoryDto.endDate);
+  // @Get('/admin/payment-histories')
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // async getAllPaymentHistories(@Query() queryAdminPaymentHistoryDto: QueryAdminPaymentHistoryDto) {
+  //   try {
+  //     validateDate(queryAdminPaymentHistoryDto.startDate, queryAdminPaymentHistoryDto.endDate);
 
-      return await this.paymentService.findAllPaymentHistories(queryAdminPaymentHistoryDto);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
+  //     return await this.paymentService.findAllPaymentHistories(queryAdminPaymentHistoryDto);
+  //   } catch (error) {
+  //     throw new BadRequestException(error);
+  //   }
+  // }
 
-  @Get('/admin/cashout-histories')
-  @UseGuards(RolesGuard)
-  @Roles(Role.ADMIN)
-  async getAllCashOutHistories(@Query() queryCashOutHistoryDto: QueryAdminPaymentHistoryDto) {
-    return await this.paymentService.getAllCashOutHistories(queryCashOutHistoryDto);
-  }
+  // @Get('/admin/cashout-histories')
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // async getAllCashOutHistories(@Query() queryCashOutHistoryDto: QueryAdminPaymentHistoryDto) {
+  //   return await this.paymentService.getAllCashOutHistories(queryCashOutHistoryDto);
+  // }
 
   @Get('/admin/total-withdraw')
   @UseGuards(RolesGuard)
