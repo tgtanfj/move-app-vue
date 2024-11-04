@@ -101,7 +101,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBarWidget(
-          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu),
+          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu, arguments: true),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

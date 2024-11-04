@@ -9,8 +9,6 @@ import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
-import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
-import 'package:move_app/presentation/screens/wallet/page/wallet_body.dart';
 
 import '../../../components/logout_dialog.dart';
 
@@ -107,40 +105,16 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             height: 20.0,
           ),
           ContentMenu(
-            followingButton: () {},
-            browseButton: () {},
             walletButton: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const WalletBody()));
+              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
             },
+            faqsButton: () {
+              Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
+            },
           ),
-          GestureDetector(
-            onTap: widget.moreButton,
-            child: Row(
-              children: [
-                Text(
-                  Constants.more,
-                  style: AppTextStyles.montserratStyle.bold20White,
-                ),
-                const SizedBox(
-                  width: 12.0,
-                ),
-                SvgPicture.asset(
-                  widget.isMoreEnable
-                      ? AppIcons.arrowUp.svgAssetPath
-                      : AppIcons.arrowDown.svgAssetPath,
-                ),
-              ],
-            ),
-          ),
-          widget.isMoreEnable
-              ? MoreInfomation(faqButton: () {
-                  Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
-                })
-              : const SizedBox(),
           const SizedBox(
             height: 40.0,
           ),

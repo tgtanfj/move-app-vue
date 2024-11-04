@@ -16,6 +16,7 @@ final class HomeState extends Equatable {
   final List<VideoModel> listMayULikeVideo;
   final List<VideoModel> listTrendVideo;
   final bool isShowListVideoTrend;
+  final bool isLoadingPage;
 
   const HomeState({
     this.status,
@@ -23,6 +24,7 @@ final class HomeState extends Equatable {
     this.listMayULikeVideo = const [],
     this.listTrendVideo = const [],
     this.isShowListVideoTrend = false,
+    this.isLoadingPage = true,
   });
 
   static HomeState initial() => const HomeState(
@@ -33,20 +35,20 @@ final class HomeState extends Equatable {
         isShowListVideoTrend: false,
       );
 
-  HomeState copyWith({
-    HomeStatus? status,
-    List<CategoryModel>? listTopCategory,
-    List<VideoModel>? listMayULikeVideo,
-    List<VideoModel>? listTrendVideo,
-    bool? isShowListVideoTrend,
-  }) {
+  HomeState copyWith(
+      {HomeStatus? status,
+      List<CategoryModel>? listTopCategory,
+      List<VideoModel>? listMayULikeVideo,
+      List<VideoModel>? listTrendVideo,
+      bool? isShowListVideoTrend,
+      bool? isLoadingPage}) {
     return HomeState(
-      status: status ?? this.status,
-      listTopCategory: listTopCategory ?? this.listTopCategory,
-      listMayULikeVideo: listMayULikeVideo ?? this.listMayULikeVideo,
-      listTrendVideo: listTrendVideo ?? this.listTrendVideo,
-      isShowListVideoTrend: isShowListVideoTrend ?? this.isShowListVideoTrend,
-    );
+        status: status ?? this.status,
+        listTopCategory: listTopCategory ?? this.listTopCategory,
+        listMayULikeVideo: listMayULikeVideo ?? this.listMayULikeVideo,
+        listTrendVideo: listTrendVideo ?? this.listTrendVideo,
+        isShowListVideoTrend: isShowListVideoTrend ?? this.isShowListVideoTrend,
+        isLoadingPage: isLoadingPage ?? this.isLoadingPage);
   }
 
   @override
@@ -56,5 +58,6 @@ final class HomeState extends Equatable {
         listMayULikeVideo,
         listTrendVideo,
         isShowListVideoTrend,
+        isLoadingPage
       ];
 }

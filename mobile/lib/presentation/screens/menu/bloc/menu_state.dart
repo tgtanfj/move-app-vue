@@ -14,12 +14,14 @@ final class MenuState extends Equatable {
   final bool isEnableMore;
   final UserModel? user;
   final List<RepModel>? reps;
+  final bool isStateAtCurrentPage;
 
   const MenuState({
     this.user,
     this.isEnableMore = false,
     this.status,
     this.reps,
+    this.isStateAtCurrentPage = false,
   });
 
   static MenuState initial() => const MenuState(
@@ -31,20 +33,18 @@ final class MenuState extends Equatable {
     bool? isEnableMore,
     UserModel? user,
     List<RepModel>? reps,
+    bool? isStateAtCurrentPage,
   }) {
     return MenuState(
-      status: status ?? this.status,
-      user: user ?? this.user,
-      isEnableMore: isEnableMore ?? this.isEnableMore,
-      reps: reps ?? this.reps,
-    );
+        status: status ?? this.status,
+        user: user ?? this.user,
+        isEnableMore: isEnableMore ?? this.isEnableMore,
+        reps: reps ?? this.reps,
+        isStateAtCurrentPage:
+            isStateAtCurrentPage ?? this.isStateAtCurrentPage);
   }
 
   @override
-  List<Object?> get props => [
-        status,
-        isEnableMore,
-        user,
-        reps,
-      ];
+  List<Object?> get props =>
+      [status, isEnableMore, user, reps, isStateAtCurrentPage];
 }

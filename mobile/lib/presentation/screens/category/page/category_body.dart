@@ -10,6 +10,8 @@ import 'package:move_app/presentation/components/category_item.dart';
 import 'package:move_app/presentation/screens/category/bloc/category_bloc.dart';
 import 'package:move_app/presentation/screens/category/bloc/category_state.dart';
 
+import '../../../routes/app_routes.dart';
+
 class CategoryBody extends StatefulWidget {
   const CategoryBody({super.key});
 
@@ -29,7 +31,11 @@ class _CategoryBodyState extends State<CategoryBody> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: const AppBarWidget(),
+          appBar: AppBarWidget(
+            prefixButton: () => Navigator.pushNamed(
+                context, AppRoutes.routeMenu,
+                arguments: true),
+          ),
           body: Dismissible(
             key: const Key(KeyScreen.categoryPage),
             direction: DismissDirection.startToEnd,
