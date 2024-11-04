@@ -56,7 +56,7 @@ export class AdminController {
     try {
       validateDate(queryAdminPaymentHistoryDto.startDate, queryAdminPaymentHistoryDto.endDate);
 
-      return await this.adminService.getAllCashOutHistories(queryAdminPaymentHistoryDto);
+      return await this.adminService.findAllPaymentHistories(queryAdminPaymentHistoryDto);
     } catch (error) {
       throw new BadRequestException(error);
     }
