@@ -113,17 +113,17 @@ export class CommentService {
     try {
       const comment = await this.commentRepository.getOneWithVideo(id);
 
+      let videoId: number;
       if (comment.parent) {
         await this.commentRepository.update(comment.parent.id, {
           numberOfReply: comment.parent.numberOfReply - 1,
         });
       }
+      videoId = comment?.parent ? comment?.parent.video.id : comment.video.id;
 
-      if (comment?.video) {
-        const video = await this.videoRepository.findOne(comment.video.id);
-        video.numberOfComments--;
-        await this.videoRepository.save(video);
-      }
+      const video = await this.videoRepository.findOne(videoId);
+      video.numberOfComments--;
+      await this.videoRepository.save(video);
 
       await this.commentRepository.delete(id);
     } catch (error) {
