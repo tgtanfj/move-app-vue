@@ -90,7 +90,6 @@ export class CashOutRepository {
 
     let order: FindOptionsOrder<Payment> = { [sortField]: sortDirection };
 
-    console.log(order);
     // Select fields
 
     const select: FindOptionsSelect<Cashout> = {

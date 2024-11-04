@@ -81,7 +81,6 @@ export class PaymentRepository {
 
     let order: FindOptionsOrder<Payment> = { [sortField]: sortDirection };
 
-    console.log(order);
     // Select fields
 
     const select: FindOptionsSelect<Payment> = {
