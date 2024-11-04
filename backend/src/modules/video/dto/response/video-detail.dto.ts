@@ -39,4 +39,7 @@ export class VideoDetail {
 
   @Expose()
   canFollow: boolean | null;
+
+  @Expose()
+  urlS3:string
 }
