@@ -6,7 +6,7 @@ import { channelSettingsService } from '@services/channel-settings.services'
 
 const tabs = [
   { id: 1, label: 'channel_settings.channel' },
-  { id: 2, label: 'channel_settings.notifications' }
+  // { id: 2, label: 'channel_settings.notifications' }
 ]
 
 const tabShow = ref(1)

@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import ProfileUserTab from './ProfileUserTab.vue'
-import NotificationsTab from './NotificationsTab.vue'
+// import NotificationsTab from './NotificationsTab.vue'
 
 const tabShow = ref(1)
 
@@ -25,7 +25,7 @@ const changeTab = (tab) => {
       >
         Profile
       </div>
-      <div
+      <!-- <div
         @click="changeTab(2)"
         class="border-b-[3px] cursor-pointer px-0 mx-3 rounded-none flex items-center justify-start ml-0 pl-0 pb-3 transition-transform"
         :class="{
@@ -34,13 +34,13 @@ const changeTab = (tab) => {
         }"
       >
         Notifications
-      </div>
+      </div> -->
     </div>
     <div v-show="tabShow === 1">
       <ProfileUserTab />
     </div>
-    <div v-show="tabShow === 2">
+    <!-- <div v-show="tabShow === 2">
       <NotificationsTab />
-    </div>
+    </div> -->
   </div>
 </template>
