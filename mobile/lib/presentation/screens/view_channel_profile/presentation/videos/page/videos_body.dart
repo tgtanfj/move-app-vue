@@ -39,6 +39,7 @@ class _VideosBodyState extends State<VideosBody>
   Widget build(BuildContext context) {
     super.build(context);
     final double height = MediaQuery.of(context).size.height;
+    ScrollController _scrollController = ScrollController();
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Padding(
@@ -80,6 +81,11 @@ class _VideosBodyState extends State<VideosBody>
                   if (onValue != null) {
                     final data = onValue as Tuple3<WorkoutLevelType,
                         CategoryModel?, SortAndFilterType>;
+                    _scrollController.animateTo(
+                      0, 
+                      duration: const Duration(milliseconds: 300), 
+                      curve: Curves.easeInOut,
+                    );
                     context.read<VideosBloc>().add(VideoSortedAndFiledEvent(
                           selectedLevel: data.item1,
                           selectedSortBy: data.item3,
@@ -108,6 +114,7 @@ class _VideosBodyState extends State<VideosBody>
                         context.read<VideosBloc>().add(LoadMoreVideosEvent());
                       },
                       child: ListView.builder(
+                        controller: _scrollController,
                         itemCount: state.isLoading ?? false
                             ? (state.videos.length + 1)
                             : state.videos.length,
