@@ -54,7 +54,7 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             },
           ),
           const SizedBox(
-            height: 40.0,
+            height: 10.0,
           ),
           CustomButton(
             padding: EdgeInsets.zero,

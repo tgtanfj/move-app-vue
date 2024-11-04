@@ -17,7 +17,7 @@ class MenuHadLogin extends StatefulWidget {
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
   final VoidCallback onBuyRep;
-
+  final int numberOfREPs;
   final String avatarPath;
   final String userName;
   final bool isBlueBadge;
@@ -33,6 +33,7 @@ class MenuHadLogin extends StatefulWidget {
     required this.isBlueBadge,
     required this.isPinkBadge,
     required this.onBuyRep,
+    required this.numberOfREPs,
   });
 
   @override
@@ -107,6 +108,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
           ContentMenu(
             walletButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeWallet);
+              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
@@ -114,9 +116,10 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             faqsButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
             },
+            numberOfREPs: widget.numberOfREPs,
           ),
           const SizedBox(
-            height: 40.0,
+            height: 10.0,
           ),
           CustomButton(
             padding: EdgeInsets.zero,
