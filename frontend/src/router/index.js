@@ -90,7 +90,7 @@ const router = createRouter({
           component: StreamerCashout
         },
         {
-          path: 'channel-settings',
+          path: 'bio-settings',
           component: ChannelSettings
         },
         {

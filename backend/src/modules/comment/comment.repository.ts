@@ -131,7 +131,7 @@ export class CommentRepository {
   async getOneWithVideo(id: number): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: { id: id },
-      relations: { video: true, parent: true, user: true },
+      relations: ['video', 'parent', 'user', 'parent.video'],
       select: {
         id: true,
         content: true,

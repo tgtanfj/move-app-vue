@@ -6,11 +6,7 @@
     <Notification />
     <DropdownMenu>
       <DropdownMenuTrigger class="w-[30px] h-[30px]">
-        <img
-          :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
-          alt="Avatar"
-          class="w-[30px] h-[30px] object-cover rounded-full"
-        />
+        <img :src="avatar" alt="Avatar" class="w-[30px] h-[30px] object-cover rounded-full" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" class="mt-3 p-4 pt-5 w-[260px]">
@@ -18,24 +14,44 @@
           class="flex items-center gap-1 p-0 pb-2 cursor-pointer group hover:text-primary focus:bg-transparent"
         >
           <div class="w-[40px] h-[40px] rounded-full">
-            <img
-              :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
-              alt="Avatar"
-              class="w-full h-full rounded-full object-cover"
-            />
+            <img :src="avatar" alt="Avatar" class="w-full h-full rounded-full object-cover" />
           </div>
-          <p class="ml-2 font-semibold text-lg group-hover:text-primary duration-100 truncate w-[150px]">
-            {{
-              authStore.usernameUser ||
-              authStore.user.username ||
-              authStore.user?.data?.username ||
-              storedUserInfo
-            }}
+          <p
+            class="ml-2 font-semibold text-lg group-hover:text-primary duration-100 truncate w-[150px]"
+          >
+            <router-link :to="`/channel/${authStore?.user?.channelId}`">
+              {{
+                authStore.usernameUser ||
+                authStore.user.username ||
+                authStore.user?.data?.username ||
+                storedUserInfo
+              }}
+            </router-link>
           </p>
           <BlueBadgeIcon v-if="authStore.user.isBlueBadge" />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <RouterLink @click="createChannel" to="/streamer/videos">
+
+        <RouterLink
+          v-if="isStreamer"
+          to="/"
+          @click="createChannel"
+          class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        >
+          <DropdownMenuItem
+            class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          >
+            <LogoMoveMini class="group-hover:text-primary duration-100" />
+            <p class="font-semibold group-hover:text-primary duration-100">Back to Move</p>
+          </DropdownMenuItem>
+        </RouterLink>
+
+        <RouterLink
+          v-else
+          to="/streamer/videos"
+          @click="createChannel"
+          class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        >
           <DropdownMenuItem
             class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
@@ -43,30 +59,50 @@
             <p class="font-semibold group-hover:text-primary duration-100">Dashboard</p>
           </DropdownMenuItem>
         </RouterLink>
-        <DropdownMenuItem
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+
+        <RouterLink
+          v-if="isStreamer"
+          to="/streamer/cashout"
+          class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
         >
-          <RouterLink
-            to="/wallet"
-            class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+          <DropdownMenuItem
+            class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          >
+            <WalletIcon class="group-hover:text-primary duration-100" />
+            <p class="font-semibold group-hover:text-primary duration-100">Cashout</p>
+          </DropdownMenuItem>
+        </RouterLink>
+
+        <RouterLink
+          v-else
+          to="/streamer/cashout"
+          class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        >
+          <DropdownMenuItem
+            class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
             <WalletIcon class="group-hover:text-primary duration-100" />
             <p class="font-semibold group-hover:text-primary duration-100">
               Wallet ({{ paymentStore.reps }} REPs)
             </p>
-          </RouterLink>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </RouterLink>
+
         <DropdownMenuSeparator />
-        <DropdownMenuItem class="group cursor-pointer px-0 focus:bg-transparent">
-          <RouterLink
-            to="/profile"
-            class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        <RouterLink
+          to="/profile"
+          class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        >
+          <DropdownMenuItem
+            class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
           >
             <SettingIcon class="group-hover:text-primary duration-100" />
             <p class="font-semibold group-hover:text-primary duration-100">Settings</p>
-          </RouterLink>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </RouterLink>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuItem
           @click="showLogoutModal = true"
           class="flex gap-3 px-0 items-center py-2 cursor-pointer group hover:text-primary focus:bg-transparent"
@@ -107,7 +143,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import BaseDialog from './BaseDialog.vue'
@@ -128,8 +164,14 @@ const authStore = useAuthStore()
 const paymentStore = usePaymentStore()
 const router = useRouter()
 const showLogoutModal = ref(false)
-const userAvatar = ref(localStorage.getItem('userAvatar'))
 const storedUserInfo = localStorage.getItem('userInfo')
+const fetchLocalAvatar = () => {
+  return localStorage.getItem('userAvatar') || defaultAvatar
+}
+
+const avatar = computed(() => {
+  return authStore.user?.avatar || fetchLocalAvatar()
+})
 
 const logOutGoogle = async () => {
   await authStore.logout()

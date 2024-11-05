@@ -62,8 +62,9 @@ export const userProfileSchema = yup.object().shape({
   fullName: yup
     .string()
     .trim()
+    .required(t('user_profile.field_required'))
     .matches(/^.{8,255}$/, t('user_profile.fullname_8_255_long'))
-    .matches(/^[A-Za-z\s]*$/, t('user_profile.fullname_no_special_characters')),
+    .matches(/^[\p{L}\s]+$/u, t('user_profile.fullname_no_special_characters')),
   country: yup.string().required(t('user_profile.field_required')),
   state: yup.string().required(t('user_profile.field_required')),
   gender: yup
@@ -97,24 +98,20 @@ export const walletSchema = yup.object().shape({
   cardholderName: yup
     .string()
     .trim()
-    .required()
     .matches(/^[A-Za-z\s]+$/, t('wallet.no_special_characters'))
     .max(50, t('Max 50 characters')),
   cardNumber: yup
     .string()
     .trim()
-    .required()
     .length(16, 'Invalid card number')
     .matches(/^\d{16}$/, 'Invalid card number'),
   cvc: yup
     .string()
     .trim()
-    .required()
     .length(3, 'Invalid card verification code')
     .matches(/^\d{3}$/, 'Invalid card verification code'),
   expDate: yup
     .string()
-    .required()
     .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Check your expiration date')
     .test('valid-expiration-date', 'Check your expiration date', (value) => {
       if (!value) return false

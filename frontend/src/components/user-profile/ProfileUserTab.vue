@@ -2,7 +2,7 @@
 import { useToast } from '@common/ui/toast/use-toast'
 import { userBaseAvatar } from '@constants/userImg.constant'
 import { useForm } from 'vee-validate'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { userProfileSchema } from '../../validation/schema'
 
 import { ADMIN_BASE, COUNTRY_BASE } from '@constants/api.constant'
@@ -20,7 +20,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
-import { denormalizeGender, normalizeGender } from '@utils/userProfile.util'
+import {
+  denormalizeGender,
+  hasEmptyProperty,
+  normalizeGender,
+  profileUpdated
+} from '@utils/userProfile.util'
 import axios from 'axios'
 import BaseDialog from '../BaseDialog.vue'
 import Loading from '../Loading.vue'
@@ -52,8 +57,8 @@ const message = ref('')
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 const showError = ref(false)
-const firstSubmittion = ref(true)
 const gender = ref('')
+const loginMethod = ref('')
 
 const { toast } = useToast()
 const { values, setValues, errors } = useForm({
@@ -70,6 +75,22 @@ const { values, setValues, errors } = useForm({
   },
   validationSchema: userProfileSchema,
   validateOnMount: false
+})
+
+const isSubmitDisabled = computed(() => {
+  // Check if there are empty properties in the new values
+  const hasEmptyProps = hasEmptyProperty(values)
+
+  // Check if the profile is updated by comparing userData with values
+  const profileChanged = profileUpdated(userData.value, values)
+
+  // The submit button should be disabled if there are empty properties
+  // or if the profile has not changed (i.e., profileChanged is false)
+  return hasEmptyProps || !profileChanged
+})
+
+onMounted(() => {
+  loginMethod.value = localStorage.getItem('loginMethod')
 })
 
 onMounted(async () => {
@@ -165,7 +186,6 @@ watch(
 watch(selectedCity, (newValue) => {
   setValues({ ...values, city: newValue })
 })
-
 watch([selectedDay, selectedMonth, selectedYear], () => {
   if (selectedDay.value && selectedMonth.value && selectedYear.value) {
     setValues({
@@ -194,22 +214,6 @@ const openChangePasswordResult = () => {
 
 const isFormDataEmpty = (formData) => {
   return formData.entries().next().done
-}
-
-function hasEmptyProperty(obj) {
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      if (key === 'city') {
-        continue
-      }
-
-      const value = obj[key]
-      if (value === undefined || value === null || value === '') {
-        return true
-      }
-    }
-  }
-  return false
 }
 
 const onSubmit = async () => {
@@ -266,7 +270,7 @@ const onSubmit = async () => {
               name: values.state
             },
             city: values.city,
-            gender: normalizeGender(values.gender)
+            gender: values.gender
           }
           toast({ description: `${t('user_profile.edit_success')}`, variant: 'successfully' })
           if (authStore.user.username) authStore.user.username = values.username
@@ -275,7 +279,8 @@ const onSubmit = async () => {
           localStorage.setItem('userAvatar', res.data.data.avatar)
         } else throw new Error(response.error)
       } catch (err) {
-        toast({ description: err.message, variant: 'destructive' })
+        const message = err?.response?.data?.message || err.message
+        toast({ description: message, variant: 'destructive' })
       } finally {
         isSubmitting.value = false
         showError.value = false
@@ -312,13 +317,13 @@ const onErrorMessage = (msg) => {
           <FormItem>
             <p>{{ $t('user_profile.profile_pic') }}</p>
             <div class="w-[56px] h-[56px] rounded-full">
-            <img
-              class="w-full h-full object-cover rounded-full"
-              :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
-              v-bind="componentField"
-              alt=""
-            />
-          </div>
+              <img
+                class="w-full h-full object-cover rounded-full"
+                :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
+                v-bind="componentField"
+                alt=""
+              />
+            </div>
             <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>
             <UploadAvatarFile
               :buttonText="$t('user_profile.update_profile_pic')"
@@ -382,7 +387,6 @@ const onErrorMessage = (msg) => {
                   v-bind="componentField"
                   v-model.trim="values.fullName"
                   :maxlength="255"
-                  :minlength="8"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
@@ -390,7 +394,7 @@ const onErrorMessage = (msg) => {
           </FormField>
         </div>
 
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-1" v-if="loginMethod === 'email'">
           <label>{{ $t('user_profile.password') }}</label>
           <p
             class="text-primary underline w-fit cursor-pointer"
@@ -519,19 +523,10 @@ const onErrorMessage = (msg) => {
               <FormItem>
                 <FormLabel class="!text-black"> State </FormLabel>
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
-                  <FormControl>
-                    <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
-                      <SelectValue>
-                        {{
-                          selectedState
-                            ? selectedState
-                            : states.length === 0
-                              ? 'No states'
-                              : 'Select state'
-                        }}
-                      </SelectValue>
-                    </SelectTrigger>
-                  </FormControl>
+                  <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
+                    <SelectValue v-if="isLoading" placeholder="Loading..." />
+                    <SelectValue v-if="!isLoading" placeholder="Select country" />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectGroup v-if="states.length === 0">
                       <SelectItem> No States </SelectItem>
@@ -552,7 +547,9 @@ const onErrorMessage = (msg) => {
           <div class="flex flex-col gap-1 w-full">
             <FormField v-slot="{ componentField }" name="city">
               <FormItem>
-                <FormLabel class="!text-black">City</FormLabel>
+                <FormLabel class="!text-black"
+                  >City<span class="italic text-sm">(Optional)</span></FormLabel
+                >
                 <FormControl>
                   <Input
                     class="px-3 py-2 border-[1px] h-[40px] focus:border-[#13D0B4] outline-none rounded-lg border-[#CCCCCC]"
@@ -571,7 +568,7 @@ const onErrorMessage = (msg) => {
         <Button
           type="submit"
           class="w-[230px] mt-6"
-          :disabled="hasEmptyProperty(values)"
+          :disabled="isSubmitDisabled || isSubmitting"
           :is-loading="isSubmitting"
         >
           {{ $t('user_profile.save') }}

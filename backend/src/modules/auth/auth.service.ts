@@ -134,7 +134,7 @@ export class AuthService {
     }
 
     if (isDuplicateOldPass || isDuplicatePass) {
-      throw new BadRequestException(this.i18n.t('exceptions.account.EMAIL_EXISTED'));
+      throw new BadRequestException(this.i18n.t('exceptions.account.PASSWORD_RESTRICTION'));
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 10);

@@ -348,9 +348,9 @@
     "back": "Back"
   },
   "channel_settings": {
-    "channel": "Channel",
+    "channel": "Bio",
     "notifications": "Notifications",
-    "channel_settings": "Channel Settings",
+    "channel_settings": "Bio Settings",
     "bio": "Bio",
     "optionals": "(Optional)",
     "tell_us": "Tell us a little bit about yourself.",
