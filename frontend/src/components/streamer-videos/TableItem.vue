@@ -132,7 +132,8 @@ const handleChange = () => {
   const checked = !isChecked.value
   emit('update:selectedItems', {
     id: props.item.id,
-    checked
+    checked,
+    urlS3: props.item.urlS3
   })
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { t } from '@helpers/i18n.helper'
 import { usePaymentStore } from '../../stores/payment'
@@ -7,7 +7,13 @@ import { loadStripe } from '@stripe/stripe-js'
 import { STRIPE_KEY } from '@constants/api.constant'
 
 import { Button } from '@common/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@common/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@common/ui/dialog'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@common/ui/form'
 import { Input } from '@common/ui/input'
 import {
@@ -56,6 +62,7 @@ const purchaseError = ref('')
 const isChecked = ref(false)
 const coun = ref('')
 const wrongCardType = ref('')
+const modalRef = ref(null)
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -122,6 +129,8 @@ watch(expDate, (newValue) => {
 })
 
 watch(cardNumber, (newValue) => {
+  cardType.value = ''
+  setValues({ ...values, cardType: '' })
   if (newValue.length >= 6) {
     if (newValue.startsWith('4')) {
       cardType.value = 'visa'
@@ -164,7 +173,7 @@ const props = defineProps({
   }
 })
 
-const { values, setValues, errors, resetForm } = useForm({
+const { values, setValues, errors, resetForm, setFieldError } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -173,8 +182,14 @@ const { values, setValues, errors, resetForm } = useForm({
     cardType: '',
     expDate: ''
   },
-  validationSchema: walletSchema
+  validationSchema: walletSchema,
+  validateOnMount: false
 })
+
+const clearError = (field) => {
+  setFieldError(field, '')
+  if (field === 'cardNumber') wrongCardType.value = ''
+}
 
 const handelBuyRepsPackage = async (item) => {
   paymentStore.setSelectedPackage(item)
@@ -187,12 +202,15 @@ const handelBuyRepsPackage = async (item) => {
 const handleShowConfirmModal = () => {
   if (!isPaymentRequired.value) showConfirmModal.value = true
   else {
-    if (Object.keys(errors.value).length > 0) {
-      return (showError.value = true)
-    }
     const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
+    const hasError = Object.keys(errors.value).length > 0
+    if (hasError) {
+      showError.value = true
+      return
+    }
     if (!isAccepted) {
-      return (wrongCardType.value = 'Please enter a valid Visa or credit card number only')
+      wrongCardType.value = 'Please enter a valid Visa or credit card number only'
+      return
     }
     showConfirmModal.value = true
   }
@@ -335,6 +353,9 @@ const handleCheckExpDate = (event) => {
     if (month > 12) {
       month = 12
     }
+    if (month < 1) {
+      month = '01'
+    }
     input = month.toString().padStart(2, '0') + input.substring(2)
   }
 
@@ -363,6 +384,7 @@ const handleCheckExpDate = (event) => {
     <div
       class="absolute right-0 bg-white text-black border-2 shadow-lg rounded-md mt-3 min-w-[300px] z-5"
       :class="{ hidden: !showListReps }"
+      ref="modalRef"
     >
       <div class="px-2 mt-3">
         <div class="flex items-center justify-between" v-if="isGiftReps">
@@ -445,6 +467,7 @@ const handleCheckExpDate = (event) => {
                           v-model.trim="cardholderName"
                           @input="handleCheckCardName"
                           @blur="handleTrim"
+                          @focus="clearError('cardholderName')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -486,7 +509,7 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cardNumber"
                           @input="handleCheckCardNumber"
-                          @focus="wrongCardType = ''"
+                          @focus="clearError('cardNumber')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -522,7 +545,9 @@ const handleCheckExpDate = (event) => {
                   </FormField>
                 </div>
               </div>
-              <p class="text-red-500 text-sm" v-if="wrongCardType">{{ wrongCardType }}</p>
+              <p class="text-red-500 font-medium text-sm" v-if="wrongCardType">
+                {{ wrongCardType }}
+              </p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
@@ -535,6 +560,7 @@ const handleCheckExpDate = (event) => {
                         class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[120px] !m-0 p-2"
                         v-model="expDate"
                         @input="handleCheckExpDate"
+                        @focus="clearError('expDate')"
                       />
                     </div>
                     <FormMessage :class="{ hidden: !showError }" />
@@ -569,6 +595,7 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cvc"
                           @input="handleCheckCVC"
+                          @focus="clearError('cvc')"
                         />
                       </FormItem>
                       <FormMessage :class="{ hidden: !showError }" />
