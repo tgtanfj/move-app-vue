@@ -23,47 +23,53 @@ class _PaymentMethodEmptyState extends State<PaymentMethodEmpty> {
     final width = MediaQuery.of(context).size.width - 134;
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Text(
-            Constants.yourPaymentMethod,
-            style: AppTextStyles.montserratStyle.bold16Black,
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 200),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  Constants.noPaymentMethod,
-                  style: AppTextStyles.montserratStyle.bold16black,
-                ),
-                Text(
-                  Constants.youDoNotHaveSavedPayment,
-                  style: AppTextStyles.montserratStyle.regular16Black
-                      .copyWith(fontStyle: FontStyle.italic),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                CustomButton(
-                  title: Constants.setUpPaymentMethod,
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PaymentDetailsPage()));
-                  },
-                  titleStyle: AppTextStyles.montserratStyle.bold16White,
-                  backgroundColor: AppColors.tiffanyBlue,
-                  width: width,
-                )
-              ],
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              Constants.yourPaymentMethod,
+              style: AppTextStyles.montserratStyle.bold16Black,
             ),
-          ),
-        ],
+            Expanded(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      Constants.noPaymentMethod,
+                      style: AppTextStyles.montserratStyle.bold16black,
+                    ),
+                    Text(
+                      Constants.youDoNotHaveSavedPayment,
+                      style: AppTextStyles.montserratStyle.regular16Black
+                          .copyWith(fontStyle: FontStyle.italic),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    CustomButton(
+                      title: Constants.setUpPaymentMethod,
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const PaymentDetailsPage()));
+                      },
+                      titleStyle: AppTextStyles.montserratStyle.bold16White,
+                      backgroundColor: AppColors.tiffanyBlue,
+                      width: width,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

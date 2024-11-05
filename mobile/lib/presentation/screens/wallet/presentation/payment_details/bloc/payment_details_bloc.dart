@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
 import 'package:move_app/data/repositories/payment_method_repository.dart';
@@ -24,20 +26,35 @@ class PaymentDetailsBloc
     on<PaymentDetailsCvvEvent>(_onPaymentDetailsCvvEvent);
   }
 
-  bool _shouldEnableSubmit() {
-    return (state.cardHolderName?.isNotEmpty ?? false) &&
-        (state.cardNumber?.isNotEmpty ?? false) &&
-        (state.expiryDate?.isNotEmpty ?? false) &&
-        (state.cvv?.isNotEmpty ?? false);
-  }
-
   Future<void> _onPaymentDetailsInitialEvent(PaymentDetailsInitialEvent event,
       Emitter<PaymentDetailsState> emit) async {
     emit(state.copyWith(
-        selectedCountry: event.selectedCountry,
-        status: PaymentDetailsStatus.processing));
-    emit(state.copyWith(isEnableSubmitPaymentMethod: _shouldEnableSubmit()));
-    add(const PaymentDetailsCountrySelectEvent());
+      selectedCountry: event.selectedCountry,
+      status: PaymentDetailsStatus.processing,
+    ));
+
+    try {
+      final countryResult = await countryRepository.getCountryList();
+      countryResult.fold(
+        (failure) {
+          emit(state.copyWith(status: PaymentDetailsStatus.failure));
+        },
+        (countries) {
+          final vnCountry = countries.firstWhere(
+            (country) => country.id == 240,
+            orElse: () => countries.first,
+          );
+
+          emit(state.copyWith(
+            countryList: countries,
+            selectedCountry: vnCountry,
+            status: PaymentDetailsStatus.success,
+          ));
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(status: PaymentDetailsStatus.failure));
+    }
   }
 
   Future<void> _onPaymentDetailsSubmitEvent(PaymentDetailsSubmitEvent event,
@@ -49,20 +66,24 @@ class PaymentDetailsBloc
     final validateExpiryDate =
         InputValidationHelper.validateExpiryDate(state.expiryDate ?? '');
     final validateCvv = InputValidationHelper.validateCvv(state.cvv ?? '');
+
     emit(state.copyWith(
-        isShowCardHolderNameMessage: validateCardHolderName != null,
-        isShowCardNumberMessage: validateCardNumber != null,
-        isShowExpiryDateMessage: validateExpiryDate != null,
-        isShowCvvMessage: validateCvv != null,
-        cardHolderNameErrorMessage: validateCardHolderName,
-        cardNumberErrorMessage: validateCardNumber,
-        expiryDateErrorMessage: validateExpiryDate,
-        cvvErrorMessage: validateCvv));
-    if (validateCardHolderName == null ||
-        validateCardNumber == null ||
-        validateExpiryDate == null ||
+      isShowCardHolderNameMessage: validateCardHolderName != null,
+      isShowCardNumberMessage: validateCardNumber != null,
+      isShowExpiryDateMessage: validateExpiryDate != null,
+      isShowCvvMessage: validateCvv != null,
+      cardHolderNameErrorMessage: validateCardHolderName,
+      cardNumberErrorMessage: validateCardNumber,
+      expiryDateErrorMessage: validateExpiryDate,
+      cvvErrorMessage: validateCvv,
+    ));
+
+    if (validateCardHolderName == null &&
+        validateCardNumber == null &&
+        validateExpiryDate == null &&
         validateCvv == null) {
       emit(state.copyWith(status: PaymentDetailsStatus.processing));
+
       try {
         final paymentMethod = await stripeService.createPaymentMethod(
           cardNumber: state.cardNumber ?? '',
@@ -88,37 +109,29 @@ class PaymentDetailsBloc
           },
         );
       } catch (e) {
+        String cardNumberErrorMessage = '';
+        if (e is StripeException && e.error.code == FailureCode.Failed) {
+          if (e.error.stripeErrorCode == 'incorrect_number') {
+            cardNumberErrorMessage =
+                Constants.pleaseEnterValidVisaOrCreditCardNumber;
+          }
+        }
         emit(state.copyWith(
-            status: PaymentDetailsStatus.failure, errorMessage: e.toString()));
+            status: PaymentDetailsStatus.failure,
+            cardNumberErrorMessage: cardNumberErrorMessage,
+            isShowCardNumberMessage: true));
       }
     }
   }
 
   Future<void> _onPaymentDetailsCountrySelectEvent(
-      PaymentDetailsCountrySelectEvent event,
-      Emitter<PaymentDetailsState> emit) async {
-    try {
-      final countryResult = await countryRepository.getCountryList();
-
-      countryResult.fold(
-        (failure) {
-          emit(state.copyWith(status: PaymentDetailsStatus.failure));
-        },
-        (countries) {
-          var index = countries.indexWhere(
-            (element) => element.id == event.selectedCountry?.id,
-          );
-
-          index = index < 0 ? 0 : index;
-          emit(state.copyWith(
-            selectedCountry: countries[index],
-            countryList: countries,
-            status: PaymentDetailsStatus.success,
-          ));
-        },
-      );
-    } catch (e) {
-      emit(state.copyWith(status: PaymentDetailsStatus.failure));
+    PaymentDetailsCountrySelectEvent event,
+    Emitter<PaymentDetailsState> emit,
+  ) async {
+    final selectedCountries =
+        state.countryList.where((country) => country.id == event.countryId);
+    if (selectedCountries.isNotEmpty) {
+      emit(state.copyWith(selectedCountry: selectedCountries.first));
     }
   }
 
@@ -131,7 +144,6 @@ class PaymentDetailsBloc
             : state.isShowCardHolderNameMessage;
     emit(state.copyWith(
         cardHolderName: event.cardHolderName,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
         isShowCardHolderNameMessage: isShowCardHolderNameMessage));
   }
 
@@ -142,9 +154,9 @@ class PaymentDetailsBloc
         ? false
         : state.isShowCardNumberMessage;
     emit(state.copyWith(
-        cardNumber: event.cardNumber,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
-        isShowCardNumberMessage: isShowCardNumberMessage));
+      cardNumber: event.cardNumber,
+      isShowCardNumberMessage: isShowCardNumberMessage,
+    ));
   }
 
   Future<void> _onPaymentDetailsExpiryDateEvent(
@@ -155,7 +167,6 @@ class PaymentDetailsBloc
         : state.isShowExpiryDateMessage;
     emit(state.copyWith(
         expiryDate: event.expiryDate,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
         isShowExpiryDateMessage: isShowExpiryDateMessage));
   }
 
@@ -163,9 +174,6 @@ class PaymentDetailsBloc
       PaymentDetailsCvvEvent event, Emitter<PaymentDetailsState> emit) async {
     final isShowCvvMessage =
         state.cvv != event.cvv ? false : state.isShowCvvMessage;
-    emit(state.copyWith(
-        cvv: event.cvv,
-        isEnableSubmitPaymentMethod: _shouldEnableSubmit(),
-        isShowCvvMessage: isShowCvvMessage));
+    emit(state.copyWith(cvv: event.cvv, isShowCvvMessage: isShowCvvMessage));
   }
 }

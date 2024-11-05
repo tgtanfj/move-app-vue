@@ -45,7 +45,7 @@ class StripeService {
           ));
       return paymentMethod;
     } catch (e) {
-      throw Exception(e.toString());
+      rethrow;
     }
   }
 }

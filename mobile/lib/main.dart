@@ -8,7 +8,6 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:move_app/config/app_config_loading.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/create_new_password/page/create_new_password_page.dart';
-
 import '.env.dart';
 import 'config/app_config.dart';
 

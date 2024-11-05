@@ -95,18 +95,24 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                       ),
                       _createTitle(title: Constants.country),
                       CustomDropdownButton(
-                        hintText: state.selectedCountry?.name ?? '',
-                        initialValue: state.selectedCountry?.id,
+                        hintText: state.selectedCountry?.name ??
+                            Constants.pleaseSelectCountry,
+                        initialValue: (state.selectedCountry?.id != null)
+                            ? state.selectedCountry?.id
+                            : null,
                         items: state.countryList.map((country) {
-                          return {'id': country.id, 'name': country.name};
+                          return {
+                            'id': country.id,
+                            'name': country.name,
+                            'countryCode': country.countryCode,
+                          };
                         }).toList(),
                         onChanged: (countryId) {
                           if (countryId != null) {
                             BlocProvider.of<PaymentDetailsBloc>(context).add(
                               PaymentDetailsCountrySelectEvent(
-                                  selectedCountry: state.countryList.firstWhere(
-                                (e) => e.id == countryId,
-                              )),
+                                countryId: countryId,
+                              ),
                             );
                           }
                         },
@@ -264,18 +270,16 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         height: 24,
                       ),
                       CustomButton(
-                          isEnabled: state.isEnableSubmitPaymentMethod ?? false,
+                          isEnabled: state.isEnableSubmitPaymentMethod,
                           title: Constants.submit,
                           titleStyle: AppTextStyles.montserratStyle.bold16White,
-                          backgroundColor:
-                              (state.isEnableSubmitPaymentMethod ?? false)
-                                  ? AppColors.tiffanyBlue
-                                  : AppColors.spanishGray,
-                          borderColor:
-                              (state.isEnableSubmitPaymentMethod ?? false)
-                                  ? AppColors.tiffanyBlue
-                                  : AppColors.spanishGray,
-                          onTap: (state.isEnableSubmitPaymentMethod ?? false)
+                          backgroundColor: (state.isEnableSubmitPaymentMethod)
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          borderColor: (state.isEnableSubmitPaymentMethod)
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          onTap: (state.isEnableSubmitPaymentMethod)
                               ? () {
                                   FocusScope.of(context).unfocus();
                                   context
