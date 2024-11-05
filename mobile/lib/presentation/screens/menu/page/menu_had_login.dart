@@ -4,6 +4,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
@@ -107,8 +108,8 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
           ),
           ContentMenu(
             walletButton: () {
-              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
-              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
+              Navigator.of(context).pushNamed(AppRoutes.routeWallet,
+                  arguments: WalletArguments());
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);

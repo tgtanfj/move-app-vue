@@ -15,7 +15,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
   Future<void> _onPaymentMethodInitialEvent(
       PaymentMethodInitialEvent event, Emitter<PaymentMethodState> emit) async {
-    emit(PaymentMethodState.initial());
+    emit(state.copyWith(status: PaymentMethodStatus.initial, rep: event.rep));
     add(const PaymentMethodFetchDataEvent());
   }
 

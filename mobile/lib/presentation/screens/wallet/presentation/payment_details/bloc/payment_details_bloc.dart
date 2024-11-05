@@ -5,6 +5,7 @@ import 'package:move_app/data/repositories/payment_method_repository.dart';
 import 'package:move_app/data/services/stripe_service.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
 
 class PaymentDetailsBloc
@@ -27,6 +28,7 @@ class PaymentDetailsBloc
   Future<void> _onPaymentDetailsInitialEvent(PaymentDetailsInitialEvent event,
       Emitter<PaymentDetailsState> emit) async {
     emit(state.copyWith(
+        walletArguments: event.walletArguments,
         selectedCountry: event.selectedCountry,
         status: PaymentDetailsStatus.processing));
     add(const PaymentDetailsCountrySelectEvent());
@@ -133,9 +135,11 @@ class PaymentDetailsBloc
     final isShowCardNumberMessage = state.cardNumber != event.cardNumber
         ? false
         : state.isShowCardNumberMessage;
+    final cardType = CardNumberValidator.getCardType(event.cardNumber);
     emit(state.copyWith(
         cardNumber: event.cardNumber,
-        isShowCardNumberMessage: isShowCardNumberMessage));
+        isShowCardNumberMessage: isShowCardNumberMessage,
+        cardType: cardType));
   }
 
   Future<void> _onPaymentDetailsExpiryDateEvent(
