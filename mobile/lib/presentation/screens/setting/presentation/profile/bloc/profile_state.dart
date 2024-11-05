@@ -19,7 +19,6 @@ final class ProfileState extends Equatable {
   final UserModel? user;
   final List<CountryModel> countryList;
   final List<StateModel> stateList;
-  final bool isEnableSaveSettings;
   final String messageInputUsername;
   final String messageInputFullName;
   final bool isShowUsernameMessage;
@@ -40,7 +39,6 @@ final class ProfileState extends Equatable {
       this.user,
       required this.countryList,
       required this.stateList,
-      this.isEnableSaveSettings = false,
       this.messageInputUsername = '',
       this.messageInputFullName = '',
       this.isShowUsernameMessage = false,
@@ -60,7 +58,6 @@ final class ProfileState extends Equatable {
         user: null,
         countryList: [],
         stateList: [],
-        isEnableSaveSettings: false,
         messageInputUsername: '',
         messageInputFullName: '',
         isShowUsernameMessage: false,
@@ -81,7 +78,6 @@ final class ProfileState extends Equatable {
     UserModel? user,
     List<CountryModel>? countryList,
     List<StateModel>? stateList,
-    bool? isEnableSaveSettings,
     String? messageInputUsername,
     String? messageInputFullName,
     bool? isShowUsernameMessage,
@@ -103,7 +99,6 @@ final class ProfileState extends Equatable {
         user: user ?? this.user,
         countryList: countryList ?? this.countryList,
         stateList: stateList ?? this.stateList,
-        isEnableSaveSettings: isEnableSaveSettings ?? this.isEnableSaveSettings,
         messageInputUsername: messageInputUsername ?? this.messageInputUsername,
         messageInputFullName: messageInputFullName ?? this.messageInputFullName,
         isShowUsernameMessage:
@@ -130,7 +125,6 @@ final class ProfileState extends Equatable {
         user,
         countryList,
         stateList,
-        isEnableSaveSettings,
         messageInputUsername,
         messageInputFullName,
         isShowUsernameMessage,
@@ -145,4 +139,7 @@ final class ProfileState extends Equatable {
         isShowStateMessage,
         isShowAvatarMessage,
       ];
+  bool get isEnableSaveSettings =>
+      (user?.username?.isNotEmpty ?? false) &&
+      (user?.fullName?.isNotEmpty ?? false);
 }

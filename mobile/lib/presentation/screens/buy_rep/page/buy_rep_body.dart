@@ -207,9 +207,11 @@ class _BuyRepBodyState extends State<BuyRepBody> {
                                         ?.firstWhere(
                                             (e) => e.countryCode == "VN")
                                         .id,
+                                    cardType: state.cardType,
                                   )
                                 : WithSavedPayment(
-                                    card: state.cardPaymentMethod?.card),
+                                    card: state.cardPaymentMethod?.card,
+                                    rep: state.rep),
                             const SizedBox(height: 24),
                             Text.rich(
                               TextSpan(

@@ -3,6 +3,7 @@ import 'package:move_app/data/models/card_payment_model.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/models/rep_model.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 
 enum BuyRepStatus {
   initial,
@@ -35,6 +36,7 @@ final class BuyRepState extends Equatable {
   final bool isShowCardNumberMessage;
   final bool isShowExpiryDateMessage;
   final bool isShowCvvMessage;
+  final CardType cardType;
 
   const BuyRepState({
     this.status,
@@ -57,6 +59,7 @@ final class BuyRepState extends Equatable {
     this.isShowCardNumberMessage = false,
     this.isShowExpiryDateMessage = false,
     this.isShowCvvMessage = false,
+    this.cardType = CardType.unknown,
   });
 
   static BuyRepState initial() => const BuyRepState(
@@ -87,6 +90,7 @@ final class BuyRepState extends Equatable {
     bool? isShowExpiryDateMessage,
     bool? isShowCvvMessage,
     bool? isShowCountryMessage,
+    CardType? cardType,
   }) {
     return BuyRepState(
       status: status ?? this.status,
@@ -114,6 +118,7 @@ final class BuyRepState extends Equatable {
       isShowExpiryDateMessage:
           isShowExpiryDateMessage ?? this.isShowExpiryDateMessage,
       isShowCvvMessage: isShowCvvMessage ?? this.isShowCvvMessage,
+      cardType: cardType ?? this.cardType,
     );
   }
 
@@ -139,7 +144,9 @@ final class BuyRepState extends Equatable {
         isShowCardNumberMessage,
         isShowExpiryDateMessage,
         isShowCvvMessage,
+        cardType,
       ];
+
   bool get isEnablePayNow =>
       (cardName?.isNotEmpty ?? false) &&
       (cardNumber?.isNotEmpty ?? false) &&

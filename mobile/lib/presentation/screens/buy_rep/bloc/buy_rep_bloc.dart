@@ -6,6 +6,7 @@ import 'package:move_app/data/repositories/rep_repository.dart';
 import 'package:move_app/data/services/stripe_service.dart';
 import 'package:move_app/presentation/screens/buy_rep/bloc/buy_rep_event.dart';
 import 'package:move_app/presentation/screens/buy_rep/bloc/buy_rep_state.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
 
 class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
@@ -68,8 +69,10 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
     final isShowCardNumberMessage = state.cardNumber != event.cardNumber
         ? false
         : state.isShowCardNumberMessage;
+    final cardType = CardNumberValidator.getCardType(event.cardNumber ?? '');
     emit(state.copyWith(
       cardNumber: event.cardNumber,
+      cardType: cardType,
       isShowCardNumberMessage: isShowCardNumberMessage,
     ));
   }

@@ -1,9 +1,12 @@
+import 'package:move_app/data/models/rep_model.dart';
+
 sealed class PaymentMethodEvent {
   const PaymentMethodEvent();
 }
 
 final class PaymentMethodInitialEvent extends PaymentMethodEvent {
-  const PaymentMethodInitialEvent();
+  final RepModel? rep;
+  const PaymentMethodInitialEvent(this.rep);
 }
 
 final class PaymentMethodFetchDataEvent extends PaymentMethodEvent {

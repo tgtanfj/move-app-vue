@@ -13,6 +13,7 @@ const showError = ref(false)
 const mutation = useForgotPassword()
 const isBanned = ref(false)
 const { isPending, isIdle, isSuccess, isError, reset } = mutation
+const countdown = ref(60)
 let banned
 
 const bgColor = computed(() => {
@@ -29,12 +30,8 @@ const { values, errors, defineField, handleSubmit, resetForm } = useForm({
   validationSchema: emailSchema
 })
 
-const isFillAllFields = computed(() => {
-  return values.email
-})
-
 const isFormValid = computed(() => {
-  return isFillAllFields.value
+  return values.email
 })
 
 const handleSendMail = async () => {
@@ -47,9 +44,16 @@ const handleSendMail = async () => {
       {
         onSuccess: () => {
           isBanned.value = true
-          banned = setTimeout(() => {
-            isBanned.value = false
-          }, 60000)
+
+          banned = setInterval(() => {
+            if (countdown.value > 0) {
+              countdown.value--
+            } else {
+              clearInterval(banned)
+              countdown.value = 60
+              isBanned.value = false
+            }
+          }, 1000)
         }
       }
     )
@@ -65,6 +69,9 @@ const resetFormOnClose = () => {
   resetForm()
   reset()
   showError.value = false
+  isBanned.value = false
+  clearInterval(banned)
+  countdown.value = 60
 }
 
 const clearErrorAPI = () => {
@@ -97,12 +104,16 @@ const clearErrorAPI = () => {
         class="border rounded-md px-3 py-5 text-center"
         :class="bgColor"
       >
-        <span v-if="isSuccess" class="max-w-[400px] m-auto">
-          {{ $t('forgot_password.send_mail_success', { email }) }}
-        </span>
-        <p v-if="isError" class="max-w-[400px] m-auto text-redMisc">
-          {{ $t('forgot_password.send_mail_error', { email }) }}
-        </p>
+        <p
+          v-if="isSuccess"
+          class="max-w-[400px] m-auto"
+          v-html="$t('forgot_password.send_mail_success', { email: `<strong>${email}</strong>` })"
+        ></p>
+        <p
+          v-if="isError"
+          class="max-w-[400px] m-auto text-redMisc"
+          v-html="$t('forgot_password.send_mail_error', { email: `<strong>${email}</strong>` })"
+        ></p>
       </div>
 
       <div class="flex justify-center mt-3">
@@ -117,7 +128,8 @@ const clearErrorAPI = () => {
               : isSuccess
                 ? $t('forgot_password.resend_link')
                 : $t('forgot_password.send_link')
-          }}</Button
+          }}
+          <span v-if="isBanned" class="font-semibold pl-1">({{ countdown }})s</span></Button
         >
       </div>
     </form>
