@@ -57,6 +57,8 @@ class ApiService {
               await AuthRepository().logOut();
               return handler.next(error);
             }
+          } else {
+            return handler.next(error);
           }
         },
       ),

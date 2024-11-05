@@ -11,6 +11,7 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { ADMIN_BASE } from '@constants/api.constant.js'
 import defaultAvatar from '@assets/icons/default-avatar.png'
+import { apiAxios } from '@helpers/axios.helper.js'
 
 export const useAuthStore = defineStore('auth', () => {
   // States
@@ -22,6 +23,8 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshToken = ref(null)
   const isLoading = ref(false)
   const emailFirebase = ref(null)
+  const blueBadge = ref(null)
+  const channelId = ref(null)
 
   // Actions
   const googleSignIn = async () => {
@@ -97,12 +100,14 @@ export const useAuthStore = defineStore('auth', () => {
           Authorization: `Bearer ${accessToken.value}`
         }
       })
-      if (loginMethodLocal === 'email') {
-        user.value = userInfo.data
-        // localStorage.setItem('userInfo', userInfo.data.data.username)
-      }
+      user.value = userInfo.data.data
       usernameUser.value = userInfo.data.data.username
+      blueBadge.value = userInfo.data.data.isBlueBadge
+      channelId.value = userInfo.data.data.channelId
+      localStorage.setItem('userAvatar', userInfo.data.data.avatar)
       localStorage.setItem('userInfo', userInfo.data.data.username)
+      localStorage.setItem('userIsBlueBadge', userInfo.data.data.isBlueBadge)
+      localStorage.setItem('userChannelId', userInfo.data.data.channelId)
       localStorage.setItem('userEmail', userInfo.data.data.email)
     } catch (error) {
       errorMsg.value = error.response?.data?.message || 'Login failed'
@@ -131,6 +136,8 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userInfo.data.data
         localStorage.setItem('userInfo', userInfo.data.data.username)
         localStorage.setItem('userEmail', userInfo.data.data.email)
+        localStorage.setItem('userIsBlueBadge', userInfo.data.data.isBlueBadge)
+        localStorage.setItem('userChannelId', userInfo.data.data.channelId)
         localStorage.setItem('userAvatar', userInfo.data.data.avatar || defaultAvatar)
         localStorage.setItem('token', accessToken.value)
         localStorage.setItem('loginMethod', 'email')
@@ -146,7 +153,7 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = false
     }
   }
-  
+
   const logout = async () => {
     const loginMethod = localStorage.getItem('loginMethod')
     try {
@@ -171,6 +178,8 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('userInfo')
           localStorage.removeItem('userAvatar')
           localStorage.removeItem('userEmail')
+          localStorage.removeItem('userIsBlueBadge')
+          localStorage.removeItem('userChannelId')
         } else throw new Error(response.error.message)
       } else {
         await signOut(auth)
@@ -185,35 +194,11 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('userInfo')
         localStorage.removeItem('userAvatar')
         localStorage.removeItem('userEmail')
+        localStorage.removeItem('userIsBlueBadge')
+        localStorage.removeItem('userChannelId')
       }
     } catch (err) {
       errorMsg.value = err.message
-    } finally {
-      isLoading.value = false
-    }
-  }
-
-  const refreshAccessToken = async () => {
-    // Refresh token
-    try {
-      isLoading.value = true
-      const currentRefreshToken = localStorage.getItem('refreshToken')
-
-      if (!currentRefreshToken) {
-        throw new Error('No refresh token available')
-      }
-
-      const response = await axios.get(`${ADMIN_BASE}/auth/refresh`, {
-        headers: {
-          Authorization: `Bearer ${currentRefreshToken}`
-        }
-      })
-
-      accessToken.value = response.data.data.accessToken
-      localStorage.setItem('token', accessToken.value)
-    } catch (error) {
-      console.error('Error refreshing access token:', error)
-      await logout()
     } finally {
       isLoading.value = false
     }
@@ -243,11 +228,20 @@ export const useAuthStore = defineStore('auth', () => {
         console.error('Error get profile: ', error)
       }
     } else if (loginMethodLocal === 'google' || loginMethodLocal === 'facebook') {
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
           user.value = currentUser
-          localStorage.setItem('userAvatar', currentUser.photoURL)
-          currentUser.getIdToken().then((idTokenFB) => {
+          try {
+            const response = await apiAxios.get('/user/profile')
+            if (response.status === 200 && response.data.data) {
+              const temp = { ...user.value, ...response.data.data }
+              user.value = { ...temp }
+              localStorage.setItem('userAvatar', response.data.data.avatar)
+            }
+          } catch (error) {
+            console.error('Error getting profile: ', error)
+          }
+          await currentUser.getIdToken().then((idTokenFB) => {
             idToken.value = idTokenFB
             const localToken = localStorage.getItem('token')
             accessToken.value = localToken ? localToken : null
@@ -256,8 +250,8 @@ export const useAuthStore = defineStore('auth', () => {
             } else {
               localStorage.setItem('loginMethod', 'facebook')
             }
-            isLoading.value = false
           })
+          isLoading.value = false
         } else {
           user.value = null
           accessToken.value = null
@@ -267,9 +261,8 @@ export const useAuthStore = defineStore('auth', () => {
       return () => {
         unsubscribe()
       }
-    } else {
-      isLoading.value = false
     }
+    isLoading.value = false
   })
 
   return {
@@ -282,12 +275,13 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     emailFirebase,
     usernameUser,
+    blueBadge,
+    channelId,
     // actions
     googleSignIn,
     facebookSignIn,
     sendTokenToBackend,
     logout,
-    loginWithEmail,
-    refreshAccessToken
+    loginWithEmail
   }
 })

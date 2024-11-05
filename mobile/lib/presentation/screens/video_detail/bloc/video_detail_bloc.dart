@@ -24,7 +24,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   VideoDetailBloc() : super(VideoDetailState.initial()) {
     on<VideoDetailInitialEvent>(_onVideoDetailInitialEvent);
-    on<VideoDetailShareSocialEvent>(_onVideoDetailShareSocialEvent);
+    on<VideoDetailShareFacebookEvent>(_onVideoDetailShareFacebookEvent);
+    on<VideoDetailShareTwitterEvent>(_onVideoDetailShareTwitterEvent);
     on<VideoDetailCommentChangedEvent>(onVideoDetailCommentChangedEvent);
     on<VideoDetailLoadMoreCommentsEvent>(onVideoDetailLoadMoreCommentEvent);
     on<VideoDetailPostCommentEvent>(onVideoDetailPostCommentEvent);
@@ -176,36 +177,46 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     }
   }
 
-  void _onVideoDetailShareSocialEvent(
-      VideoDetailShareSocialEvent event, Emitter<VideoDetailState> emit) async {
-    emit(state.copyWith(status: VideoDetailStatus.processing));
-    final result =
-        await shareRepository.sharingVideo(event.videoId, event.option);
-    if (event.option == Constants.twitterOption) {
-      result.fold((l) {
-        emit(state.copyWith(
-          status: VideoDetailStatus.failure,
-          errorMessage: l,
-        ));
-      }, (r) {
-        emit(state.copyWith(
-          status: VideoDetailStatus.success,
-          twitterLink: r,
-        ));
-      });
-    } else if (event.option == Constants.facebookOption) {
-      result.fold((l) {
-        emit(state.copyWith(
-          status: VideoDetailStatus.failure,
-          errorMessage: l,
-        ));
-      }, (r) {
-        emit(state.copyWith(
-          status: VideoDetailStatus.success,
-          facebookLink: r,
-        ));
-      });
-    }
+  void _onVideoDetailShareFacebookEvent(VideoDetailShareFacebookEvent event,
+      Emitter<VideoDetailState> emit) async {
+    emit(state.copyWith(
+      status: VideoDetailStatus.processing,
+      twitterLink: '',
+    ));
+    final facebookLink = await shareRepository.sharingVideo(
+        event.videoId, Constants.facebookOption);
+    facebookLink.fold((l) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.failure,
+        errorMessage: l,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.success,
+        facebookLink: r,
+      ));
+    });
+  }
+
+  void _onVideoDetailShareTwitterEvent(VideoDetailShareTwitterEvent event,
+      Emitter<VideoDetailState> emit) async {
+    emit(state.copyWith(
+      status: VideoDetailStatus.processing,
+      facebookLink: '',
+    ));
+    final twitterLink = await shareRepository.sharingVideo(
+        event.videoId, Constants.twitterOption);
+    twitterLink.fold((l) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.failure,
+        errorMessage: l,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.success,
+        twitterLink: r,
+      ));
+    });
   }
 
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,

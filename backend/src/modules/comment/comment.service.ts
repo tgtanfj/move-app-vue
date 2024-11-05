@@ -114,7 +114,7 @@ export class CommentService {
       const comment = await this.commentRepository.getOneWithVideo(id);
 
       let videoId: number;
-      if (comment.parent) {
+      if (comment?.parent) {
         await this.commentRepository.update(comment.parent.id, {
           numberOfReply: comment.parent.numberOfReply - 1,
         });

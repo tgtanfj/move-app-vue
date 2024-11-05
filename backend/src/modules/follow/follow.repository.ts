@@ -36,8 +36,8 @@ export class FollowRepository {
       },
       order: {
         channel: {
-          isPinkBadge: 'ASC',
-          isBlueBadge: 'ASC',
+          numberOfFollowers: 'DESC',
+          isBlueBadge: 'DESC',
         },
       },
       relations,

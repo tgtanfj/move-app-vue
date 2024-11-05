@@ -54,7 +54,7 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             },
           ),
           const SizedBox(
-            height: 40.0,
+            height: 10.0,
           ),
           CustomButton(
             padding: EdgeInsets.zero,
@@ -66,9 +66,10 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             onTap: () {
               widget.isStateAtCurrentPage
                   ? Navigator.of(context).pop()
-                  : Navigator.pushReplacementNamed(
+                  : Navigator.pushNamedAndRemoveUntil(
                       context,
                       AppRoutes.home,
+                      (route) => false,
                       arguments: false,
                     );
               showDialog(

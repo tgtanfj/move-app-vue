@@ -7,11 +7,15 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/rep_model.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/buy_rep/page/buy_rep_page.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/card_item.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
@@ -32,9 +36,25 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
       state.status == PaymentDetailsStatus.processing
           ? EasyLoading.show()
           : EasyLoading.dismiss();
+
+      if (state.status == PaymentDetailsStatus.added &&
+          state.walletArguments?.rep?.id != null) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.home, (route) => false);
+        showDialog(
+            context: context,
+            builder: (BuildContext build) {
+              return BuyRepPage(rep: state.walletArguments!.rep!);
+            });
+        return;
+      }
       if (state.status == PaymentDetailsStatus.added) {
         EasyLoading.dismiss();
-        Navigator.pushNamed(context, AppRoutes.routeWallet, arguments: true);
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.routeWallet,
+            arguments: WalletArguments(rep: RepModel(), isTrue: true),
+            (route) => false);
       }
     }, child: BlocBuilder<PaymentDetailsBloc, PaymentDetailsState>(
             builder: (context, state) {
@@ -155,6 +175,10 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                             : AppColors.tiffanyBlue,
                         widthMessage: MediaQuery.of(context).size.width,
                         preMessage: state.cardNumberErrorMessage ?? '',
+                        suffix: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: CardItem(cardType: state.cardType),
+                        ),
                       ),
                       const SizedBox(
                         height: 12,

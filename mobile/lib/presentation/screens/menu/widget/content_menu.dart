@@ -5,6 +5,7 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 
 class ContentMenu extends StatefulWidget {
+  final int numberOfREPs;
   final VoidCallback walletButton;
   final VoidCallback settingButton;
   final VoidCallback faqsButton;
@@ -13,6 +14,7 @@ class ContentMenu extends StatefulWidget {
     super.key,
     required this.walletButton,
     required this.settingButton,
+    this.numberOfREPs = 0,
     required this.faqsButton,
   });
 
@@ -25,21 +27,24 @@ class _ContentMenuState extends State<ContentMenu> {
   Widget build(BuildContext context) {
     return Wrap(
       children: [
+        const SizedBox(
+          height: 24.0,
+        ),
         CustomButton(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.only(top: 10),
           backgroundColor: AppColors.black,
           borderColor: AppColors.black,
           borderRadius: 0,
           titleStyle: AppTextStyles.montserratStyle.bold20White,
           textAlign: TextAlign.start,
           onTap: widget.walletButton,
-          title: '${Constants.wallet}(0 REP\$)',
+          title: '${Constants.wallet}(${widget.numberOfREPs} REP\$)',
         ),
         const SizedBox(
           height: 24.0,
         ),
         CustomButton(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.only(top: 10),
           backgroundColor: AppColors.black,
           borderColor: AppColors.black,
           borderRadius: 0,
@@ -52,7 +57,7 @@ class _ContentMenuState extends State<ContentMenu> {
           height: 24.0,
         ),
         CustomButton(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.only(top: 10),
           backgroundColor: AppColors.black,
           borderColor: AppColors.black,
           borderRadius: 0,

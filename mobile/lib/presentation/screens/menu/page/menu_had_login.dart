@@ -4,6 +4,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/components/badges.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
@@ -17,7 +18,7 @@ class MenuHadLogin extends StatefulWidget {
   final bool isMoreEnable;
   final VoidCallback logoutSuccessEvent;
   final VoidCallback onBuyRep;
-
+  final int numberOfREPs;
   final String avatarPath;
   final String userName;
   final bool isBlueBadge;
@@ -33,6 +34,7 @@ class MenuHadLogin extends StatefulWidget {
     required this.isBlueBadge,
     required this.isPinkBadge,
     required this.onBuyRep,
+    required this.numberOfREPs,
   });
 
   @override
@@ -106,7 +108,8 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
           ),
           ContentMenu(
             walletButton: () {
-              Navigator.of(context).pushNamed(AppRoutes.routeWallet);
+              Navigator.of(context).pushNamed(AppRoutes.routeWallet,
+                  arguments: WalletArguments());
             },
             settingButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeProfile);
@@ -114,9 +117,10 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
             faqsButton: () {
               Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
             },
+            numberOfREPs: widget.numberOfREPs,
           ),
           const SizedBox(
-            height: 40.0,
+            height: 10.0,
           ),
           CustomButton(
             padding: EdgeInsets.zero,

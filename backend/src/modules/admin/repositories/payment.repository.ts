@@ -89,6 +89,7 @@ export class PaymentRepository {
       createdAt: true,
       repsPackage: {
         numberOfREPs: true,
+        price:true
       },
       status: true,
       user: {

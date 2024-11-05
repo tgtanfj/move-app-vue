@@ -1,6 +1,6 @@
 <script setup>
 import { usePaymentStore } from '../../stores/payment'
-import { onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { t } from '@helpers/i18n.helper'
 import { Button } from '@common/ui/button'
 import { useAuthStore } from '../../stores/auth'
@@ -41,6 +41,17 @@ const handleCloseModal = () => {
   showListReps.value = false
 }
 
+const handleCloseListRepsModal = (event) => {
+  if (
+    modalRef.value &&
+    modalRef.value.contains &&
+    !modalRef.value.contains(event.target) &&
+    showListReps.value
+  ) {
+    showListReps.value = false
+  }
+}
+
 onMounted(async () => {
   isLoading.value = true
   try {
@@ -54,6 +65,14 @@ onMounted(async () => {
   } finally {
     isLoading.value = false
   }
+})
+
+onMounted(() => {
+  window.addEventListener('click', handleCloseListRepsModal)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleCloseListRepsModal)
 })
 
 watch(route, (newValue) => {
