@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { t } from '@helpers/i18n.helper'
 import { usePaymentStore } from '../../stores/payment'
@@ -38,10 +38,22 @@ import { useForm } from 'vee-validate'
 import { ChevronLeft, X } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
 
+const props = defineProps({
+  showListReps: {
+    type: Boolean,
+    required: true
+  },
+  isGiftReps: {
+    type: Boolean,
+    required: false
+  }
+})
+
 const paymentStore = usePaymentStore()
 const emit = defineEmits(['buy-package', 'close-modal', 'back-giftrep', 'success-buy'])
 const queryClient = useQueryClient()
 
+const route = useRoute()
 const router = useRouter()
 
 const isPaymentRequired = ref(false)
@@ -72,7 +84,18 @@ const isSubmitEnabled = computed(() => {
   }
 })
 
-const route = useRoute()
+const listRepsClasses = computed(() => ({
+  hidden: !props.showListReps
+}))
+
+watch(
+  () => props.showListReps,
+  (newVal) => {
+    if (newVal) {
+      adjustModalPosition()
+    }
+  }
+)
 
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
@@ -162,16 +185,13 @@ onMounted(async () => {
   stripe.value = await loadStripe(STRIPE_KEY)
 })
 
-const props = defineProps({
-  showListReps: {
-    type: Boolean,
-    required: true
-  },
-  isGiftReps: {
-    type: Boolean,
-    required: false
-  }
-})
+// onMounted(() => {
+//   window.addEventListener('resize', adjustModalPosition)
+// })
+
+// onBeforeUnmount(() => {
+//   window.removeEventListener('resize', adjustModalPosition)
+// })
 
 const { values, setValues, errors, resetForm, setFieldError } = useForm({
   initialValues: {
@@ -185,6 +205,29 @@ const { values, setValues, errors, resetForm, setFieldError } = useForm({
   validationSchema: walletSchema,
   validateOnMount: false
 })
+
+const adjustModalPosition = async () => {
+  //E nsures that the DOM has been updated before calculating the modal's position
+  await nextTick()
+
+  const modal = modalRef.value
+  if (modal && modal.offsetHeight > 0 && modal.offsetWidth > 0) {
+    const rect = modal.getBoundingClientRect()
+    const top = rect.top
+    const viewportHeight = window.innerHeight
+
+    // If the modal is off the screen
+    if (top < 0) {
+      modal.style.top = '200px'
+    }
+    // If the modal's bottom exceeds the viewport height, move it up
+    else if (top + rect.height > viewportHeight) {
+      const excessHeight = top + rect.height - viewportHeight
+      const newTop = top - excessHeight - 10
+      modal.style.top = `-${newTop + 100}px`
+    }
+  }
+}
 
 const clearError = (field) => {
   setFieldError(field, '')
@@ -383,7 +426,7 @@ const handleCheckExpDate = (event) => {
   <div>
     <div
       class="absolute right-0 bg-white text-black border-2 shadow-lg rounded-md mt-3 min-w-[300px] z-5"
-      :class="{ hidden: !showListReps }"
+      :class="listRepsClasses"
       ref="modalRef"
     >
       <div class="px-2 mt-3">
@@ -574,7 +617,7 @@ const handleCheckExpDate = (event) => {
                         <Tooltip>
                           <TooltipTrigger
                             asChild
-                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[1px] px-[4px] border-black font-semibold"
+                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[0.6px] px-[4px] border-black font-semibold"
                           >
                             <span>?</span>
                           </TooltipTrigger>
@@ -687,7 +730,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order success</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} reps is successfully
           </p>
         </DialogHeader>
@@ -700,7 +743,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order failed</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} is not successfully
           </p>
           <DialogDescription>{{ purchaseError }}</DialogDescription>

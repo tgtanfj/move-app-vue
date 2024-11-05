@@ -190,10 +190,7 @@ const onSubmit = async () => {
     type: values.cardType
   }
 
-  await paymentStore.createUserPaymentMethod(cardData).then(() => {
-    const { query } = route
-    if (query.source) router.push({ path: query.source, query: { redirectFrom: 'add-payment' } })
-  })
+  await paymentStore.createUserPaymentMethod(cardData, route, router)
 }
 
 const handleTrim = (e) => {
@@ -382,7 +379,7 @@ const handleCheckCardName = (event) => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger
-                        class="cursor-pointer rounded-full border-[2px] py-[0.8px] px-[4px] border-black font-semibold ml-2"
+                        class="cursor-pointer rounded-full border-[2px] py-[0.6px] px-[4px] border-black font-semibold ml-2"
                       >
                         <span>?</span>
                       </TooltipTrigger>
