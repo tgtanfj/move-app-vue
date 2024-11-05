@@ -98,16 +98,16 @@ const openPopover = () => {
 }
 </script>
 <template>
-  <div
-    class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer"
+  <Popover
+    v-model:open="showRatingModal"
     ref="ratingModal"
   >
-    <div class="flex gap-2 items-center" @click="openPopover">
+    <PopoverTrigger class="flex gap-2 items-center text-primary" @click="openPopover">
       <Star width="24px" color="#12BDA3" :fill="oldRating > 0 ? '#12BDA3' : '#ffffff'" />
       <span class="uppercase font-semibold text-sm"> {{ $t('video.rate') }}</span>
-    </div>
-    <div
-      class="absolute top-0 -translate-y-64 right-0 min-w-[300px] flex flex-col bg-white p-7 text-black rounded-lg shadow-lg border-1 border-gray-200 z-10"
+    </PopoverTrigger>
+    <PopoverContent side="top" align="end"
+      
       :class="{ hidden: !showRatingModal }"
     >
       <div class="flex justify-between items-center">
@@ -138,6 +138,6 @@ const openPopover = () => {
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </PopoverContent>
+  </Popover>
 </template>
