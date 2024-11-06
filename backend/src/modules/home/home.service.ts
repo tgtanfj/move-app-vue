@@ -438,6 +438,13 @@ export class HomeService {
   }
 
   async youMayLike(userId: number) {
+    const foundChannel = await this.channelRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
     const selected = [
       'v.id',
       'v.title',
@@ -498,7 +505,7 @@ export class HomeService {
       this.getVideoByIds(videosWithValue1, selected),
       this.getVideoByIds(recentWatchedVideoIds, selected),
     ]);
-    const ignoreIds = [...videosWithValue2, ...videosWithValue2, ...recentWatchedVideoIds];
+    const ignoreIds = [...videosWithValue2, ...videosWithValue1, ...recentWatchedVideoIds];
     let result = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
 
     if (result.length >= 32) {
@@ -509,9 +516,17 @@ export class HomeService {
     if (limitVideoOther > 0) {
       let topViewVideo = await this.videoRepository.find({
         take: limitVideoOther,
-        where: { id: Not(In(ignoreIds)) },
+        where: {
+          id: Not(In(ignoreIds)),
+          channel: {
+            id: Not(foundChannel ? foundChannel.id : null),
+          },
+          isPublish:true
+        },
         order: {
           numberOfViews: 'DESC',
+          ratings: 'DESC',
+          createdAt:'desc'
         },
         relations: {
           category: true,
