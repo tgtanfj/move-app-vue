@@ -43,7 +43,7 @@ const {
 
 const setTimeInterval = ref(null)
 
-const truncateString = (str, length = 70) => {
+const truncateString = (str, length = 65) => {
   return str.length > length ? str.slice(0, length) + '...' : str
 }
 
