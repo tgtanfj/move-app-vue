@@ -64,7 +64,7 @@ const props = defineProps({
             <p class="text-[#666666] text-[14px]">{{ video?.category?.title }}</p>
             <p>⋅</p>
             <p class="text-[#666666] text-[14px]">
-              {{ video.postedTime ? convertTimePostVideo(video?.postedTime) : 'Posted a day ago' }}
+              {{ video.createdAt ? convertTimePostVideo(video?.createdAt) : 'Posted a day ago' }}
             </p>
           </div>
           <div class="flex items-center gap-1 justify-start mt-2">

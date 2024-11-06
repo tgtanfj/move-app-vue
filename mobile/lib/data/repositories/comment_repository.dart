@@ -199,4 +199,30 @@ class CommentRepository {
       return Left(e.toString());
     }
   }
+
+  Future<Either<String, Response>> deleteComment(int commentId) async {
+    try {
+      final response = await apiService.request(
+        APIRequestMethod.delete,
+        "${ApiUrls.commentEndpoint}/$commentId",
+        options: Options(
+          headers: {
+            'Accept': '*/*',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        return Right(response);
+      } else {
+        return Left("${response.statusCode}");
+      }
+    } catch (e) {
+      if (e is DioException && e.response != null) {
+        final errorData = e.response?.data;
+        final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+        return Left(errorMessage);
+      }
+      return Left(e.toString());
+    }
+  }
 }

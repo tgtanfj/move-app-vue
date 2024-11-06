@@ -22,13 +22,6 @@ const ratingModal = ref(null)
 
 const emit = defineEmits('update-rating')
 
-onMounted(() => {
-  window.addEventListener('click', handleCloseRatingModal)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('click', handleCloseRatingModal)
-})
-
 watch(
   () => authStore.accessToken,
   async (newValue) => {
@@ -50,14 +43,6 @@ watch(
   },
   { immediate: true }
 )
-
-const handleCloseRatingModal = (event) => {
-  const modal = ratingModal.value
-  const isClickOutsideModal = modal && !modal.contains(event.target)
-  if (isClickOutsideModal) {
-    cancel()
-  }
-}
 
 const setRating = (index) => {
   rating.value = index
@@ -88,6 +73,7 @@ const onSubmit = async () => {
 const cancel = () => {
   showRatingModal.value = false
   if (!oldRating.value) rating.value = 0
+  else rating.value = oldRating.value
 }
 const openPopover = () => {
   if (authStore.accessToken) {
@@ -100,16 +86,18 @@ const openPopover = () => {
 <template>
   <Popover
     v-model:open="showRatingModal"
+    @update:open="
+      (val) => {
+        if (!val) cancel()
+      }
+    "
     ref="ratingModal"
   >
     <PopoverTrigger class="flex gap-2 items-center text-primary" @click="openPopover">
       <Star width="24px" color="#12BDA3" :fill="oldRating > 0 ? '#12BDA3' : '#ffffff'" />
       <span class="uppercase font-semibold text-sm"> {{ $t('video.rate') }}</span>
     </PopoverTrigger>
-    <PopoverContent side="top" align="end"
-      
-      :class="{ hidden: !showRatingModal }"
-    >
+    <PopoverContent side="top" align="end" :class="{ hidden: !showRatingModal }">
       <div class="flex justify-between items-center">
         <h4 class="font-bold text-lg">{{ $t('video.rate_video') }}</h4>
         <X class="cursor-pointer" @click="cancel" />

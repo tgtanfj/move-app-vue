@@ -4,51 +4,13 @@ import { useFetch } from '@utils/vue-query.util'
 import axios from 'axios'
 
 export const videoService = {
-  createVideoSession: async (fileSize, onProgress) => {
+  createVideoSession: async (fileSize) => {
     const url = `${ADMIN_BASE}/video/create-upload-session`
     const body = {
       fileSize
     }
-
-    let imposterProgress = 5
-    let interval
-
-    const startProgress = () => {
-      interval = setInterval(() => {
-        if (imposterProgress < 89) {
-          const randomIncrement = Math.floor(Math.random() * 10) + 1
-          imposterProgress += randomIncrement
-          if (imposterProgress >= 100) {
-            imposterProgress = 100
-          }
-          if (onProgress) {
-            onProgress(imposterProgress)
-          }
-        } else {
-          onProgress(100)
-          clearInterval(interval)
-        }
-      }, 500)
-    }
-
     try {
-      startProgress()
-
-      const response = await apiAxios.post(url, body, {
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const realProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-
-            if (realProgress > imposterProgress) {
-              clearInterval(interval)
-              if (onProgress) {
-                onProgress(realProgress)
-              }
-            }
-          }
-        }
-      })
-
+      const response = await apiAxios.post(url, body)
       return { data: response.data }
     } catch (error) {
       console.error('Signup error:', error)

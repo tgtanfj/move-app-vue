@@ -46,6 +46,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (!isLoadingUser.value && dataUser.value) {
     commentToggleStore.setChannelId(dataUser.value.data?.channelId)
+    commentToggleStore.setUserId(dataUser.value.data?.id)
   }
 })
 

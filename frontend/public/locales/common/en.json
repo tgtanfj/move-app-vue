@@ -1,7 +1,7 @@
 {
   "common": {
     "hello_world": "Hello World!",
-    "no_data": "No data available",
+    "no_data": "No data available.",
     "show": "Show",
     "display_range_record": "{to} - {from} of {total} results",
     "display_single_record": "{num} of {num} result"
@@ -25,6 +25,7 @@
     "twitter": "Twitter",
     "copy_link": "Copy Link",
     "link_copied": "Link copied!",
+    "message_copied": "Message Copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
@@ -165,7 +166,8 @@
   "otp_verify": {
     "title": "Verify your email to keep account secure",
     "desc": "We sent a 6-digit code to your email. Enter the code below to confirm your account. You may also tap on the link in the email we sent you.",
-    "resend_code": "Resend code"
+    "resend_code": "Resend code",
+    "banned": "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later"
   },
   "error_message": {
     "required": "This field is required",
@@ -273,7 +275,9 @@
     "reply": "Reply",
     "show": "Show",
     "view": "View",
-    "view_comment": "View comment"
+    "view_comment": "View comment",
+    "delete": "Delete",
+    "copy": "Copy"
   },
   "video": {
     "rate": "Rate Video",

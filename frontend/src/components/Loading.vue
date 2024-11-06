@@ -8,8 +8,8 @@
 .spinner {
   width: 16px;
   height: 16px;
-  border: 4px solid white;
-  border-top-color: #10d0b6;
+  border: 4px solid #10d0b6;
+  border-top-color: white;
   border-radius: 50%;
   animation: spin 1s ease-in-out infinite;
 }

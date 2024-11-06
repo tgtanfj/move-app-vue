@@ -1,6 +1,5 @@
 import StreamerCashout from '@views/streamer/StreamerCashout.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
 import ChannelSettings from '@components/channel-setttings/ChannelSettings.vue'
 import ChannelComments from '@components/channel-comments/ChannelComments.vue'
 
@@ -54,6 +53,10 @@ const router = createRouter({
           path: '/channel/:id',
           name: 'view-channel',
           component: () => import('@views/ChannelView.vue')
+        },
+        {
+          path: '/notify-error',
+          component: () => import('@views/NotifyError.vue')
         }
       ]
     },

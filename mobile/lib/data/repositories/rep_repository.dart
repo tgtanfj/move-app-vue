@@ -52,13 +52,20 @@ class RepRepository {
         ),
         data: data,
       );
+
       if (response.data['statusCode'] == 200) {
         var clientSecret = response.data['data']['client_secret'];
-        if (response.data['data']['status'] == Constants.requiresConfirmation) {
-          var paymentMethod = await stripeService.confirmPayment(
-              paymentIntentClientSecret: clientSecret);
-        }
+
         if (clientSecret != null) {
+          if (response.data['data']['status'] ==
+              Constants.requiresConfirmation) {
+            var paymentMethod = await stripeService.confirmPayment(
+              paymentIntentClientSecret: clientSecret,
+            );
+            if (paymentMethod.paymentMethodId == null) {
+              return const Left(Constants.failed);
+            }
+          }
           return const Right(Constants.success);
         } else {
           return const Left(Constants.failed);

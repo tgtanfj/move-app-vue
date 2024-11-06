@@ -4,11 +4,11 @@ const endpointAuth = {
 };
 
 const endpointUser = {
-  GET_ALL: `/user/admin`
+  GET_ALL: `/admin/users`
 };
 
 const endpointVideo = {
-  GET_ALL: `/video/admin`
+  GET_ALL: `/admin/videos`
 };
 
 const endpointPayment = {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/comment_model.dart';
 import '../../../../config/theme/app_images.dart';
 
@@ -14,33 +16,36 @@ class ItemComment extends StatefulWidget {
   final Widget? widgetListReplies;
   final Widget? widgetShowListReplies;
   final Widget? widgetHideListReplies;
-  final bool isHideReplies;
   final VoidCallback? onTapShowInputReply;
+  final VoidCallback? onTapDelete;
+  final bool isHideReplies;
   final Widget? widgetReplyInput;
   final bool isShowReplyButton;
   final bool isShowTemporaryListReply;
-  final int? originalNumOfReply;
+  final int? repliesLength;
   final bool hasTargetReplyId;
   final bool hasTargetCommentId;
   final bool isCommentable;
 
-  const ItemComment(
-      {super.key,
-      this.commentModel,
-      this.onTapLike,
-      this.onTapDislike,
-      this.widgetListReplies,
-      this.widgetShowListReplies,
-      this.widgetHideListReplies,
-      this.isHideReplies = true,
-      this.widgetReplyInput,
-      this.onTapShowInputReply,
-      this.isShowReplyButton = true,
-      this.isShowTemporaryListReply = false,
-      this.originalNumOfReply,
-      this.hasTargetReplyId = false,
-      this.hasTargetCommentId = false,
-      this.isCommentable = true});
+  const ItemComment({
+    super.key,
+    this.commentModel,
+    this.onTapLike,
+    this.onTapDislike,
+    this.widgetListReplies,
+    this.widgetShowListReplies,
+    this.widgetHideListReplies,
+    this.isHideReplies = true,
+    this.widgetReplyInput,
+    this.onTapShowInputReply,
+    this.isShowReplyButton = true,
+    this.isShowTemporaryListReply = false,
+    this.repliesLength,
+    this.hasTargetReplyId = false,
+    this.hasTargetCommentId = false,
+    this.isCommentable = true,
+    this.onTapDelete,
+  });
 
   @override
   State<ItemComment> createState() => _ItemCommentState();
@@ -48,6 +53,16 @@ class ItemComment extends StatefulWidget {
 
 class _ItemCommentState extends State<ItemComment> {
   bool isSeeMore = false;
+  bool isShowTextCopy = false;
+
+  void _handleCopy() {
+    Clipboard.setData(ClipboardData(text: widget.commentModel?.content ?? ""));
+
+    setState(() => isShowTextCopy = true);
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() => isShowTextCopy = false);
+    });
+  }
 
   String getRepImage(int totalDonation) {
     if (totalDonation == 100) {
@@ -133,18 +148,48 @@ class _ItemCommentState extends State<ItemComment> {
     return Container(
       padding: const EdgeInsets.only(left: 12),
       decoration: _buildHighlightDecoration(widget.hasTargetCommentId),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
         children: [
-          _buildDonationTag(),
-          _buildUsernameRow(),
-          _buildDonationInfo(),
-          const SizedBox(height: 6),
-          _buildCommentText(),
-          const SizedBox(height: 32),
-          _buildActionsRow(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildDonationTag(),
+              _buildUsernameRow(),
+              _buildDonationInfo(),
+              const SizedBox(height: 6),
+              _buildCommentText(),
+              const SizedBox(height: 32),
+              _buildActionsRow(),
+            ],
+          ),
+          if (isShowTextCopy) _buildCopiedTextBox(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCopiedTextBox() {
+    return Positioned(
+      top: 30,
+      right: 0.0,
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          Constants.copied,
+          style: AppTextStyles.montserratStyle.regular13GraniteGray,
+        ),
       ),
     );
   }
@@ -170,7 +215,7 @@ class _ItemCommentState extends State<ItemComment> {
             color: AppColors.rajah,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
             child: Text(widget.commentModel?.lastContentDonate ?? "",
                 maxLines: null,
                 overflow: TextOverflow.visible,
@@ -240,20 +285,24 @@ class _ItemCommentState extends State<ItemComment> {
 
     return SizedBox(
       width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Text(previewText,
-              style: AppTextStyles.montserratStyle.regular16Black,
-              overflow: TextOverflow.visible),
-          if (content.length > 300)
-            GestureDetector(
-              onTap: () => setState(() => isSeeMore = !isSeeMore),
-              child: Text(
-                isSeeMore ? Constants.readLess : Constants.readMore,
-                style: AppTextStyles.montserratStyle.semiBold16Grey,
-              ),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(previewText,
+                  style: AppTextStyles.montserratStyle.regular16Black,
+                  overflow: TextOverflow.visible),
+              if (content.length > 300)
+                GestureDetector(
+                  onTap: () => setState(() => isSeeMore = !isSeeMore),
+                  child: Text(
+                    isSeeMore ? Constants.readLess : Constants.readMore,
+                    style: AppTextStyles.montserratStyle.semiBold16Grey,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -270,16 +319,81 @@ class _ItemCommentState extends State<ItemComment> {
             const SizedBox(width: 8),
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(widget.commentModel?.numberOfLike.toString() ?? "0",
-                  style: widget.isCommentable
-                      ? AppTextStyles.montserratStyle.regular16TiffanyBlue
-                      : AppTextStyles.montserratStyle.regular16DarkSilver),
+              child: Text(
+                widget.commentModel?.numberOfLike.toString() ?? "0",
+                style: widget.isCommentable
+                    ? AppTextStyles.montserratStyle.regular16TiffanyBlue
+                    : AppTextStyles.montserratStyle.regular16DarkSilver,
+              ),
             ),
             const SizedBox(width: 15),
             _buildDislikeButton(),
             const SizedBox(width: 20),
             if (widget.isShowReplyButton) _buildReplyButton(),
           ],
+        ),
+        _buildPopupButton(),
+      ],
+    );
+  }
+
+  Widget _buildPopupButton() {
+    return Column(
+      children: [
+        PopupMenuButton<String>(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          offset: const Offset(0, -70),
+          icon: SvgPicture.asset(AppIcons.dots.svgAssetPath),
+          onSelected: (value) {
+            if (value == Constants.copy) {
+              _handleCopy();
+            } else {
+              widget.onTapDelete?.call();
+            }
+          },
+          itemBuilder: (BuildContext context) {
+            List<PopupMenuEntry<String>> menuItems = [];
+            if ((widget.commentModel?.user?.username) ==
+                SharedPrefer.sharedPrefer.getUsername()) {
+              menuItems.add(
+                PopupMenuItem<String>(
+                  value: Constants.delete,
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(AppIcons.bin.svgAssetPath),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Text(
+                          Constants.delete,
+                          style: AppTextStyles.montserratStyle.regular16Black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            menuItems.add(
+              PopupMenuItem<String>(
+                value: Constants.copy,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(AppIcons.copy.svgAssetPath),
+                    const SizedBox(width: 15),
+                    Text(
+                      Constants.copy,
+                      style: AppTextStyles.montserratStyle.regular16Black,
+                    ),
+                  ],
+                ),
+              ),
+            );
+
+            return menuItems;
+          },
         ),
       ],
     );
@@ -337,9 +451,7 @@ class _ItemCommentState extends State<ItemComment> {
         children: [
           widget.widgetReplyInput ?? const SizedBox.shrink(),
           widget.widgetHideListReplies ?? const SizedBox.shrink(),
-          (widget.isShowTemporaryListReply &&
-                  ((widget.commentModel?.numberOfReply ?? 0) >=
-                      (widget.originalNumOfReply ?? 0)))
+          widget.isShowTemporaryListReply && !widget.isHideReplies
               ? Wrap(
                   children: [
                     Container(

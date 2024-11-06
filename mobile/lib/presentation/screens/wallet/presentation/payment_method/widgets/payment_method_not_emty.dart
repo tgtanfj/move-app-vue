@@ -55,38 +55,36 @@ class _PaymentMethodNotEmptyState extends State<PaymentMethodNotEmpty> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(children: [
-                    Text(
-                      Constants.cardholderName,
-                      style: AppTextStyles.montserratStyle.regular12Black,
-                    ),
-                    Expanded(child: Container()),
-                    Text(
-                      Constants.edit,
-                      style: AppTextStyles.montserratStyle.regular14TiffanyBlue,
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => RemoveCardDialog(
-                            yesCallback: () {
-                              context.read<PaymentMethodBloc>().add(
-                                  PaymentMethodDetachCardEvent(
-                                      state.cardPaymentModel?.id));
-                            },
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          Constants.cardholderName,
+                          style: AppTextStyles.montserratStyle.regular12Black,
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => RemoveCardDialog(
+                                yesCallback: () {
+                                  context.read<PaymentMethodBloc>().add(
+                                      PaymentMethodDetachCardEvent(
+                                          state.cardPaymentModel?.id));
+                                },
+                              ),
+                            );
+                          },
+                          child: Text(
+                            Constants.remove,
+                            style: AppTextStyles
+                                .montserratStyle.regular14BrinkPink,
                           ),
-                        );
-                      },
-                      child: Text(
-                        Constants.remove,
-                        style: AppTextStyles.montserratStyle.regular14BrinkPink,
-                      ),
-                    ),
-                  ]),
+                        ),
+                      ]),
                   Text(
                     state.cardPaymentModel?.name ?? Constants.noName,
                     style: AppTextStyles.montserratStyle.regular18Black,

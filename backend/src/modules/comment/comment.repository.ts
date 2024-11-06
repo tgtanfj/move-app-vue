@@ -131,13 +131,13 @@ export class CommentRepository {
   async getOneWithVideo(id: number): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: { id: id },
-      relations: ['video', 'parent', 'user', 'parent.video'],
+      relations: ['video', 'parent', 'user', 'parent.video', 'parent.user'],
       select: {
         id: true,
         content: true,
         numberOfReply: true,
         numberOfLike: true,
-        parent: { id: true, numberOfReply: true, video: { id: true } },
+        parent: { id: true, numberOfReply: true, video: { id: true }, user: { id: true } },
         video: {
           id: true,
           title: true,
@@ -291,7 +291,7 @@ export class CommentRepository {
       this.getLastContentDonate(comment.user.id, videoId),
     ]);
 
-    const checkLike = userId ? reactions.find((reaction) => reaction.user.id === userId) : undefined;
+    const checkLike = userId ? reactions.find((reaction) => reaction.user?.id === userId) : undefined;
 
     return {
       ...comment,

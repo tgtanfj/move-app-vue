@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
@@ -27,9 +29,24 @@ class RemoveCardDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              Constants.removeCard,
-              style: AppTextStyles.montserratStyle.bold16Black,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  Constants.removeCard,
+                  style: AppTextStyles.montserratStyle.bold16Black,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: SvgPicture.asset(
+                    AppIcons.close.svgAssetPath,
+                    width: 16,
+                    height: 16,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Text(

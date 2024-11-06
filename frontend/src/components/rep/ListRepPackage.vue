@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { t } from '@helpers/i18n.helper'
 import { usePaymentStore } from '../../stores/payment'
@@ -38,10 +38,22 @@ import { useForm } from 'vee-validate'
 import { ChevronLeft, X } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
 
+const props = defineProps({
+  showListReps: {
+    type: Boolean,
+    required: true
+  },
+  isGiftReps: {
+    type: Boolean,
+    required: false
+  }
+})
+
 const paymentStore = usePaymentStore()
 const emit = defineEmits(['buy-package', 'close-modal', 'back-giftrep', 'success-buy'])
 const queryClient = useQueryClient()
 
+const route = useRoute()
 const router = useRouter()
 
 const isPaymentRequired = ref(false)
@@ -50,7 +62,8 @@ const countries = ref(null)
 const isLoading = ref(false)
 const userCountryIso = ref(null)
 const cardType = ref('')
-const expDate = ref('')
+const expMonth = ref('')
+const expYear = ref('')
 const showError = ref(false)
 const cardholderName = ref('')
 const cvc = ref('')
@@ -63,6 +76,8 @@ const isChecked = ref(false)
 const coun = ref('')
 const wrongCardType = ref('')
 const modalRef = ref(null)
+const expMonthInput = ref(null)
+const expYearInput = ref(null)
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -72,7 +87,18 @@ const isSubmitEnabled = computed(() => {
   }
 })
 
-const route = useRoute()
+const listRepsClasses = computed(() => ({
+  hidden: !props.showListReps
+}))
+
+watch(
+  () => props.showListReps,
+  (newVal) => {
+    if (newVal) {
+      adjustModalPosition()
+    }
+  }
+)
 
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
@@ -114,11 +140,13 @@ watch(cvc, (newValue) => {
 watch(cardholderName, (newValue) => {
   setValues({ ...values, cardholderName: newValue })
 })
-watch(expDate, (newValue) => {
-  if (newValue) {
+watch([expMonth, expYear], (newValue) => {
+  const [month, year] = newValue
+
+  if (month && year) {
     setValues({
       ...values,
-      expDate: newValue
+      expDate: `${month}/${year}`
     })
   } else {
     setValues({
@@ -131,7 +159,7 @@ watch(expDate, (newValue) => {
 watch(cardNumber, (newValue) => {
   cardType.value = ''
   setValues({ ...values, cardType: '' })
-  if (newValue.length >= 6) {
+  if (newValue.length >= 1) {
     if (newValue.startsWith('4')) {
       cardType.value = 'visa'
       setValues({ ...values, cardType: 'visa' })
@@ -162,18 +190,7 @@ onMounted(async () => {
   stripe.value = await loadStripe(STRIPE_KEY)
 })
 
-const props = defineProps({
-  showListReps: {
-    type: Boolean,
-    required: true
-  },
-  isGiftReps: {
-    type: Boolean,
-    required: false
-  }
-})
-
-const { values, setValues, errors, resetForm, setFieldError } = useForm({
+const { values, setValues, errors, resetForm } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -186,9 +203,25 @@ const { values, setValues, errors, resetForm, setFieldError } = useForm({
   validateOnMount: false
 })
 
-const clearError = (field) => {
-  setFieldError(field, '')
-  if (field === 'cardNumber') wrongCardType.value = ''
+const adjustModalPosition = async () => {
+  //Ensures that the DOM has been updated before calculating the modal's position
+  await nextTick()
+
+  const modal = modalRef.value
+  if (modal && modal.offsetHeight > 0 && modal.offsetWidth > 0) {
+    const rect = modal.getBoundingClientRect()
+    const top = rect.top
+    const viewportHeight = window.innerHeight
+
+    // If the modal is off the screen
+    if (top < 0) {
+      modal.style.top = `${Math.abs(top)}`
+    }
+    // If the modal's bottom exceeds the viewport height, move it up
+    else if (top + rect.height > viewportHeight) {
+      modal.style.bottom = `0px`
+    }
+  }
 }
 
 const handelBuyRepsPackage = async (item) => {
@@ -240,7 +273,8 @@ const resetAfterSuccess = () => {
   cardNumber.value = ''
   cardholderName.value = ''
   cardType.value = ''
-  expDate.value = ''
+  expMonth.value = ''
+  expYear.value = ''
   cvc.value = ''
   showSuccessModal.value = true
 }
@@ -296,7 +330,8 @@ const resetFormOnClose = () => {
   cardNumber.value = ''
   cardholderName.value = ''
   cardType.value = ''
-  expDate.value = ''
+  expMonth.value = ''
+  expYear.value = ''
   cvc.value = ''
   userCountryIso.value = ''
   showError.value = false
@@ -312,9 +347,6 @@ const handleCloseSuccessModal = () => {
 }
 const handleCloseFailureModal = () => {
   showFailureModal.value = false
-  setTimeout(() => {
-    paymentStore.setSelectedPackage(null)
-  }, 300)
 }
 
 const handleTrim = (e) => {
@@ -336,46 +368,32 @@ const handleCheckCVC = (event) => {
 }
 const handleCheckCardName = (event) => {
   const input = event.target.value
-  const trimmedInput = input.replace(/\s+/g, ' ').trim()
+
+  const cleanedInput = input.replace(/[^\p{L}\s]/gu, '')
+  const trimmedInput = cleanedInput.replace(/\s+/g, ' ').trim()
+
   cardholderName.value = trimmedInput
   setValues({ ...values, cardholderName: trimmedInput })
 }
 
-const handleCheckExpDate = (event) => {
-  let input = event.target.value
-
-  // Remove non-numeric characters
-  input = input.replace(/\D/g, '')
-
-  // Ensure the month is between 01 and 12
-  if (input.length >= 2) {
-    let month = parseInt(input.substring(0, 2), 10)
-    if (month > 12) {
-      month = 12
-    }
-    if (month < 1) {
-      month = '01'
-    }
-    input = month.toString().padStart(2, '0') + input.substring(2)
+const handleCheckExpMonth = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  if (filteredInput === '00') {
+    expMonth.value = '01'
+  } else if (Number(filteredInput) > 12) {
+    expMonth.value = '12'
+  } else {
+    expMonth.value = filteredInput
   }
-
-  // Add '/' after the month
-  if (input.length > 2) {
-    input = input.substring(0, 2) + '/' + input.substring(2)
+  if (expMonth.value.length === 2) {
+    expYearInput.value.focus()
   }
-
-  // Limit input to 5 characters (MM/YY)
-  if (input.length > 5) {
-    input = input.substring(0, 5)
-  }
-
-  // Handle backspace
-  if (event.inputType === 'deleteContentBackward' && input.length === 3) {
-    input = input.substring(0, 2)
-  }
-
-  expDate.value = input
-  setValues({ ...values, expDate: input })
+}
+const handleCheckExpYear = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  expYear.value = filteredInput
 }
 </script>
 
@@ -383,7 +401,7 @@ const handleCheckExpDate = (event) => {
   <div>
     <div
       class="absolute right-0 bg-white text-black border-2 shadow-lg rounded-md mt-3 min-w-[300px] z-5"
-      :class="{ hidden: !showListReps }"
+      :class="listRepsClasses"
       ref="modalRef"
     >
       <div class="px-2 mt-3">
@@ -467,7 +485,6 @@ const handleCheckExpDate = (event) => {
                           v-model.trim="cardholderName"
                           @input="handleCheckCardName"
                           @blur="handleTrim"
-                          @focus="clearError('cardholderName')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -509,7 +526,6 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cardNumber"
                           @input="handleCheckCardNumber"
-                          @focus="clearError('cardNumber')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -545,25 +561,39 @@ const handleCheckExpDate = (event) => {
                   </FormField>
                 </div>
               </div>
-              <p class="text-red-500 font-medium text-sm" v-if="wrongCardType">
-                {{ wrongCardType }}
+              <p
+                class="text-red-500 font-medium text-sm"
+                v-if="wrongCardType || paymentStore.stripeErr"
+              >
+                {{ wrongCardType || paymentStore.stripeErr }}
               </p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
                   <FormField v-slot="{ componentField }" name="expDate">
-                    <!-- <FormItem class="w-full flex items-center gap-4 mt-2"> -->
-                    <div class="w-full flex items-center gap-4 mt-2">
-                      <input
-                        maxlength="5"
-                        placeholder="MM/YY"
-                        class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[120px] !m-0 p-2"
-                        v-model="expDate"
-                        @input="handleCheckExpDate"
-                        @focus="clearError('expDate')"
-                      />
-                    </div>
-                    <FormMessage :class="{ hidden: !showError }" />
+                    <FormItem class="w-full flex flex-col gap-4 mt-2">
+                      <div class="w-full flex items-center gap-4 mt-2">
+                        <input
+                          maxlength="2"
+                          placeholder="MM"
+                          class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                          type="text"
+                          v-model.trim="expMonth"
+                          @input="handleCheckExpMonth"
+                          ref="expMonthInput"
+                        />
+                        <input
+                          maxlength="2"
+                          placeholder="YY"
+                          class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                          type="text"
+                          v-model.trim="expYear"
+                          @input="handleCheckExpYear"
+                          ref="expYearInput"
+                        />
+                      </div>
+                      <FormMessage class="!mt-0" :class="{ hidden: !showError }" />
+                    </FormItem>
                   </FormField>
                 </div>
                 <div class="w-full gap-3">
@@ -574,12 +604,12 @@ const handleCheckExpDate = (event) => {
                         <Tooltip>
                           <TooltipTrigger
                             asChild
-                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[1px] px-[4px] border-black font-semibold"
+                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[0.6px] px-[4px] border-black font-semibold"
                           >
                             <span>?</span>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p class="text-[8px] max-w-[400px] whitespace-normal break-words">
+                          <TooltipContent class="max-w-[200px]">
+                            <p class="text-[12px] whitespace-normal break-words">
                               {{ t('wallet.cvc') }}
                             </p>
                           </TooltipContent>
@@ -595,7 +625,6 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cvc"
                           @input="handleCheckCVC"
-                          @focus="clearError('cvc')"
                         />
                       </FormItem>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -687,7 +716,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order success</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} reps is successfully
           </p>
         </DialogHeader>
@@ -700,7 +729,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order failed</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} is not successfully
           </p>
           <DialogDescription>{{ purchaseError }}</DialogDescription>

@@ -5,7 +5,9 @@ import BaseDialog from '@components/BaseDialog.vue'
 import { useOTPVerification } from '@services/optverify.services'
 import { signupService } from '@services/signup.services'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = defineProps(['signupInfo', 'countdown', 'isCounting'])
 const emit = defineEmits(['verifySuccess', 'reset'])
 
@@ -33,10 +35,7 @@ const handleSendOTP = () => {
       },
       onError: (err) => {
         errorMessage.value = err.response?.data?.message
-        if (
-          errorMessage.value ===
-          "You've entered the wrong OTP too many times. Your account is locked for 10 minutes. Please try again later"
-        ) {
+        if (errorMessage.value === t('otp_verify.banned')) {
           isBanned.value = true
 
           setTimeout(() => {

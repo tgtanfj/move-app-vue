@@ -1,6 +1,6 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import defaultAvatar from '@assets/icons/default-avatar.png'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import { useRouter } from 'vue-router'
 import { getFollowerText } from '../../utils/follower.util'
 import { formatFollowers } from '@utils/formatViews.util'

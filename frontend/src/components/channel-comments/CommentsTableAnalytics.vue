@@ -26,8 +26,8 @@ const updateReplyCount = (id, number) => {
       <TableHeader>
         <TableRow class="uppercase">
           <TableHead> {{ $t('channel_comments.comments') }} </TableHead>
-          <TableHead class="text-center">{{ $t('channel_comments.reps') }}</TableHead>
-          <TableHead class="text-center">{{ $t('channel_comments.videos') }}</TableHead>
+          <TableHead >{{ $t('channel_comments.reps') }}</TableHead>
+          <TableHead >{{ $t('channel_comments.videos') }}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody :disabled="true" class="w-full">

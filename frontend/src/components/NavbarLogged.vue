@@ -9,7 +9,6 @@ const props = defineProps({
     required: false
   }
 })
-
 </script>
 
 <template>
@@ -19,7 +18,7 @@ const props = defineProps({
     </div>
 
     <Notification />
-    
+
     <MenuAccount />
   </div>
 </template>

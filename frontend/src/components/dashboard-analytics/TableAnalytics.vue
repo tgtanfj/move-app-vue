@@ -37,7 +37,7 @@ const routeToInDepth = (videoId) => {
         class="cursor-pointer hover:bg-[#EDFFFC]"
         @click="routeToInDepth(video.video_id)"
       >
-        <TableCell class="w-40"> <img :src="video.thumbnail" /> </TableCell>
+        <TableCell class="w-40"> <img :src="video.thumbnail" class="w-[124px] h-[70px]"/> </TableCell>
         <TableCell
           ><p class="font-semibold w-[300px] truncate">
             {{ video.video_title }}

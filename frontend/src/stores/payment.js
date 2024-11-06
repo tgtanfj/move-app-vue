@@ -1,13 +1,12 @@
 import { useToast } from '@common/ui/toast'
 import { STRIPE_KEY, STRIPE_PAYMENT_METHOD_API, STRIPE_TOKEN_API } from '@constants/api.constant'
 import { apiAxios } from '@helpers/axios.helper'
+import { t } from '@helpers/i18n.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
 
 const { toast } = useToast()
-const route = useRoute()
 
 export const usePaymentStore = defineStore('payment', () => {
   const isLoading = ref(false)
@@ -15,7 +14,6 @@ export const usePaymentStore = defineStore('payment', () => {
   const isCreating = ref(false)
   const userPaymentList = ref(null)
   const showSucessNotify = ref(false)
-  const stripeErr = ref('')
   const reps = ref(0)
   const isBuying = ref(false)
   const selectedPackage = ref(null)
@@ -80,7 +78,7 @@ export const usePaymentStore = defineStore('payment', () => {
         startNotificationTimer()
       }
     } catch (error) {
-      console.error(error)
+      toast({ description: error.response?.data?.message || error, variant: 'destructive' })
     }
   }
   const createToken = async (card) => {
@@ -117,7 +115,7 @@ export const usePaymentStore = defineStore('payment', () => {
       return { error: error.response?.data?.error || error.message }
     }
   }
-  const createUserPaymentMethod = async (card) => {
+  const createUserPaymentMethod = async (card, route, router, setFieldError, changeShowError) => {
     try {
       isCreating.value = true
       const { token, error: tokenError } = await createToken(card)
@@ -141,6 +139,12 @@ export const usePaymentStore = defineStore('payment', () => {
         if (res.status === 200) {
           const { id: paymentMethodId } = res.data
           await sendPaymentIdToServer(paymentMethodId)
+          if (route && router) {
+            const { query } = route
+            if (query && query.source && selectedPackage.value) {
+              router.push({ path: query.source, query: { redirectFrom: 'add-payment' } })
+            }
+          }
         } else {
           throw new Error(res.data.error || 'Error creating payment method')
         }
@@ -148,7 +152,10 @@ export const usePaymentStore = defineStore('payment', () => {
         throw new Error('Token was not created')
       }
     } catch (err) {
-      toast({ description: err, variant: 'destructive' })
+      if ((err.message = 'Your card number is incorrect.') && setFieldError) {
+        setFieldError('cardNumber', 'Your card number is incorrect')
+        changeShowError(true)
+      }
     } finally {
       isCreating.value = false
     }
@@ -161,9 +168,10 @@ export const usePaymentStore = defineStore('payment', () => {
       })
       if (response.status === 201) {
         userPaymentList.value = null
+        toast({ description: `${t('wallet.remove_success')}`, variant: 'successfully' })
       } else throw new Error(response.data)
     } catch (error) {
-      console.error('Error deleting payment method', error)
+      toast({ description: error.response?.data?.message || error, variant: 'destructive' })
     } finally {
       isDeleting.value = false
     }
@@ -274,7 +282,6 @@ export const usePaymentStore = defineStore('payment', () => {
     isBuying,
     userPaymentList,
     showSucessNotify,
-    stripeErr,
     repsPackageList,
     reps,
     selectedPackage,

@@ -11,7 +11,7 @@ import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
-import defaultAvatar from '../../assets/icons/default-avatar.png'
+import defaultAvatar from '../../assets/images/default-avatar.png'
 import { commentServices } from '@services/comment.services'
 import { Input } from '@common/ui/input'
 import { Button } from '@common/ui/button'
@@ -29,6 +29,7 @@ import {
   repliesCountPerComment,
   myReplyPerComment
 } from '../../helpers/useReplies'
+import DeleteAndCopyCommentButton from './DeleteAndCopyCommentButton.vue'
 
 const props = defineProps({
   comments: {
@@ -37,7 +38,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-comments', 'updateReplyCount'])
+const emit = defineEmits([
+  'update-comments',
+  'updateReplyCount',
+  'handleDeleteComment',
+  'decreReplycount',
+  'uploadNewReplycount'
+])
 
 const openLoginStore = useOpenLoginStore()
 const authStore = useAuthStore()
@@ -49,6 +56,7 @@ const replyData = ref(null)
 const replyInputId = ref(null)
 const isFocused = ref(false)
 const isCancelComment = ref(false)
+const deleteCount = ref(0)
 
 const userAvatar = ref(localStorage.getItem('userAvatar'))
 
@@ -174,6 +182,17 @@ const hideRepliesByComment = (commentId, item) => {
   if (item.numberOfReply < repliesCountPerComment.value[commentId]) {
     const numberCount = repliesCountPerComment.value[commentId] - item.numberOfReply
     increaseReplies(commentId, numberCount)
+    if (deleteCount.value > 0) {
+      emit(
+        'uploadNewReplycount',
+        commentId,
+        repliesCountPerComment.value[commentId] - deleteCount.value
+      )
+      deleteCount.value = 0
+    }
+  }
+  if (repliesPerComment.value[commentId] <= 10) {
+    emit('uploadNewReplycount', commentId, repliesPerComment.value[commentId].length)
   }
   isShowedReplies.value[commentId] = false
   hasMoreRepliesPerComment.value[commentId] = false
@@ -233,7 +252,15 @@ const createReply = async (commentId) => {
       myReplyPerComment.value[commentId] = response.data
       increaseReplies(commentId, 1)
     } else {
-      myReplyPerComment.value[commentId] = response.data
+      if (
+        repliesPerComment.value[commentId] &&
+        !isEmptyObject(repliesPerComment.value[commentId])
+      ) {
+        increaseReplies(commentId, 1)
+        repliesPerComment.value[commentId].push(response.data)
+      } else {
+        myReplyPerComment.value[commentId] = response.data
+      }
     }
     replyData.value = ''
     isFocused.value = false
@@ -248,6 +275,43 @@ const createReply = async (commentId) => {
 const isReplyValid = computed(() => {
   return replyData.value.trim() !== ''
 })
+
+const handleDeleteComment = async (id, name, commentId) => {
+  if (name === 'comment') {
+    const response = await commentServices.deleteCommentById(id)
+    if (response.statusCode === 200) {
+      emit('handleDeleteComment', id)
+    }
+  }
+  if (name === 'reply') {
+    const response = await commentServices.deleteCommentById(id)
+    if (response.statusCode === 200) {
+      repliesPerComment.value[commentId] = repliesPerComment.value[commentId].filter(
+        (item) => item?.id !== id
+      )
+      emit('decreReplycount', commentId)
+      deleteCount.value += 1
+    }
+  }
+  if (name === 'myreply') {
+    const response = await commentServices.deleteCommentById(id)
+    if (response.statusCode === 200) {
+      myReplyPerComment.value = {}
+    }
+  }
+}
+
+const handleShowReply = (commentId) => {
+  if (myReplyPerComment.value[commentId]) {
+    increaseReplies(commentId, 1)
+    myReplyPerComment.value[commentId] = {}
+  }
+  showRepliesByComment(commentId)
+}
+
+const isEmptyObject = (obj) => {
+  return obj && Object.keys(obj).length === 0 && obj.constructor === Object
+}
 </script>
 
 <template>
@@ -258,8 +322,8 @@ const isReplyValid = computed(() => {
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
-        <div class="px-3 w-full pb-2" :id="item.id">
-          <div class="flex flex-col gap-1 w-full">
+        <div class="px-3 w-full pb-2 flex items-start" :id="item.id">
+          <div class="flex flex-col gap-1 w-full pr-10">
             <div class="flex items-center justify-start gap-2">
               <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
               <div
@@ -373,6 +437,8 @@ const isReplyValid = computed(() => {
               <Input
                 v-model="replyData"
                 @focus="isFocused = true"
+                @keydown.enter="createReply(item.id)"
+                @keydown.esc="cancelComment"
                 placeholder="Reply comment"
                 class="w-full outline-none rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
               />
@@ -395,7 +461,7 @@ const isReplyValid = computed(() => {
 
             <div v-if="item.numberOfReply > 0" class="mt-1 cursor-pointer transition-all">
               <div
-                @click="showRepliesByComment(item.id)"
+                @click="handleShowReply(item?.id)"
                 class="flex items-center gap-1 justify-start"
                 v-if="!isShowedReplies[item.id]"
               >
@@ -429,7 +495,7 @@ const isReplyValid = computed(() => {
             </div>
 
             <div v-if="myReplyPerComment[item.id]" class="w-full space-y-4 mt-2">
-              <div class="flex gap-4 items-start">
+              <div class="flex gap-4 items-start relative">
                 <img
                   :src="myReplyPerComment[item.id].user.avatar"
                   class="object-cover w-[40px] h-[40px] rounded-full"
@@ -545,6 +611,14 @@ const isReplyValid = computed(() => {
                     </div>
                   </div>
                 </div>
+                <div class="absolute top-0 -right-[58px]">
+                  <DeleteAndCopyCommentButton
+                    :comment="myReplyPerComment[item.id]"
+                    @handleDeleteComment="
+                      handleDeleteComment(myReplyPerComment[item.id]?.id, 'myreply')
+                    "
+                  />
+                </div>
               </div>
             </div>
 
@@ -553,10 +627,10 @@ const isReplyValid = computed(() => {
                 v-for="reply in repliesPerComment[item.id]"
                 :key="reply.id"
                 :id="reply.id"
-                class="flex gap-4 items-start py-2"
+                class="flex gap-4 items-start py-2 relative"
               >
                 <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1 justify-between w-full">
                   <div class="flex items-center justify-start gap-2">
                     <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
                     <div
@@ -656,6 +730,12 @@ const isReplyValid = computed(() => {
                     </div>
                   </div>
                 </div>
+                <div class="absolute top-2 -right-[58px]">
+                  <DeleteAndCopyCommentButton
+                    :comment="reply"
+                    @handleDeleteComment="handleDeleteComment(reply?.id, 'reply', item?.id)"
+                  />
+                </div>
               </div>
               <div
                 v-if="hasMoreRepliesPerComment[item.id]"
@@ -673,6 +753,10 @@ const isReplyValid = computed(() => {
               </div>
             </div>
           </div>
+          <DeleteAndCopyCommentButton
+            :comment="item"
+            @handleDeleteComment="handleDeleteComment(item?.id, 'comment')"
+          />
         </div>
       </div>
     </div>
