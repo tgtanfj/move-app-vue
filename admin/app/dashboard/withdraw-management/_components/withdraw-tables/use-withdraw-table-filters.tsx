@@ -3,6 +3,11 @@ import { searchParams } from '@/lib/searchparams';
 import { useQueryState } from 'nuqs';
 import { useCallback, useMemo } from 'react';
 
+export const STATUS_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'failed', label: 'Failed' }
+];
 
 export function useWithdrawTableFilters() {
   const [searchQuery, setSearchQuery] = useQueryState(
@@ -17,7 +22,10 @@ export function useWithdrawTableFilters() {
     searchParams.page.withDefault(1)
   );
 
-  
+  const [statusFilter, setStatusFilter] = useQueryState(
+    'status',
+    searchParams.status.withOptions({ shallow: false }).withDefault('')
+  );
 
   const resetFilters = useCallback(() => {
     setSearchQuery(null);
@@ -25,10 +33,12 @@ export function useWithdrawTableFilters() {
   }, [setSearchQuery, setPage]);
 
   const isAnyFilterActive = useMemo(() => {
-    return !!searchQuery ;
+    return !!searchQuery;
   }, [searchQuery]);
 
   return {
+    statusFilter,
+    setStatusFilter,
     searchQuery,
     setSearchQuery,
     page,

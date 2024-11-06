@@ -3,8 +3,8 @@ import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { useGetAllUsersQuery } from '@/store/queries/usersManagement';
+import { useState } from 'react';
 import UsersTable from './user-tables';
-import { useEffect, useState } from 'react';
 import { useUserTableFilters } from './user-tables/use-user-table-filters';
 
 export default function UsersListingPage() {
