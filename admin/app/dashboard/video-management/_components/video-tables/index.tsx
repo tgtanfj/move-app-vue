@@ -4,65 +4,54 @@ import { DataTable } from '@/components/ui/table/data-table';
 import { DataTableFilterBox } from '@/components/ui/table/data-table-filter-box';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
+import { useGetAllVideosQuery } from '@/store/queries/videoManagement';
+import { useState } from 'react';
 import { columns } from '../video-tables/columns';
-import {
-  WORKOUT_LEVEL_OPTIONS,
-  useVideoTableFilters
-} from './use-video-table-filters';
-import { Video } from '@/constants/data';
-import { useMemo } from 'react';
+import { WORKOUT_LEVEL_OPTIONS } from './use-video-table-filters';
 
-export default function VideoTable({
-  data = [],
-  totalData,
-  currentPage,
-  pageSize,
-  totalPages,
-  isLoading,
-  onPageChange,
-  onPageSizeChange
-}: {
-  data: Video[];
-  totalData: number;
-  currentPage: number;
-  pageSize: number;
-  totalPages: number;
-  isLoading: boolean;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
-}) {
+export default function VideoTable() {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
+
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<string>('ASC');
+
+  const [workoutLevelFilter, setWorkoutLevelFilter] = useState<string | null>(
+    null
+  );
+
   const {
-    workoutLevelFilter,
-    setWorkoutLevelFilter,
-    isAnyFilterActive,
-    resetFilters,
-    searchQuery,
-    setPage,
-    setSearchQuery
-  } = useVideoTableFilters();
-
-  // Apply filtering logic
-  const filteredData = useMemo(() => {
-    return data.filter((video) => {
-      const matchesSearch = searchQuery
-        ? video.title.toLowerCase().includes(searchQuery.toLowerCase())
-        : true;
-      const matchesWorkoutLevel = workoutLevelFilter
-        ? video.workoutLevel === workoutLevelFilter
-        : true;
-      return matchesSearch && matchesWorkoutLevel;
-    });
-  }, [data, searchQuery, workoutLevelFilter]);
-
-  // Handle pagination change
-  const handlePaginationChange = (newPage: number, newSize: number) => {
-    onPageChange(newPage);
-    onPageSizeChange(newSize);
-  };
+    result = [],
+    meta = { total: 0, page: page, take: pageSize, totalPages: 1 },
+    isFetching
+  } = useGetAllVideosQuery(
+    {
+      page: page,
+      take: pageSize,
+      query: search,
+      workoutLevel: workoutLevelFilter,
+      sortBy: sortBy,
+      sortType: sortType
+    },
+    {
+      selectFromResult: ({ data, isFetching }) => ({
+        result: data?.data || [],
+        meta: data?.meta || {
+          total: 0,
+          page: page,
+          take: pageSize,
+          totalPages: 1
+        },
+        isFetching
+      }),
+      refetchOnMountOrArgChange: true
+    }
+  );
 
   return (
     <div className="space-y-4">
-      {isLoading ? (
+      {false ? (
         <div className="flex items-center justify-center">
           <span>Loading...</span>
         </div>
@@ -71,8 +60,8 @@ export default function VideoTable({
           <div className="flex flex-wrap items-center gap-4">
             <DataTableSearch
               searchKey="title"
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
+              searchQuery={search}
+              setSearchQuery={setSearch}
               setPage={setPage}
             />
             <DataTableFilterBox
@@ -80,22 +69,37 @@ export default function VideoTable({
               title="Workout Level"
               options={WORKOUT_LEVEL_OPTIONS}
               setFilterValue={setWorkoutLevelFilter}
-              filterValue={workoutLevelFilter}
+              filterValue={workoutLevelFilter || ''}
             />
             <DataTableResetFilter
-              isFilterActive={isAnyFilterActive}
-              onReset={resetFilters}
+              isFilterActive={search || workoutLevelFilter ? true : false}
+              onReset={() => {
+                setWorkoutLevelFilter(null);
+                setSearch('');
+                setPage(1);
+                setPageSize(10);
+              }}
             />
           </div>
           <DataTable
             columns={columns}
-            data={filteredData}
-            totalItems={totalData}
+            data={result}
+            meta={meta}
             pageSizeOptions={[10, 20, 50]}
-            onPageChange={(page) => handlePaginationChange(page, pageSize)}
-            onPageSizeChange={(size) =>
-              handlePaginationChange(currentPage, size)
-            }
+            onPageChange={(page) => setPage(page)}
+            onPageSizeChange={(size) => setPageSize(size)}
+            onSortChange={(field, direction) => {
+              console.log(field, direction);
+              if (field && direction) {
+                setSortBy(field);
+                setSortType(direction === 'asc' ? 'ASC' : 'DESC');
+                setPage(1);
+              } else {
+                setSortBy('title');
+                setSortType('ASC');
+                setPage(1);
+              }
+            }}
           />
         </>
       )}

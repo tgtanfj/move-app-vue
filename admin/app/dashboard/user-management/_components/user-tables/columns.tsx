@@ -19,7 +19,8 @@ export const columns: ColumnDef<Employee>[] = [
   },
   {
     accessorKey: 'fullName',
-    header: 'Full Name'
+    header: 'Full Name',
+    enableSorting: true
   },
   {
     accessorKey: 'gender',

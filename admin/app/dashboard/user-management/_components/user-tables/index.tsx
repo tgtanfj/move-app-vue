@@ -7,7 +7,7 @@ import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-fil
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
 import { useGetAllUsersQuery } from '@/store/queries/usersManagement';
 import Papa from 'papaparse';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { columns } from './columns';
 import { GENDER_OPTIONS } from './use-user-table-filters';
