@@ -80,7 +80,7 @@ export const useSearchStore = defineStore('search', () => {
         content: query
       })
       if (res.status === 201) {
-        return
+        await getUserHistory()
       } else throw new Error(res.error)
     } catch (error) {
       console.log(error)

@@ -4,7 +4,6 @@ import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/category_model.dart';
 import 'package:move_app/data/models/channel_model.dart';
-import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/data/repositories/categories_repository.dart';
 import 'package:move_app/data/repositories/channels_repository.dart';
@@ -23,6 +22,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
 
   SearchResultBloc() : super(SearchResultState.initial()) {
     on<SearchResultInitialEvent>(_onSearchResultInitialEvent);
+    on<SearchResultOnSubmittedEvent>(_onSearchResultOnSubmittedEvent);
     on<SearchResultLoadMoreChannelsEvent>(_onSearchResultLoadMoreChannelEvent);
     on<SearchResultLoadPreviousChannelEvent>(
         _onSearchResultLoadPreviousChannelEvent);
@@ -38,9 +38,14 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
     on<SearchLoadSuggestionEvent>(_onSearchLoadSuggestionEvent);
   }
 
-  Future<void> _onSearchResultInitialEvent(
-      SearchResultInitialEvent event, Emitter<SearchResultState> emit) async {
+  void _onSearchResultInitialEvent(
+      SearchResultInitialEvent event, Emitter<SearchResultState> emit) {}
+
+  Future<void> _onSearchResultOnSubmittedEvent(
+      SearchResultOnSubmittedEvent event,
+      Emitter<SearchResultState> emit) async {
     emit(state.copyWith(
+      status: SearchResultStatus.processing,
       searchQuery: event.searchQuery,
     ));
     if (event.searchQuery != null && event.searchQuery!.trim().isNotEmpty) {
@@ -57,6 +62,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       }, (r) {
         emit(state.copyWith(
           categoryList: r,
+          page: 1,
           status: SearchResultStatus.success,
         ));
       });
@@ -66,8 +72,11 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           errorMessage: l,
         ));
       }, (r) {
-        emit(
-            state.copyWith(channelList: r, status: SearchResultStatus.success));
+        emit(state.copyWith(
+          channelList: r,
+          currentCategoriesPage: 1,
+          status: SearchResultStatus.success,
+        ));
       });
       (result[2] as Either<String, List<VideoModel>>).fold((l) {
         emit(state.copyWith(
@@ -77,12 +86,47 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
       }, (r) {
         emit(state.copyWith(videoList: r, status: SearchResultStatus.success));
       });
+      if (state.categoryList.isEmpty &&
+          state.categoryList.isEmpty &&
+          state.videoList.isEmpty) {
+        emit(state.copyWith(
+            searchResultFound: Constants.notFoundResult,
+            status: SearchResultStatus.failure));
+      }
+
+      final totalChannelPages =
+          await channelsRepository.getTotalPages(event.searchQuery ?? "", 1);
+      totalChannelPages.fold((l) {
+        emit(state.copyWith(
+          status: SearchResultStatus.failure,
+          errorMessage: l,
+        ));
+      }, (r) {
+        emit(state.copyWith(
+          totalChannelPages: r,
+          status: SearchResultStatus.success,
+        ));
+      });
     } else {
       emit(state.copyWith(
         status: SearchResultStatus.failure,
         errorMessage: Constants.failedToLoadVideos,
       ));
     }
+
+    final totalCategoriesPages = await categoriesRepository
+        .getTotalCategoriesPages(event.searchQuery ?? "", 1);
+    totalCategoriesPages.fold((l) {
+      emit(state.copyWith(
+        status: SearchResultStatus.failure,
+        errorMessage: l,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        totalCategoriesPages: r,
+        status: SearchResultStatus.success,
+      ));
+    });
   }
 
   Future<void> _onSearchResultLoadMoreChannelEvent(
@@ -114,10 +158,11 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           ));
         }, (r) {
           emit(state.copyWith(
-              channelList: r,
-              page: currentPage,
-              totalChannelPages: state.totalChannelPages,
-              status: SearchResultStatus.success));
+            channelList: r,
+            page: currentPage,
+            totalChannelPages: state.totalChannelPages,
+            status: SearchResultStatus.success,
+          ));
         });
       }
     }
@@ -141,6 +186,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           emit(state.copyWith(
             channelList: r,
             page: currentPage,
+            status: SearchResultStatus.success,
           ));
         });
       } else {
@@ -188,10 +234,11 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           ));
         }, (r) {
           emit(state.copyWith(
-              categoryList: r,
-              currentCategoriesPage: currentPage,
-              totalCategoriesPages: state.totalCategoriesPages,
-              status: SearchResultStatus.success));
+            categoryList: r,
+            currentCategoriesPage: currentPage,
+            totalCategoriesPages: state.totalCategoriesPages,
+            status: SearchResultStatus.success,
+          ));
         });
       }
     }
@@ -250,9 +297,6 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
         emit(state.copyWith(
           status: SearchResultStatus.success,
           searchHistory: r,
-          categoryList: [],
-          channelList: [],
-          videoList: [],
         ));
       });
     }

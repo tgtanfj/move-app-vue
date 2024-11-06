@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/data/repositories/user_repository.dart';
 
@@ -135,8 +136,13 @@ class AuthRepository {
           },
         ),
       );
-      await SharedPrefer.sharedPrefer
-          .setUserToken(response.data['data']['accessToken']);
+      String accessToken = response.data['data']['accessToken'];
+
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+      int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+      await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
+      await SharedPrefer.sharedPrefer.setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -199,8 +205,13 @@ class AuthRepository {
           },
         ),
       );
-      await SharedPrefer.sharedPrefer
-          .setUserToken(response.data['data']['accessToken']);
+      String accessToken = response.data['data']['accessToken'];
+
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+      int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+      await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
+      await SharedPrefer.sharedPrefer.setUserToken(accessToken);
       await SharedPrefer.sharedPrefer
           .setUserRefreshToken(response.data['data']['refreshToken']);
       return response.data['data']['accessToken'];
@@ -223,10 +234,14 @@ class AuthRepository {
           },
         ),
       );
-      if (response.data['data']['accessToken'] != null) {
+      if (response.statusCode == 200) {
+        String accessToken = response.data['data']['accessToken'];
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(accessToken);
+        int? userId = decodedToken['userId'] ?? decodedToken['sub'];
+        await SharedPrefer.sharedPrefer.setUserId(userId ?? 0);
+
         await UserRepository().getUserProfile();
-        await SharedPrefer.sharedPrefer
-            .setUserToken(response.data['data']['accessToken']);
+        await SharedPrefer.sharedPrefer.setUserToken(accessToken);
         await SharedPrefer.sharedPrefer
             .setUserRefreshToken(response.data['data']['refreshToken']);
         return Right(response.data['data']['accessToken']);
@@ -234,23 +249,19 @@ class AuthRepository {
         return const Left("Login Error");
       }
     } catch (e) {
-      if (e is DioException) {
-        if (e.response != null) {
+      if (e is DioException && e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage = errorData["message"] ?? 'Unknown error occurred';
           return Left(errorMessage);
-        } else {
-          return Left(e.message.toString());
         }
-      }
-      rethrow;
+      return Left(e.toString());
     }
   }
 
   Future<void> logOut() async {
     String refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
     try {
-      await apiServiceAdditional.request(
+      final response = await apiServiceAdditional.request(
         Method.get,
         ApiUrls.endPointLogout,
         options: Options(
@@ -261,13 +272,18 @@ class AuthRepository {
           },
         ),
       );
-      await SharedPrefer.sharedPrefer.setUserToken('');
-      await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
-      await SharedPrefer.sharedPrefer.setUsername('');
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      await googleSignIn.signOut();
-      await FacebookAuth.instance.logOut();
-      await FirebaseAuth.instance.signOut();
+      if (response.statusCode == 200) {
+        await SharedPrefer.sharedPrefer.setUnreadNotificationCount(0);
+        await SharedPrefer.sharedPrefer.setUserId(0);
+        await SharedPrefer.sharedPrefer.setUserToken('');
+        await SharedPrefer.sharedPrefer.setUserRefreshToken('');
+        await SharedPrefer.sharedPrefer.setAvatarUserUrl('');
+        await SharedPrefer.sharedPrefer.setUsername('');
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        await googleSignIn.signOut();
+        await FacebookAuth.instance.logOut();
+        await FirebaseAuth.instance.signOut();
+      }
     } catch (e) {
       if (e is DioException) {
         if (e.response != null) {

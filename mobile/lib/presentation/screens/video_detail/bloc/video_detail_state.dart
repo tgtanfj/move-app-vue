@@ -28,36 +28,39 @@ class VideoDetailState extends Equatable {
   final String? inputReply;
   final Map<int, bool>? isHiddenInputReply;
   final Map<int?, int?>? originalNumOfReply;
-  final bool isShowTemporaryListReply;
+  final Map<int, bool>? isShowTemporaryListReply;
   final int? videoId;
   final String? option;
   final String? twitterLink;
   final String? facebookLink;
+  final int? targetCommentId;
+  final int? targetReplyId;
   final DateTime? timeStarted;
 
-  const VideoDetailState({
-    this.video,
-    this.status,
-    this.isShowVideo = false,
-    this.inputComment,
-    this.listComments,
-    this.replies,
-    this.lastCommentId,
-    this.commentModel,
-    this.rateSelected,
-    this.errorMessage,
-    this.lastIdReply,
-    this.isHiddenListReply,
-    this.inputReply,
-    this.isHiddenInputReply,
-    this.originalNumOfReply,
-    this.isShowTemporaryListReply = false,
-    this.videoId,
-    this.option,
-    this.twitterLink,
-    this.facebookLink,
-    this.timeStarted,
-  });
+  const VideoDetailState(
+      {this.video,
+      this.status,
+      this.isShowVideo = false,
+      this.inputComment,
+      this.listComments,
+      this.replies,
+      this.lastCommentId,
+      this.commentModel,
+      this.rateSelected,
+      this.errorMessage,
+      this.lastIdReply,
+      this.isHiddenListReply,
+      this.inputReply,
+      this.isHiddenInputReply,
+      this.originalNumOfReply,
+      this.isShowTemporaryListReply ,
+      this.videoId,
+      this.option,
+      this.twitterLink,
+      this.facebookLink,
+      this.timeStarted,
+      this.targetCommentId,
+      this.targetReplyId});
 
   static VideoDetailState initial() => const VideoDetailState(
         status: VideoDetailStatus.initial,
@@ -79,11 +82,13 @@ class VideoDetailState extends Equatable {
     String? inputReply,
     Map<int, bool>? isHiddenInputReply,
     Map<int?, int?>? originalNumOfReply,
-    bool? isShowTemporaryListReply,
+    Map<int, bool>? isShowTemporaryListReply,
     int? videoId,
     String? option,
     String? twitterLink,
     String? facebookLink,
+    int? targetCommentId,
+    int? targetReplyId,
     DateTime? timeStarted,
   }) {
     return VideoDetailState(
@@ -108,6 +113,8 @@ class VideoDetailState extends Equatable {
       option: option ?? this.option,
       twitterLink: twitterLink ?? this.twitterLink,
       facebookLink: facebookLink ?? this.facebookLink,
+      targetCommentId: targetCommentId ?? this.targetCommentId,
+      targetReplyId: targetReplyId ?? this.targetReplyId,
       timeStarted: timeStarted ?? this.timeStarted,
     );
   }
@@ -134,6 +141,8 @@ class VideoDetailState extends Equatable {
         option,
         twitterLink,
         facebookLink,
+        targetCommentId,
+        targetReplyId,
         timeStarted,
       ];
 }

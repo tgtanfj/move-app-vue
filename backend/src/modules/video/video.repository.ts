@@ -477,6 +477,7 @@ export class VideoRepository {
       relations: ['channel', 'channel.user'],
       select: {
         id: true,
+        title: true,
         channel: {
           id: true,
           user: {
@@ -594,7 +595,6 @@ export class VideoRepository {
       totalCount: result[0]?.total_count || 0,
       result,
     };
-
   }
 
   async getVideoAnalyticByQuery(
@@ -661,7 +661,6 @@ export class VideoRepository {
       totalCount: result[0]?.total_count || 0,
       result,
     };
-
   }
 
   async getTotalSecondsOfChannel(channelId: number) {
@@ -673,6 +672,6 @@ export class VideoRepository {
       .andWhere('vw."deletedAt" IS NULL')
       .getRawOne();
 
-    return result.total_view_time 
+    return result.total_view_time;
   }
 }

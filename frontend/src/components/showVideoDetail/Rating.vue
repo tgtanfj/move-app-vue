@@ -22,13 +22,6 @@ const ratingModal = ref(null)
 
 const emit = defineEmits('update-rating')
 
-onMounted(() => {
-  window.addEventListener('click', handleCloseRatingModal)
-})
-onBeforeUnmount(() => {
-  window.removeEventListener('click', handleCloseRatingModal)
-})
-
 watch(
   () => authStore.accessToken,
   async (newValue) => {
@@ -50,14 +43,6 @@ watch(
   },
   { immediate: true }
 )
-
-const handleCloseRatingModal = (event) => {
-  const modal = ratingModal.value
-  const isClickOutsideModal = modal && !modal.contains(event.target)
-  if (isClickOutsideModal) {
-    cancel()
-  }
-}
 
 const setRating = (index) => {
   rating.value = index
@@ -88,6 +73,7 @@ const onSubmit = async () => {
 const cancel = () => {
   showRatingModal.value = false
   if (!oldRating.value) rating.value = 0
+  else rating.value = oldRating.value
 }
 const openPopover = () => {
   if (authStore.accessToken) {
@@ -98,18 +84,20 @@ const openPopover = () => {
 }
 </script>
 <template>
-  <div
-    class="relative flex items-center gap-2 text-sm font-semibold text-primary cursor-pointer"
+  <Popover
+    v-model:open="showRatingModal"
+    @update:open="
+      (val) => {
+        if (!val) cancel()
+      }
+    "
     ref="ratingModal"
   >
-    <div class="flex gap-2 items-center" @click="openPopover">
+    <PopoverTrigger class="flex gap-2 items-center text-primary" @click="openPopover">
       <Star width="24px" color="#12BDA3" :fill="oldRating > 0 ? '#12BDA3' : '#ffffff'" />
       <span class="uppercase font-semibold text-sm"> {{ $t('video.rate') }}</span>
-    </div>
-    <div
-      class="absolute top-0 -translate-y-64 right-0 min-w-[300px] flex flex-col bg-white p-7 text-black rounded-lg shadow-lg border-1 border-gray-200 z-10"
-      :class="{ hidden: !showRatingModal }"
-    >
+    </PopoverTrigger>
+    <PopoverContent side="top" align="end" :class="{ hidden: !showRatingModal }">
       <div class="flex justify-between items-center">
         <h4 class="font-bold text-lg">{{ $t('video.rate_video') }}</h4>
         <X class="cursor-pointer" @click="cancel" />
@@ -138,6 +126,6 @@ const openPopover = () => {
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </PopoverContent>
+  </Popover>
 </template>

@@ -5,6 +5,7 @@ import PaymentCard from './PaymentCard.vue'
 import { t } from '@helpers/i18n.helper'
 import PaymentDetailModal from './PaymentDetailModal.vue'
 import Loading from '@components/Loading.vue'
+
 const paymentStore = usePaymentStore()
 
 onMounted(() => {
@@ -19,8 +20,8 @@ onMounted(() => {
     </div>
     <div class="w-full flex flex-col" v-else>
       <span class="text-[16px] font-bold">{{ t('wallet.your_payment_method') }}</span>
-      <div v-if="paymentStore.userPaymentList.length > 0" class="w-full mt-4 flex gap-8">
-        <PaymentCard v-for="item in paymentStore.userPaymentList" :key="item.id" :item="item" />
+      <div v-if="paymentStore.userPaymentList" class="w-full mt-4 flex gap-8">
+        <PaymentCard />
       </div>
       <div v-else class="w-full pt-[15%] flex flex-col items-center justify-center gap-2">
         <p class="text-[16px] font-bold">{{ t('wallet.no_payment_method_setup') }}</p>

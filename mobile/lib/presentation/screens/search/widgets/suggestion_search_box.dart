@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -54,7 +53,10 @@ class SuggestionSearchBox extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VideosCategoryPage(categoryId: suggestionModel?.topCategory?.id ?? 0 ,)));
+                          builder: (context) => VideosCategoryPage(
+                                categoryId:
+                                    suggestionModel?.topCategory?.id ?? 0,
+                              )));
                 },
               )
             : const SizedBox(),
@@ -114,7 +116,9 @@ class SuggestionSearchBox extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Avatar(
-                        imageUrl: suggestionModel?.topVideos?[index].url ?? "",
+                        imageUrl: suggestionModel?.topVideos?[index]
+                                .thumbnailsModel?.firstOrNull?.image ??
+                            "",
                         widthAvatar: 40,
                         heightAvatar: 40,
                         radiusAvatar: 50),
@@ -141,26 +145,26 @@ class SuggestionSearchBox extends StatelessWidget {
                   );
                 })
             : const SizedBox(),
-          ListTile(
-            leading: const Icon(
-              Icons.search,
-              color: AppColors.tiffanyBlue,
+        ListTile(
+          leading: const Icon(
+            Icons.search,
+            color: AppColors.tiffanyBlue,
+          ),
+          title: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: Constants.allResultFor,
+                  style: DefaultTextStyle.of(context).style,
+                ),
+                TextSpan(
+                  text: " ${resultSearchText ?? ''}",
+                  style: DefaultTextStyle.of(context).style,
+                ),
+              ],
             ),
-            title: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: Constants.allResultFor,
-                    style: DefaultTextStyle.of(context).style,
-                  ),
-                  TextSpan(
-                    text: " ${resultSearchText ?? ''}",
-                    style: DefaultTextStyle.of(context).style,
-                  ),
-                ],
-              ),
-            ),
-          )
+          ),
+        )
       ],
     );
   }

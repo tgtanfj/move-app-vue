@@ -134,7 +134,7 @@ export class AuthService {
     }
 
     if (isDuplicateOldPass || isDuplicatePass) {
-      throw new BadRequestException(this.i18n.t('exceptions.account.EMAIL_EXISTED'));
+      throw new BadRequestException(this.i18n.t('exceptions.account.PASSWORD_RESTRICTION'));
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -205,6 +205,9 @@ export class AuthService {
 
     // check password
     const account = await this.userService.findOneAccount(user.id);
+
+    if (account.type != TypeAccount.NORMAL)
+      throw new BadRequestException(this.i18n.t('exceptions.social.TRY_ANOTHER_LOGIN_METHOD'));
 
     if (!account) {
       return null;

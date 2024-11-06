@@ -30,10 +30,10 @@ export class Comment extends BaseEntity {
   @ManyToOne(() => Video, (video) => video.comments, { onDelete: 'CASCADE' })
   video: Video;
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children: Comment[];
 
-  @TreeParent()
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: Comment;
 
   @OneToMany(() => CommentReaction, (commentReaction) => commentReaction.comment)

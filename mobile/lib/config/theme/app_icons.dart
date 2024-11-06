@@ -60,6 +60,13 @@ enum AppIcons {
   masterCard,
   creditCard,
   arrowLeft,
+  visaCard,
+  blueRep,
+  grayRep,
+  pinkRep,
+  tiffanyRep,
+  copy,
+  bin
 }
 
 extension AppIconsExtension on AppIcons {

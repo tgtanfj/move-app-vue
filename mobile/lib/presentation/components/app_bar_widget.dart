@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -5,12 +7,14 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/search/page/search_result_page.dart';
 
+import '../../data/data_sources/local/shared_preferences.dart';
+import '../../data/data_sources/remote/notification_service.dart';
+
 class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? prefixButton;
   final VoidCallback? suffixButton;
   final String? prefixIconPath;
   final String? suffixIconPath;
-  final bool isShowNotificationDot;
   final bool isEnableSuffixIcon;
   final bool isEnablePrefixIcon;
   final String? title;
@@ -24,7 +28,6 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
     this.suffixButton,
     this.prefixIconPath,
     this.suffixIconPath,
-    this.isShowNotificationDot = false,
     this.isEnableSuffixIcon = true,
     this.isEnablePrefixIcon = true,
     this.title,
@@ -41,6 +44,34 @@ class AppBarWidget extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AppBarWidgetState extends State<AppBarWidget> {
+  String token = SharedPrefer.sharedPrefer.getUserToken();
+  int userId = SharedPrefer.sharedPrefer.getUserId();
+  late NotificationService _notificationService;
+  late StreamSubscription<int> _unreadCountSubscription;
+  int unreadCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationService = NotificationService();
+
+    if (token.isNotEmpty) {
+      _unreadCountSubscription = _notificationService.listenForUnreadCount(userId).listen((count) {
+        if (mounted) {
+          setState(() {
+            unreadCount = count;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _unreadCountSubscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -70,7 +101,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                         right: 0,
                         child: Visibility(
                             visible: widget.prefixIconPath == null &&
-                                widget.isShowNotificationDot,
+                                unreadCount > 0,
                             child: SvgPicture.asset(
                               AppIcons.redDot.svgAssetPath,
                               height: 16,
@@ -124,7 +155,7 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                         right: 0,
                         child: Visibility(
                             visible: widget.prefixIconPath != null &&
-                                widget.isShowNotificationDot,
+                                unreadCount > 0,
                             child: SvgPicture.asset(
                               AppIcons.redDot.svgAssetPath,
                               height: 16,

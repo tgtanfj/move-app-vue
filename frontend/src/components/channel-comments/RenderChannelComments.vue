@@ -6,7 +6,6 @@ import LikeOnIcon from '@assets/icons/LikeOnIcon.vue'
 import LikeOffDisabledIcon from '@assets/icons/LikeOffDisabledIcon.vue'
 import DislikeOffDisabledIcon from '@assets/icons/DislikeOffDisabledIcon.vue'
 import RepsSenderIcon from '@assets/icons/RepsSenderIcon.vue'
-import YellowRepsIcon from '@assets/icons/YellowRepsIcon.vue'
 import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
@@ -21,6 +20,7 @@ import { useAuthStore } from '../../stores/auth'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import { TableCell, TableRow } from '@common/ui/table'
 import { useRouter } from 'vue-router'
+import RenderIconsReps from './RenderIconsReps.vue'
 
 const props = defineProps({
   comments: {
@@ -257,14 +257,24 @@ const handleRidirect = (commentId, videoId) => {
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
         <div class="flex flex-col gap-1 w-full">
-          <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+          <div class="flex items-center justify-start gap-2">
+            <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+            <div
+              class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+              v-if="item?.lastContentDonate"
+            >
+              <span class="m-auto text-white text-[10px] font-bold">{{
+                item?.lastContentDonate
+              }}</span>
+            </div>
+          </div>
           <div class="flex items-center gap-3">
             <p class="text-[13px] font-bold">{{ item.user.username }}</p>
             <div v-if="item.user.channel" class="flex items-center">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
             </div>
             <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
-              <YellowRepsIcon />
+              <RenderIconsReps :numberOfReps="item?.totalDonation" />
               <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                 Gifted {{ item.totalDonation }} REPs
               </p>
@@ -275,7 +285,7 @@ const handleRidirect = (commentId, videoId) => {
           </div>
           <div>
             <div
-              class="flex flex-col items-start"
+              class="flex flex-col items-start content-container"
               v-if="item.content.length > 300 && !showFullContentIds.includes(item.id)"
             >
               {{ item.content.slice(0, 300) }}...
@@ -283,7 +293,7 @@ const handleRidirect = (commentId, videoId) => {
                 {{ $t('comment.read_more') }}
               </button>
             </div>
-            <div class="flex flex-col items-start" v-else>
+            <div class="flex flex-col items-start content-container" v-else>
               {{ item.content }}
               <button
                 v-if="item.content.length > 300"
@@ -311,7 +321,10 @@ const handleRidirect = (commentId, videoId) => {
               <div v-else class="-mt-1">
                 <LikeOffDisabledIcon />
               </div>
-              <p class="text-primary text-[13px]">
+              <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
+              </p>
+              <p v-else class="text-[#A9A9A9] text-[13px]">
                 {{ item.numberOfLike ? formatViews(item.numberOfLike) : '0' }}
               </p>
             </div>
@@ -370,7 +383,6 @@ const handleRidirect = (commentId, videoId) => {
                   v-if="isShowedReplies[item.id]"
                   class="flex items-center gap-1 justify-start"
                 >
-                  <ChevronUp class="text-primary w-[20px] transition-all" />
                   <p
                     v-if="repliesCountPerComment[item.id] > 1"
                     class="text-primary text-[13px] font-semibold"
@@ -382,6 +394,7 @@ const handleRidirect = (commentId, videoId) => {
                     {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
                     {{ $t('comment.reply') }}
                   </p>
+                  <ChevronUp class="text-primary w-[20px] transition-all" />
                 </div>
               </div>
             </div>
@@ -395,6 +408,8 @@ const handleRidirect = (commentId, videoId) => {
             <Input
               v-model="replyData"
               @focus="isFocused = true"
+              @keydown.enter="createReply(item.id)"
+              @keydown.esc="createReply(item.id)"
               placeholder="Reply comment"
               class="w-full outline-none bg-transparent rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
             />
@@ -425,10 +440,20 @@ const handleRidirect = (commentId, videoId) => {
                 class="object-cover w-[40px] h-[40px] rounded-full"
               />
               <div class="flex flex-col gap-1">
-                <RepsSenderIcon
-                  class="mb-1"
-                  v-if="myReplyPerComment[item.id].totalDonation !== 0"
-                />
+                <div class="flex items-center justify-start gap-2">
+                  <RepsSenderIcon
+                    class="mb-1"
+                    v-if="myReplyPerComment[item.id]?.totalDonation !== 0"
+                  />
+                  <div
+                    class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                    v-if="myReplyPerComment[item.id]?.lastContentDonate"
+                  >
+                    <span class="m-auto text-white text-[10px] font-bold">{{
+                      myReplyPerComment[item.id]?.lastContentDonate
+                    }}</span>
+                  </div>
+                </div>
                 <div class="flex items-center gap-3">
                   <p class="text-[13px] font-bold">
                     {{ myReplyPerComment[item.id].user.username }}
@@ -440,7 +465,7 @@ const handleRidirect = (commentId, videoId) => {
                     v-if="myReplyPerComment[item.id].totalDonation !== 0"
                     class="flex items-end gap-2"
                   >
-                    <YellowRepsIcon />
+                    <RenderIconsReps :numberOfReps="myReplyPerComment[item.id]?.totalDonation" />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                       Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
                     </p>
@@ -455,7 +480,7 @@ const handleRidirect = (commentId, videoId) => {
                 </div>
                 <div>
                   <div
-                    class="flex flex-col items-start"
+                    class="flex flex-col items-start content-container"
                     v-if="
                       myReplyPerComment[item.id].content.length > 300 &&
                       !showFullReplyIds.includes(myReplyPerComment[item.id].id)
@@ -469,7 +494,7 @@ const handleRidirect = (commentId, videoId) => {
                       {{ $t('comment.read_more') }}
                     </button>
                   </div>
-                  <div class="flex flex-col items-start" v-else>
+                  <div class="flex flex-col items-start content-container" v-else>
                     {{ myReplyPerComment[item.id].content }}
                     <button
                       v-if="myReplyPerComment[item.id].content.length > 300"
@@ -535,14 +560,24 @@ const handleRidirect = (commentId, videoId) => {
             >
               <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
               <div class="flex flex-col gap-1">
-                <RepsSenderIcon class="mb-1" v-if="reply.totalDonation !== 0" />
+                <div class="flex items-center justify-start gap-2">
+                  <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
+                  <div
+                    class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
+                    v-if="reply?.lastContentDonate"
+                  >
+                    <span class="m-auto text-white text-[10px] font-bold">{{
+                      reply?.lastContentDonate
+                    }}</span>
+                  </div>
+                </div>
                 <div class="flex items-center gap-3">
                   <p class="text-[13px] font-bold">{{ reply.user.username }}</p>
                   <div v-if="reply.user.channel" class="flex items-center">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                   </div>
                   <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
-                    <YellowRepsIcon />
+                    <RenderIconsReps :numberOfReps="reply?.totalDonation" />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                       Gifted {{ reply.totalDonation }} REPs
                     </p>
@@ -553,7 +588,7 @@ const handleRidirect = (commentId, videoId) => {
                 </div>
                 <div>
                   <div
-                    class="flex flex-col items-start"
+                    class="flex flex-col items-start content-container"
                     v-if="reply.content.length > 300 && !showFullReplyIds.includes(reply.id)"
                   >
                     {{ reply.content.slice(0, 300) }}...
@@ -561,7 +596,7 @@ const handleRidirect = (commentId, videoId) => {
                       {{ $t('comment.read_more') }}
                     </button>
                   </div>
-                  <div class="flex flex-col items-start" v-else>
+                  <div class="flex flex-col items-start content-container" v-else>
                     {{ reply.content }}
                     <button
                       v-if="reply.content.length > 300"
@@ -589,7 +624,10 @@ const handleRidirect = (commentId, videoId) => {
                     <div v-else class="-mt-1">
                       <LikeOffDisabledIcon />
                     </div>
-                    <p class="text-primary text-[13px]">
+                    <p v-if="item?.video?.isCommentable" class="text-primary text-[13px]">
+                      {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
+                    </p>
+                    <p v-else class="text-[#A9A9A9] text-[13px]">
                       {{ reply.numberOfLike ? formatViews(reply.numberOfLike) : '0' }}
                     </p>
                   </div>
@@ -635,8 +673,39 @@ const handleRidirect = (commentId, videoId) => {
       </div>
     </TableCell>
     <TableCell class="w-[15%] h-full align-top">
-      <div class="flex justify-center mb-auto text-[16px] font-bold">
-        {{ item?.totalDonation > 0 ? item?.totalDonation : '-' }}
+      <div class="flex justify-center mb-auto">
+        <template v-if="item?.totalDonation > 0">
+          <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GrayIconImg.png" />
+            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+          </div>
+          <div
+            v-else-if="item.totalDonation <= 4999"
+            class="flex items-center justify-center gap-2"
+          >
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GreenIconImg.png" />
+            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+          </div>
+          <div
+            v-else-if="item.totalDonation <= 9999"
+            class="flex items-center justify-center gap-2"
+          >
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/PinkIconImg.png" />
+            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+          </div>
+          <div
+            v-else-if="item.totalDonation <= 24999"
+            class="flex items-center justify-center gap-2"
+          >
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/BlueIconImg.png" />
+            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+          </div>
+          <div v-else class="flex items-center justify-center gap-2">
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/YellowIconImg.png" />
+            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+          </div>
+        </template>
+        <span class="font-bold" v-else>-</span>
       </div>
     </TableCell>
     <TableCell class="w-[25%] align-top">
@@ -660,3 +729,10 @@ const handleRidirect = (commentId, videoId) => {
     </TableCell>
   </TableRow>
 </template>
+
+<style>
+.content-container {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+</style>

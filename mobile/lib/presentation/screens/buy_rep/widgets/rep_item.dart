@@ -7,12 +7,12 @@ import 'package:move_app/presentation/components/custom_button.dart';
 
 class RepItem extends StatelessWidget {
   final RepModel rep;
-  final VoidCallback onRepSelect;
+  final VoidCallback onSelectRep;
 
   const RepItem({
     super.key,
     required this.rep,
-    required this.onRepSelect,
+    required this.onSelectRep,
   });
 
   @override
@@ -26,14 +26,14 @@ class RepItem extends StatelessWidget {
           Flexible(
             flex: 7,
             child: Text(
-              '${rep.rep} ${Constants.rep}',
+              '${rep.numberOfREPs} ${Constants.rep}',
               style: AppTextStyles.montserratStyle.bold16black,
             ),
           ),
           Flexible(
             flex: 3,
             child: CustomButton(
-              onTap: onRepSelect,
+              onTap: onSelectRep,
               padding: const EdgeInsets.symmetric(vertical: 10),
               title: '${Constants.us}${rep.price}',
               titleStyle: AppTextStyles.montserratStyle.bold16White,

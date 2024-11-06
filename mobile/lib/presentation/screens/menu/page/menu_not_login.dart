@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
-import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/auth/widgets/dialog_authentication.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
-import 'package:move_app/presentation/screens/menu/widget/more_infomation.dart';
-
-import '../../auth/widgets/dialog_authentication.dart';
 
 class MenuNotLogin extends StatefulWidget {
   final VoidCallback moreButton;
   final bool isMoreEnable;
+  final bool isStateAtCurrentPage;
 
   const MenuNotLogin(
-      {super.key, required this.moreButton, required this.isMoreEnable});
+      {super.key,
+      required this.moreButton,
+      required this.isMoreEnable,
+      required this.isStateAtCurrentPage});
 
   @override
   State<MenuNotLogin> createState() => _MenuNotLoginState();
@@ -33,8 +33,6 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             height: 8.0,
           ),
           ContentMenu(
-            followingButton: () {},
-            browseButton: () {},
             walletButton: () {
               showDialog(
                 context: context,
@@ -44,35 +42,19 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
               );
             },
             settingButton: () {
-              Navigator.of(context).pushNamed(AppRoutes.routeProfile);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const DialogAuthentication();
+                },
+              );
+            },
+            faqsButton: () {
+              Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
             },
           ),
-          GestureDetector(
-            onTap: widget.moreButton,
-            child: Row(
-              children: [
-                Text(
-                  Constants.more,
-                  style: AppTextStyles.montserratStyle.bold20White,
-                ),
-                const SizedBox(
-                  width: 12.0,
-                ),
-                SvgPicture.asset(
-                  widget.isMoreEnable
-                      ? AppIcons.arrowUp.svgAssetPath
-                      : AppIcons.arrowDown.svgAssetPath,
-                ),
-              ],
-            ),
-          ),
-          widget.isMoreEnable
-              ? MoreInfomation(faqButton: () {
-                  Navigator.of(context).pushNamed(AppRoutes.routeviewFAQs);
-                })
-              : const SizedBox(),
           const SizedBox(
-            height: 40.0,
+            height: 10.0,
           ),
           CustomButton(
             padding: EdgeInsets.zero,
@@ -82,11 +64,20 @@ class _MenuNotLoginState extends State<MenuNotLogin> {
             titleStyle: AppTextStyles.montserratStyle.bold20White,
             textAlign: TextAlign.start,
             onTap: () {
-              Navigator.pop(context);
+              widget.isStateAtCurrentPage
+                  ? Navigator.of(context).pop()
+                  : Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.home,
+                      (route) => false,
+                      arguments: false,
+                    );
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const DialogAuthentication();
+                  return DialogAuthentication(
+                    isStayOnPage: widget.isStateAtCurrentPage,
+                  );
                 },
               );
             },

@@ -26,7 +26,19 @@ async function bootstrap() {
   }
 
   app.use(I18nMiddleware);
-  app.use(helmet())
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'default-src': ["'self'"],
+          'script-src': ["'self'", "'unsafe-inline'"],
+          'style-src': ["'self'", "'unsafe-inline'"],
+          'img-src': ["'self'", 'data:', 'https:'],
+        },
+      },
+    }),
+  );
 
   app.enableCors();
 

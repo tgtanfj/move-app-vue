@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:move_app/config/theme/app_colors.dart';
-import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/card_model.dart';
+import 'package:move_app/data/models/rep_model.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/card_item.dart';
+import 'package:move_app/presentation/screens/wallet/page/wallet_page.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 
 class WithSavedPayment extends StatelessWidget {
-  const WithSavedPayment({super.key});
+  final RepModel? rep;
+  final CardModel? card;
+
+  const WithSavedPayment({super.key, this.card, this.rep});
 
   @override
   Widget build(BuildContext context) {
+    CardType cardType =
+        CardType.values.firstWhere((e) => e.name == card?.brand);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -17,40 +25,34 @@ class WithSavedPayment extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            masterCard(),
-            Text(
-              Constants.visaEndingWith,
-              style: AppTextStyles.montserratStyle.regular16Black,
-            ),
+            CardItem(cardType: cardType),
+            const SizedBox(width: 8),
+            Text.rich(TextSpan(
+                text:
+                    '${CardNumberValidator.getCardName(cardType)} ${Constants.endingWith} ',
+                style: AppTextStyles.montserratStyle.regular16Black,
+                children: [
+                  TextSpan(
+                    text: '${card?.last4}',
+                    style: AppTextStyles.montserratStyle.bold16black,
+                  )
+                ]))
           ],
         ),
         InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WalletPage(
+                          walletArguments:
+                              WalletArguments(rep: rep, isTrue: false))));
+            },
             child: Text(
               Constants.change,
               style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
             ))
       ],
-    );
-  }
-
-  Widget masterCard() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Container(
-          height: 25,
-          width: 34,
-          padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.chineseSilver,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: SvgPicture.asset(
-            AppIcons.masterCard.svgAssetPath,
-          )),
     );
   }
 }

@@ -1,9 +1,7 @@
-import { Param, ParseIntPipe, Query } from '@nestjs/common';
-import { FilterWorkoutLevel, SortBy } from './filter-video-channel.dto';
-import { Type } from 'class-transformer';
-import { User } from '@/shared/decorators/user.decorator';
-import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNumber } from 'class-validator';
+import { FilterWorkoutLevel, SortBy } from './filter-video-channel.dto';
 
 export class QueryChannelDto {
   @ApiProperty({ name: 'workout-level', enum: FilterWorkoutLevel, required: false })

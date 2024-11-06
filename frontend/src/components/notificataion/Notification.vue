@@ -1,11 +1,6 @@
 <script setup>
 import BellIcon from '@assets/icons/BellIcon.vue'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@common/ui/dropdown-menu'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { X } from 'lucide-vue-next'
 import NotifyItem from '@components/notificataion/NotifyItem.vue'
 import { database, ref as firebaseRef } from '@services/firebaseConfig'
@@ -50,7 +45,7 @@ const fetchNotifications = async () => {
           notifyList.value.reverse()
           badgeStatus.value = notifyList.value.some((notify) => !notify.isRead)
         } else {
-          console.log('No notifications available')
+          // console.log('No notifications available')
           notifyList.value = []
           badgeStatus.value = false
         }
@@ -81,10 +76,14 @@ const handleModalPopup = () => {
   isOpenModalNotify.value = false
 }
 
-const toggleDropdown = () => {
+const handleOpenNotify = () => {
   fetchNotifications()
   isOpenModalNotify.value = !isOpenModalNotify.value
   badgeStatus.value = false
+}
+
+const closeMenuAccount = () => {
+  isOpenModalNotify.value = false
 }
 
 const loadMoreNotifications = () => {
@@ -110,8 +109,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DropdownMenu v-model:open="isOpenModalNotify" @close="isOpenModalNotify = false">
-    <DropdownMenuTrigger @click="toggleDropdown">
+  <Popover v-model:open="isOpenModalNotify">
+    <PopoverTrigger @click="handleOpenNotify">
       <div class="relative">
         <BellIcon />
         <div
@@ -119,16 +118,16 @@ onUnmounted(() => {
           class="absolute top-0 right-0 w-[10px] h-[10px] bg-red-500 rounded-full"
         ></div>
       </div>
-    </DropdownMenuTrigger>
+    </PopoverTrigger>
 
-    <DropdownMenuContent align="end" class="bg-black border-none mt-4 p-0 w-[340px] text-white">
+    <PopoverContent align="end" class="bg-black border-none mt-4 p-0 w-[340px] text-white">
       <div class="flex w-full justify-between items-center p-3 border-b-[1px] border-white">
         <div class="w-[18px]"></div>
         <h2 class="font-semibold text-lg">Notifications</h2>
         <div>
-          <DropdownMenuItem class="cursor-pointer focus:bg-transparent p-0">
+          <div class="cursor-pointer focus:bg-transparent p-0" @click="closeMenuAccount">
             <X width="18px" class="hover:text-white text-white font-bold text-right p-0" />
-          </DropdownMenuItem>
+          </div>
         </div>
       </div>
 
@@ -138,7 +137,7 @@ onUnmounted(() => {
 
       <div
         v-else
-        class="max-h-[340px] overflow-y-auto custom-scrollbar"
+        class="h-auto max-h-[344px] overflow-y-auto custom-scrollbar rounded-lg"
         @scroll="handleScrollLoadMoreNotify"
       >
         <NotifyItem
@@ -158,8 +157,8 @@ onUnmounted(() => {
           </p>
         </div>
       </div>
-    </DropdownMenuContent>
-  </DropdownMenu>
+    </PopoverContent>
+  </Popover>
 </template>
 
 <style scoped>
@@ -174,9 +173,11 @@ onUnmounted(() => {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #d3d3d3;
+  
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
   background-color: #000000;
+  border-radius: 8px;
 }
 </style>

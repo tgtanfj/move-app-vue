@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/page/payment_details_page.dart';
 
 class PaymentMethodEmpty extends StatefulWidget {
-  const PaymentMethodEmpty({super.key});
+  final WalletArguments? walletArguments;
+  const PaymentMethodEmpty({super.key, this.walletArguments});
 
   @override
   State<PaymentMethodEmpty> createState() => _PaymentMethodEmptyState();
@@ -57,8 +59,8 @@ class _PaymentMethodEmptyState extends State<PaymentMethodEmpty> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const PaymentDetailsPage()));
+                                builder: (context) => PaymentDetailsPage(
+                                    walletArguments: widget.walletArguments)));
                       },
                       titleStyle: AppTextStyles.montserratStyle.bold16White,
                       backgroundColor: AppColors.tiffanyBlue,

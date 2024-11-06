@@ -73,9 +73,13 @@ const handleClick = () => {
           class="flex items-center w-full gap-1 cursor-pointer"
           @click="router.push(`/channel/${channel.id}`)"
         >
-          <img :src="channel.image" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
+          <img
+            :src="channel.image"
+            alt="Avatar"
+            class="w-10 h-10 rounded-full object-cover shrink-0"
+          />
           <div class="flex flex-col gap-0 w-full">
-            <div class="flex gap-2 ">
+            <div class="flex gap-2">
               <span
                 v-if="sidebarOpen"
                 class="ml-2 text-sm overflow-hidden max-w-[145px] text-ellipsis whitespace-nowrap"
@@ -92,17 +96,17 @@ const handleClick = () => {
             </div>
           </div>
         </div>
-        <div v-if="isLoading && !followerStore.follower" v-for="item in 10">
+        <div v-if="isLoading" v-for="item in 10">
           <FollowedChannelsSkeleton />
         </div>
         <p
-          v-if="sidebarOpen && authStore.accessToken && followerStore.follower.length === 0"
+          v-if="sidebarOpen && authStore.accessToken && followerStore.follower.length === 0 && !isLoading"
           class="text-[16px] text-[#666666]"
         >
           {{ $t('sidebar.not_login') }}
         </p>
         <div
-          v-if="sidebarOpen && !authStore.accessToken"
+          v-if="sidebarOpen && !authStore.accessToken && !isLoading"
           :class="sidebarOpen ? 'opacity-100 delay-500' : 'opacity-0'"
           class="w-full h-[220px] bg-primary rounded-lg shadow-lg flex flex-col p-4 items-start justify-between transition-opacity opacity-0 duration-500 ease-in-out"
         >

@@ -1,6 +1,5 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useForm } from 'vee-validate'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@common/ui/dialog'
 import { FormControl, FormField, FormItem, FormMessage } from '@common/ui/form'
 import { Input } from '@common/ui/input'
@@ -19,33 +18,87 @@ import { usePaymentStore } from '../../stores/payment'
 import { walletServices } from '@services/wallet.services'
 import { walletSchema } from '../../validation/schema'
 import { validateCard } from '@utils/wallet.util'
+import { STRIPE_KEY } from '@constants/api.constant'
+import VisaCardIcon from '@assets/icons/VisaCardIcon.vue'
+import MasterCardIcon from '@assets/icons/MasterCardIcon.vue'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@common/ui/tooltip'
+import { useForm } from 'vee-validate'
+import { hasEmptyProperty } from '@utils/userProfile.util'
+import { useRoute, useRouter } from 'vue-router'
 
 const paymentStore = usePaymentStore()
+const router = useRouter()
+const route = useRoute()
 
-const { values, errors } = useForm({
-  initialValues: {
-    cardholderName: ''
-  },
-  validationSchema: walletSchema
-})
-
-const stripePublicToken = import.meta.env.VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripe = ref(null)
-const card = ref(null)
-const cardError = ref('')
-const isCardValid = ref(false)
 const isOpen = ref(false)
 const countries = ref(null)
 const isLoading = ref(false)
 const userCountryIso = ref(null)
+const cardType = ref('')
+const expMonth = ref('')
+const expYear = ref('')
+const showError = ref(false)
+const cardholderName = ref('')
+const cvc = ref('')
+const cardNumber = ref('')
+const coun = ref('')
+const wrongCardType = ref('')
+
+const { values, setValues, errors, resetForm, setFieldError } = useForm({
+  initialValues: {
+    cardholderName: '',
+    country: '',
+    cardNumber: '',
+    cvc: '',
+    cardType: '',
+    expDate: ''
+  },
+  validationSchema: walletSchema,
+  validateOnMount: false
+})
+
+watch(cardNumber, (newValue) => {
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
+})
+
+watch(cardNumber, (newValue) => {
+  cardType.value = ''
+  setValues({ ...values, cardType: '' })
+  if (newValue.length >= 6) {
+    if (newValue.startsWith('4')) {
+      cardType.value = 'visa'
+      setValues({ ...values, cardType: 'visa' })
+    } else if (newValue.startsWith('2') || newValue.startsWith('5')) {
+      cardType.value = 'mastercard'
+      setValues({ ...values, cardType: 'mastercard' })
+    }
+  } else {
+    cardType.value = ''
+    setValues({ ...values, cardType: '' })
+  }
+})
+
+watch(userCountryIso, (newValue) => setValues({ ...values, country: newValue }))
 
 onMounted(async () => {
+  await walletServices.getCountries().then((response) => {
+    if (response) countries.value = response?.data
+  })
   const handleCallAPis = async () => {
     await walletServices.fetchUserLocation().then((response) => {
-      if (response) userCountryIso.value = response?.country
-    })
-    await walletServices.getCountries().then((response) => {
-      if (response) countries.value = response?.data
+      if (response) coun.value = response?.country
     })
   }
   isLoading.value = true
@@ -55,72 +108,140 @@ onMounted(async () => {
 
 watch(isOpen, async (newValue) => {
   if (newValue) {
-    stripe.value = await loadStripe(stripePublicToken)
-    const elements = stripe.value.elements()
-    const style = {
-      base: {
-        color: '#32325d',
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSize: '16px',
-        fontSmoothing: 'antialiased',
-        fontWeight: '400',
-        lineHeight: '24px',
-        '::placeholder': {
-          color: '#aab7c4'
-        }
-      },
-      invalid: {
-        color: '#fa755a',
-        iconColor: '#fa755a'
-      }
-    }
-    card.value = await elements.create('card', { style })
-    card.value.on('change', (event) => {
-      if (event.error) {
-        cardError.value = event.error.message
-        isCardValid.value = false
-      } else if (event.empty) {
-        cardError.value = ''
-        isCardValid.value = false
-      } else {
-        cardError.value = ''
-        isCardValid.value = event.complete
-      }
-    })
-    card.value.mount('#card-element')
+    stripe.value = await loadStripe(STRIPE_KEY)
+    resetForm()
+    userCountryIso.value = coun.value
+    setValues({ ...values, country: coun.value })
   }
 })
+watch(cardType, (newValue) => {
+  if (newValue) {
+    setValues({ ...values, cardType: cardType.value })
+  }
+})
+
+watch(cardNumber, (newValue) => {
+  setValues({ ...values, cardNumber: newValue })
+})
+watch(cvc, (newValue) => {
+  setValues({ ...values, cvc: newValue })
+})
+watch(cardholderName, (newValue) => {
+  setValues({ ...values, cardholderName: newValue })
+})
+watch([expMonth, expYear], (newValue) => {
+  const [month, year] = newValue
+
+  if (month && year) {
+    setValues({
+      ...values,
+      expDate: `${month}/${year}`
+    })
+  } else {
+    setValues({
+      ...values,
+      expDate: ''
+    })
+  }
+})
+
+const resetFormOnClose = () => {
+  cardNumber.value = ''
+  cardholderName.value = ''
+  cardType.value = ''
+  expMonth.value = ''
+  expYear.value = ''
+  cvc.value = ''
+  userCountryIso.value = ''
+  showError.value = false
+}
 
 const isSubmitEnabled = computed(() => {
-  const hasFormErrors = Object.keys(errors.value).length > 0
-  const hasCardError = !!cardError.value
+  const isFormDataEmpty = hasEmptyProperty(values)
 
-  return !hasFormErrors && !hasCardError && isCardValid.value
+  return !isFormDataEmpty
 })
 
+const clearError = (field) => {
+  setFieldError(field, '')
+  if (field === 'cardNumber') wrongCardType.value = ''
+}
+
 const onSubmit = async () => {
-  if (
-    Object.keys(errors.value).length > 0 ||
-    cardError.value ||
-    !(await validateCard(card, stripe, cardError))
-  ) {
+  const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
+  const hasError = Object.keys(errors.value).length > 0
+  if (hasError) {
+    showError.value = true
     return
-  } else {
-    paymentStore
-      .createUserPaymentMethod(stripe.value, card.value, {
-        name: values.cardholderName || 'default name',
-        address: {
-          country: userCountryIso.value || 'US'
-        }
-      })
-      .then(() => {
-        isOpen.value = false
-      })
   }
+  if (!isAccepted) {
+    wrongCardType.value = 'Please enter a valid Visa or credit card number only'
+    return
+  }
+
+  const expirationParts = values.expDate.split('/').map(Number)
+  const cardData = {
+    number: values.cardNumber,
+    exp_month: expirationParts[0],
+    exp_year: expirationParts[1],
+    cvc: values.cvc,
+    name: values.cardholderName,
+    country: userCountryIso.value,
+    type: values.cardType
+  }
+
+  await paymentStore.createUserPaymentMethod(cardData, route, router)
+}
+
+const handleTrim = (e) => {
+  cardholderName.value = e.target.value.trim()
+  setValues({ ...values, cardholderName: cardholderName.value.trim() })
+}
+
+const handleCheckExpMonth = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  if (filteredInput === '00') {
+    expMonth.value = '01'
+  } else if (Number(filteredInput) > 12) {
+    expMonth.value = '12'
+  } else {
+    expMonth.value = filteredInput
+  }
+}
+const handleCheckExpYear = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  expYear.value = filteredInput
+}
+const handleCheckCardNumber = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 16)
+  cardNumber.value = filteredInput
+  setValues({ ...values, cardNumber: filteredInput })
+}
+const handleCheckCVC = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '').slice(0, 3)
+  cvc.value = filteredInput
+  setValues({ ...values, cvc: filteredInput })
+}
+const handleCheckCardName = (event) => {
+  const input = event.target.value
+  const trimmedInput = input.replace(/\s+/g, ' ').trim()
+  cardholderName.value = trimmedInput
+  setValues({ ...values, cardholderName: trimmedInput })
 }
 </script>
 <template>
-  <Dialog v-model:open="isOpen">
+  <Dialog
+    v-model:open="isOpen"
+    @update:open="
+      (val) => {
+        if (!val) resetFormOnClose()
+      }
+    "
+  >
     <DialogTrigger aschild>
       <Button>{{ t('wallet.setup_payment') }}</Button>
     </DialogTrigger>
@@ -138,16 +259,16 @@ const onSubmit = async () => {
                   <FormControl>
                     <Input
                       maxlength="50"
-                      minlength="2"
-                      placeholder="Card Holder Name"
                       class="border-[#CCCCCC] h-[40px] w-full"
-                      :class="{ 'border-red-500': errors.cardholderName }"
                       type="text"
                       v-bind="componentField"
-                      v-model.trim="values.cardholderName"
+                      v-model.trim="cardholderName"
+                      @input="handleCheckCardName"
+                      @blur="handleTrim"
+                      @focus="clearError('cardholderName')"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage :class="{ hidden: !showError }" />
                 </FormItem>
               </FormField>
             </div>
@@ -172,16 +293,123 @@ const onSubmit = async () => {
               </Select>
             </div>
           </div>
-          <div class="col-span-2 w-full">
-            <div class="flex flex-col items-start gap-1 mb-1">
-              <p>{{ t('wallet.card_info') }}</p>
+          <div class="grid grid-cols-2 w-full gap-3">
+            <div class="flex flex-col items-start">
+              <FormField v-slot="{ componentField }" name="cardNumber">
+                <FormItem class="w-full">
+                  <FormLabel class="">{{ t('wallet.card_number') }}</FormLabel>
+                  <FormControl>
+                    <Input
+                      maxlength="16"
+                      class="border-[#CCCCCC] h-[40px] w-full"
+                      type="text"
+                      v-bind="componentField"
+                      v-model.trim="cardNumber"
+                      @input="handleCheckCardNumber"
+                      @focus="clearError('cardNumber')"
+                    />
+                  </FormControl>
+                  <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+                </FormItem>
+              </FormField>
             </div>
-            <div id="card-element"></div>
-            <p class="text-sm text-red-500 mt-2" v-if="cardError">{{ cardError }}</p>
+            <div class="flex flex-col items-start">
+              <FormField v-slot="{ componentField }" name="cardType">
+                <FormItem class="w-full">
+                  <FormLabel class="">{{ t('wallet.card_type') }}</FormLabel>
+                  <div class="flex gap-1 items-center">
+                    <div
+                      :class="{
+                        'cursor-pointer border-2 p-2 items-center flex justify-center rounded-md': true,
+                        'opacity-100': values.cardType === 'visa',
+                        'opacity-30': values.cardType !== 'visa'
+                      }"
+                    >
+                      <VisaCardIcon />
+                    </div>
+                    <div
+                      :class="{
+                        'cursor-pointer border-2 px-2 py-1 items-center flex justify-center rounded-md': true,
+                        'opacity-100': values.cardType === 'mastercard',
+                        'opacity-30': values.cardType !== 'mastercard'
+                      }"
+                    >
+                      <MasterCardIcon class="w-7 h-5" />
+                    </div>
+                  </div>
+                  <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+                </FormItem>
+              </FormField>
+            </div>
           </div>
-
+          <p class="text-red-500 font-medium text-sm" v-if="wrongCardType">{{ wrongCardType }}</p>
+          <div class="grid grid-cols-2 w-full gap-3">
+            <div>
+              <label>Expiration date</label>
+              <FormField v-slot="{ componentField }" name="expDate">
+                <FormItem class="w-full flex flex-col gap-4 mt-2">
+                  <div class="w-full flex items-center gap-4 mt-2">
+                    <input
+                      maxlength="2"
+                      placeholder="MM"
+                      class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                      type="text"
+                      v-model.trim="expMonth"
+                      @input="handleCheckExpMonth"
+                      @focus="clearError('expDate')"
+                    />
+                    <input
+                      maxlength="2"
+                      placeholder="YY"
+                      class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                      type="text"
+                      v-model.trim="expYear"
+                      @input="handleCheckExpYear"
+                      @focus="clearError('expDate')"
+                    />
+                  </div>
+                  <FormMessage class="!mt-0" :class="{ hidden: !showError }" />
+                </FormItem>
+              </FormField>
+            </div>
+            <div class="w-full gap-3">
+              <div class="flex flex-col w-full">
+                <label
+                  >CVV2/CVC2
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger
+                        class="cursor-pointer rounded-full border-[2px] py-[0.6px] px-[4px] border-black font-semibold ml-2"
+                      >
+                        <span>?</span>
+                      </TooltipTrigger>
+                      <TooltipContent class="max-w-[200px]">
+                        <p class="text-[12px] whitespace-normal break-words">
+                          {{ t('wallet.cvc') }}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </label>
+                <FormField v-slot="{ componentField }" name="cvc" class="w-full">
+                  <FormItem class="w-full flex flex-col mt-2">
+                    <Input
+                      maxlength="3"
+                      class="border-[#CCCCCC] h-[40px] w-[100px] mt-2"
+                      type="text"
+                      v-bind="componentField"
+                      v-model.trim="cvc"
+                      @input="handleCheckCVC"
+                      @focus="clearError('cvc')"
+                    />
+                  </FormItem>
+                  <FormMessage class="mt-2" :class="{ hidden: !showError }" />
+                </FormField>
+              </div>
+            </div>
+          </div>
           <div>
-            <div class="text-[12px] text-[#777777] w-full mt-2">
+            <div class="text-[10px] w-full mt-2">
               {{ t('wallet.by_submit') }}
               <span class="text-primary text-[12px]">{{ t('wallet.end_user_license') }}</span
               >,
@@ -194,8 +422,8 @@ const onSubmit = async () => {
               <Button
                 type="submit"
                 class="w-[128px] h-[40px]"
-                :disabled="!isSubmitEnabled || paymentStore.isCreating"
                 :isLoading="paymentStore.isCreating"
+                :disabled="paymentStore.isCreating || !isSubmitEnabled"
               >
                 {{ $t('button.submit') }}
               </Button>

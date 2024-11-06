@@ -35,6 +35,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         state.email != event.email ? false : state.isShowEmailMessage;
     final isShowPasswordMessage =
         state.password != event.password ? false : state.isShowPasswordMessage;
+
     emit(
       state.copyWith(
         email: event.email,
@@ -47,6 +48,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void _onLoginWithGoogleEvent(LoginWithGoogleEvent event, Emitter emit) async {
+    emit(state.copyWith(
+      status: LoginStatus.processing
+    ));
     final user = await AuthRepository().googleLogin();
     user.fold((l) {
       emit(state.copyWith(
@@ -63,6 +67,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter emit) async {
+    emit(state.copyWith(
+        status: LoginStatus.processing
+    ));
     final facebookAccount = await AuthRepository().loginWithFacebook();
     facebookAccount.fold((l) {
       emit(state.copyWith(

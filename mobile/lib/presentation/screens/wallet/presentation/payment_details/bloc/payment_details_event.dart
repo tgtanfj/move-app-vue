@@ -1,4 +1,5 @@
 import 'package:move_app/data/models/country_model.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 
 sealed class PaymentDetailsEvent {
   const PaymentDetailsEvent();
@@ -6,10 +7,15 @@ sealed class PaymentDetailsEvent {
 
 final class PaymentDetailsInitialEvent extends PaymentDetailsEvent {
   final CountryModel? selectedCountry;
+  final WalletArguments? walletArguments;
 
-  const PaymentDetailsInitialEvent({this.selectedCountry});
+  const PaymentDetailsInitialEvent(
+      {this.selectedCountry, this.walletArguments});
 
-  List<Object?> get props => [selectedCountry ?? 0];
+  List<Object?> get props => [
+        selectedCountry ?? 0,
+        walletArguments,
+      ];
 }
 
 final class PaymentDetailsSubmitEvent extends PaymentDetailsEvent {

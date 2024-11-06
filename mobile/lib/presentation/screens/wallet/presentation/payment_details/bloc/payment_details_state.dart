@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:move_app/data/models/country_model.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 
 enum PaymentDetailsStatus {
   initial,
@@ -32,6 +34,8 @@ final class PaymentDetailsState extends Equatable {
   final String? cvvErrorMessage;
   final String? paymentMethodId;
   final dynamic responseData;
+  final CardType cardType;
+  final WalletArguments? walletArguments;
 
   bool get isEnableSubmitPaymentMethod =>
       (cardHolderName?.isNotEmpty ?? false) &&
@@ -61,6 +65,8 @@ final class PaymentDetailsState extends Equatable {
     this.cvvErrorMessage,
     this.paymentMethodId,
     this.responseData,
+    this.cardType = CardType.unknown,
+    this.walletArguments,
   });
 
   static PaymentDetailsState initial() => const PaymentDetailsState(
@@ -109,6 +115,8 @@ final class PaymentDetailsState extends Equatable {
     String? cvvErrorMessage,
     String? paymentMethodId,
     dynamic responseData,
+    CardType? cardType,
+    WalletArguments? walletArguments,
   }) {
     return PaymentDetailsState(
       status: status ?? this.status,
@@ -138,6 +146,8 @@ final class PaymentDetailsState extends Equatable {
       cvvErrorMessage: cvvErrorMessage ?? this.cvvErrorMessage,
       paymentMethodId: paymentMethodId ?? this.paymentMethodId,
       responseData: responseData ?? this.responseData,
+      cardType: cardType ?? this.cardType,
+      walletArguments: walletArguments ?? this.walletArguments,
     );
   }
 
@@ -164,5 +174,7 @@ final class PaymentDetailsState extends Equatable {
         cvvErrorMessage,
         responseData,
         paymentMethodId,
+        cardType,
+        walletArguments,
       ];
 }

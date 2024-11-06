@@ -30,6 +30,9 @@ class ApiUrls {
   static const String follow = "follow";
   static const String homeCategoriesEndPoint = "home/categories";
   static const String addPaymentEndpoint = "stripe/attach-card";
+  static const String realTimeDatabaseUrl =
+      "https://move-project-51201-default-rtdb.asia-southeast1.firebasedatabase.app";
+  static const String getCommentEndPoint = 'comment/';
   static const String homeCategoriesNoLoginEndPoint =
       "home/categories-no-login/";
   static const String homeCategoriesLoginEndPoint = "home/categories/";
@@ -38,5 +41,11 @@ class ApiUrls {
   static const String donationEndPoint = "donation";
   static const String stripeListCardsEndPoint = "stripe/list-cards";
   static const String viewEndPoint = "view";
-   static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String stripeDetachCardEndPoint = "stripe/detach-card";
+  static const String paymentListRepsPackageEndPoint =
+      "payment/list-reps-package";
+  static const String paymentBuyRepsEndPoint = "payment/buy-reps";
+  static const String refreshTokenEndpoint = "auth/refresh";
+
+  static const String deepLink = "https://api.training-move-intern.madlab.tech/deep-link";
 }

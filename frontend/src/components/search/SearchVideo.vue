@@ -20,7 +20,7 @@ const props = defineProps({
       <router-link :to="`/video/${video.id}`">
         <img
           class="object-cover w-full h-[170px]"
-          :src="video.thumbnails[0].image"
+          :src="video?.thumbnails[0]?.image"
           :alt="video.title"
         />
       </router-link>
@@ -39,7 +39,9 @@ const props = defineProps({
     </div>
     <div class="flex items-start mt-2">
       <router-link :to="`/channel/${video.channel.id}`">
-        <img class="w-[50px] h-[50px] rounded-full shrink-0" :src="video.channel.image" />
+        <div class="w-[40px] h-[40px] rounded-full">
+          <img class="w-full h-full rounded-full" :src="video?.channel?.image" />
+        </div>
       </router-link>
       <div class="ml-3">
         <router-link :to="`/video/${video.id}`">
@@ -52,17 +54,17 @@ const props = defineProps({
           </p>
         </router-link>
         <div class="flex flex-col items-start justify-start mt-1.5">
-          <router-link :to="`/channel/${video.channel.id}`">
+          <router-link :to="`/channel/${video?.channel?.id}`">
             <div class="flex items-center gap-3">
-              <p class="text-[#666666] text-[14px]">{{ video.channel.name }}</p>
+              <p class="text-[#666666] text-[14px]">{{ video?.channel?.name }}</p>
               <BlueBadgeIcon v-if="video.channel.isBlueBadge" />
             </div>
           </router-link>
           <div class="flex gap-1 items-center">
-            <p class="text-[#666666] text-[14px]">{{ video.category.title }}</p>
+            <p class="text-[#666666] text-[14px]">{{ video?.category?.title }}</p>
             <p>⋅</p>
             <p class="text-[#666666] text-[14px]">
-              {{ video.postedTime ? convertTimePostVideo(video.postedTime) : 'Posted a day ago' }}
+              {{ video.postedTime ? convertTimePostVideo(video?.postedTime) : 'Posted a day ago' }}
             </p>
           </div>
           <div class="flex items-center gap-1 justify-start mt-2">

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/data/models/payment_model.dart';
 import 'package:move_app/utils/util_date_time_format.dart';
@@ -15,8 +14,7 @@ class ListPaymentHistories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.57,
+    return Expanded(
       child: ListView.separated(
         itemCount: paymentHistoryList?.length ?? 0,
         itemBuilder: (BuildContext context, int index) {

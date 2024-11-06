@@ -69,6 +69,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                                   width: 56,
                                   height: 56,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      AppImages.defaultAvatar.webpAssetPath,
+                                      width: 56,
+                                      height: 56,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
                                 ),
                     ),
                     Visibility(
@@ -239,6 +247,10 @@ class _ProfileBodyState extends State<ProfileBody> {
                             .read<ProfileBloc>()
                             .add(ProfileCityChangeEvent(city: value));
                       },
+                      suffixLabel: Text(
+                        Constants.optional,
+                        style: AppTextStyles.montserratStyle.regular16Black,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     CustomButton(

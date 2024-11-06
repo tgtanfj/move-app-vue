@@ -57,7 +57,11 @@ class _SearchResultBodyState extends State<SearchResultBody> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SearchResultBloc, SearchResultState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        (state.status == SearchResultStatus.processing)
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
+      },
       child: BlocBuilder<SearchResultBloc, SearchResultState>(
         builder: (context, state) {
           return Scaffold(
@@ -91,17 +95,17 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                 });
               },
               onSubmitted: (value) {
-                context
-                    .read<SearchResultBloc>()
-                    .add(SearchSaveHistoryEvent(searchText: value));
-                _focusNode.unfocus();
-                _controller.text.trim().isNotEmpty
-                    ? context.read<SearchResultBloc>().add(
-                        SearchResultInitialEvent(
-                            searchQuery: _controller.text.trim()))
-                    : const Center(
-                        child: Text(Constants.enterValidContent),
-                      );
+                if (_controller.text.trim().isNotEmpty) {
+                  context
+                      .read<SearchResultBloc>()
+                      .add(SearchSaveHistoryEvent(searchText: value));
+                  _focusNode.unfocus();
+                  context.read<SearchResultBloc>().add(
+                      SearchResultOnSubmittedEvent(
+                          searchQuery: _controller.text.trim()));
+                } else {
+                  _focusNode.requestFocus();
+                }
               },
             ),
             backgroundColor: AppColors.white,
@@ -124,98 +128,89 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                             const SizedBox(
                               height: 16,
                             ),
-                            const CustomSectionTitle(
-                                title: Constants.searchResults),
+                            (state.categoryList.isNotEmpty ||
+                                    state.videoList.isNotEmpty ||
+                                    state.channelList.isNotEmpty)
+                                ? const CustomSectionTitle(
+                                    title: Constants.searchResults)
+                                : Center(
+                                    child: Text(state.searchResultFound ?? "",
+                                        style: AppTextStyles
+                                            .montserratStyle.bold14Black),
+                                  ),
                             const SizedBox(
                               height: 24,
                             ),
                             Column(
                               children: [
-                                (state.categoryList.isEmpty &&
-                                        state.videoList.isEmpty &&
-                                        state.channelList.isEmpty)
-                                    ? Center(
-                                        child: Text(Constants.notFoundResult,
+                                (state.categoryList.isNotEmpty)
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            Constants.categories,
                                             style: AppTextStyles
-                                                .montserratStyle.bold14Black),
-                                      )
-                                    : (state.categoryList.isNotEmpty)
-                                        ? Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                .montserratStyle.bold16Black,
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.3,
+                                            child: ListSearchResultCategories(
+                                              categoryList: state.categoryList,
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
                                             children: [
-                                              Text(
-                                                Constants.categories,
-                                                style: AppTextStyles
-                                                    .montserratStyle
-                                                    .bold16Black,
-                                              ),
-                                              const SizedBox(
-                                                height: 12,
-                                              ),
-                                              SizedBox(
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.3,
-                                                child:
-                                                    ListSearchResultCategories(
-                                                  categoryList:
-                                                      state.categoryList,
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                children: [
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      context
-                                                          .read<
-                                                              SearchResultBloc>()
-                                                          .add(SearchResultLoadPreviousCategoriesEvent(
-                                                              searchQuery: state
-                                                                      .searchQuery ??
-                                                                  ""));
-                                                    },
-                                                    icon: const Icon(
-                                                        Icons.navigate_before),
-                                                    color:
-                                                        (state.currentCategoriesPage ==
-                                                                1)
-                                                            ? AppColors
-                                                                .chineseSilver
-                                                            : AppColors
-                                                                .tiffanyBlue,
-                                                    padding: EdgeInsets.zero,
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      context
-                                                          .read<
-                                                              SearchResultBloc>()
-                                                          .add(SearchResultLoadMoreCategoriesEvent(
-                                                              searchQuery: state
-                                                                      .searchQuery ??
-                                                                  ""));
-                                                    },
-                                                    icon: const Icon(
-                                                        Icons.navigate_next),
-                                                    color: (state.currentCategoriesPage ==
-                                                                state
-                                                                    .totalCategoriesPages ||
-                                                            state.categoryList
-                                                                    .length <
-                                                                2)
+                                              IconButton(
+                                                onPressed: () {
+                                                  context
+                                                      .read<SearchResultBloc>()
+                                                      .add(SearchResultLoadPreviousCategoriesEvent(
+                                                          searchQuery: state
+                                                                  .searchQuery ??
+                                                              ""));
+                                                },
+                                                icon: const Icon(
+                                                    Icons.navigate_before),
+                                                color:
+                                                    (state.currentCategoriesPage ==
+                                                            1)
                                                         ? AppColors
                                                             .chineseSilver
                                                         : AppColors.tiffanyBlue,
-                                                  ),
-                                                ],
+                                                padding: EdgeInsets.zero,
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  context
+                                                      .read<SearchResultBloc>()
+                                                      .add(SearchResultLoadMoreCategoriesEvent(
+                                                          searchQuery: state
+                                                                  .searchQuery ??
+                                                              ""));
+                                                },
+                                                icon: const Icon(
+                                                    Icons.navigate_next),
+                                                color: (state
+                                                            .currentCategoriesPage ==
+                                                        state
+                                                            .totalCategoriesPages)
+                                                    ? AppColors.chineseSilver
+                                                    : AppColors.tiffanyBlue,
                                               ),
                                             ],
-                                          )
-                                        : const SizedBox(),
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox(),
                                 (state.channelList.isNotEmpty)
                                     ? Column(
                                         crossAxisAlignment:
@@ -263,11 +258,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                                 icon: const Icon(
                                                     Icons.navigate_next),
                                                 color: (state.page ==
-                                                            state
-                                                                .totalChannelPages ||
-                                                        state.channelList
-                                                                .length <
-                                                            8)
+                                                        state.totalChannelPages)
                                                     ? AppColors.chineseSilver
                                                     : AppColors.tiffanyBlue,
                                               ),
@@ -347,7 +338,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                     onTap: () {
                                       _focusNode.unfocus();
                                       context.read<SearchResultBloc>().add(
-                                          SearchResultInitialEvent(
+                                          SearchResultOnSubmittedEvent(
                                               searchQuery: searchItem.content));
                                       _controller.text =
                                           searchItem.content ?? "";

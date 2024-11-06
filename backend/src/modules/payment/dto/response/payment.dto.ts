@@ -1,4 +1,4 @@
-import { RepsPackage } from '@/entities/reps-package.entity';
+import { TransactionStatus } from '@/entities/enums/transaction-status.enum';
 import { Expose, Transform, Type } from 'class-transformer';
 
 export class RepsPackageDto {
@@ -18,4 +18,7 @@ export default class PaymentDto {
 
   @Expose()
   repsPackage: RepsPackageDto;
+
+  @Expose()
+  status: TransactionStatus;
 }

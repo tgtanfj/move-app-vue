@@ -42,9 +42,9 @@ const sidebarList = [
     path: '/streamer/cashout'
   },
   {
-    name: 'Channel Settings',
+    name: 'Bio Settings',
     icon: Settings,
-    path: '/streamer/channel-settings'
+    path: '/streamer/bio-settings'
   }
 ];
 

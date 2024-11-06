@@ -23,6 +23,8 @@ import { sortedSocialLinks } from '../../utils/socialOrder.util'
 import Rating from './Rating.vue'
 import axios from 'axios'
 import GiftReps from './GiftReps.vue'
+import { repliesPerComment, showRepliesByComment } from '@helpers/useReplies'
+import { commentServices } from '@services/comment.services'
 
 const props = defineProps({
   videoDetail: {
@@ -68,16 +70,7 @@ onMounted(async () => {
 
 const handleNewComment = (comment) => {
   commentFirst.value = comment
-  scrollToComment()
 }
-
-onMounted(() => {
-  nextTick(() => {
-    getCommentById().then(() => {
-      handleNewComment(commentFirst.value)
-    })
-  })
-})
 
 const getCommentById = async () => {
   if (commentId) {
@@ -86,8 +79,6 @@ const getCommentById = async () => {
       const dataCommentBytId = response.data.data
       if (response && dataCommentBytId) {
         commentFirst.value = dataCommentBytId
-
-        scrollToComment()
       }
     } catch (error) {
       console.error('Error fetching comment by ID:', error)
@@ -95,9 +86,44 @@ const getCommentById = async () => {
   }
 }
 
-const scrollToComment = () => {
+const scrollToComment = async () => {
   if (commentId && replyId) {
-    console.log('reply scroll')
+    await showRepliesByComment(commentId)
+    
+    try {
+      const response = await axios.get(`${ADMIN_BASE}/comment/${replyId}`);
+      const targetReply = response.data.data
+
+      if (targetReply) {
+        if (!repliesPerComment.value[commentId]) {
+          repliesPerComment.value[commentId] = []
+        }
+        repliesPerComment.value[commentId].unshift(targetReply);
+
+        repliesPerComment.value[commentId] = repliesPerComment.value[commentId].filter(
+          (reply, index, self) => index === self.findIndex((r) => r.id === reply.id)
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching reply by ID:", error);
+    }
+
+    setTimeout(() => {
+      const replyElement = document.getElementById(replyId)
+      if (replyElement) {
+        const navbarHeight = 180
+        const elementPosition = replyElement.getBoundingClientRect().top + window.scrollY
+        const offsetPosition = elementPosition - navbarHeight
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+        replyElement.classList.add('highlight')
+      } else {
+        console.log('Reply element not found after timeout')
+      }
+    }, 1000)
   } else if (commentId) {
     setTimeout(() => {
       const commentElement = document.getElementById(commentId)
@@ -117,12 +143,6 @@ const scrollToComment = () => {
     }, 1000)
   }
 }
-
-onMounted(() => {
-  nextTick(() => {
-    getCommentById()
-  })
-})
 
 const durationLite =
   props.videoDetail.duration === 'less than 30 minutes'
@@ -212,6 +232,13 @@ watch(
 )
 
 onMounted(() => {
+  nextTick(async () => {
+    await getCommentById()
+    if (commentFirst.value) {
+      handleNewComment(commentFirst.value)
+      await scrollToComment()
+    }
+  })
   checkFollowStatus()
 })
 </script>
@@ -233,11 +260,13 @@ onMounted(() => {
       </div>
 
       <div class="flex gap-2 mt-2">
-        <p class="text-red-500 font-semibold">
+        <p class="text-red-500 font-semibold" v-if="videoDetail.numberOfViews > 0">
           <span class="font-semibold">{{ formatViews(videoDetail.numberOfViews) }}</span>
           {{ $t('video_detail.views') }}
         </p>
-        <p class="font-semibold text-primary">• {{ videoDetail.category?.title }}</p>
+        <p class="font-semibold text-primary">
+          <span v-if="videoDetail.numberOfViews > 0">•</span> {{ videoDetail.category?.title }}
+        </p>
       </div>
 
       <div class="flex justify-between items-center mt-4">

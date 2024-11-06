@@ -5,11 +5,13 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/buy_rep_dialog.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_bloc.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_event.dart';
 import 'package:move_app/presentation/screens/menu/bloc/menu_state.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_had_login.dart';
 import 'package:move_app/presentation/screens/menu/page/menu_not_login.dart';
+
 import '../../../routes/app_routes.dart';
 
 class MenuBody extends StatefulWidget {
@@ -31,7 +33,15 @@ class _MenuBodyState extends State<MenuBody> {
             children: [
               AppBarWidget(
                 prefixIconPath: AppIcons.closeWhite.svgAssetPath,
-                prefixButton: () => Navigator.of(context).pop(),
+                prefixButton: () {
+                  state.isStateAtCurrentPage
+                      ? Navigator.of(context).pop()
+                      : Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.home,
+                          (route) => false,
+                        );
+                },
                 isEnableSuffixIcon: token.isNotEmpty,
                 suffixIconPath: AppIcons.notification.svgAssetPath,
                 suffixButton: () {
@@ -45,6 +55,7 @@ class _MenuBodyState extends State<MenuBody> {
                         userName: state.user?.username ?? Constants.userName,
                         isBlueBadge: state.user?.isBlueBadge ?? false,
                         isPinkBadge: state.user?.isPinkBadge ?? false,
+                        numberOfREPs: state.user?.numberOfREPs ?? 0,
                         logoutSuccessEvent: () => context
                             .read<MenuBloc>()
                             .add(const MenuLogoutSuccessEvent()),
@@ -52,8 +63,20 @@ class _MenuBodyState extends State<MenuBody> {
                         moreButton: () => context.read<MenuBloc>().add(
                             MenuSelectMoreEvent(
                                 isMoreEnable: !state.isEnableMore)),
+                        onBuyRep: () {
+                          Navigator.of(context).pushNamed(AppRoutes.home);
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return BuyRepDialog(
+                                  numberOfREPs: state.user?.numberOfREPs ?? 0,
+                                  reps: state.reps ?? [],
+                                );
+                              });
+                        },
                       )
                     : MenuNotLogin(
+                        isStateAtCurrentPage: state.isStateAtCurrentPage,
                         isMoreEnable: state.isEnableMore,
                         moreButton: () => context.read<MenuBloc>().add(
                             MenuSelectMoreEvent(

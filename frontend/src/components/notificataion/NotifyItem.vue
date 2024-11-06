@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import defaultAvatar from '@assets/icons/default-avatar.png'
 import AvaSystem from '@assets/icons/AvaSystem.vue'
@@ -25,13 +25,24 @@ const props = defineProps({
 
 const router = useRouter()
 const timestamp = props.notifyData.timestamp
-const { commentId, sender, videoId, type, videoTitle, replyId, purchase, donation, rep_milestone, cashout
+const {
+  commentId,
+  sender,
+  videoId,
+  type,
+  videoTitle,
+  replyId,
+  purchase,
+  donation,
+  rep_milestone,
+  cashout,
+  followMilestone,
+  viewVideoMilestone
 } = props.notifyData.data
 
-const content = ref('')
-const timeAgo = ref('')
+const setTimeInterval = ref(null)
 
-const truncateString = (str, length = 100) => {
+const truncateString = (str, length = 70) => {
   return str.length > length ? str.slice(0, length) + '...' : str
 }
 
@@ -60,7 +71,9 @@ const getContentByType = () => {
     case 'upload':
       return truncateString(`just uploaded a new video '<strong>${videoTitle}</strong>'`)
     case 'donation':
-      return truncateString(`has donated ${donation} to your video '<strong>${videoTitle}</strong>'`)
+      return truncateString(
+        `has donated ${donation} to your video '<strong>${videoTitle}</strong>'`
+      )
 
     // System
     case 'cashout':
@@ -70,10 +83,10 @@ const getContentByType = () => {
     case 'password_change_reminder':
       return "Please update your password as it hasn't been changed for 90 days."
     case 'follow_milestone':
-      return "Congratulations! You've just reached 1,000 followers."
+      return `Congratulations! You've just reached ${followMilestone} followers.`
     case 'view_video_milestone':
       return truncateString(
-        `Your video '<strong>${videoTitle}<strong>' has surpassed 10,000 views.`
+        `Your video '<strong>${videoTitle}</strong>' has surpassed ${viewVideoMilestone} views.`
       )
     case 'rep_milestone':
       return `You've earned ${rep_milestone} REPs in total from your content.`
@@ -82,11 +95,12 @@ const getContentByType = () => {
   }
 }
 
-content.value = getContentByType()
-
 const formatTimeAgo = (timestamp) => {
   const now = Date.now()
   const secondsElapsed = Math.floor((now - timestamp) / 1000)
+
+  const validSecondsElapsed = Math.max(secondsElapsed, 0)
+
   const minutesElapsed = Math.floor(secondsElapsed / 60)
   const hoursElapsed = Math.floor(minutesElapsed / 60)
   const daysElapsed = Math.floor(hoursElapsed / 24)
@@ -94,8 +108,8 @@ const formatTimeAgo = (timestamp) => {
   const monthsElapsed = Math.floor(daysElapsed / 30)
   const yearsElapsed = Math.floor(daysElapsed / 365)
 
-  if (secondsElapsed < 60) {
-    return `${secondsElapsed} seconds ago`
+  if (validSecondsElapsed < 60) {
+    return `${validSecondsElapsed} seconds ago`
   } else if (minutesElapsed < 60) {
     return `${minutesElapsed} minutes ago`
   } else if (hoursElapsed < 24) {
@@ -111,14 +125,11 @@ const formatTimeAgo = (timestamp) => {
   }
 }
 
-timeAgo.value = formatTimeAgo(timestamp)
-
-setInterval(() => {
-  timeAgo.value = formatTimeAgo(timestamp)
-}, 60000)
+const timeAgo = ref(formatTimeAgo(timestamp))
+const content = ref(getContentByType())
 
 const handleModalPopup = () => {
-  if (props.modalPopup && !isSystemType(type)) {
+  if (props.modalPopup && type !== 'cashout' && type !== 'purchase') {
     props.modalPopup()
   }
   props.markAsRead(props.notifyData.id, props.notifyData.userId)
@@ -149,16 +160,40 @@ const handleModalPopup = () => {
     case 'upload':
       router.push({ name: 'videoDetail', params: { id: videoId } })
       break
+    case 'follow':
+      router.push('/streamer/analytics/overview')
+      break
 
     // System
-    case 'cashout':
-      return 'You have successfully withdrawn'
     case 'donation':
-      return 'has donated ${reps} to your video'
+      router.push('/streamer/analytics/overview')
+      break
+    case 'follow_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'view_video_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'rep_milestone':
+      router.push('/streamer/analytics/overview')
+      break
+    case 'password_change_reminder':
+      router.push('/profile')
+      break
     default:
       return 'performed an action'
   }
 }
+
+onMounted(() => {
+  setTimeInterval.value = setInterval(() => {
+    timeAgo.value = formatTimeAgo(timestamp)
+  }, 60000)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(setTimeInterval.value)
+})
 </script>
 
 <template>
@@ -173,7 +208,7 @@ const handleModalPopup = () => {
     >
       <div class="min-w-[40px] w-[40px] h-[40px] rounded-full">
         <div v-if="isSystemType(type)">
-          <AvaSystem />
+          <AvaSystem width="40px" height="40px" />
         </div>
 
         <img

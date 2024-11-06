@@ -8,9 +8,14 @@ sealed class VideoDetailEvent extends Equatable {
 
 final class VideoDetailInitialEvent extends VideoDetailEvent {
   final int videoId;
-  const VideoDetailInitialEvent({required this.videoId});
+  final int? targetCommentId;
+  final int? targetReplyId;
+
+  const VideoDetailInitialEvent(
+      {required this.videoId, this.targetCommentId, this.targetReplyId});
+
   @override
-  List<Object?> get props => [videoId];
+  List<Object?> get props => [videoId, targetCommentId, targetReplyId];
 }
 
 final class VideoDetailSelectQualityEvent extends VideoDetailEvent {
@@ -145,24 +150,45 @@ class VideoDetailFollowChannelEvent extends VideoDetailEvent {
   List<Object?> get props => [channelId];
 }
 
-final class VideoDetailShareSocialEvent extends VideoDetailEvent {
+final class VideoDetailShareFacebookEvent extends VideoDetailEvent {
   final int? videoId;
-  final String? option;
 
-  const VideoDetailShareSocialEvent({
+  const VideoDetailShareFacebookEvent({
     this.videoId,
-    required this.option,
   });
 
   @override
   List<Object?> get props => [
         videoId,
-        option,
       ];
+}
+
+final class VideoDetailShareTwitterEvent extends VideoDetailEvent {
+  final int? videoId;
+
+  const VideoDetailShareTwitterEvent({
+    this.videoId,
+  });
+
+  @override
+  List<Object?> get props => [
+    videoId,
+  ];
 }
 
 final class VideoDetailPopEvent extends VideoDetailEvent {
   const VideoDetailPopEvent();
+
   @override
   List<Object?> get props => [];
+}
+
+final class VideoDetailDeleteCommentEvent extends VideoDetailEvent {
+  final int commentId;
+  final int? parenCommentId;
+
+  const VideoDetailDeleteCommentEvent({required this.commentId, this.parenCommentId});
+
+  @override
+  List<Object?> get props => [commentId, parenCommentId];
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,14 +7,19 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/rep_model.dart';
+import 'package:move_app/data/models/wallet_argument_model.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/components/custom_dropdown_button.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/buy_rep/page/buy_rep_page.dart';
+import 'package:move_app/presentation/screens/buy_rep/widgets/card_item.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_bloc.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
+import 'package:move_app/utils/card_date_formatter.dart';
 
 class PaymentDetailsBody extends StatefulWidget {
   const PaymentDetailsBody({super.key});
@@ -30,9 +36,25 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
       state.status == PaymentDetailsStatus.processing
           ? EasyLoading.show()
           : EasyLoading.dismiss();
+
+      if (state.status == PaymentDetailsStatus.added &&
+          state.walletArguments?.rep?.id != null) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.home, (route) => false);
+        showDialog(
+            context: context,
+            builder: (BuildContext build) {
+              return BuyRepPage(rep: state.walletArguments!.rep!);
+            });
+        return;
+      }
       if (state.status == PaymentDetailsStatus.added) {
         EasyLoading.dismiss();
-        Navigator.pushNamed(context, AppRoutes.routeWallet, arguments: true);
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.routeWallet,
+            arguments: WalletArguments(rep: RepModel(), isTrue: true),
+            (route) => false);
       }
     }, child: BlocBuilder<PaymentDetailsBloc, PaymentDetailsState>(
             builder: (context, state) {
@@ -68,12 +90,24 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                       CustomEditText(
                         initialValue: state.cardHolderName,
                         title: Constants.cardholderName,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r"[a-zA-Z\s]")),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
                         titleStyle:
                             AppTextStyles.montserratStyle.regular14Black,
                         onChanged: (value) => {
                           BlocProvider.of<PaymentDetailsBloc>(context).add(
                             PaymentDetailsCardHolderNameEvent(
                               cardHolderName: value,
+                            ),
+                          )
+                        },
+                        onLostFocus: (value) => {
+                          BlocProvider.of<PaymentDetailsBloc>(context).add(
+                            PaymentDetailsCardHolderNameEvent(
+                              cardHolderName: value.trim(),
                             ),
                           )
                         },
@@ -121,6 +155,11 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         height: 12,
                       ),
                       CustomEditText(
+                        textInputType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(16),
+                        ],
                         initialValue: state.cardNumber,
                         title: Constants.cardNumber,
                         titleStyle:
@@ -142,6 +181,10 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                             : AppColors.tiffanyBlue,
                         widthMessage: MediaQuery.of(context).size.width,
                         preMessage: state.cardNumberErrorMessage ?? '',
+                        suffix: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: CardItem(cardType: state.cardType),
+                        ),
                       ),
                       const SizedBox(
                         height: 12,
@@ -152,8 +195,13 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                           Expanded(
                             child: CustomEditText(
                               initialValue: state.expiryDate,
-                              hintText: Constants.formatExpiryDate,
+                              hintText: Constants.mmyy,
                               title: Constants.expiryDate,
+                              textInputType: TextInputType.number,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(5),
+                                CardDateFormatter(),
+                              ],
                               titleStyle:
                                   AppTextStyles.montserratStyle.regular14Black,
                               onChanged: (value) => {
@@ -185,6 +233,11 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                           ),
                           Expanded(
                               child: CustomEditText(
+                            textInputType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(3),
+                            ],
                             initialValue: state.cvv,
                             title: Constants.cvv,
                             titleStyle:

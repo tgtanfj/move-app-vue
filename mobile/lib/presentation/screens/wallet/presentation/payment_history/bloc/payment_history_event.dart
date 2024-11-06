@@ -11,6 +11,11 @@ final class PaymentHistoryOnTapStartDateEvent extends PaymentHistoryEvent {
   PaymentHistoryOnTapStartDateEvent();
 }
 
+final class PaymentHistoryOnTapOutSideEvent extends PaymentHistoryEvent {
+
+  PaymentHistoryOnTapOutSideEvent();
+}
+
 final class PaymentHistoryOnTapEndDateEvent extends PaymentHistoryEvent {
 
   PaymentHistoryOnTapEndDateEvent();

@@ -1,7 +1,6 @@
 <script setup>
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import defaultAvatar from '@assets/icons/default-avatar.png'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import { useRouter } from 'vue-router'
 import { getFollowerText } from '../../utils/follower.util'
 import { formatFollowers } from '@utils/formatViews.util'
@@ -45,9 +44,9 @@ const handleNavigate = () => {
       @click="handleNavigate"
     />
     <div>
-      <div class="flex items-center">
+      <div class="flex">
         <span class="text-2xl ml-3 cursor-pointer break-all" @click="handleNavigate">{{ name }}</span>
-        <span class="flex gap-2 ml-3"> <BlueBadgeIcon v-if="isBlueBadge" /> </span>
+        <span class="flex gap-2 ml-3"> <BlueBadgeIcon v-if="isBlueBadge" class="mt-[6px]" /> </span>
       </div>
       <p class="text-sm">{{ formatFollowers(follower) }} {{ getFollowerText(follower) }}</p>
     </div>

@@ -9,8 +9,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLoadingPage = ModalRoute.of(context)?.settings.arguments as bool? ?? true;
     return BlocProvider<HomeBloc>(
-      create: (context) => HomeBloc()..add(HomeInitialEvent()),
+      create: (context) => HomeBloc()..add(HomeInitialEvent(isLoadingPage: isLoadingPage)),
       child: const HomeBody(),
     );
   }

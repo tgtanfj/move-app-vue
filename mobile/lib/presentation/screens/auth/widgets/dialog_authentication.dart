@@ -9,7 +9,8 @@ import 'package:move_app/presentation/screens/auth/widgets/custom_expandable_pag
 import '../../../../../config/theme/app_colors.dart';
 
 class DialogAuthentication extends StatelessWidget {
-  const DialogAuthentication({super.key});
+  final bool isStayOnPage;
+  const DialogAuthentication({super.key, this.isStayOnPage = false});
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -40,13 +41,15 @@ class DialogAuthentication extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 22),
-              const CustomExpandablePageView(
+               CustomExpandablePageView(
                 dividerColor: AppColors.chineseSilver,
-                tabBarPadding: EdgeInsets.symmetric(horizontal: 16),
+                tabBarPadding: const EdgeInsets.symmetric(horizontal: 16),
                 tabAlignment: TabAlignment.center,
                 tabsWithViews: {
-                  Constants.logIn: LoginPage(),
-                  Constants.signUp: SignUpPage()
+                  Constants.logIn: LoginPage(
+                    isStayOnPage: isStayOnPage,
+                  ),
+                  Constants.signUp: const SignUpPage()
                 },
               ),
             ],

@@ -23,10 +23,14 @@ class _SettingBodyState extends State<SettingBody> {
     return BlocListener<SettingBloc, SettingState>(
       listener: (context, state) {},
       child: BlocBuilder<SettingBloc, SettingState>(builder: (context, state) {
-        return const Scaffold(
-          appBar: AppBarWidget(),
+        return Scaffold(
+          appBar: AppBarWidget(
+            prefixButton: () {
+              Navigator.of(context).pop();
+            },
+          ),
           backgroundColor: AppColors.white,
-          body: SafeArea(
+          body: const SafeArea(
             child: Padding(
               padding: EdgeInsets.all(16),
               child: Column(

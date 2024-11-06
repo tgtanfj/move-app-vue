@@ -1,13 +1,15 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:move_app/constants/api_urls.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
+import 'package:move_app/data/repositories/auth_repository.dart';
 
 enum APIRequestMethod { get, post, put, delete, patch }
 
 class ApiService {
   late Dio dio;
-
   static final ApiService _instance = ApiService._internal();
 
   factory ApiService() {
@@ -23,15 +25,44 @@ class ApiService {
       responseType: ResponseType.json,
     ));
 
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-        if (accessToken.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $accessToken';
-        }
-        return handler.next(options);
-      },
-    ));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+          if (accessToken.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+          return handler.next(options);
+        },
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 400) {
+            try {
+              final respone = await refreshAccessToken();
+              respone.fold((l) async {
+                handler.next(error);
+              }, (r) async {
+                error.requestOptions.headers['Authorization'] = 'Bearer $r';
+                final newResponse = await dio.request(
+                  error.requestOptions.path,
+                  options: Options(
+                    method: error.requestOptions.method,
+                    headers: error.requestOptions.headers,
+                  ),
+                  data: error.requestOptions.data,
+                  queryParameters: error.requestOptions.queryParameters,
+                );
+                return handler.resolve(newResponse);
+              });
+            } catch (e) {
+              await AuthRepository().logOut();
+              return handler.next(error);
+            }
+          } else {
+            return handler.next(error);
+          }
+        },
+      ),
+    );
   }
 
   Future<Response<T>> request<T>(
@@ -82,6 +113,30 @@ class ApiService {
         print(e);
       }
       rethrow;
+    }
+  }
+
+  Future<Either<String, String>> refreshAccessToken() async {
+    try {
+      String? refreshToken = SharedPrefer.sharedPrefer.getUserRefreshToken();
+      if (refreshToken.isNotEmpty) {
+        await SharedPrefer.sharedPrefer.setUserToken(refreshToken);
+        final response = await ApiService().request(
+          APIRequestMethod.get,
+          ApiUrls.refreshTokenEndpoint,
+        );
+        if (response.statusCode == 200) {
+          final newAccessToken = response.data['data']['accessToken'];
+          await SharedPrefer.sharedPrefer.setUserToken(newAccessToken);
+          return Right(newAccessToken);
+        }
+        if (response.statusCode == 400) {
+          await AuthRepository().logOut();
+        }
+      }
+      return const Left(Constants.refreshTokenExpired);
+    } catch (e) {
+      return const Left(Constants.refreshTokenExpired);
     }
   }
 }

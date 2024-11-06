@@ -18,7 +18,7 @@
         </div>
       </div>
     </TableCell>
-    <TableCell>{{ formatDateString(item.datePosted) }}</TableCell>
+    <TableCell>{{ formatDateLong(item.datePosted) }}</TableCell>
     <TableCell class="text-center">{{ item.numberOfViews }}</TableCell>
     <TableCell class="text-center">{{ item.numberOfComments }}</TableCell>
     <TableCell>
@@ -88,11 +88,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import { TableCell, TableRow } from '@common/ui/table'
 import EditVideo from '@components/video-manage/EditVideo.vue'
 import ShareVideo from '@components/video-manage/ShareVideo.vue'
-import { detectDuration, formatDateString } from '@utils/uploadVideo.util'
+import { detectDuration } from '@utils/uploadVideo.util'
 import { ArrowDownToLine, EllipsisVertical, Trash, Upload } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseDialog from '../BaseDialog.vue'
+import { formatDateLong } from '../../utils/convertDate.util'
 
 const props = defineProps({
   item: {
@@ -131,7 +132,8 @@ const handleChange = () => {
   const checked = !isChecked.value
   emit('update:selectedItems', {
     id: props.item.id,
-    checked
+    checked,
+    urlS3: props.item.urlS3
   })
 }
 

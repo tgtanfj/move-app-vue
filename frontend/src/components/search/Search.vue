@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useSearchStore } from '../../stores/search'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 
 const searchStore = useSearchStore()
 const router = useRouter()
@@ -54,6 +53,7 @@ const handleCloseResultModal = (event) => {
 }
 
 const redirectToSearch = (query) => {
+  searchStore.text = query
   router.push({
     path: '/search',
     query: {
@@ -66,10 +66,14 @@ const redirectToSearch = (query) => {
     searchStore.postUserHistory(query)
   }
 }
-const redirectTo = (endpoint, query, id) => {
-  if (id) {
-    router.push(`/${endpoint}/${query}/${id}`)
-  } else router.push(`/${endpoint}/${query}`)
+const redirectToCategory = (endpoint, query, id) => {
+  searchStore.text = query
+  router.push(`/${endpoint}/${query}/${id}`)
+  searchStore.closeResultBox()
+}
+const redirectToVideoAndChannel = (endpoint, query, id) => {
+  searchStore.text = query
+  router.push(`/${endpoint}/${id}`)
   searchStore.closeResultBox()
 }
 const handleFocus = () => {
@@ -145,7 +149,7 @@ const onSubmit = () => {
               <div
                 class="flex items-center gap-3 cursor-pointer"
                 @click="
-                  redirectTo(
+                  redirectToCategory(
                     'categories',
                     searchStore.results.topCategory?.title.toLowerCase(),
                     searchStore.results.topCategory.id
@@ -178,7 +182,10 @@ const onSubmit = () => {
             :key="item.id"
             class="flex justify-between items-center gap-5 cursor-pointer"
           >
-            <div class="flex items-center" @click="redirectTo('channel', item.id)">
+            <div
+              class="flex items-center"
+              @click="redirectToVideoAndChannel('channel', item.name, item.id)"
+            >
               <img :src="item.image" alt="item.name" class="w-[60px] h-[60px] rounded-full" />
               <p class="text-base font-medium text-black capitalize ml-4 mr-1">
                 {{
@@ -203,7 +210,10 @@ const onSubmit = () => {
             :key="item.id"
             class="flex items-center justify-between gap-5"
           >
-            <div class="flex items-center" @click="redirectTo('video', item.id)">
+            <div
+              class="flex items-center"
+              @click="redirectToVideoAndChannel('video', item.title, item.id)"
+            >
               <img
                 :src="item.thumbnails[0]?.image"
                 :alt="item.title"

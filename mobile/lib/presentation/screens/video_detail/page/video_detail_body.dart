@@ -4,8 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
+import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/key_screen.dart';
-import 'package:move_app/data/services/launch_url_service.dart';
+import 'package:move_app/data/services/launch_service.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
@@ -28,7 +29,9 @@ import '../widgets/item_comment.dart';
 import '../widgets/write_comment.dart';
 
 class VideoDetailBody extends StatefulWidget {
-  const VideoDetailBody({super.key});
+  const VideoDetailBody({
+    super.key,
+  });
 
   @override
   State<VideoDetailBody> createState() => _VideoDetailBodyState();
@@ -37,6 +40,7 @@ class VideoDetailBody extends StatefulWidget {
 class _VideoDetailBodyState extends State<VideoDetailBody> {
   late ScrollController _scrollController;
   final String username = SharedPrefer.sharedPrefer.getUsername();
+  bool _hasScrolledToPosition = false;
 
   @override
   void initState() {
@@ -73,7 +77,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(),
+        builder: (context) => const DialogAuthentication(
+          isStayOnPage: true,
+        ),
       );
     } else {
       final event = isLike
@@ -95,7 +101,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBarWidget(
-          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu),
+          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu,
+              arguments: true),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,6 +120,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
             Expanded(
               child: BlocConsumer<VideoDetailBloc, VideoDetailState>(
                 listener: (context, state) {
+                  (state.status == VideoDetailStatus.processing)
+                      ? EasyLoading.show()
+                      : EasyLoading.dismiss();
                   if (state.status == VideoDetailStatus.rateSuccess) {
                     showDialog(
                       context: context,
@@ -120,6 +130,33 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                         return const ThanksRateDialog();
                       },
                     );
+                  }
+                  if (state.targetCommentId != null &&
+                      !_hasScrolledToPosition) {
+                    final comments = state.listComments;
+
+                    if ((comments?.length ?? 0) > 2) {
+                      double scrollToPosition = 100;
+                      _hasScrolledToPosition = true;
+
+                      Future.delayed(const Duration(seconds: 1), () {
+                        _scrollController.animateTo(
+                          scrollToPosition,
+                          duration: const Duration(seconds: 1),
+                          curve: Curves.linear,
+                        );
+                      });
+                    }
+                  }
+                  if (state.facebookLink != null &&
+                      state.facebookLink!.isNotEmpty) {
+                    openExternalApplication(
+                        "${state.facebookLink?.split('?').first}?u=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
+                  }
+                  if (state.twitterLink != null &&
+                      state.twitterLink!.isNotEmpty) {
+                    openExternalApplication(
+                        "${state.twitterLink?.split('?').first}?url=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
                   }
                 },
                 builder: (context, state) {
@@ -248,8 +285,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               controller: _scrollController,
               shrinkWrap: true,
               itemCount: state.listComments?.length ?? 0,
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
+              separatorBuilder: (BuildContext context, int index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  child: const Divider()),
               itemBuilder: (BuildContext context, int index) {
                 return _buildCommentItem(
                     context, state.listComments![index], state, height);
@@ -281,6 +319,10 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     final isHideRepliesForCurrentComment =
         state.isHiddenListReply?[commentModel.id] ?? false;
 
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
+    final hasTargetCommentId =
+        state.targetCommentId == commentModel.id && state.targetReplyId == 0;
     return Column(
       children: [
         if (commentModel == state.listComments?.first) ...[
@@ -290,6 +332,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         ],
         ItemComment(
           commentModel: commentModel,
+          onTapDelete: () {
+            context.read<VideoDetailBloc>().add(
+                VideoDetailDeleteCommentEvent(commentId: commentModel.id ?? 0));
+          },
+          isCommentable: state.video?.isCommentable ?? false,
+          hasTargetCommentId: hasTargetCommentId,
           onTapLike: state.video?.isCommentable == true
               ? () =>
                   _handleCommentReaction(context, commentModel, isLike: true)
@@ -301,13 +349,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           isHideReplies: isHideRepliesForCurrentComment,
           widgetHideListReplies: _buildHideRepliesButton(
               context, commentModel, state, isHideRepliesForCurrentComment),
-          widgetListReplies: _buildReplyList(
-              context, replies, isHideRepliesForCurrentComment, state),
+          widgetListReplies: _buildReplyList(context, replies,
+              isHideRepliesForCurrentComment, state, commentModel),
           onTapShowInputReply: state.video?.isCommentable == true
               ? () => _onTapShowInputReply(context, commentModel)
               : null,
-          isShowTemporaryListReply: state.isShowTemporaryListReply,
-          originalNumOfReply: state.originalNumOfReply?[commentModel.id] ?? 0,
+          isShowTemporaryListReply: isShowTemporaryListReplyMap,
+          repliesLength: replies.length,
           widgetReplyInput: _buildReplyInput(
             context,
             commentModel,
@@ -323,10 +371,10 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   Widget _buildHideRepliesButton(BuildContext context,
       CommentModel commentModel, VideoDetailState state, bool isHideReplies) {
     return Visibility(
-      visible: isHideReplies,
+      visible: isHideReplies && commentModel.numberOfReply != 0,
       child: CustomButton(
         title:
-            "Hide ${(commentModel.numberOfReply ?? 0) > (state.originalNumOfReply?[commentModel.id] ?? 0) ? (commentModel.numberOfReply ?? 0) : (state.originalNumOfReply?[commentModel.id] ?? 0)} ${(state.originalNumOfReply?[commentModel.id] ?? 0) == 1 ? 'Reply' : 'Replies'}",
+            "Hide ${(commentModel.numberOfReply ?? 0)} ${(commentModel.numberOfReply ?? 0) == 1 ? 'Reply' : 'Replies'}",
         titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
         prefix: Padding(
           padding: const EdgeInsets.only(right: 12),
@@ -355,16 +403,27 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   }
 
   Widget _buildReplyList(BuildContext context, List<CommentModel> replies,
-      bool isHideReplies, VideoDetailState state) {
+      bool isHideReplies, VideoDetailState state, CommentModel commentModel) {
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
+
     return Visibility(
-      visible: isHideReplies || state.isShowTemporaryListReply,
+      visible: isHideReplies || isShowTemporaryListReplyMap,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int replyIndex) {
           final replyCommentModel = replies[replyIndex];
+          final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           return ItemComment(
+            onTapDelete: () {
+              context.read<VideoDetailBloc>().add(VideoDetailDeleteCommentEvent(
+                  commentId: replyCommentModel.id ?? 0,
+                  parenCommentId: commentModel.id));
+            },
             commentModel: replyCommentModel,
+            isCommentable: state.video?.isCommentable ?? false,
+            hasTargetReplyId: hasTargetReplyId,
             isShowReplyButton: false,
             onTapLike: state.video?.isCommentable == true
                 ? () => _handleCommentReaction(context, replyCommentModel,
@@ -387,7 +446,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(),
+        builder: (context) => const DialogAuthentication(
+          isStayOnPage: true,
+        ),
       );
     } else {
       context.read<VideoDetailBloc>().add(
@@ -406,6 +467,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       child: WriteComment(
         hintText: Constants.writeReply,
         isCancelReply: true,
+        marginRight: 0,
         onChanged: (value) {
           context.read<VideoDetailBloc>().add(
                 VideoDetailReplyChangedEvent(content: value),
@@ -444,15 +506,18 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       List<CommentModel> replies,
       bool isHideReplies,
       VideoDetailState state) {
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
+
     return Visibility(
-      visible:
-          ((state.originalNumOfReply?[commentModel.id] ?? 0) > replies.length &&
-                  (commentModel.numberOfReply ?? 0) > 0) ||
-              (!isHideReplies && (commentModel.numberOfReply ?? 0) > 0),
+      visible: ((commentModel.numberOfReply ?? 0) > replies.length &&
+              (commentModel.numberOfReply ?? 0) > 0) ||
+          (!isHideReplies && (commentModel.numberOfReply ?? 0) > 0) &&
+              (!isShowTemporaryListReplyMap && replies.length == 1),
       child: CustomButton(
         title: isHideReplies
             ? Constants.showMoreReplies
-            : "Show ${commentModel.numberOfReply} ${commentModel.numberOfReply == 1 ? "Reply" : "Replies"}",
+            : "Show ${(commentModel.numberOfReply ?? 0) - (replies.isEmpty ? 0 : replies.length)} ${(commentModel.numberOfReply == 1 || ((commentModel.numberOfReply ?? 0) - (replies.isEmpty ? 0 : 1)) == 1) ? "Reply" : "Replies"}",
         titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
         prefix: Padding(
           padding: const EdgeInsets.only(right: 12),
@@ -490,7 +555,6 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     double height,
     VideoDetailState state,
   ) {
-    String token = SharedPrefer.sharedPrefer.getUserToken();
     return Column(
       children: [
         const SizedBox(
@@ -510,11 +574,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               );
             },
             followButton: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -524,11 +590,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             giftRepButton: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -541,11 +609,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             onTapRate: () {
-              if (token.isEmpty) {
+              if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication();
+                    return const DialogAuthentication(
+                      isStayOnPage: true,
+                    );
                   },
                 );
               } else {
@@ -558,7 +628,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   },
                 ).then((onValue) {
                   if (onValue != null) {
-                    if (context.mounted && onValue != null) {
+                    if (mounted) {
                       context
                           .read<VideoDetailBloc>()
                           .add(VideoDetailRateSubmitEvent(onValue));
@@ -568,24 +638,17 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             facebookButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.facebookOption));
-              if (state.facebookLink != null &&
-                  state.facebookLink!.isNotEmpty) {
-                openExternalApplication(state.facebookLink ?? "");
-              }
+              context.read<VideoDetailBloc>().add(VideoDetailShareFacebookEvent(
+                  videoId: state.video?.id ?? 0));
             },
             twitterButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.twitterOption));
-              if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
-                openExternalApplication(state.twitterLink ?? "");
-              }
+              context.read<VideoDetailBloc>().add(VideoDetailShareTwitterEvent(
+                  videoId: state.video?.id ?? 0,));
             },
             copyLinkButton: () {
-              Clipboard.setData(ClipboardData(text: state.video?.url ?? ""));
+              Clipboard.setData(ClipboardData(
+                  text:
+                      "${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}"));
             },
           ),
         ),
