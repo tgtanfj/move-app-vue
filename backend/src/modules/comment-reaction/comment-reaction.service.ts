@@ -126,8 +126,9 @@ export class CommentReactionService {
     const snapshot = await notificationsRef.get();
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
+      const isRead = childSnapshot.val().isRead;
       const checkId = value?.replyId ? value.replyId : value.commentId;
-      if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
+      if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId && isRead === false) {
         remove.push(childSnapshot.ref.remove());
       }
     });
