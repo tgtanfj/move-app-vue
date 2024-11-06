@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
 import 'package:move_app/data/repositories/payment_method_repository.dart';
@@ -44,7 +45,7 @@ class PaymentDetailsBloc
         (countries) {
           final vnCountry = countries.firstWhere(
             (country) => country.id == 240,
-            orElse: () => countries.first,
+            orElse: () => CountryModel(),
           );
 
           emit(state.copyWith(

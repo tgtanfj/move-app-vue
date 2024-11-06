@@ -134,13 +134,9 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                         initialValue: (state.selectedCountry?.id != null)
                             ? state.selectedCountry?.id
                             : null,
-                        items: state.countryList.map((country) {
-                          return {
-                            'id': country.id,
-                            'name': country.name,
-                            'countryCode': country.countryCode,
-                          };
-                        }).toList(),
+                        items: state.countryList
+                            .map((country) => country.toJson())
+                            .toList(),
                         onChanged: (countryId) {
                           if (countryId != null) {
                             BlocProvider.of<PaymentDetailsBloc>(context).add(
