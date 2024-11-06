@@ -60,6 +60,7 @@ const postCommentVideo = async () => {
     if (data.message === 'success') {
       emit('update', data?.data)
       comment.value = ''
+      cancelComment()
     } else {
       return
     }

@@ -75,7 +75,6 @@ const isActivePath = (itemPath) => {
                     <component :is="item.icon" class="mr-2" />
                     {{ item.name }}
                     <span class="ml-auto">
-                      <ChevronDown />
                     </span>
                   </router-link>
                   <router-link

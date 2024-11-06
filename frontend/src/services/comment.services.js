@@ -111,5 +111,14 @@ export const commentServices = {
       console.error('Get channel comments error:', error)
       throw error
     }
+  },
+  deleteCommentById: async (commentId) => {
+    try {
+      const response = await apiAxios.delete(`/comment/${commentId}`)
+      return response.data
+    } catch (error) {
+      console.error('Delete comments error:', error)
+      throw error
+    }
   }
 }
