@@ -143,7 +143,7 @@ const onSubmit = () => {
       </div>
       <div v-if="searchStore.text !== ''" class="w-full">
         <!-- 1 Category -->
-        <div v-if="typeof searchStore.results.topCategory === 'object'" class="mt-4 w-full">
+        <div v-if="searchStore.results.topCategory?.id" class="mt-4 w-full">
           <div class="border-b-[3px] pb-4">
             <div class="flex items-center justify-between mb-1">
               <div
