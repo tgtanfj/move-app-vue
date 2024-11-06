@@ -36,6 +36,15 @@ export class SearchService {
     return { categories, totalCount };
   }
 
+  async channelIdHasPublishedVideo(channelId: number): Promise<boolean> {
+    const videoCount = await this.videoRepository.count({
+      where: {
+        channel: { id: channelId },
+        isPublish: true, // Check if the video is published
+      },
+    });
+    return videoCount > 0;
+  }
   async searchChannels(params: {
     query: string;
     page: number;
@@ -45,7 +54,7 @@ export class SearchService {
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
 
-    const [channels, totalCount] = await this.channelRepository
+    let [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
       .orderBy('channel.numberOfFollowers', 'DESC')
@@ -55,9 +64,17 @@ export class SearchService {
       .take(limit)
       .getManyAndCount();
 
+    // Filter channels to include only those with published videos
+    channels = await Promise.all(
+      channels.map(async (channel) => {
+        const hasPublishedVideos = await this.channelIdHasPublishedVideo(channel.id);
+        return hasPublishedVideos ? channel : null;
+      }),
+    );
+    channels = channels.filter((channel) => channel !== null);
+
     return { channels, totalCount };
   }
-
   async searchVideos(params: { query: string; page: number; limit: number }) {
     const { query, page, limit } = params;
     const keyword = query.toLowerCase();
@@ -115,77 +132,78 @@ export class SearchService {
   async suggestion(query: string) {
     const keyword = query.toLowerCase();
 
-    // Find initial videos matching the keyword, sorted by `numberOfViews`
+    // Lấy video ban đầu dựa trên từ khóa, sắp xếp theo `numberOfViews`
     let initialVideos = await this.videoRepository.find({
       where: [{ title: ILike(`%${keyword}%`) }],
       relations: ['channel', 'thumbnails'],
       order: { numberOfViews: 'DESC' },
     });
 
-    // Filter thumbnails to only include those with `selected` set to `true`
+    // Lọc thumbnail để chỉ lấy những thumbnail có `selected` là `true`
     initialVideos = initialVideos.map((video) => {
       video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
       return video;
     });
 
-    // Get top category based on keyword
+    // Lấy category dựa trên keyword
     const topCategory = await this.categoryRepository.findOne({
       where: { title: ILike(`%${keyword}%`) },
       order: { numberOfViews: 'DESC' },
     });
 
-    // Get top instructors based on keyword, sorted by number of followers
-    let topInstructors = await this.channelRepository.find({
-      where: { name: ILike(`%${keyword}%`) },
-      order: { numberOfFollowers: 'DESC' },
-    });
+    // Lấy channel dựa trên keyword, sắp xếp theo số lượng followers
+    let topInstructors = await this.channelRepository
+      .createQueryBuilder('channel')
+      .leftJoinAndSelect('channel.videos', 'video')
+      .where('channel.name ILIKE :keyword', { keyword: `%${keyword}%` })
+      .andWhere('video.id IS NOT NULL')
+      .orderBy('channel.numberOfFollowers', 'DESC')
+      .getMany();
 
-    // Sort initial videos based on the specified criteria
+    // Sắp xếp video theo tiêu chí: followers của channel, views, comments, createdAt
     const topVideos = initialVideos.sort((a, b) => {
       const aFollowers = a.channel?.numberOfFollowers || 0;
       const bFollowers = b.channel?.numberOfFollowers || 0;
-
-      if (bFollowers !== aFollowers) {
-        return bFollowers - aFollowers;
-      } else if (b.numberOfViews !== a.numberOfViews) {
-        return b.numberOfViews - a.numberOfViews;
-      } else if (b.numberOfComments !== a.numberOfComments) {
-        return b.numberOfComments - a.numberOfComments;
-      } else {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
+      if (bFollowers !== aFollowers) return bFollowers - aFollowers;
+      if (b.numberOfViews !== a.numberOfViews) return b.numberOfViews - a.numberOfViews;
+      if (b.numberOfComments !== a.numberOfComments) return b.numberOfComments - a.numberOfComments;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    // Sort instructors by badge priority: blue badge first, then pink badge
+    // Sắp xếp instructor theo độ ưu tiên của badge
     topInstructors = topInstructors.sort((a, b) => {
       const priorityA = (a.isBlueBadge ? 2 : 0) + (a.isPinkBadge ? 1 : 0);
       const priorityB = (b.isBlueBadge ? 2 : 0) + (b.isPinkBadge ? 1 : 0);
       return priorityB - priorityA;
     });
 
-    // Select up to the top 2 instructors
-    const topTwoInstructors = topInstructors.slice(0, 2);
-
+    // Số lượng mục tiêu cho category, channel và video
     let numVideos = 5;
+    let numChannels = 2;
+    let hasCategory = !!topCategory;
 
-    if (topCategory) {
-      numVideos -= 1;
-    }
+    // Xác định các tình huống đặc biệt
+    if (hasCategory) numVideos -= 1;
+    numVideos -= Math.min(numChannels, topInstructors.length);
 
-    if (topTwoInstructors) {
-      numVideos -= topTwoInstructors.length;
-    }
-
-    // Slice the top videos to match the calculated number
     const slicedVideos = topVideos.slice(0, numVideos);
+    const slicedInstructors = topInstructors.slice(0, Math.min(numChannels, topInstructors.length));
 
-    // Return the result with the specified structure
+    // Nếu không đủ video, bổ sung channel theo yêu cầu
+    if (slicedVideos.length < numVideos) {
+      const remainingChannels = topInstructors.slice(
+        slicedInstructors.length,
+        slicedInstructors.length + (numVideos - slicedVideos.length),
+      );
+      slicedInstructors.push(...remainingChannels);
+    }
+
     return {
       topCategory: topCategory || null,
-      topInstructors: topTwoInstructors.length > 0 ? topTwoInstructors : [],
+      topInstructors: slicedInstructors.length > 0 ? slicedInstructors : [],
       topVideos: slicedVideos,
-      hasTopCategory: !!topCategory, // Flag indicating if `topCategory` exists
-      topInstructorsCount: topTwoInstructors.length, // Number of `topTwoInstructors`
+      hasTopCategory: hasCategory,
+      topInstructorsCount: slicedInstructors.length,
     };
   }
 
