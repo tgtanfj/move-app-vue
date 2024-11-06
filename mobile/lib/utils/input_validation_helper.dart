@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:move_app/constants/constants.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 
 class InputValidationHelper {
   static final RegExp email = RegExp(
@@ -193,6 +194,9 @@ class InputValidationHelper {
   static String? validateCardNumber(String value) {
     if (value.length < 16) {
       return Constants.invalidCardNumber;
+    }
+    if (CardNumberValidator.getCardType(value) == CardType.unknown) {
+      return Constants.invalidVisaOrCreditCard;
     }
     return null;
   }

@@ -4,9 +4,9 @@ class CountryModel {
   final String? countryCode;
 
   CountryModel({
-    required this.id,
-    required this.name,
-    required this.countryCode,
+    this.id,
+    this.name,
+    this.countryCode,
   });
 
   CountryModel copyWith({

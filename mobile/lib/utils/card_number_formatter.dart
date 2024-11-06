@@ -9,7 +9,7 @@ enum CardType {
 
 class CardNumberValidator {
   static var visaRegex = RegExp(r'^4[0-9]{0,15}$');
-  static var mastercardRegex = RegExp(r'^5(?:[1-5][0-9]{0,14})?$');
+  static var mastercardRegex = RegExp(r'^[52][0-9]{0,15}$');
 
   static CardType getCardType(String cardNumber) {
     if (cardNumber.isEmpty) return CardType.unknown;
