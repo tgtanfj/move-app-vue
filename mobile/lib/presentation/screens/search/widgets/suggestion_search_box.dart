@@ -9,6 +9,7 @@ import 'package:move_app/data/models/suggestion_model.dart';
 import 'package:move_app/presentation/components/avatar.dart';
 import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/presentation/screens/videos_category/page/videos_category_page.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 
 class SuggestionSearchBox extends StatelessWidget {
   final SuggestionModel? suggestionModel;
@@ -99,8 +100,8 @@ class SuggestionSearchBox extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => VideoDetailPage(
-                            videoId:
+                          builder: (context) => ViewChannelProfilePage(
+                            idChannel:
                                 suggestionModel?.topInstructors?[index].id ?? 0,
                           ),
                         ),
