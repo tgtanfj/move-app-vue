@@ -48,13 +48,11 @@ final class PaymentDetailsSubmitEvent extends PaymentDetailsEvent {
 }
 
 class PaymentDetailsCountrySelectEvent extends PaymentDetailsEvent {
-  final int? countryId;
-  final CountryModel? selectedCountry;
+  final int countryId;
 
-  const PaymentDetailsCountrySelectEvent(
-      {this.countryId, this.selectedCountry});
+  const PaymentDetailsCountrySelectEvent({required this.countryId});
 
-  List<Object?> get props => [countryId ?? 0, selectedCountry ?? 0];
+  List<Object?> get props => [countryId];
 }
 
 class PaymentDetailsCardHolderNameEvent extends PaymentDetailsEvent {

@@ -18,6 +18,7 @@ final class PaymentDetailsState extends Equatable {
   final bool? showCardHolder;
   final List<CountryModel> countryList;
   final CountryModel? selectedCountry;
+  final String? countryCode;
   final String messageSelectCountry;
   final String? cardHolderName;
   final String? cardNumber;
@@ -49,6 +50,7 @@ final class PaymentDetailsState extends Equatable {
     required this.countryList,
     this.messageSelectCountry = '',
     this.selectedCountry,
+    this.countryCode,
     this.cardHolderName,
     this.cardNumber,
     this.expiryDate,
@@ -74,6 +76,7 @@ final class PaymentDetailsState extends Equatable {
         countryList: [],
         messageSelectCountry: '',
         selectedCountry: null,
+        countryCode: '',
         cardHolderName: '',
         cardNumber: '',
         expiryDate: '',
@@ -97,6 +100,7 @@ final class PaymentDetailsState extends Equatable {
     List<CountryModel>? countryList,
     CountryModel? selectedCountry,
     String? messageSelectCountry,
+    String? countryCode,
     String? cardHolderName,
     String? cardNumber,
     String? expiryDate,
@@ -121,6 +125,7 @@ final class PaymentDetailsState extends Equatable {
       countryList: countryList ?? this.countryList,
       messageSelectCountry: messageSelectCountry ?? this.messageSelectCountry,
       selectedCountry: selectedCountry ?? this.selectedCountry,
+      countryCode: countryCode ?? this.countryCode,
       cardHolderName: cardHolderName ?? this.cardHolderName,
       cardNumber: cardNumber ?? this.cardNumber,
       expiryDate: expiryDate ?? this.expiryDate,
@@ -154,6 +159,7 @@ final class PaymentDetailsState extends Equatable {
         countryList,
         messageSelectCountry,
         selectedCountry,
+        countryCode,
         cardHolderName,
         cardNumber,
         expiryDate,
