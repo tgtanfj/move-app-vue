@@ -64,7 +64,7 @@ export class SearchService {
     const offset = (page - 1) * limit;
 
     const [allVideos, totalItemCount] = await this.videoRepository.findAndCount({
-      relations: ['channel', 'thumbnails'],
+      relations: ['channel', 'thumbnails', 'category'],
     });
 
     // Filter videos based on the keyword in title or channel name
