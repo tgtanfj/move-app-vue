@@ -5,7 +5,6 @@ import { computed, ref } from 'vue'
 import { apiAxios } from '../helpers/axios.helper'
 
 const DOWNLOAD_VIDEO_URL = `/video/download`
-const DOWNLOAD_VIDEOS_URL = `/video/download-videos`
 
 export const useVideoStore = defineStore('video', () => {
   //State
@@ -174,35 +173,29 @@ export const useVideoStore = defineStore('video', () => {
 
   const downloadVideos = async (videoSelected) => {
     try {
-      const response = await apiAxios.post(`/video/download-videos`, {
-        arrayUrl: videoSelected
-      })
-      return response.data
+      const response = await fetch(
+        'https://api.training-move-intern.madlab.tech/video/download-videos',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+
+          body: JSON.stringify({ arrayUrl: videoSelected })
+        }
+      )
+
+      return response
     } catch (error) {
       console.error('Error downloading videos:', error)
       throw error
     }
   }
-  // const downloadVideos = async (videoSelected) => {
-  //   try {
-  //     const result = await Promise.all(
-  //       videoSelected.map(async (id) => {
-  //         const response = await apiAxios.get(`${DOWNLOAD_VIDEO_URL}/${id}`)
-  //         return response.data
-  //       })
-  //     )
-
-  //     return result
-  //   } catch (error) {
-  //     console.error('Error downloading videos:', error)
-  //     throw error
-  //   }
-  // }
 
   return {
     //states
     videos,
-    // videoId,
     errorMsg,
     isLoading,
     isCopied,

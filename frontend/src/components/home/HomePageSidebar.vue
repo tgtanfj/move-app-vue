@@ -6,6 +6,7 @@ import { ArrowRightFromLine } from 'lucide-vue-next'
 import { ArrowLeft } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import FollowedChannelsSkeleton from './FollowedChannelsSkeleton.vue'
 import { getFollowerText } from '@utils/follower.util'
 import { useRouter } from 'vue-router'
@@ -45,6 +46,10 @@ const handleClick = () => {
   openLoginStore.toggleOpenLogin()
   openLoginStore.handleClickSignUpFromSidebar()
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
 </script>
 
 <template>
@@ -74,9 +79,10 @@ const handleClick = () => {
           @click="router.push(`/channel/${channel.id}`)"
         >
           <img
-            :src="channel.image"
+            :src="channel.image || defaultAvatar"
             alt="Avatar"
             class="w-10 h-10 rounded-full object-cover shrink-0"
+            @error="handleImageError"
           />
           <div class="flex flex-col gap-0 w-full">
             <div class="flex gap-2">

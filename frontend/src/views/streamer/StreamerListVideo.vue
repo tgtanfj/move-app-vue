@@ -62,8 +62,8 @@
           </div>
         </div>
       </div>
-      <div class="mt-4 ml-7" v-else>
-        <p class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</p>
+      <div class="mt-2 ml-7" v-else>
+        <p class="italic text-[16px]">{{ $t('streamer.no_videos') }}</p>
       </div>
     </template>
   </div>

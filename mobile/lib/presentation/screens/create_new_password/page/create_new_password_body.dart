@@ -148,7 +148,9 @@ class _CreateNewPasswordBodyState extends State<CreateNewPasswordBody> {
                               isShowMessage: state.isShowValidationError &&
                                   (!state.isPasswordValid ||
                                       !state.doPasswordsMatch),
-                              preMessage: Constants.errorMessageConfirmPassword,
+                              preMessage: !state.doPasswordsMatch
+                                  ? Constants.errorMessageConfirmPassword
+                                  : Constants.errorMessageNewPassword,
                             ),
                             const SizedBox(height: 24),
                             SizedBox(

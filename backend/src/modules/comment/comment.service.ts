@@ -148,10 +148,17 @@ export class CommentService {
 
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
+      const isRead = childSnapshot.val().isRead;
       const type = comment?.parent ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT;
       const checkId = comment?.parent ? value.replyId : value.commentId;
 
-      if (value.type === type && checkId === +commentId) remove.push(childSnapshot.ref.remove());
+      if (value.type === type && checkId === +commentId) {
+        if (isRead === false) {
+          remove.push(childSnapshot.ref.remove());
+        } else {
+          childSnapshot.ref.update({ hasDelete: true });
+        }
+      }
     });
 
     await Promise.all(remove);

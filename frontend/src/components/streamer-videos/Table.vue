@@ -185,17 +185,19 @@ const handleDeleteVideo = async (videoId) => {
 
 const handleDownloadVideoList = async () => {
   try {
-    const data = await videoStore.downloadVideos(selectedItemsUrlS3.value)
-    const blob = new Blob([data], { type: 'application/zip' }); // Đặt MIME type phù hợp
-    const url = URL.createObjectURL(blob);
+    const filteredItems = selectedItemsUrlS3.value.filter((item) => item !== null)
 
-    const a = document.createElement('a');
-    a.href = url;
-    document.body.appendChild(a);
-    a.click();
+    const data = await videoStore.downloadVideos(filteredItems)
+    const blob = data instanceof Blob ? data : await data.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'move-videos.zip'
+    document.body.appendChild(a)
+    a.click()
 
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url); // Giải phóng URL sau khi tải
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   } catch (error) {
     console.error('Error downloading video list:', error)
   }

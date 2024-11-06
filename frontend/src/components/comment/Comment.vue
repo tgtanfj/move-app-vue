@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router'
 import RenderComment from './RenderComment.vue'
 import WriteComment from './WriteComment.vue'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
-import LoadingTable from '@components/LoadingTable.vue'
 import Loading from '@components/Loading.vue'
 
 const props = defineProps({
@@ -50,6 +49,20 @@ const updateReplyCount = (id, newReplyCount) => {
   const targetComment = commentData.value.find((c) => c.id === id)
   if (targetComment) {
     targetComment.numberOfReply = targetComment.numberOfReply + newReplyCount
+  }
+}
+
+const decreReplycount = (id) => {
+  const targetComment = commentData.value.find((c) => c.id === id)
+  if (targetComment) {
+    targetComment.numberOfReply = targetComment.numberOfReply - 1
+  }
+}
+
+const uploadNewReplycount = (id, updateValue) => {
+  const targetComment = commentData.value.find((c) => c.id === id)
+  if (targetComment) {
+    targetComment.numberOfReply = updateValue
   }
 }
 
@@ -104,6 +117,10 @@ watch(
 const handleUpdateComments = (updatedComments) => {
   commentData.value = updatedComments
 }
+
+const handleDeleteComment = (commentId) => {
+  commentData.value = commentData.value.filter((item) => item?.id !== commentId)
+}
 </script>
 
 <template>
@@ -125,6 +142,9 @@ const handleUpdateComments = (updatedComments) => {
         :comments="commentData"
         @update-comments="handleUpdateComments"
         @updateReplyCount="updateReplyCount"
+        @decreReplycount="decreReplycount"
+        @uploadNewReplycount="uploadNewReplycount"
+        @handleDeleteComment="handleDeleteComment"
       />
       <div v-else class="w-full flex flex-col items-center justify-center pt-6">
         <p class="text-[16px]">No comments to display</p>
@@ -144,6 +164,9 @@ const handleUpdateComments = (updatedComments) => {
         :comments="commentData"
         @update-comments="handleUpdateComments"
         @updateReplyCount="updateReplyCount"
+        @decreReplycount="decreReplycount"
+        @uploadNewReplycount="uploadNewReplycount"
+        @handleDeleteComment="handleDeleteComment"
       />
       <div v-else class="w-full flex flex-col items-center justify-center pt-6">
         <p class="text-[16px]">No comments to display</p>

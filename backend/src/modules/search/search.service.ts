@@ -28,6 +28,7 @@ export class SearchService {
     const [categories, totalCount] = await this.categoryRepository
       .createQueryBuilder('category')
       .where('category.title ILIKE :keyword', { keyword })
+      .orderBy('category.numberOfViews', 'DESC')
       .skip(offset)
       .take(limit)
       .getManyAndCount();
@@ -35,6 +36,15 @@ export class SearchService {
     return { categories, totalCount };
   }
 
+  async channelIdHasPublishedVideo(channelId: number): Promise<boolean> {
+    const videoCount = await this.videoRepository.count({
+      where: {
+        channel: { id: channelId },
+        isPublish: true, // Check if the video is published
+      },
+    });
+    return videoCount > 0;
+  }
   async searchChannels(params: {
     query: string;
     page: number;
@@ -44,7 +54,7 @@ export class SearchService {
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
 
-    const [channels, totalCount] = await this.channelRepository
+    let [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
       .orderBy('channel.numberOfFollowers', 'DESC')
@@ -54,131 +64,146 @@ export class SearchService {
       .take(limit)
       .getManyAndCount();
 
+    // Filter channels to include only those with published videos
+    channels = await Promise.all(
+      channels.map(async (channel) => {
+        const hasPublishedVideos = await this.channelIdHasPublishedVideo(channel.id);
+        return hasPublishedVideos ? channel : null;
+      }),
+    );
+    channels = channels.filter((channel) => channel !== null);
+
     return { channels, totalCount };
   }
   async searchVideos(params: { query: string; page: number; limit: number }) {
     const { query, page, limit } = params;
-    const keyword = `%${query}%`;
+    const keyword = query.toLowerCase();
     const offset = (page - 1) * limit;
 
-    const videosWithHighestViewsYesterday = await this.getVideosWithHighestViewsYesterday(
-      keyword,
-      offset,
-      limit,
+    const [allVideos, totalItemCount] = await this.videoRepository.findAndCount({
+      relations: ['channel', 'thumbnails', 'category'],
+    });
+
+    // Filter videos based on the keyword in title or channel name
+    let filteredVideos = allVideos.filter(
+      (video) =>
+        video.title.toLowerCase().includes(keyword) ||
+        (video.channel && video.channel.name.toLowerCase().includes(keyword)),
     );
 
-    const [searchedVideos, totalCount] = await this.videoRepository
-      .createQueryBuilder('video')
-      .innerJoinAndSelect('video.category', 'category')
-      .innerJoinAndSelect('video.channel', 'channel')
-      .leftJoinAndSelect(
-        'video.thumbnails',
-        'thumbnail',
-        'thumbnail.videoId = video.id AND thumbnail.selected = true',
-      )
-      .where('video.title ILIKE :keyword', { keyword })
-      .skip(offset)
-      .take(limit)
-      .getManyAndCount();
+    // Filter thumbnails to only include those with `selected` set to `true`
+    filteredVideos = filteredVideos.map((video) => {
+      video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
+      return video;
+    });
 
-    const combinedVideos = [...videosWithHighestViewsYesterday, ...searchedVideos];
+    // Sort videos based on priority: channel followers, views, comments, and recency
+    filteredVideos = filteredVideos.sort((a, b) => {
+      const aFollowers = a.channel?.numberOfFollowers || 0;
+      const bFollowers = b.channel?.numberOfFollowers || 0;
 
-    const uniqueVideos = combinedVideos.filter(
-      (video, index, self) => index === self.findIndex((v) => v.id === video.id),
-    );
+      if (bFollowers !== aFollowers) {
+        return bFollowers - aFollowers;
+      } else if (b.numberOfViews !== a.numberOfViews) {
+        return b.numberOfViews - a.numberOfViews;
+      } else if (b.numberOfComments !== a.numberOfComments) {
+        return b.numberOfComments - a.numberOfComments;
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
 
-    const limitedVideos = uniqueVideos.slice(0, limit);
+    // Paginate the sorted videos
+    const paginatedVideos = filteredVideos.slice(offset, offset + limit);
 
-    const totalPages = Math.ceil(totalCount / limit);
+    const totalPages = Math.ceil(filteredVideos.length / limit);
     const itemFrom = offset + 1;
-    const itemTo = Math.min(offset + limit, totalCount);
+    const itemTo = offset + paginatedVideos.length;
 
-    return { videos: limitedVideos, totalItemCount: totalCount, totalPages, itemFrom, itemTo };
-  }
-
-  private async getVideosWithHighestViewsYesterday(keyword: string, offset: number, limit: number) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const videosWithHighestViews = await this.videoRepository.find({
-      relations: { views: true, thumbnails: true, channel: true },
-      where: { title: ILike(keyword), views: { viewDate: yesterday } },
-      order: { views: { totalView: 'DESC' } },
-      skip: offset,
-      take: limit,
-    });
-
-    const dataRes = videosWithHighestViews.map((video) => {
-      const { views, ...data } = video;
-      const thumbnails = video.thumbnails.find((thumbnail) => thumbnail.selected === true);
-      return {
-        ...data,
-        thumbnails: [thumbnails],
-        channel: video.channel,
-      };
-    });
-
-    return dataRes;
+    return {
+      videos: paginatedVideos,
+      totalItemCount: filteredVideos.length,
+      totalPages,
+      itemFrom,
+      itemTo,
+    };
   }
 
   async suggestion(query: string) {
-    const keyword = `%${query}%`;
+    const keyword = query.toLowerCase();
 
-    // Truy vấn Top Category
-    const topCategoryPromise = this.categoryRepository
-      .createQueryBuilder('category')
-      .select('category')
-      .where('category.title ILIKE :keyword', { keyword })
-      .orderBy('category.numberOfViews', 'DESC')
-      .getOne();
+    // Lấy video ban đầu dựa trên từ khóa, sắp xếp theo `numberOfViews`
+    let initialVideos = await this.videoRepository.find({
+      where: [{ title: ILike(`%${keyword}%`) }],
+      relations: ['channel', 'thumbnails'],
+      order: { numberOfViews: 'DESC' },
+    });
 
-    // Truy vấn Top Instructors (sắp xếp theo số lượng followers)
-    const topInstructorsPromise = this.channelRepository
+    // Lọc thumbnail để chỉ lấy những thumbnail có `selected` là `true`
+    initialVideos = initialVideos.map((video) => {
+      video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
+      return video;
+    });
+
+    // Lấy category dựa trên keyword
+    const topCategory = await this.categoryRepository.findOne({
+      where: { title: ILike(`%${keyword}%`) },
+      order: { numberOfViews: 'DESC' },
+    });
+
+    // Lấy channel dựa trên keyword, sắp xếp theo số lượng followers
+    let topInstructors = await this.channelRepository
       .createQueryBuilder('channel')
-      .select('channel')
-      .where('channel.name ILIKE :keyword', { keyword })
+      .leftJoinAndSelect('channel.videos', 'video')
+      .where('channel.name ILIKE :keyword', { keyword: `%${keyword}%` })
+      .andWhere('video.id IS NOT NULL')
       .orderBy('channel.numberOfFollowers', 'DESC')
       .getMany();
 
-    // Truy vấn Top Videos với views của ngày hôm qua
-    const topVideosPromise = this.getVideosWithHighestViewsYesterday(keyword, 0, 2);
+    // Sắp xếp video theo tiêu chí: followers của channel, views, comments, createdAt
+    const topVideos = initialVideos.sort((a, b) => {
+      const aFollowers = a.channel?.numberOfFollowers || 0;
+      const bFollowers = b.channel?.numberOfFollowers || 0;
+      if (bFollowers !== aFollowers) return bFollowers - aFollowers;
+      if (b.numberOfViews !== a.numberOfViews) return b.numberOfViews - a.numberOfViews;
+      if (b.numberOfComments !== a.numberOfComments) return b.numberOfComments - a.numberOfComments;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
-    // Chạy các promises đồng thời
-    const [topCategory, topInstructors, topVideos] = await Promise.all([
-      topCategoryPromise,
-      topInstructorsPromise,
-      topVideosPromise,
-    ]);
-
-    // Nếu không có kết quả từ getVideosWithHighestViewsYesterday thì fallback bằng truy vấn trong bảng video
-    let finalTopVideos = topVideos;
-    if (finalTopVideos.length === 0) {
-      finalTopVideos = await this.videoRepository
-        .createQueryBuilder('video')
-        .select('video')
-        .leftJoinAndSelect('video.thumbnails', 'thumbnail')
-        .where('video.title ILIKE :keyword OR video.keywords ILIKE :keyword', { keyword })
-        .andWhere('thumbnail.selected = :isSelected', { isSelected: true })
-        .orderBy('video.numberOfViews', 'DESC')
-        .limit(2)
-        .getMany();
-    }
-
-    // Sắp xếp instructors theo badge (ưu tiên blue badge trước, sau đó pink badge)
-    const sortedInstructors = topInstructors.sort((a, b) => {
+    // Sắp xếp instructor theo độ ưu tiên của badge
+    topInstructors = topInstructors.sort((a, b) => {
       const priorityA = (a.isBlueBadge ? 2 : 0) + (a.isPinkBadge ? 1 : 0);
       const priorityB = (b.isBlueBadge ? 2 : 0) + (b.isPinkBadge ? 1 : 0);
       return priorityB - priorityA;
     });
 
-    // Chọn ra 2 instructors hàng đầu
-    const topTwoInstructors = sortedInstructors.slice(0, 2);
+    // Số lượng mục tiêu cho category, channel và video
+    let numVideos = 5;
+    let numChannels = 2;
+    let hasCategory = !!topCategory;
 
-    // Trả về kết quả
+    // Xác định các tình huống đặc biệt
+    if (hasCategory) numVideos -= 1;
+    numVideos -= Math.min(numChannels, topInstructors.length);
+
+    const slicedVideos = topVideos.slice(0, numVideos);
+    const slicedInstructors = topInstructors.slice(0, Math.min(numChannels, topInstructors.length));
+
+    // Nếu không đủ video, bổ sung channel theo yêu cầu
+    if (slicedVideos.length < numVideos) {
+      const remainingChannels = topInstructors.slice(
+        slicedInstructors.length,
+        slicedInstructors.length + (numVideos - slicedVideos.length),
+      );
+      slicedInstructors.push(...remainingChannels);
+    }
+
     return {
-      topCategory: topCategory || 'Notfound',
-      topInstructors: topTwoInstructors.length > 0 ? topTwoInstructors : 'Notfound',
-      topVideos: finalTopVideos.length > 0 ? finalTopVideos : 'Notfound',
+      topCategory: topCategory || null,
+      topInstructors: slicedInstructors.length > 0 ? slicedInstructors : [],
+      topVideos: slicedVideos,
+      hasTopCategory: hasCategory,
+      topInstructorsCount: slicedInstructors.length,
     };
   }
 

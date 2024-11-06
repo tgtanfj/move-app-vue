@@ -390,6 +390,8 @@ class Constants {
       'Your payment method has been setup successfully.';
   static const String guideLineCVV =
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
+  static const String pleaseEnterValidVisaOrCreditCardNumber =
+      'Please enter a valid Visa or credit card number only';
   static const String repsNotFound = 'Reps not found';
   static const String requiresConfirmation = 'requires_confirmation';
   static const String refreshTokenExpired = 'Refresh token expired';

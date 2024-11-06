@@ -11,6 +11,7 @@ import { signinSchema } from '../../validation/schema'
 import { useFollowerStore } from '../../stores/follower.store'
 import { auth } from '@services/firebaseConfig'
 import { signOut } from 'firebase/auth'
+import { useSearchStore } from '../../stores/search'
 
 const props = defineProps({
   closeModal: Function
@@ -29,6 +30,7 @@ const [email, emailAttrs] = defineField('email')
 const [password, passwordAttrs] = defineField('password')
 const { toast } = useToast()
 const authStore = useAuthStore()
+const searchStore = useSearchStore()
 const followerStore = useFollowerStore()
 
 const isFillAllFields = computed(() => {
@@ -45,6 +47,7 @@ const handleSignIn = async () => {
   } else {
     await authStore.loginWithEmail(values)
     if (authStore.accessToken) {
+      searchStore.text = ''
       followerStore.getAllFollowers()
       props.closeModal()
       toast({ description: 'Login successfully', variant: 'successfully' })
@@ -62,6 +65,7 @@ const handleGoogleSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        searchStore.text = ''
         followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })
@@ -89,6 +93,7 @@ const handleFacebookSignIn = async () => {
       await authStore.sendTokenToBackend()
 
       if (authStore.accessToken) {
+        searchStore.text = ''
         followerStore.getAllFollowers()
         props.closeModal()
         toast({ description: 'Login successfully', variant: 'successfully' })

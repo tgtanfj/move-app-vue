@@ -4,10 +4,18 @@ class CountryModel {
   final String? countryCode;
 
   CountryModel({
-    required this.id,
-    required this.name,
-    required this.countryCode,
+    this.id,
+    this.name,
+    this.countryCode,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'countryCode': countryCode,
+    };
+  }
 
   CountryModel copyWith({
     int? id,

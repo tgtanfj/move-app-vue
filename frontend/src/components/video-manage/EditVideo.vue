@@ -334,7 +334,7 @@ const onDialogClose = (isOpen) => {
     </DialogTrigger>
 
     <DialogContent
-      class="m-0 p-0 w-[840px] h-[520px] flex flex-col justify-between overflow-hidden"
+      class="m-0 p-0 w-[840px] h-[550px] flex flex-col justify-between overflow-hidden"
     >
       <DialogTitle class="my-6 mx-6">
         <p class="text-[24px] font-bold mb-6">{{ $t('streamer.edit_modal_title') }}</p>
@@ -642,7 +642,7 @@ const onDialogClose = (isOpen) => {
           </Button>
         </div>
         <div v-show="tabChange === 'tags'">
-          <Button @click="changeTab('details')" class="w-[120px] font-normal" variant="outline">{{
+          <Button @click="changeTab('details')" class="w-[90px] font-normal" variant="outline">{{
             $t('upload_video.back')
           }}</Button>
           <Button
@@ -655,7 +655,7 @@ const onDialogClose = (isOpen) => {
           </Button>
         </div>
         <div v-show="tabChange === 'settings'" class="flex items-center">
-          <Button @click="changeTab('tags')" class="w-[120px] font-normal" variant="outline">{{
+          <Button @click="changeTab('tags')" class="w-[90px] font-normal" variant="outline">{{
             $t('upload_video.back')
           }}</Button>
           <Button
@@ -664,7 +664,7 @@ const onDialogClose = (isOpen) => {
             :disabled="uploadLoading"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
-            <span class="font-bold" v-if="!uploadLoading">{{ $t('streamer.save') }}</span>
+            <span class="font-bold text-sm" v-if="!uploadLoading">{{ $t('streamer.save') }}</span>
             <Loading v-if="uploadLoading" />
           </Button>
         </div>

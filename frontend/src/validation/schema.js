@@ -98,8 +98,8 @@ export const walletSchema = yup.object().shape({
   cardholderName: yup
     .string()
     .trim()
-    .matches(/^[A-Za-z\s]+$/, t('wallet.no_special_characters'))
-    .max(50, t('Max 50 characters')),
+    .matches(/^[\p{L}\s]+$/u, t('wallet.no_special_characters'))
+    .max(50, 'Max 50 characters'),
   cardNumber: yup
     .string()
     .trim()
