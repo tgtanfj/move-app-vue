@@ -477,6 +477,7 @@ export class VideoRepository {
       relations: ['channel', 'channel.user'],
       select: {
         id: true,
+        title: true,
         channel: {
           id: true,
           user: {

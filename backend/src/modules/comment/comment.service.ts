@@ -10,6 +10,7 @@ import { VideoRepository } from '../video/video.repository';
 import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { db } from '@/shared/firebase/firebase.config';
 
 @Injectable()
 export class CommentService {
@@ -44,57 +45,31 @@ export class CommentService {
   async create(userInfo: UserInfoDto, dto: CreateCommentDto) {
     try {
       const userId = userInfo.id;
-      let videoId: number;
-      let dataNotification: CommonNotificationDto;
+      const video = await this.videoRepository.findOne(dto?.videoId);
 
-      dto.videoId && (videoId = dto.videoId);
-      const ownerVideo = await this.videoRepository.getOwnerVideo(videoId);
-
-      if (ownerVideo.isCommentable === false) {
+      if (video?.isCommentable === false) {
         throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
       }
 
       if (dto.commentId && !dto.videoId) {
-        const comment = await this.commentRepository.getOneWithVideo(dto.commentId);
+        const comment = await this.commentRepository.getOne(dto.commentId);
         await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
-        videoId = comment.video.id;
-        const reply = await this.commentRepository.create(userId, dto);
 
-        if (userInfo.id !== comment.user.id) {
-          dataNotification = {
-            sender: userInfo,
-            type: NOTIFICATION_TYPE.REPLY,
-            videoId: videoId,
-            videoTitle: comment.video.title,
-            commentId: comment.id,
-            commentContent: comment.content,
-            replyId: reply.id,
-          };
-          await this.notificationService.sendOneToOneNotification(comment.user.id, dataNotification);
-        }
+        const reply = await this.commentRepository.create(userId, dto);
+        await this.sendNotificationComment(userInfo, reply.id, dto);
 
         return reply;
       }
 
-      const video = await this.videoRepository.findOne(videoId);
       if (!video) {
         throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
       }
+
       const comment = await this.commentRepository.create(userId, dto);
-
-      if (userInfo.id !== ownerVideo.channel.user.id) {
-        dataNotification = {
-          sender: userInfo,
-          type: NOTIFICATION_TYPE.COMMENT,
-          videoId: video.id,
-          videoTitle: video.title,
-          commentId: comment.id,
-        };
-        await this.notificationService.sendOneToOneNotification(ownerVideo.channel.user.id, dataNotification);
-      }
-
       video.numberOfComments++;
+
       await this.videoRepository.save(video);
+      await this.sendNotificationComment(userInfo, comment.id, dto);
       return comment;
     } catch (error) {
       console.log(error);
@@ -111,9 +86,9 @@ export class CommentService {
 
   async delete(id: number): Promise<void> {
     try {
+      let videoId: number;
       const comment = await this.commentRepository.getOneWithVideo(id);
 
-      let videoId: number;
       if (comment?.parent) {
         await this.commentRepository.update(comment.parent.id, {
           numberOfReply: comment.parent.numberOfReply - 1,
@@ -125,9 +100,60 @@ export class CommentService {
       video.numberOfComments--;
       await this.videoRepository.save(video);
 
+      await this.removeNotificationComment(id);
+
       await this.commentRepository.delete(id);
     } catch (error) {
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT'));
     }
+  }
+
+  async sendNotificationComment(userInfo: UserInfoDto, commentId: number, dto: CreateCommentDto) {
+    let receiverId: number;
+    const isReply = !!dto.commentId;
+
+    const video = await this.videoRepository.getOwnerVideo(dto.videoId);
+    receiverId = video.channel.user.id;
+
+    const parent = await this.commentRepository.getOneWithVideo(dto.commentId);
+    isReply && (receiverId = parent.user.id);
+
+    if (userInfo.id !== receiverId) {
+      const dataNotification = {
+        sender: userInfo,
+        type: isReply ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT,
+        videoId: isReply ? parent.video.id : dto.videoId,
+        videoTitle: isReply ? parent.video.title : video.title,
+        commentId: isReply ? dto.commentId : commentId,
+        commentContent: isReply ? parent.content : null,
+        replyId: isReply ? commentId : null,
+      };
+
+      await this.notificationService.sendOneToOneNotification(receiverId, dataNotification);
+    }
+  }
+
+  async removeNotificationComment(commentId: number) {
+    let userId: number;
+    const remove = [];
+    const comment = await this.commentRepository.getOneWithVideo(commentId);
+    userId = comment?.parent && comment.parent.user.id;
+
+    if (!comment?.parent) {
+      userId = (await this.videoRepository.getOwnerVideo(comment.video.id)).channel.user.id;
+    }
+
+    const notificationsRef = db.ref(`notifications/${userId}`);
+    const snapshot = await notificationsRef.get();
+
+    snapshot.forEach((childSnapshot) => {
+      const value = childSnapshot.val().data;
+      const type = comment?.parent ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT;
+      const checkId = comment?.parent ? value.replyId : value.commentId;
+
+      if (value.type === type && checkId === +commentId) remove.push(childSnapshot.ref.remove());
+    });
+
+    await Promise.all(remove);
   }
 }
