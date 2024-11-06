@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { t } from '@helpers/i18n.helper'
 import { usePaymentStore } from '../../stores/payment'
@@ -7,7 +7,13 @@ import { loadStripe } from '@stripe/stripe-js'
 import { STRIPE_KEY } from '@constants/api.constant'
 
 import { Button } from '@common/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@common/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@common/ui/dialog'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@common/ui/form'
 import { Input } from '@common/ui/input'
 import {
@@ -32,10 +38,22 @@ import { useForm } from 'vee-validate'
 import { ChevronLeft, X } from 'lucide-vue-next'
 import { useQueryClient } from '@tanstack/vue-query'
 
+const props = defineProps({
+  showListReps: {
+    type: Boolean,
+    required: true
+  },
+  isGiftReps: {
+    type: Boolean,
+    required: false
+  }
+})
+
 const paymentStore = usePaymentStore()
 const emit = defineEmits(['buy-package', 'close-modal', 'back-giftrep', 'success-buy'])
 const queryClient = useQueryClient()
 
+const route = useRoute()
 const router = useRouter()
 
 const isPaymentRequired = ref(false)
@@ -56,6 +74,7 @@ const purchaseError = ref('')
 const isChecked = ref(false)
 const coun = ref('')
 const wrongCardType = ref('')
+const modalRef = ref(null)
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -65,7 +84,18 @@ const isSubmitEnabled = computed(() => {
   }
 })
 
-const route = useRoute()
+const listRepsClasses = computed(() => ({
+  hidden: !props.showListReps
+}))
+
+watch(
+  () => props.showListReps,
+  (newVal) => {
+    if (newVal) {
+      adjustModalPosition()
+    }
+  }
+)
 
 onMounted(async () => {
   await walletServices.getCountries().then((response) => {
@@ -122,6 +152,8 @@ watch(expDate, (newValue) => {
 })
 
 watch(cardNumber, (newValue) => {
+  cardType.value = ''
+  setValues({ ...values, cardType: '' })
   if (newValue.length >= 6) {
     if (newValue.startsWith('4')) {
       cardType.value = 'visa'
@@ -153,18 +185,15 @@ onMounted(async () => {
   stripe.value = await loadStripe(STRIPE_KEY)
 })
 
-const props = defineProps({
-  showListReps: {
-    type: Boolean,
-    required: true
-  },
-  isGiftReps: {
-    type: Boolean,
-    required: false
-  }
-})
+// onMounted(() => {
+//   window.addEventListener('resize', adjustModalPosition)
+// })
 
-const { values, setValues, errors, resetForm } = useForm({
+// onBeforeUnmount(() => {
+//   window.removeEventListener('resize', adjustModalPosition)
+// })
+
+const { values, setValues, errors, resetForm, setFieldError } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -173,8 +202,37 @@ const { values, setValues, errors, resetForm } = useForm({
     cardType: '',
     expDate: ''
   },
-  validationSchema: walletSchema
+  validationSchema: walletSchema,
+  validateOnMount: false
 })
+
+const adjustModalPosition = async () => {
+  //E nsures that the DOM has been updated before calculating the modal's position
+  await nextTick()
+
+  const modal = modalRef.value
+  if (modal && modal.offsetHeight > 0 && modal.offsetWidth > 0) {
+    const rect = modal.getBoundingClientRect()
+    const top = rect.top
+    const viewportHeight = window.innerHeight
+
+    // If the modal is off the screen
+    if (top < 0) {
+      modal.style.top = '200px'
+    }
+    // If the modal's bottom exceeds the viewport height, move it up
+    else if (top + rect.height > viewportHeight) {
+      const excessHeight = top + rect.height - viewportHeight
+      const newTop = top - excessHeight - 10
+      modal.style.top = `-${newTop + 100}px`
+    }
+  }
+}
+
+const clearError = (field) => {
+  setFieldError(field, '')
+  if (field === 'cardNumber') wrongCardType.value = ''
+}
 
 const handelBuyRepsPackage = async (item) => {
   paymentStore.setSelectedPackage(item)
@@ -187,12 +245,15 @@ const handelBuyRepsPackage = async (item) => {
 const handleShowConfirmModal = () => {
   if (!isPaymentRequired.value) showConfirmModal.value = true
   else {
-    if (Object.keys(errors.value).length > 0) {
-      return (showError.value = true)
-    }
     const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
+    const hasError = Object.keys(errors.value).length > 0
+    if (hasError) {
+      showError.value = true
+      return
+    }
     if (!isAccepted) {
-      return (wrongCardType.value = 'Please enter a valid Visa or credit card number only')
+      wrongCardType.value = 'Please enter a valid Visa or credit card number only'
+      return
     }
     showConfirmModal.value = true
   }
@@ -335,6 +396,9 @@ const handleCheckExpDate = (event) => {
     if (month > 12) {
       month = 12
     }
+    if (month < 1) {
+      month = '01'
+    }
     input = month.toString().padStart(2, '0') + input.substring(2)
   }
 
@@ -362,7 +426,8 @@ const handleCheckExpDate = (event) => {
   <div>
     <div
       class="absolute right-0 bg-white text-black border-2 shadow-lg rounded-md mt-3 min-w-[300px] z-5"
-      :class="{ hidden: !showListReps }"
+      :class="listRepsClasses"
+      ref="modalRef"
     >
       <div class="px-2 mt-3">
         <div class="flex items-center justify-between" v-if="isGiftReps">
@@ -445,6 +510,7 @@ const handleCheckExpDate = (event) => {
                           v-model.trim="cardholderName"
                           @input="handleCheckCardName"
                           @blur="handleTrim"
+                          @focus="clearError('cardholderName')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -486,7 +552,7 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cardNumber"
                           @input="handleCheckCardNumber"
-                          @focus="wrongCardType = ''"
+                          @focus="clearError('cardNumber')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -522,7 +588,9 @@ const handleCheckExpDate = (event) => {
                   </FormField>
                 </div>
               </div>
-              <p class="text-red-500 text-sm" v-if="wrongCardType">{{ wrongCardType }}</p>
+              <p class="text-red-500 font-medium text-sm" v-if="wrongCardType">
+                {{ wrongCardType }}
+              </p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
@@ -535,6 +603,7 @@ const handleCheckExpDate = (event) => {
                         class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[120px] !m-0 p-2"
                         v-model="expDate"
                         @input="handleCheckExpDate"
+                        @focus="clearError('expDate')"
                       />
                     </div>
                     <FormMessage :class="{ hidden: !showError }" />
@@ -548,7 +617,7 @@ const handleCheckExpDate = (event) => {
                         <Tooltip>
                           <TooltipTrigger
                             asChild
-                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[1px] px-[4px] border-black font-semibold"
+                            class="ml-2 cursor-pointer rounded-full border-[2px] py-[0.6px] px-[4px] border-black font-semibold"
                           >
                             <span>?</span>
                           </TooltipTrigger>
@@ -569,6 +638,7 @@ const handleCheckExpDate = (event) => {
                           v-bind="componentField"
                           v-model.trim="cvc"
                           @input="handleCheckCVC"
+                          @focus="clearError('cvc')"
                         />
                       </FormItem>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -660,7 +730,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order success</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} reps is successfully
           </p>
         </DialogHeader>
@@ -673,7 +743,7 @@ const handleCheckExpDate = (event) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-2xl font-bold">Order failed</DialogTitle>
-          <p class="text-lg font-semibold">
+          <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} is not successfully
           </p>
           <DialogDescription>{{ purchaseError }}</DialogDescription>

@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:move_app/data/models/card_model.dart';
 import 'package:move_app/data/models/card_payment_model.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
+import 'package:move_app/data/models/rep_model.dart';
 
 enum PaymentMethodStatus { initial, processing, success, failure, removed }
 
@@ -13,6 +14,7 @@ final class PaymentMethodState extends Equatable {
   final PaymentMethodModel? paymentMethodModel;
   final CardModel? card;
   final bool? isRemoved;
+  final RepModel? rep;
 
   const PaymentMethodState({
     this.status,
@@ -22,6 +24,7 @@ final class PaymentMethodState extends Equatable {
     this.paymentMethodModel,
     this.card,
     this.isRemoved,
+    this.rep,
   });
 
   static PaymentMethodState initial() => const PaymentMethodState(
@@ -42,6 +45,7 @@ final class PaymentMethodState extends Equatable {
     PaymentMethodModel? paymentMethodModel,
     CardModel? card,
     bool? isRemoved,
+    RepModel? rep,
   }) {
     return PaymentMethodState(
       status: status ?? this.status,
@@ -51,6 +55,7 @@ final class PaymentMethodState extends Equatable {
       paymentMethodModel: paymentMethodModel ?? this.paymentMethodModel,
       card: card ?? this.card,
       isRemoved: isRemoved ?? this.isRemoved,
+      rep: rep ?? this.rep,
     );
   }
 
@@ -62,6 +67,7 @@ final class PaymentMethodState extends Equatable {
         cardPaymentModel,
         card,
         paymentMethodModel,
-        isRemoved
+        isRemoved,
+        rep,
       ];
 }

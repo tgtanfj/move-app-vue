@@ -4,6 +4,7 @@ enum AppImages {
   headline,
   headlineFull,
   defaultAvatar,
+  moveWhite,
 }
 
 extension AppImagesExtension on AppImages {

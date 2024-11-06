@@ -6,6 +6,7 @@ import { ChannelService } from '../channel/channel.service';
 import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { UserInfoDto } from '../user/dto/user-info.dto';
 import { NotificationService } from '../notification/notification.service';
+import { db } from '@/shared/firebase/firebase.config';
 
 @Injectable()
 export class FollowService {
@@ -41,6 +42,51 @@ export class FollowService {
     }
 
     await this.channelService.increaseFollow(channelId);
+    await this.sendNotificationFollow(userInfo, channelId);
+
+    return result;
+  }
+
+  async unfollow(userId: number, channelId: number) {
+    const ins = await this.findOneOrThrow(userId, channelId);
+    const unFollow = await this.followRepository.delete(ins);
+    if (!unFollow) {
+      throw new BadRequestException();
+    }
+    await this.channelService.decreaseFollow(channelId);
+
+    await this.removeNotificationFollow(channelId, userId);
+    return unFollow;
+  }
+
+  async findOneOrThrow(userId: number, channelId: number) {
+    const ins = await this.followRepository.findOneFollow(userId, channelId);
+    if (!ins) {
+      throw new BadRequestException();
+    }
+    return ins;
+  }
+
+  async removeNotificationFollow(channelId: number, userId: number) {
+    const channel = await this.channelService.findOne(channelId, { user: true });
+    const receiveId = channel.user.id;
+    const remove = [];
+
+    const notificationsRef = db.ref(`notifications/${receiveId}`);
+    const snapshot = await notificationsRef.get();
+    snapshot.forEach((childSnapshot) => {
+      const value = childSnapshot.val().data;
+      const isRead = childSnapshot.val().isRead;
+      const senderId = value.sender.id;
+      if (value.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId && isRead === false) {
+        remove.push(childSnapshot.ref.remove());
+      }
+    });
+
+    await Promise.all(remove);
+  }
+
+  async sendNotificationFollow(userInfo: UserInfoDto, channelId: number) {
     const channel = await this.channelService.findOne(channelId, { user: true });
     const receiver = channel.user.id;
 
@@ -72,25 +118,5 @@ export class FollowService {
       };
       await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
     }
-
-    return result;
-  }
-
-  async unfollow(userId: number, channelId: number) {
-    const ins = await this.findOneOrThrow(userId, channelId);
-    const unFollow = await this.followRepository.delete(ins);
-    if (!unFollow) {
-      throw new BadRequestException();
-    }
-    await this.channelService.decreaseFollow(channelId);
-    return unFollow;
-  }
-
-  async findOneOrThrow(userId: number, channelId: number) {
-    const ins = await this.followRepository.findOneFollow(userId, channelId);
-    if (!ins) {
-      throw new BadRequestException();
-    }
-    return ins;
   }
 }

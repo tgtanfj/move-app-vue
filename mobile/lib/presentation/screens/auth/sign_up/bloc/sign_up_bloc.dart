@@ -115,6 +115,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
   void _onSignUpWithGoogleEvent(
       SignUpWithGoogleEvent event, Emitter emit) async {
+    emit(state.copyWith(status: SignUpStatus.loading));
     final user = await AuthRepository().googleLogin();
     try {
       // ignore: unnecessary_null_comparison
@@ -137,6 +138,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
 
   void _onSignUpWithFacebookEvent(
       SignUpWithFacebookEvent event, Emitter emit) async {
+    emit(state.copyWith(status: SignUpStatus.loading));
     final facebookAccount = await AuthRepository().loginWithFacebook();
     try {
       // ignore: unnecessary_null_comparison

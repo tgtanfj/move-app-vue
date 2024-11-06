@@ -3,16 +3,17 @@ import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
 import 'package:move_app/data/repositories/payment_method_repository.dart';
 import 'package:move_app/data/repositories/rep_repository.dart';
-import 'package:move_app/data/services/stripe_service.dart';
+import 'package:move_app/data/repositories/stripe_repository.dart';
 import 'package:move_app/presentation/screens/buy_rep/bloc/buy_rep_event.dart';
 import 'package:move_app/presentation/screens/buy_rep/bloc/buy_rep_state.dart';
+import 'package:move_app/utils/card_number_formatter.dart';
 import 'package:move_app/utils/input_validation_helper.dart';
 
 class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
   final PaymentMethodRepository paymentRepository = PaymentMethodRepository();
   final RepRepository repRepository = RepRepository();
   final CountryRepository countryRepository = CountryRepository();
-  final StripeService stripeService = StripeService();
+  final StripeRepository stripeRepository = StripeRepository();
 
   BuyRepBloc() : super(BuyRepState.initial()) {
     on<BuyRepInitialEvent>(_onBuyRepInitialEvent);
@@ -68,8 +69,10 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
     final isShowCardNumberMessage = state.cardNumber != event.cardNumber
         ? false
         : state.isShowCardNumberMessage;
+    final cardType = CardNumberValidator.getCardType(event.cardNumber ?? '');
     emit(state.copyWith(
       cardNumber: event.cardNumber,
+      cardType: cardType,
       isShowCardNumberMessage: isShowCardNumberMessage,
     ));
   }
@@ -135,47 +138,53 @@ class BuyRepBloc extends Bloc<BuyRepEvent, BuyRepState> {
         messageInputExpiryDate: validateExpiryDate,
         messageInputCvv: validateCvv,
       ));
-      if (validateCardName == null ||
-          validateCardNumber == null ||
-          validateExpiryDate == null ||
+      if (validateCardName == null &&
+          validateCardNumber == null &&
+          validateExpiryDate == null &&
           validateCvv == null) {
-        final paymentMethod = await stripeService.createPaymentMethod(
+        final paymentMethodId = await stripeRepository.createPaymentMethod(
             cardNumber: state.cardNumber ?? '',
+            cardName: state.cardName ?? '',
             expiryDate: state.expiryDate ?? '',
             cvv: state.cvv ?? '',
-            cardHolderName: state.cardName ?? '',
-            country: state.countryCode ?? '');
-        final paymentMethodId = paymentMethod.toJson()['id'].toString();
-        final paymentMethodModel =
-            PaymentMethodModel(paymentMethodId: paymentMethodId);
-        if (state.isSavePayment) {
-          emit(state.copyWith(status: BuyRepStatus.orderProcessing));
-          final buyRep = await repRepository.buyReps(
-              repPackageId: state.rep?.id ?? 0,
-              paymentMethodId: paymentMethodModel.paymentMethodId,
-              save: true);
-          buyRep.fold((l) {
-            emit(state.copyWith(
-              status: BuyRepStatus.orderFailed,
-              errorMessage: l,
-            ));
-          }, (r) {
-            emit(state.copyWith(status: BuyRepStatus.orderSuccess));
-          });
-        } else {
-          emit(state.copyWith(status: BuyRepStatus.orderProcessing));
-          final buyRep = await repRepository.buyReps(
-              repPackageId: state.rep?.id ?? 0,
-              paymentMethodId: paymentMethodModel.paymentMethodId,
-              save: false);
-          buyRep.fold((l) {
-            emit(state.copyWith(
-              status: BuyRepStatus.orderFailed,
-              errorMessage: l,
-            ));
-          }, (r) {
-            emit(state.copyWith(status: BuyRepStatus.orderSuccess));
-          });
+            countryCode: state.countryCode ?? '');
+        paymentMethodId.fold((l) {
+          emit(state.copyWith(
+              isShowCardNumberMessage: true, messageInputCardNumber: l));
+        }, (r) {
+          emit(state.copyWith(
+              paymentMethodModel: PaymentMethodModel(paymentMethodId: r)));
+        });
+        if (state.paymentMethodModel?.paymentMethodId != null) {
+          if (state.isSavePayment) {
+            emit(state.copyWith(status: BuyRepStatus.orderProcessing));
+            final buyRep = await repRepository.buyReps(
+                repPackageId: state.rep?.id ?? 0,
+                paymentMethodId: state.paymentMethodModel!.paymentMethodId,
+                save: true);
+            buyRep.fold((l) {
+              emit(state.copyWith(
+                status: BuyRepStatus.orderFailed,
+                errorMessage: l,
+              ));
+            }, (r) {
+              emit(state.copyWith(status: BuyRepStatus.orderSuccess));
+            });
+          } else {
+            emit(state.copyWith(status: BuyRepStatus.orderProcessing));
+            final buyRep = await repRepository.buyReps(
+                repPackageId: state.rep?.id ?? 0,
+                paymentMethodId: state.paymentMethodModel!.paymentMethodId,
+                save: false);
+            buyRep.fold((l) {
+              emit(state.copyWith(
+                status: BuyRepStatus.orderFailed,
+                errorMessage: l,
+              ));
+            }, (r) {
+              emit(state.copyWith(status: BuyRepStatus.orderSuccess));
+            });
+          }
         }
       }
     }

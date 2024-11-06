@@ -46,23 +46,21 @@ export class UpdateUserDto {
   @ApiProperty({ example: 'John Doe', required: false })
   @IsOptional()
   @Length(8, 255, { message: 'Full name must be between 8 and 255 characters' })
-  @Matches(/^[a-zA-Z\s]+$/, { message: 'Full name must not contain special characters or numbers' })
+  @Matches(/^[a-zA-ZÀ-ỹ\s]+$/, { message: 'Full name must not contain special characters or numbers' })
   @Transform(({ value }) => (value === '' ? undefined : value))
   fullName?: string;
 
   @ApiProperty({ example: 1, required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
   countryId?: number;
 
   @ApiProperty({ example: 10, required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
   stateId?: number;
 
   @ApiProperty({ example: 'New York', required: false })
   @IsOptional()
-  @Transform(({ value }) => (value === '' ? undefined : value))
+  @Transform(({ value }) => (value === '' ? null : value))
   city?: string;
 
   @IsOptional()

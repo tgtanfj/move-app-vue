@@ -68,9 +68,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         ));
       });
     }
-    final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
-        (state.user?.fullName?.isNotEmpty ?? false);
-    emit(state.copyWith(isEnableSaveSettings: isEnableSaveSettings));
   }
 
   void _onProfileGenderChangedEvent(
@@ -135,14 +132,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) {
     final updateUser = state.user?.copyWith(username: event.username);
-    final isEnableSaveSettings = (updateUser?.username?.isNotEmpty ?? false) &&
-        (state.user?.fullName?.isNotEmpty ?? false);
     final isShowUsernameMessage = state.user?.username != event.username
         ? false
         : state.isShowUsernameMessage;
     emit(state.copyWith(
       user: updateUser,
-      isEnableSaveSettings: isEnableSaveSettings,
       isShowUsernameMessage: isShowUsernameMessage,
     ));
   }
@@ -152,15 +146,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) {
     final updateUser = state.user?.copyWith(fullName: event.fullName);
-    final isEnableSaveSettings = (state.user?.username?.isNotEmpty ?? false) &&
-        (updateUser?.fullName?.isNotEmpty ?? false);
     final isShowFullNameMessage = state.user?.username != event.fullName
         ? false
         : state.isShowFullNameMessage;
     emit(state.copyWith(
-        user: updateUser,
-        isEnableSaveSettings: isEnableSaveSettings,
-        isShowFullNameMessage: isShowFullNameMessage));
+        user: updateUser, isShowFullNameMessage: isShowFullNameMessage));
   }
 
   void _onProfileCityChangEvent(

@@ -111,12 +111,12 @@
 import { Button } from '@common/ui/button'
 import { Checkbox } from '@common/ui/checkbox'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@common/ui/table'
-import TableItem from './TableItem.vue'
-import { ref, computed, watch, onMounted } from 'vue'
 import { useToast } from '@common/ui/toast/use-toast'
 import { ArrowDownToLine, Trash } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 import { useVideoStore } from '../../stores/videoManage.js'
 import BaseDialog from '../BaseDialog.vue'
+import TableItem from './TableItem.vue'
 
 const videoStore = useVideoStore()
 const { toast } = useToast()
@@ -129,16 +129,18 @@ const props = defineProps({
 })
 
 const selectedItems = ref([])
+const selectedItemsUrlS3 = ref([])
 const showConfirmModal = ref(false)
 
 const allSelected = computed(() => {
   return props.list.length > 0 && selectedItems.value.length === props.list.length
 })
 
-const handleItemUpdate = ({ id, checked }) => {
+const handleItemUpdate = ({ id, checked, urlS3 }) => {
   if (checked) {
     if (!selectedItems.value.includes(id)) {
       selectedItems.value.push(id)
+      selectedItemsUrlS3.value.push(urlS3)
     }
   } else {
     selectedItems.value = selectedItems.value.filter((item) => item !== id)
@@ -183,21 +185,17 @@ const handleDeleteVideo = async (videoId) => {
 
 const handleDownloadVideoList = async () => {
   try {
-    const data = await videoStore.downloadVideos(Object.values(selectedItems.value))
+    const data = await videoStore.downloadVideos(selectedItemsUrlS3.value)
+    const blob = new Blob([data], { type: 'application/zip' }); // Đặt MIME type phù hợp
+    const url = URL.createObjectURL(blob);
 
-    const downloadVideo = (url, index) => {
-      const a = document.createElement('a')
-      a.href = url
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-    }
+    const a = document.createElement('a');
+    a.href = url;
+    document.body.appendChild(a);
+    a.click();
 
-    for (let i = 0; i < data.length; i++) {
-      setTimeout(() => {
-        downloadVideo(data[i].data, i)
-      }, i * 10000)
-    }
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url); // Giải phóng URL sau khi tải
   } catch (error) {
     console.error('Error downloading video list:', error)
   }

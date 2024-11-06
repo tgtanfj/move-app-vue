@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_icons.dart';
+import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/data/models/notification_model.dart';
 import 'package:move_app/presentation/screens/notification/widgets/dialog_notice.dart';
@@ -87,8 +88,8 @@ class _ItemNotificationState extends State<ItemNotification> {
       height: 40,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) {
-        return SvgPicture.asset(
-          AppIcons.artboardMove.svgAssetPath,
+        return Image.asset(
+          AppImages.moveWhite.pngAssetPath,
           width: 40,
           height: 40,
           fit: BoxFit.cover,
@@ -116,9 +117,13 @@ class _ItemNotificationState extends State<ItemNotification> {
                 style: AppTextStyles.montserratStyle.bold14White,
               ),
               TextSpan(text: message),
-              TextSpan(text: mainContentMessage, style: AppTextStyles.montserratStyle.bold14White),
+              TextSpan(
+                  text: mainContentMessage,
+                  style: AppTextStyles.montserratStyle.bold14White),
               TextSpan(text: sufMessage),
-              TextSpan(text: afterSufMessage, style: AppTextStyles.montserratStyle.bold14White),
+              TextSpan(
+                  text: afterSufMessage,
+                  style: AppTextStyles.montserratStyle.bold14White),
             ],
           ),
         ),

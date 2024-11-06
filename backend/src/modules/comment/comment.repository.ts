@@ -2,15 +2,7 @@ import { CommentReaction } from '@/entities/comment-reaction.entity';
 import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Brackets,
-  FindOptionsRelations,
-  LessThan,
-  MoreThan,
-  Repository,
-  TreeRepository,
-  UpdateResult,
-} from 'typeorm';
+import { FindOptionsRelations, LessThan, MoreThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
 import { Comment } from './../../entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -139,13 +131,13 @@ export class CommentRepository {
   async getOneWithVideo(id: number): Promise<Comment> {
     return await this.commentRepository.findOne({
       where: { id: id },
-      relations: { video: true, parent: true, user: true },
+      relations: ['video', 'parent', 'user', 'parent.video', 'parent.user'],
       select: {
         id: true,
         content: true,
         numberOfReply: true,
         numberOfLike: true,
-        parent: { id: true, numberOfReply: true },
+        parent: { id: true, numberOfReply: true, video: { id: true }, user: { id: true } },
         video: {
           id: true,
           title: true,
@@ -299,7 +291,7 @@ export class CommentRepository {
       this.getLastContentDonate(comment.user.id, videoId),
     ]);
 
-    const checkLike = userId ? reactions.find((reaction) => reaction.user.id === userId) : undefined;
+    const checkLike = userId ? reactions.find((reaction) => reaction.user?.id === userId) : undefined;
 
     return {
       ...comment,

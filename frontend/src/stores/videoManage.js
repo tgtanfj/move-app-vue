@@ -1,10 +1,11 @@
 import { ADMIN_BASE } from '@constants/api.constant'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { apiAxios } from '../helpers/axios.helper'
 
 const DOWNLOAD_VIDEO_URL = `/video/download`
+const DOWNLOAD_VIDEOS_URL = `/video/download-videos`
 
 export const useVideoStore = defineStore('video', () => {
   //State
@@ -110,23 +111,22 @@ export const useVideoStore = defineStore('video', () => {
           'Content-Type': 'multipart/form-data'
         }
       })
-      
+
       if (res.status === 200) {
-        const updatedVideo = res.data.data;
-        const index = videos.value.findIndex((video) => video.id === videoId);
+        const updatedVideo = res.data.data
+        const index = videos.value.findIndex((video) => video.id === videoId)
 
         if (index !== -1) {
-            const currentVideo = videos.value[index];
-            const newThumbnail = updatedVideo.thumbnails && updatedVideo.thumbnails.length > 0
-                ? updatedVideo.thumbnails[0].image 
-                : currentVideo.thumbnail;
+          const currentVideo = videos.value[index]
+          const newThumbnail =
+            updatedVideo.thumbnails && updatedVideo.thumbnails.length > 0
+              ? updatedVideo.thumbnails[0].image
+              : currentVideo.thumbnail
 
-            videos.value[index] = { ...currentVideo, ...updatedVideo, thumbnail_url: newThumbnail };
+          videos.value[index] = { ...currentVideo, ...updatedVideo, thumbnail_url: newThumbnail }
         }
       }
       return res
-
-
     } catch (error) {
       console.error('Error updating video:', error)
     }
@@ -134,8 +134,6 @@ export const useVideoStore = defineStore('video', () => {
     //   console.log(`${key}: ${value}`);
     // });
   }
-
-
 
   const shareVideoSocial = (videoId, option) => {
     const shareFbUrl = 'https://www.facebook.com/sharer/sharer.php?u='
@@ -176,19 +174,30 @@ export const useVideoStore = defineStore('video', () => {
 
   const downloadVideos = async (videoSelected) => {
     try {
-      const result = await Promise.all(
-        videoSelected.map(async (id) => {
-          const response = await apiAxios.get(`${DOWNLOAD_VIDEO_URL}/${id}`)
-          return response.data
-        })
-      )
-
-      return result
+      const response = await apiAxios.post(`/video/download-videos`, {
+        arrayUrl: videoSelected
+      })
+      return response.data
     } catch (error) {
       console.error('Error downloading videos:', error)
       throw error
     }
   }
+  // const downloadVideos = async (videoSelected) => {
+  //   try {
+  //     const result = await Promise.all(
+  //       videoSelected.map(async (id) => {
+  //         const response = await apiAxios.get(`${DOWNLOAD_VIDEO_URL}/${id}`)
+  //         return response.data
+  //       })
+  //     )
+
+  //     return result
+  //   } catch (error) {
+  //     console.error('Error downloading videos:', error)
+  //     throw error
+  //   }
+  // }
 
   return {
     //states

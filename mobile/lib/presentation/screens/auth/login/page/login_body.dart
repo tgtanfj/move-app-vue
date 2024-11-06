@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:move_app/config/theme/app_colors.dart';
@@ -19,6 +20,7 @@ import '../bloc/login_event.dart';
 
 class LoginBody extends StatefulWidget {
   final bool isStayOnPage;
+
   const LoginBody({super.key, this.isStayOnPage = false});
 
   @override
@@ -41,13 +43,15 @@ class _LoginBodyState extends State<LoginBody>
             Navigator.pop(context);
           } else {
             Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-                (Route<dynamic> route) => false,
-          );
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (Route<dynamic> route) => false,
+            );
           }
-          
         }
+        (state.status == LoginStatus.processing)
+            ? EasyLoading.show()
+            : EasyLoading.dismiss();
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {

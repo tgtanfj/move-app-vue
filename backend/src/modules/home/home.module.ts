@@ -19,6 +19,7 @@ import { VimeoService } from '@/shared/services/vimeo.service';
 import { ThumbnailModule } from '../thumbnail/thumbnail.module';
 import { ChannelModule } from '../channel/channel.module';
 import { CategoryModule } from '../category/category.module';
+import { ApiConfigService } from '@/shared/services/api-config.service';
 
 @Module({
   imports: [
@@ -31,6 +32,15 @@ import { CategoryModule } from '../category/category.module';
     CategoryModule,
   ],
   controllers: [HomeController],
-  providers: [HomeService, JwtService, VimeoService],
+  providers: [
+    HomeService,
+    JwtService,
+    VimeoService,
+    {
+      provide: 'TIME_CRON_JOB',
+      useFactory: (configService: ApiConfigService) => configService.getString('TIME_CRON_JOB'),
+      inject: [ApiConfigService],
+    },
+  ],
 })
 export class HomeModule {}

@@ -35,12 +35,14 @@ const {
   purchase,
   donation,
   rep_milestone,
-  cashout
+  cashout,
+  followMilestone,
+  viewVideoMilestone
 } = props.notifyData.data
 
 const setTimeInterval = ref(null)
 
-const truncateString = (str, length = 60) => {
+const truncateString = (str, length = 70) => {
   return str.length > length ? str.slice(0, length) + '...' : str
 }
 
@@ -81,10 +83,10 @@ const getContentByType = () => {
     case 'password_change_reminder':
       return "Please update your password as it hasn't been changed for 90 days."
     case 'follow_milestone':
-      return "Congratulations! You've just reached 1,000 followers."
+      return `Congratulations! You've just reached ${followMilestone} followers.`
     case 'view_video_milestone':
       return truncateString(
-        `Your video '<strong>${videoTitle}<strong>' has surpassed 10,000 views.`
+        `Your video '<strong>${videoTitle}</strong>' has surpassed ${viewVideoMilestone} views.`
       )
     case 'rep_milestone':
       return `You've earned ${rep_milestone} REPs in total from your content.`
@@ -127,7 +129,7 @@ const timeAgo = ref(formatTimeAgo(timestamp))
 const content = ref(getContentByType())
 
 const handleModalPopup = () => {
-  if (props.modalPopup && !isSystemType(type)) {
+  if (props.modalPopup && type !== 'cashout' && type !== 'purchase') {
     props.modalPopup()
   }
   props.markAsRead(props.notifyData.id, props.notifyData.userId)
@@ -206,7 +208,7 @@ onBeforeUnmount(() => {
     >
       <div class="min-w-[40px] w-[40px] h-[40px] rounded-full">
         <div v-if="isSystemType(type)">
-          <AvaSystem />
+          <AvaSystem width="40px" height="40px" />
         </div>
 
         <img

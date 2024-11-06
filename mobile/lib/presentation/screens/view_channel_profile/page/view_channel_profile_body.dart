@@ -9,6 +9,7 @@ import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/custom_tab_bar.dart';
+import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_bloc.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
@@ -30,7 +31,6 @@ class ViewChannelProfileBody extends StatefulWidget {
 class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
   @override
   Widget build(BuildContext context) {
-    
     return BlocListener<ViewChannelProfileBloc, ViewChannelProfileState>(
         listener: (context, state) {
       state.status == ViewChannelProfileStatus.processing
@@ -42,7 +42,11 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
         return const SizedBox();
       }
       return Scaffold(
-        appBar: const AppBarWidget(),
+        appBar: AppBarWidget(
+          prefixButton: () {
+            Navigator.pushNamed(context, AppRoutes.routeMenu, arguments: true);
+          },
+        ),
         backgroundColor: AppColors.white,
         body: SafeArea(
             child: Column(
@@ -73,7 +77,10 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          runSpacing: 4,
                           children: [
                             Text(
                               state.channel?.name ?? '',
@@ -107,7 +114,9 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                     child: InkWell(
                         splashFactory: NoSplash.splashFactory,
                         onTap: () {
-                          if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
+                          if (SharedPrefer.sharedPrefer
+                              .getUserToken()
+                              .isEmpty) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {

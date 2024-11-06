@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@common/ui/dropdown-menu'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 import FacebookIcon from '@assets/icons/FacebookIcon.vue'
 import TwitterIcon from '@assets/icons/TwitterIcon.vue'
 import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
@@ -17,13 +18,17 @@ import { useToast } from '../../common/ui/toast'
 const route = useRoute()
 const currentUrl = ref(window.location.origin + route.fullPath)
 const isCopied = ref(false)
+const isModalShare = ref(false)
 
 const { toast } = useToast()
 
-watch(route, (newRoute) => {
-  const currentPath = newRoute.fullPath
-  currentUrl.value = window.location.origin + currentPath
-})
+const openShareModal = () => {
+  isModalShare.value = true
+}
+
+const closeShareModal = () => {
+  isModalShare.value = false
+}
 
 const shareOnFacebook = () => {
   if (!navigator.onLine) {
@@ -59,24 +64,28 @@ const copyLinkVideo = () => {
       console.error('Failed to copy: ', err)
     })
 }
+
+watch(route, (newRoute) => {
+  const currentPath = newRoute.fullPath
+  currentUrl.value = window.location.origin + currentPath
+})
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger
-      class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary"
-    >
+  <Popover v-model:open="isModalShare">
+    <PopoverTrigger @click="openShareModal" class="flex items-center gap-2 text-sm cursor-pointer font-semibold text-primary">
       <Share2 width="24px" class="text-primary" /> {{ $t('video_detail.share') }}
-    </DropdownMenuTrigger>
-    <DropdownMenuContent side="top" align="end">
+    </PopoverTrigger>
+
+    <PopoverContent side="top" align="end" class="p-3 mb-2 w-auto">
       <div class="flex items-center justify-between mb-2">
         <h3 class="ml-2 font-semibold">{{ $t('video_detail.share_via') }}</h3>
-        <DropdownMenuItem class="cursor-pointer focus:bg-transparent">
+        <div class="cursor-pointer focus:bg-transparent"  @click="closeShareModal">
           <X width="20px" />
-        </DropdownMenuItem>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3 px-3 pb-2">
+      <div class="flex items-center gap-4">
         <div
           @click="shareOnFacebook"
           class="flex flex-col gap-2 items-center cursor-pointer focus:bg-transparent"
@@ -108,6 +117,6 @@ const copyLinkVideo = () => {
           </div>
         </div>
       </div>
-    </DropdownMenuContent>
-  </DropdownMenu>
+    </PopoverContent>
+  </Popover>
 </template>

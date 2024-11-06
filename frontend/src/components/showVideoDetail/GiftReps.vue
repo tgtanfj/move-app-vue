@@ -36,7 +36,7 @@ const { data, isLoading } = useGiftPackages()
 const { data: dataUser, isLoading: isLoadingUser } = useUserReps()
 const { isPending, mutate } = useDonation()
 
-const showListReps = ref(false)
+const showListBuyReps = ref(false)
 
 watchEffect(() => {
   if (!isLoading.value && data.value) {
@@ -51,36 +51,32 @@ watchEffect(() => {
 
 const handleOpenPopover = () => {
   const isLogin = !!userStore.accessToken
-  isOpenBuyReps.value = false
   if (isLogin) {
     isPopoverOpen.value = true
+    giftReps.giftPackageId = 0
+    giftReps.content = PRESET_MESSAGE[0]
+    showListBuyReps.value = false
+    isOpenBuyReps.value = false
   } else {
     openLoginStore.toggleOpenLogin()
   }
 }
 const closePopover = () => {
   isPopoverOpen.value = false
-  giftReps.giftPackageId = 0
-  giftReps.content = PRESET_MESSAGE[0]
-}
-const closeDialog = () => {
   openDonationSuccess.value = false
-  closePopover()
 }
 
 const handleCloseModal = () => {
-  showListReps.value = false
-  giftReps.giftPackageId = 0
-  giftReps.content = PRESET_MESSAGE[0]
+  showListBuyReps.value = false
 }
 const handleBackGiftModal = () => {
-  showListReps.value = false
+  showListBuyReps.value = false
   isOpenBuyReps.value = false
 }
 
 const handleGetReps = () => {
   isOpenBuyReps.value = true
-  showListReps.value = true
+  showListBuyReps.value = true
 }
 
 function handleClickMessage(value) {
@@ -111,10 +107,16 @@ const handleDonation = () => {
     }
   )
 }
-
 </script>
 <template>
-  <Popover :open="isPopoverOpen">
+  <Popover
+    v-model:open="isPopoverOpen"
+    @update:open="
+      (val) => {
+        if (!val) closePopover()
+      }
+    "
+  >
     <PopoverTrigger>
       <Button @click.stop="handleOpenPopover" class="text-[14px] py-5 pl-5 pr-4"
         >{{ $t('gift_reps.gift_reps') }} <ChevronRight class="ml-2"
@@ -181,7 +183,7 @@ const handleDonation = () => {
       </div>
       <!--BUY REPS-->
       <ListRepPackage
-        :showListReps="showListReps"
+        :showListReps="showListBuyReps"
         @close-modal="handleCloseModal"
         @back-giftrep="handleBackGiftModal"
         @success-buy="closePopover"
@@ -194,7 +196,7 @@ const handleDonation = () => {
     v-model:open="openDonationSuccess"
     @update:open="
       (val) => {
-        if (!val) closeDialog()
+        if (!val) closePopover()
       }
     "
     :width="480"

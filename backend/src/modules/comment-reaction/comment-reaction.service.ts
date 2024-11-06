@@ -7,6 +7,7 @@ import { NotificationService } from '../notification/notification.service';
 import { UserInfoDto } from '../user/dto/user-info.dto';
 import { CommentReactionRepository } from './comment-reaction.repository';
 import { CreateCommentReactionDto } from './dto/create-comment-reaction.dto';
+import { db } from '@/shared/firebase/firebase.config';
 
 @Injectable()
 export class CommentReactionService {
@@ -36,32 +37,13 @@ export class CommentReactionService {
         return commentReactionExisted;
       }
       const commentReaction = await this.commentReactionRepository.create(userId, dto);
-      const comment = await this.commentRepository.getOne(dto.commentId, {
-        user: true,
-        video: true,
-        parent: { video: true },
-      });
-      const receiver = comment.user.id;
+      const comment = await this.commentRepository.getOne(dto.commentId);
       comment.numberOfLike += dto.isLike ? 1 : 0;
 
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
-      const parent = comment?.parent;
-      const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
-        receiver,
-        userInfo.id,
-        comment.id,
-      );
-      if (!isExisted && userId !== receiver) {
-        const dataNotification = {
-          sender: userInfo,
-          type: NOTIFICATION_TYPE.LIKE,
-          videoId: parent ? parent.video.id : comment.video.id,
-          videoTitle: parent ? parent.video.title : comment.video.title,
-          commentId: parent ? comment.parent.id : comment.id,
-          replyId: parent ? comment.id : null,
-        };
-        await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
+      if (dto.isLike) {
+        await this.sendNotificationLike(userInfo, dto.commentId);
       }
 
       return commentReaction;
@@ -71,12 +53,20 @@ export class CommentReactionService {
     }
   }
 
-  async update(userId: number, dto: CreateCommentReactionDto): Promise<CommentReaction> {
+  async update(userInfo: UserInfoDto, dto: CreateCommentReactionDto): Promise<CommentReaction> {
     try {
+      const userId = userInfo.id;
       const commentReaction = await this.commentReactionRepository.update(userId, dto);
       const comment = commentReaction.comment;
       comment.numberOfLike += dto.isLike ? 1 : -1;
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
+
+      if (dto.isLike) {
+        await this.sendNotificationLike(userInfo, dto.commentId);
+      } else {
+        await this.removeNotificationLike(dto.commentId);
+      }
+
       return commentReaction;
     } catch (error) {
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_UPDATE_COMMENT_REACTION'));
@@ -88,10 +78,61 @@ export class CommentReactionService {
       const commentReaction = await this.commentReactionRepository.getOneWithUserComment(userId, commentId);
       const result = await this.commentReactionRepository.delete(commentReaction.id);
       const comment = await this.commentRepository.getOne(commentId);
+
       result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
+
+      await this.removeNotificationLike(commentId);
     } catch (error) {
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT_REACTION'));
     }
+  }
+
+  async sendNotificationLike(userInfo: UserInfoDto, commentId: number) {
+    const comment = await this.commentRepository.getOne(commentId, {
+      user: true,
+      video: true,
+      parent: { video: true },
+    });
+    const receiver = comment.user.id;
+    const parent = comment?.parent;
+
+    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+      receiver,
+      userInfo.id,
+      comment.id,
+    );
+
+    const dataNotification = {
+      sender: userInfo,
+      type: NOTIFICATION_TYPE.LIKE,
+      videoId: parent ? parent.video.id : comment.video.id,
+      videoTitle: parent ? parent.video.title : comment.video.title,
+      commentId: parent ? comment.parent.id : comment.id,
+      replyId: parent ? comment.id : null,
+    };
+
+    if (!isExisted && userInfo.id !== receiver) {
+      await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
+    }
+  }
+
+  async removeNotificationLike(commentId: number) {
+    const comment = await this.commentRepository.getOne(commentId, { user: true });
+    const receiveId = comment.user.id;
+    const remove = [];
+
+    const notificationsRef = db.ref(`notifications/${receiveId}`);
+    const snapshot = await notificationsRef.get();
+    snapshot.forEach((childSnapshot) => {
+      const value = childSnapshot.val().data;
+      const isRead = childSnapshot.val().isRead;
+      const checkId = value?.replyId ? value.replyId : value.commentId;
+      if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId && isRead === false) {
+        remove.push(childSnapshot.ref.remove());
+      }
+    });
+
+    await Promise.all(remove);
   }
 }

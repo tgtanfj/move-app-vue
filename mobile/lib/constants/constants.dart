@@ -392,4 +392,8 @@ class Constants {
   static const String requiresConfirmation = 'requires_confirmation';
   static const String refreshTokenExpired = 'Refresh token expired';
   static const String shareSocial = "share-social";
+  static const String copy = "Copy";
+  static const String copied = "Copied";
+  static const String delete = "Delete";
+
 }

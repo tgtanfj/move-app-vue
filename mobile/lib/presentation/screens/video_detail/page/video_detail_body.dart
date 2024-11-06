@@ -101,7 +101,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBarWidget(
-          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu),
+          prefixButton: () => Navigator.pushNamed(context, AppRoutes.routeMenu,
+              arguments: true),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,9 +120,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
             Expanded(
               child: BlocConsumer<VideoDetailBloc, VideoDetailState>(
                 listener: (context, state) {
-                  (state.status == VideoDetailStatus.processing) ?
-                      EasyLoading.show():
-                      EasyLoading.dismiss();
+                  (state.status == VideoDetailStatus.processing)
+                      ? EasyLoading.show()
+                      : EasyLoading.dismiss();
                   if (state.status == VideoDetailStatus.rateSuccess) {
                     showDialog(
                       context: context,
@@ -152,7 +153,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     openExternalApplication(
                         "${state.facebookLink?.split('?').first}?u=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
                   }
-                  if (state.twitterLink != null && state.twitterLink!.isNotEmpty) {
+                  if (state.twitterLink != null &&
+                      state.twitterLink!.isNotEmpty) {
                     openExternalApplication(
                         "${state.twitterLink?.split('?').first}?url=${ApiUrls.deepLink}?path=${Constants.shareSocial}/${state.video?.id}");
                   }
@@ -316,6 +318,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     final replies = state.replies?[commentModel.id] ?? [];
     final isHideRepliesForCurrentComment =
         state.isHiddenListReply?[commentModel.id] ?? false;
+
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
     final hasTargetCommentId =
         state.targetCommentId == commentModel.id && state.targetReplyId == 0;
     return Column(
@@ -327,6 +332,10 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         ],
         ItemComment(
           commentModel: commentModel,
+          onTapDelete: () {
+            context.read<VideoDetailBloc>().add(
+                VideoDetailDeleteCommentEvent(commentId: commentModel.id ?? 0));
+          },
           isCommentable: state.video?.isCommentable ?? false,
           hasTargetCommentId: hasTargetCommentId,
           onTapLike: state.video?.isCommentable == true
@@ -340,13 +349,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           isHideReplies: isHideRepliesForCurrentComment,
           widgetHideListReplies: _buildHideRepliesButton(
               context, commentModel, state, isHideRepliesForCurrentComment),
-          widgetListReplies: _buildReplyList(
-              context, replies, isHideRepliesForCurrentComment, state),
+          widgetListReplies: _buildReplyList(context, replies,
+              isHideRepliesForCurrentComment, state, commentModel),
           onTapShowInputReply: state.video?.isCommentable == true
               ? () => _onTapShowInputReply(context, commentModel)
               : null,
-          isShowTemporaryListReply: state.isShowTemporaryListReply,
-          originalNumOfReply: state.originalNumOfReply?[commentModel.id] ?? 0,
+          isShowTemporaryListReply: isShowTemporaryListReplyMap,
+          repliesLength: replies.length,
           widgetReplyInput: _buildReplyInput(
             context,
             commentModel,
@@ -362,10 +371,10 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   Widget _buildHideRepliesButton(BuildContext context,
       CommentModel commentModel, VideoDetailState state, bool isHideReplies) {
     return Visibility(
-      visible: isHideReplies,
+      visible: isHideReplies && commentModel.numberOfReply != 0,
       child: CustomButton(
         title:
-            "Hide ${(commentModel.numberOfReply ?? 0) > (state.originalNumOfReply?[commentModel.id] ?? 0) ? (commentModel.numberOfReply ?? 0) : (state.originalNumOfReply?[commentModel.id] ?? 0)} ${(state.originalNumOfReply?[commentModel.id] ?? 0) == 1 ? 'Reply' : 'Replies'}",
+            "Hide ${(commentModel.numberOfReply ?? 0)} ${(commentModel.numberOfReply ?? 0) == 1 ? 'Reply' : 'Replies'}",
         titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
         prefix: Padding(
           padding: const EdgeInsets.only(right: 12),
@@ -394,9 +403,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
   }
 
   Widget _buildReplyList(BuildContext context, List<CommentModel> replies,
-      bool isHideReplies, VideoDetailState state) {
+      bool isHideReplies, VideoDetailState state, CommentModel commentModel) {
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
+
     return Visibility(
-      visible: isHideReplies || state.isShowTemporaryListReply,
+      visible: isHideReplies || isShowTemporaryListReplyMap,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -404,6 +416,11 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           final replyCommentModel = replies[replyIndex];
           final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           return ItemComment(
+            onTapDelete: () {
+              context.read<VideoDetailBloc>().add(VideoDetailDeleteCommentEvent(
+                  commentId: replyCommentModel.id ?? 0,
+                  parenCommentId: commentModel.id));
+            },
             commentModel: replyCommentModel,
             isCommentable: state.video?.isCommentable ?? false,
             hasTargetReplyId: hasTargetReplyId,
@@ -489,15 +506,18 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
       List<CommentModel> replies,
       bool isHideReplies,
       VideoDetailState state) {
+    final isShowTemporaryListReplyMap =
+        state.isShowTemporaryListReply?[commentModel.id] ?? false;
+
     return Visibility(
-      visible:
-          ((state.originalNumOfReply?[commentModel.id] ?? 0) > replies.length &&
-                  (commentModel.numberOfReply ?? 0) > 0) ||
-              (!isHideReplies && (commentModel.numberOfReply ?? 0) > 0),
+      visible: ((commentModel.numberOfReply ?? 0) > replies.length &&
+              (commentModel.numberOfReply ?? 0) > 0) ||
+          (!isHideReplies && (commentModel.numberOfReply ?? 0) > 0) &&
+              (!isShowTemporaryListReplyMap && replies.length == 1),
       child: CustomButton(
         title: isHideReplies
             ? Constants.showMoreReplies
-            : "Show ${commentModel.numberOfReply} ${commentModel.numberOfReply == 1 ? "Reply" : "Replies"}",
+            : "Show ${(commentModel.numberOfReply ?? 0) - (replies.isEmpty ? 0 : replies.length)} ${(commentModel.numberOfReply == 1 || ((commentModel.numberOfReply ?? 0) - (replies.isEmpty ? 0 : 1)) == 1) ? "Reply" : "Replies"}",
         titleStyle: AppTextStyles.montserratStyle.bold16tiffanyBlue,
         prefix: Padding(
           padding: const EdgeInsets.only(right: 12),
@@ -618,14 +638,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             facebookButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.facebookOption));
+              context.read<VideoDetailBloc>().add(VideoDetailShareFacebookEvent(
+                  videoId: state.video?.id ?? 0));
             },
             twitterButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareSocialEvent(
-                  videoId: state.video?.id ?? 0,
-                  option: Constants.twitterOption));
+              context.read<VideoDetailBloc>().add(VideoDetailShareTwitterEvent(
+                  videoId: state.video?.id ?? 0,));
             },
             copyLinkButton: () {
               Clipboard.setData(ClipboardData(

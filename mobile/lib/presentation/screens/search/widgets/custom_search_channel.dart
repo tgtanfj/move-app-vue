@@ -33,49 +33,54 @@ class _CustomSearchChannelState extends State<CustomSearchChannel> {
       child: Row(
         children: [
           Avatar(
-              imageUrl: widget.imageUrl ?? "",
-              widthAvatar: 72,
-              heightAvatar: 72,
-              radiusAvatar: 50,
+            imageUrl: widget.imageUrl ?? "",
+            widthAvatar: 72,
+            heightAvatar: 72,
+            radiusAvatar: 50,
           ),
           const SizedBox(
             width: 22,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    widget.name ?? "",
-                    style: AppTextStyles.montserratStyle.regular16Black,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  widget.isBlueBadge
-                      ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
-                      : const SizedBox(),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
-              ),
-              RichText(
-                text: TextSpan(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    TextSpan(
-                      text: widget.numberOfFollowers ?? '',
-                      style: AppTextStyles.montserratStyle.regular12Black,
+                    Flexible(
+                      child: Text(
+                        widget.name ?? "",
+                        style: AppTextStyles.montserratStyle.regular16Black,
+                        softWrap: true,
+                      ),
                     ),
-                    TextSpan(
-                      text: " ${Constants.followers}",
-                      style: AppTextStyles.montserratStyle.regular12Black,
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    widget.isBlueBadge
+                        ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
+                        : const SizedBox(),
+                    const SizedBox(
+                      width: 8,
                     ),
                   ],
                 ),
-              )
-            ],
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: widget.numberOfFollowers ?? '',
+                        style: AppTextStyles.montserratStyle.regular12Black,
+                      ),
+                      TextSpan(
+                        text: " ${Constants.followers}",
+                        style: AppTextStyles.montserratStyle.regular12Black,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ],
       ),
