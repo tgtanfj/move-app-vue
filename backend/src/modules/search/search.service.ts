@@ -64,58 +64,40 @@ export class SearchService {
     const offset = (page - 1) * limit;
 
     const [allVideos, totalItemCount] = await this.videoRepository.findAndCount({
-      relations: ['channel', 'comments', 'views'],
+      relations: ['channel', 'thumbnails'],
     });
 
-    // Filter videos based on keyword in title or channel name
+    // Filter videos based on the keyword in title or channel name
     let filteredVideos = allVideos.filter(
       (video) =>
         video.title.toLowerCase().includes(keyword) ||
         (video.channel && video.channel.name.toLowerCase().includes(keyword)),
     );
 
-    console.log('filteredVideos', filteredVideos);
+    // Filter thumbnails to only include those with `selected` set to `true`
+    filteredVideos = filteredVideos.map((video) => {
+      video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
+      return video;
+    });
 
-    // Apply priority sorting
-    try {
-      filteredVideos = filteredVideos
-        .sort((a, b) => {
-          // Xếp video có lượt xem lên trước video không có lượt xem
-          const viewsA = a.views.length > 0 ? a.numberOfViews : 0;
-          const viewsB = b.views.length > 0 ? b.numberOfViews : 0;
+    // Sort videos based on priority: channel followers, views, comments, and recency
+    filteredVideos = filteredVideos.sort((a, b) => {
+      const aFollowers = a.channel?.numberOfFollowers || 0;
+      const bFollowers = b.channel?.numberOfFollowers || 0;
 
-          // Sort by number of followers and video views
-          if (b.channel.numberOfFollowers !== a.channel.numberOfFollowers) {
-            return b.channel.numberOfFollowers - a.channel.numberOfFollowers;
-          }
-          if (viewsB !== viewsA) {
-            return viewsB - viewsA;
-          }
+      if (bFollowers !== aFollowers) {
+        return bFollowers - aFollowers;
+      } else if (b.numberOfViews !== a.numberOfViews) {
+        return b.numberOfViews - a.numberOfViews;
+      } else if (b.numberOfComments !== a.numberOfComments) {
+        return b.numberOfComments - a.numberOfComments;
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
 
-          // Sort by ratings and comment count
-          if (b.ratings !== a.ratings) {
-            return b.ratings - a.ratings;
-          }
-          if (b.numberOfComments !== a.numberOfComments) {
-            return b.numberOfComments - a.numberOfComments;
-          }
-
-          // Sort by creation date
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        })
-        .filter((video) => {
-          // Filter videos uploaded within the last 24 hours
-          const timeframe = new Date();
-          timeframe.setDate(timeframe.getDate() - 1);
-          return new Date(video.createdAt) >= timeframe;
-        });
-    } catch (error) {
-      console.error('Error while sorting and filtering videos:', error);
-    }
-
-    // Apply pagination
+    // Paginate the sorted videos
     const paginatedVideos = filteredVideos.slice(offset, offset + limit);
-    console.log('paginatedVideos', paginatedVideos);
 
     const totalPages = Math.ceil(filteredVideos.length / limit);
     const itemFrom = offset + 1;
@@ -133,53 +115,56 @@ export class SearchService {
   async suggestion(query: string) {
     const keyword = query.toLowerCase();
 
+    // Find initial videos matching the keyword, sorted by `numberOfViews`
     let initialVideos = await this.videoRepository.find({
-      where: [{ title: ILike(`%${keyword}%`) }, { keywords: ILike(`%${keyword}%`) }],
-      relations: ['thumbnails', 'views'],
+      where: [{ title: ILike(`%${keyword}%`) }],
+      relations: ['channel', 'thumbnails'],
       order: { numberOfViews: 'DESC' },
     });
 
-    // Lấy Top Category dựa vào keyword
+    // Filter thumbnails to only include those with `selected` set to `true`
+    initialVideos = initialVideos.map((video) => {
+      video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
+      return video;
+    });
+
+    // Get top category based on keyword
     const topCategory = await this.categoryRepository.findOne({
       where: { title: ILike(`%${keyword}%`) },
       order: { numberOfViews: 'DESC' },
     });
 
-    // Lấy Top Instructors dựa vào keyword và sắp xếp theo số lượng followers
+    // Get top instructors based on keyword, sorted by number of followers
     let topInstructors = await this.channelRepository.find({
       where: { name: ILike(`%${keyword}%`) },
       order: { numberOfFollowers: 'DESC' },
     });
 
-    // Lọc ra các video có lượt xem trong ngày hôm qua
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
+    // Sort initial videos based on the specified criteria
     const topVideos = initialVideos.sort((a, b) => {
-      const viewsA = a.views.filter((view) => new Date(view.createdAt) >= yesterday);
-      const viewsB = b.views.filter((view) => new Date(view.createdAt) >= yesterday);
+      const aFollowers = a.channel?.numberOfFollowers || 0;
+      const bFollowers = b.channel?.numberOfFollowers || 0;
 
-      if (viewsA.length > 0 && viewsB.length === 0) {
-        return -1; // a có lượt xem hôm qua, b không có
-      } else if (viewsA.length === 0 && viewsB.length > 0) {
-        return 1; // a không có lượt xem hôm qua, b có
-      } else {
+      if (bFollowers !== aFollowers) {
+        return bFollowers - aFollowers;
+      } else if (b.numberOfViews !== a.numberOfViews) {
         return b.numberOfViews - a.numberOfViews;
+      } else if (b.numberOfComments !== a.numberOfComments) {
+        return b.numberOfComments - a.numberOfComments;
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
     });
 
-    // Sắp xếp instructors theo badge (ưu tiên blue badge trước, sau đó pink badge)
+    // Sort instructors by badge priority: blue badge first, then pink badge
     topInstructors = topInstructors.sort((a, b) => {
       const priorityA = (a.isBlueBadge ? 2 : 0) + (a.isPinkBadge ? 1 : 0);
       const priorityB = (b.isBlueBadge ? 2 : 0) + (b.isPinkBadge ? 1 : 0);
       return priorityB - priorityA;
     });
 
-    // Chọn ra tối đa 2 instructors hàng đầu
+    // Select up to the top 2 instructors
     const topTwoInstructors = topInstructors.slice(0, 2);
-
-    console.log('topCategory:', topCategory ? 'Exists' : 'Null');
-    console.log('topTwoInstructors count:', topTwoInstructors.length);
 
     let numVideos = 5;
 
@@ -191,15 +176,16 @@ export class SearchService {
       numVideos -= topTwoInstructors.length;
     }
 
+    // Slice the top videos to match the calculated number
     const slicedVideos = topVideos.slice(0, numVideos);
 
-    // Trả về kết quả với đúng cấu trúc yêu cầu
+    // Return the result with the specified structure
     return {
       topCategory: topCategory || null,
       topInstructors: topTwoInstructors.length > 0 ? topTwoInstructors : [],
       topVideos: slicedVideos,
-      hasTopCategory: !!topCategory, // Thêm flag kiểm tra sự tồn tại của `topCategory`
-      topInstructorsCount: topTwoInstructors.length, // Trả về số lượng `topTwoInstructors`
+      hasTopCategory: !!topCategory, // Flag indicating if `topCategory` exists
+      topInstructorsCount: topTwoInstructors.length, // Number of `topTwoInstructors`
     };
   }
 
