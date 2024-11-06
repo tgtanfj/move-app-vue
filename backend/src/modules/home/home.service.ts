@@ -506,12 +506,12 @@ export class HomeService {
     ]);
     const ignoreIds = [...videosWithValue2, ...videosWithValue1, ...recentWatchedVideoIds];
     let temp = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
-    let result = [...new Set(temp)];
+    let result = [...new Map(temp.map((item) => [item.id, item])).values()];
 
     if (result.length >= 32) {
       result = result.slice(0, 31);
     }
-    
+
     const limitVideoOther = 32 - result.length;
     if (limitVideoOther > 0) {
       let topViewVideo = await this.videoRepository.find({
