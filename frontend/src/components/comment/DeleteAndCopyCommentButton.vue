@@ -2,7 +2,7 @@
 import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
 import { useToast } from '@common/ui/toast'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
-import { Copy, EllipsisVertical, Trash2 } from 'lucide-vue-next'
+import { Copy, EllipsisVertical, MessageSquareMore, Trash2 } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 
@@ -66,11 +66,11 @@ const handleDeleteComment = (value) => {
         </div>
         <div
           v-if="isCopied"
-          class="absolute left-0 -top-[45px] p-1 border-[1.5px] rounded-lg bg-white shadow-lg z-2 w-[130px]"
+          class="absolute left-0 -top-[45px] p-1 border-[1.5px] rounded-lg bg-white shadow-lg z-2 w-[170px]"
         >
           <div class="p-1 flex items-center text-[14px] gap-2 font-semibold">
-            <CopyLinkIcon class="w-[16px] h-[24px]" />
-            {{ $t('streamer.link_copied') }}
+            <MessageSquareMore class="w-[16px] h-[24px] text-primary" />
+            {{ $t('streamer.message_copied') }}
           </div>
         </div>
       </div>

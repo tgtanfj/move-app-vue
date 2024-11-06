@@ -1,6 +1,5 @@
 import StreamerCashout from '@views/streamer/StreamerCashout.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
 import ChannelSettings from '@components/channel-setttings/ChannelSettings.vue'
 import ChannelComments from '@components/channel-comments/ChannelComments.vue'
 

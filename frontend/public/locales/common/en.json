@@ -1,7 +1,7 @@
 {
   "common": {
     "hello_world": "Hello World!",
-    "no_data": "No data available",
+    "no_data": "No data available.",
     "show": "Show",
     "display_range_record": "{to} - {from} of {total} results",
     "display_single_record": "{num} of {num} result"
@@ -25,6 +25,7 @@
     "twitter": "Twitter",
     "copy_link": "Copy Link",
     "link_copied": "Link copied!",
+    "message_copied": "Message Copied!",
     "no_videos": "You have not upload any videos yet.",
     "upload_video": "Upload a video",
     "delete": "Delete",
