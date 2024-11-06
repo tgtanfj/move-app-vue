@@ -217,7 +217,7 @@ const adjustModalPosition = async () => {
     if (top < 0) {
       modal.style.top = `${Math.abs(top)}`
     }
-    // If the modal's bottom exceeds the viewport height, move it up
+    // If the modal's bottom exceeds the viewport height
     else if (top + rect.height > viewportHeight) {
       modal.style.bottom = `0px`
     }
@@ -561,12 +561,6 @@ const handleCheckExpYear = (event) => {
                   </FormField>
                 </div>
               </div>
-              <p
-                class="text-red-500 font-medium text-sm"
-                v-if="wrongCardType || paymentStore.stripeErr"
-              >
-                {{ wrongCardType || paymentStore.stripeErr }}
-              </p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
@@ -732,7 +726,7 @@ const handleCheckExpYear = (event) => {
           <p class="text-sm">
             You purchase of {{ paymentStore.selectedPackage.numberOfREPs }} is not successfully
           </p>
-          <DialogDescription>{{ purchaseError }}</DialogDescription>
+          <DialogDescription class="text-lg">{{ purchaseError }}</DialogDescription>
         </DialogHeader>
         <div class="flex items-center justify-center gap-4">
           <Button @click="handleCloseFailureModal">{{ t('button.ok') }}</Button>
