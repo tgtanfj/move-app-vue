@@ -76,8 +76,9 @@ export class FollowService {
     const snapshot = await notificationsRef.get();
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
+      const isRead = childSnapshot.val().isRead;
       const senderId = value.sender.id;
-      if (value.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId) {
+      if (value.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId && isRead === false) {
         remove.push(childSnapshot.ref.remove());
       }
     });
