@@ -18,17 +18,19 @@ final class NotificationState extends Equatable {
     this.listNotifications,
   });
 
-  static NotificationState initial() => const NotificationState(
+  static NotificationState initial() =>
+      const NotificationState(
         status: NotificationStatus.initial,
       );
 
   NotificationState copyWith({
     NotificationStatus? status,
     List<NotificationModel>? listNotifications,
+    bool? hasDeletedComment
   }) {
     return NotificationState(
-        status: status ?? this.status,
-        listNotifications: listNotifications ?? this.listNotifications);
+      status: status ?? this.status,
+      listNotifications: listNotifications ?? this.listNotifications,);
   }
 
   @override

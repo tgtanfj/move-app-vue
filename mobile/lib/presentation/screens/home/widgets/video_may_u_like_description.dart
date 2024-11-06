@@ -18,6 +18,7 @@ class VideoMayULikeDescription extends StatelessWidget {
   final String duration;
   final VoidCallback onTapToVideoDetail;
   final VoidCallback onTapToProfile;
+  final String category;
   const VideoMayULikeDescription({
     super.key,
     required this.avatarUrl,
@@ -31,6 +32,8 @@ class VideoMayULikeDescription extends StatelessWidget {
     required this.duration,
     required this.onTapToVideoDetail,
     required this.onTapToProfile,
+    required this.category,
+
   });
 
   @override
@@ -100,7 +103,7 @@ class VideoMayULikeDescription extends StatelessWidget {
           child: Row(children: [
             Expanded(
               child: Text(
-                '$channelName • $createTime',
+                '$category • $createTime',
                 style: AppTextStyles.montserratStyle.regular14graniteGray,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

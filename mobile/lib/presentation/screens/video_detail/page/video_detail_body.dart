@@ -208,7 +208,8 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                                         .montserratStyle.bold14White,
                                     onTap: () {
                                       Navigator.of(context)
-                                          .pushNamed(AppRoutes.home);
+                                          .pushNamedAndRemoveUntil(
+                                              AppRoutes.home, (route) => false);
                                     },
                                     width: 120,
                                     padding: const EdgeInsets.all(5),
@@ -323,6 +324,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         state.isShowTemporaryListReply?[commentModel.id] ?? false;
     final hasTargetCommentId =
         state.targetCommentId == commentModel.id && state.targetReplyId == 0;
+
+    if (hasTargetCommentId) {
+      Future.delayed(const Duration(seconds: 5), () {
+        context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+      });
+    }
     return Column(
       children: [
         if (commentModel == state.listComments?.first) ...[
@@ -396,7 +403,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           }
         },
         borderColor: AppColors.white,
-        padding: const EdgeInsets.only(top: 12),
+        padding:  EdgeInsets.zero,
         mainAxisSize: MainAxisSize.min,
       ),
     );
@@ -415,6 +422,11 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
         itemBuilder: (BuildContext context, int replyIndex) {
           final replyCommentModel = replies[replyIndex];
           final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
+          if (hasTargetReplyId) {
+            Future.delayed(const Duration(seconds: 5), () {
+              context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+            });
+          }
           return ItemComment(
             onTapDelete: () {
               context.read<VideoDetailBloc>().add(VideoDetailDeleteCommentEvent(
@@ -536,8 +548,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               );
         },
         borderColor: AppColors.white,
-        padding: const EdgeInsets.only(top: 12),
-        mainAxisSize: MainAxisSize.min,
+        padding: EdgeInsets.zero,
       ),
     );
   }
@@ -638,12 +649,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
               }
             },
             facebookButton: () {
-              context.read<VideoDetailBloc>().add(VideoDetailShareFacebookEvent(
-                  videoId: state.video?.id ?? 0));
+              context.read<VideoDetailBloc>().add(
+                  VideoDetailShareFacebookEvent(videoId: state.video?.id ?? 0));
             },
             twitterButton: () {
               context.read<VideoDetailBloc>().add(VideoDetailShareTwitterEvent(
-                  videoId: state.video?.id ?? 0,));
+                    videoId: state.video?.id ?? 0,
+                  ));
             },
             copyLinkButton: () {
               Clipboard.setData(ClipboardData(

@@ -59,7 +59,7 @@ class _ItemCommentState extends State<ItemComment> {
     Clipboard.setData(ClipboardData(text: widget.commentModel?.content ?? ""));
 
     setState(() => isShowTextCopy = true);
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 5), () {
       setState(() => isShowTextCopy = false);
     });
   }
@@ -101,7 +101,7 @@ class _ItemCommentState extends State<ItemComment> {
     return isHighlighted
         ? BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            color: AppColors.lavenderBlush,
+            color: AppColors.culturedLight,
             border: Border.all(width: 1, color: AppColors.tiffanyBlue),
           )
         : null;
@@ -186,9 +186,19 @@ class _ItemCommentState extends State<ItemComment> {
           ],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
-          Constants.copied,
-          style: AppTextStyles.montserratStyle.regular13GraniteGray,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(AppIcons.messageTiffany.svgAssetPath),
+            const SizedBox(
+              width: 10,
+            ),
+            Text(
+              Constants.copied,
+              style: AppTextStyles.montserratStyle.bold14Black,
+            ),
+          ],
         ),
       ),
     );
@@ -346,7 +356,10 @@ class _ItemCommentState extends State<ItemComment> {
             borderRadius: BorderRadius.circular(16.0),
           ),
           offset: const Offset(0, -70),
-          icon: SvgPicture.asset(AppIcons.dots.svgAssetPath),
+          icon: SvgPicture.asset(
+            AppIcons.dots.svgAssetPath,
+            color: AppColors.tiffanyBlue,
+          ),
           onSelected: (value) {
             if (value == Constants.copy) {
               _handleCopy();
@@ -474,9 +487,6 @@ class _ItemCommentState extends State<ItemComment> {
                     ),
                   ],
                 ),
-          widget.hasTargetReplyId
-              ? const SizedBox(height: 15)
-              : const SizedBox.shrink()
         ],
       ),
     );
