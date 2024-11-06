@@ -63,7 +63,7 @@ const { values, setValues, errors, resetForm, setFieldError } = useForm({
 watch(cardNumber, (newValue) => {
   cardType.value = ''
   setValues({ ...values, cardType: '' })
-  if (newValue.length >= 6) {
+  if (newValue.length >= 1) {
     if (newValue.startsWith('4')) {
       cardType.value = 'visa'
       setValues({ ...values, cardType: 'visa' })

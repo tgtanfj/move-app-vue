@@ -159,7 +159,7 @@ watch([expMonth, expYear], (newValue) => {
 watch(cardNumber, (newValue) => {
   cardType.value = ''
   setValues({ ...values, cardType: '' })
-  if (newValue.length >= 6) {
+  if (newValue.length >= 1) {
     if (newValue.startsWith('4')) {
       cardType.value = 'visa'
       setValues({ ...values, cardType: 'visa' })
@@ -215,13 +215,11 @@ const adjustModalPosition = async () => {
 
     // If the modal is off the screen
     if (top < 0) {
-      modal.style.top = '200px'
+      modal.style.top = `${Math.abs(top)}`
     }
     // If the modal's bottom exceeds the viewport height, move it up
     else if (top + rect.height > viewportHeight) {
-      const excessHeight = top + rect.height - viewportHeight
-      const newTop = top - excessHeight - 10
-      modal.style.top = `-${newTop + 100}px`
+      modal.style.bottom = `0px`
     }
   }
 }
