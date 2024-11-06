@@ -147,6 +147,7 @@ export type Withdraw = {
   id: number;
   numberOfREPs: number;
   createdAt: any;
+  status: string;
   channel: {
     name: string;
     user: {

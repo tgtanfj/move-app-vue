@@ -2,108 +2,105 @@
 
 import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import { DataTable } from '@/components/ui/table/data-table';
+import { DataTableFilterBox } from '@/components/ui/table/data-table-filter-box';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
-import { Withdraw } from '@/constants/data';
-import { fTimestamp } from '@/lib/format-time';
+import { fDate } from '@/lib/format-time';
+import { useGetAllWithdrawHistoriesQuery } from '@/store/queries/paymentManagement';
 import { useState } from 'react';
-import { DateRange } from 'react-day-picker';
 import { columns } from './columns';
-import { useWithdrawTableFilters } from './use-withdraw-table-filters';
+import { STATUS_OPTIONS } from './use-withdraw-table-filters';
 
-export default function WithdrawTable({
-  data = [],
-  totalData
-}: {
-  data: Withdraw[];
-  totalData: number;
-}) {
+export default function WithdrawTable() {
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [status, setStatus] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [startDate, setStartDate] = useState('1-1-2024');
+  const [endDate, setEndDate] = useState(fDate(Date.now()));
+
   const {
-    isAnyFilterActive,
-    resetFilters,
-    searchQuery,
-    setPage,
-    setSearchQuery
-  } = useWithdrawTableFilters();
+    result = [],
+    meta = { total: 0, page: 1, take: 10, totalPages: 1 },
+    isFetching
+  } = useGetAllWithdrawHistoriesQuery(
+    {
+      startDate,
+      endDate,
+      take: pageSize,
+      page,
+      status,
+      search,
+      sortField,
+      sortDirection
+    },
+    {
+      selectFromResult: ({ data, isFetching }) => ({
+        result: data?.data || [],
+        meta: data?.meta || {
+          total: 0,
+          page: 1,
+          take: pageSize,
+          totalPages: 1
+        },
+        isFetching
+      })
+    }
+    );
 
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | null>(
-    null
-  );
-
-  const dataFiltered = applyFilter({
-    inputData: data,
-    filterName: searchQuery,
-    filterStartDate: selectedDateRange?.from,
-    filterEndDate: selectedDateRange?.to
-  });
+  const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
+    setPage(1); // Reset to the first page when sorting changes
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         <DataTableSearch
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
+          searchQuery={search}
+          setSearchQuery={setSearch}
           setPage={setPage}
           searchKey={'full name or email'}
         />
+        <DataTableFilterBox
+          filterKey="status"
+          title="Status"
+          options={STATUS_OPTIONS}
+          setFilterValue={setStatus}
+          filterValue={status || ''}
+        />
         <CalendarDateRangePicker
           onChange={(range) => {
-            if (range && typeof range !== 'object') return; // Ignore event if it's a FormEvent
+            if (range && typeof range !== 'object') return;
             if (range && 'from' in range && 'to' in range) {
-              setSelectedDateRange(range as DateRange);
+              setStartDate(range?.from?.toLocaleDateString() || '');
+              setEndDate(range?.to?.toLocaleDateString() || '');
             }
           }}
         />
 
         <DataTableResetFilter
-          isFilterActive={isAnyFilterActive}
-          onReset={resetFilters}
+          isFilterActive={search || status ? true : false}
+          onReset={() => {
+            setStatus('');
+            setSearch('');
+            setPage(1);
+            setPageSize(10);
+          }}
         />
       </div>
-      <DataTable columns={columns} data={dataFiltered} totalItems={totalData} />
+      <DataTable
+        columns={columns}
+        data={result}
+        meta={meta}
+        pageSizeOptions={[10, 20, 50]}
+        onPageChange={(page) => setPage(page)}
+        onPageSizeChange={(size) => setPageSize(size)}
+        onSortChange={handleSortChange}
+      />
     </div>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter({
-  inputData,
-  filterName,
-  filterStartDate,
-  filterEndDate
-}: {
-  inputData: Withdraw[];
-  filterName: string;
-  filterStartDate: Date | undefined;
-  filterEndDate: Date | undefined;
-}) {
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (filterName) {
-    inputData = inputData.filter(
-      (withdraw) =>
-        withdraw.channel.name
-          .toLowerCase()
-          .indexOf(filterName.toLowerCase()) !== -1 ||
-        withdraw.channel.user.email
-          .toLowerCase()
-          .indexOf(filterName.toLowerCase()) !== -1 ||
-        withdraw.channel.user.fullName
-          .toLowerCase()
-          .indexOf(filterName.toLowerCase()) !== -1
-    );
-  }
-
-  if (filterStartDate && filterEndDate) {
-    inputData = inputData.filter(
-      (withdraw) =>
-        fTimestamp(withdraw.createdAt) >= fTimestamp(filterStartDate) &&
-        fTimestamp(withdraw.createdAt) <= fTimestamp(filterEndDate)
-    );
-  }
-
-  return inputData;
 }
