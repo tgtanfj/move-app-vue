@@ -499,19 +499,19 @@ export class HomeService {
         videosWithValue1.push(entry.videoId);
       }
     });
-
-    const [priorityHigh, priorityLow, recentVideoByUser] = await Promise.all([
+    const [recentVideoByUser, priorityHigh, priorityLow] = await Promise.all([
+      this.getVideoByIds(recentWatchedVideoIds, selected),
       this.getVideoByIds(videosWithValue2, selected),
       this.getVideoByIds(videosWithValue1, selected),
-      this.getVideoByIds(recentWatchedVideoIds, selected),
     ]);
     const ignoreIds = [...videosWithValue2, ...videosWithValue1, ...recentWatchedVideoIds];
-    let result = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
+    let temp = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
+    let result = [...new Set(temp)];
 
     if (result.length >= 32) {
       result = result.slice(0, 31);
     }
-
+    
     const limitVideoOther = 32 - result.length;
     if (limitVideoOther > 0) {
       let topViewVideo = await this.videoRepository.find({
@@ -521,12 +521,12 @@ export class HomeService {
           channel: {
             id: Not(foundChannel ? foundChannel.id : null),
           },
-          isPublish:true
+          isPublish: true,
         },
         order: {
           numberOfViews: 'DESC',
           ratings: 'DESC',
-          createdAt:'desc'
+          createdAt: 'desc',
         },
         relations: {
           category: true,
