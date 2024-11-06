@@ -100,7 +100,7 @@ export class HomeService {
     const response = await Promise.all(
       result.map(async (video) => {
         const [thumbnail, channel, category] = await Promise.all([
-          this.thumbnailService.getSelectedThumbnail(video.id),
+          this.thumbnailService.getSelectedThumbnail(video.videoId),
           this.channelService.findOne(video.channelId),
           this.categoryService.getCategoryById(video.categoryId),
         ]);

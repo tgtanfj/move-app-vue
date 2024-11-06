@@ -181,20 +181,17 @@ export class SearchService {
     console.log('topCategory:', topCategory ? 'Exists' : 'Null');
     console.log('topTwoInstructors count:', topTwoInstructors.length);
 
-    let slicedVideos;
-    if (topCategory && topTwoInstructors.length === 2) {
-      slicedVideos = topVideos.slice(0, 3);
-      console.log('slicedVideos1', slicedVideos);
-    } else if (topCategory && topTwoInstructors.length === 1) {
-      slicedVideos = topVideos.slice(0, 4);
-      console.log('slicedVideos2', slicedVideos);
-    } else if (topCategory || topTwoInstructors.length > 0) {
-      slicedVideos = topVideos.slice(0, 5);
-      console.log('slicedVideos3', slicedVideos);
-    } else {
-      slicedVideos = topVideos.slice(0, 6);
-      console.log('slicedVideos4', slicedVideos);
+    let numVideos = 5;
+
+    if (topCategory) {
+      numVideos -= 1;
     }
+
+    if (topTwoInstructors) {
+      numVideos -= topTwoInstructors.length;
+    }
+
+    const slicedVideos = topVideos.slice(0, numVideos);
 
     // Trả về kết quả với đúng cấu trúc yêu cầu
     return {
