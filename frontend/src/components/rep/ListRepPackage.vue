@@ -190,7 +190,7 @@ onMounted(async () => {
   stripe.value = await loadStripe(STRIPE_KEY)
 })
 
-const { values, setValues, errors, resetForm, setFieldError } = useForm({
+const { values, setValues, errors, resetForm } = useForm({
   initialValues: {
     cardholderName: '',
     country: '',
@@ -221,14 +221,6 @@ const adjustModalPosition = async () => {
     else if (top + rect.height > viewportHeight) {
       modal.style.bottom = `0px`
     }
-  }
-}
-
-const clearError = (field) => {
-  setFieldError(field, '')
-  if (field === 'cardNumber') {
-    wrongCardType.value = ''
-    paymentStore.stripeErr = ''
   }
 }
 
@@ -493,7 +485,6 @@ const handleCheckExpYear = (event) => {
                           v-model.trim="cardholderName"
                           @input="handleCheckCardName"
                           @blur="handleTrim"
-                          @focus="clearError('cardholderName')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -535,7 +526,6 @@ const handleCheckExpYear = (event) => {
                           v-bind="componentField"
                           v-model.trim="cardNumber"
                           @input="handleCheckCardNumber"
-                          @focus="clearError('cardNumber')"
                         />
                       </FormControl>
                       <FormMessage :class="{ hidden: !showError }" />
@@ -590,7 +580,6 @@ const handleCheckExpYear = (event) => {
                           type="text"
                           v-model.trim="expMonth"
                           @input="handleCheckExpMonth"
-                          @focus="clearError('expDate')"
                           ref="expMonthInput"
                         />
                         <input
@@ -600,7 +589,6 @@ const handleCheckExpYear = (event) => {
                           type="text"
                           v-model.trim="expYear"
                           @input="handleCheckExpYear"
-                          @focus="clearError('expDate')"
                           ref="expYearInput"
                         />
                       </div>
@@ -637,7 +625,6 @@ const handleCheckExpYear = (event) => {
                           v-bind="componentField"
                           v-model.trim="cvc"
                           @input="handleCheckCVC"
-                          @focus="clearError('cvc')"
                         />
                       </FormItem>
                       <FormMessage :class="{ hidden: !showError }" />

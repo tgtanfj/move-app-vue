@@ -141,7 +141,9 @@ const resetFormOnClose = () => {
   cvc.value = ''
   userCountryIso.value = ''
   showError.value = false
-  paymentStore.stripeErr = ''
+}
+const changeShowError = (val) => {
+  showError.value = val
 }
 
 const isSubmitEnabled = computed(() => {
@@ -149,14 +151,6 @@ const isSubmitEnabled = computed(() => {
 
   return !isFormDataEmpty
 })
-
-const clearError = (field) => {
-  setFieldError(field, '')
-  if (field === 'cardNumber') {
-    wrongCardType.value = ''
-    paymentStore.stripeErr = ''
-  }
-}
 
 const onSubmit = async () => {
   const isAccepted = values.cardType === 'visa' || values.cardType === 'mastercard'
@@ -166,7 +160,7 @@ const onSubmit = async () => {
     return
   }
   if (!isAccepted) {
-    wrongCardType.value = 'Please enter a valid Visa or credit card number only'
+    setFieldError('cardNumber', 'Please enter a valid Visa or credit card number only')
     return
   }
 
@@ -181,7 +175,13 @@ const onSubmit = async () => {
     type: values.cardType
   }
 
-  await paymentStore.createUserPaymentMethod(cardData, route, router)
+  await paymentStore.createUserPaymentMethod(
+    cardData,
+    route,
+    router,
+    setFieldError,
+    changeShowError
+  )
 }
 
 const handleTrim = (e) => {
@@ -262,7 +262,6 @@ const handleCheckCardName = (event) => {
                       v-model.trim="cardholderName"
                       @input="handleCheckCardName"
                       @blur="handleTrim"
-                      @focus="clearError('cardholderName')"
                     />
                   </FormControl>
                   <FormMessage :class="{ hidden: !showError }" />
@@ -303,7 +302,6 @@ const handleCheckCardName = (event) => {
                       v-bind="componentField"
                       v-model.trim="cardNumber"
                       @input="handleCheckCardNumber"
-                      @focus="clearError('cardNumber')"
                     />
                   </FormControl>
                   <FormMessage class="mt-2" :class="{ hidden: !showError }" />
@@ -339,12 +337,7 @@ const handleCheckCardName = (event) => {
               </FormField>
             </div>
           </div>
-          <p
-            class="text-red-500 font-medium text-sm"
-            v-if="wrongCardType || paymentStore.stripeErr"
-          >
-            {{ wrongCardType || paymentStore.stripeErr }}
-          </p>
+
           <div class="grid grid-cols-2 w-full gap-3">
             <div>
               <label>Expiration date</label>
@@ -358,7 +351,6 @@ const handleCheckCardName = (event) => {
                       type="text"
                       v-model.trim="expMonth"
                       @input="handleCheckExpMonth"
-                      @focus="clearError('expDate')"
                       ref="expMonthInput"
                     />
                     <input
@@ -368,7 +360,6 @@ const handleCheckCardName = (event) => {
                       type="text"
                       v-model.trim="expYear"
                       @input="handleCheckExpYear"
-                      @focus="clearError('expDate')"
                       ref="expYearInput"
                     />
                   </div>
@@ -404,7 +395,6 @@ const handleCheckCardName = (event) => {
                       v-bind="componentField"
                       v-model.trim="cvc"
                       @input="handleCheckCVC"
-                      @focus="clearError('cvc')"
                     />
                   </FormItem>
                   <FormMessage class="mt-2" :class="{ hidden: !showError }" />

@@ -14,7 +14,6 @@ export const usePaymentStore = defineStore('payment', () => {
   const isCreating = ref(false)
   const userPaymentList = ref(null)
   const showSucessNotify = ref(false)
-  const stripeErr = ref('')
   const reps = ref(0)
   const isBuying = ref(false)
   const selectedPackage = ref(null)
@@ -116,7 +115,7 @@ export const usePaymentStore = defineStore('payment', () => {
       return { error: error.response?.data?.error || error.message }
     }
   }
-  const createUserPaymentMethod = async (card, route, router) => {
+  const createUserPaymentMethod = async (card, route, router, setFieldError, changeShowError) => {
     try {
       isCreating.value = true
       const { token, error: tokenError } = await createToken(card)
@@ -153,7 +152,10 @@ export const usePaymentStore = defineStore('payment', () => {
         throw new Error('Token was not created')
       }
     } catch (err) {
-      stripeErr.value = 'Your card number is incorrect'
+      if ((err.message = 'Your card number is incorrect.') && setFieldError) {
+        setFieldError('cardNumber', 'Your card number is incorrect')
+        changeShowError(true)
+      }
     } finally {
       isCreating.value = false
     }
@@ -280,7 +282,6 @@ export const usePaymentStore = defineStore('payment', () => {
     isBuying,
     userPaymentList,
     showSucessNotify,
-    stripeErr,
     repsPackageList,
     reps,
     selectedPackage,

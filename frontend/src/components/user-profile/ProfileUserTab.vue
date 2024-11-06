@@ -62,7 +62,7 @@ const gender = ref('')
 const loginMethod = ref('')
 
 const { toast } = useToast()
-const { values, setValues, errors } = useForm({
+const { values, setValues, errors, setFieldError } = useForm({
   initialValues: {
     avatar: null,
     username: '',
@@ -281,10 +281,16 @@ const onSubmit = async () => {
         } else throw new Error(response.error)
       } catch (err) {
         const message = err?.response?.data?.message || err.message
-        toast({ description: message, variant: 'destructive' })
+        if (message === `The username '${values.username}' has been taken. Try another username.`) {
+          setFieldError(
+            'username',
+            `The username '${values.username}' has been taken. Try another username.`
+          )
+          showError.value = true
+        }
       } finally {
         isSubmitting.value = false
-        showError.value = false
+        // showError.value = false
       }
     }
   }
@@ -309,7 +315,6 @@ const onErrorMessage = (msg) => {
 const handleImageError = (event) => {
   event.target.src = defaultAvatar
 }
-
 </script>
 
 <template>
