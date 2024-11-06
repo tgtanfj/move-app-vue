@@ -52,12 +52,6 @@ export class User extends BaseEntity {
   role: Role;
 
   @Column({
-    type: 'boolean',
-    default: false,
-  })
-  isActive: boolean;
-
-  @Column({
     type: 'varchar',
     nullable: true,
   })
