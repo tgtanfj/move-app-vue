@@ -676,32 +676,32 @@ const handleRidirect = (commentId, videoId) => {
       <div class="flex justify-center mb-auto">
         <template v-if="item?.totalDonation > 0">
           <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GrayIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GrayIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
-            v-else-if="item.totalDonation <= 4999"
+            v-else-if="item.totalDonation <= 4999"g
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GreenIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GreenIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
             v-else-if="item.totalDonation <= 9999"
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/PinkIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/PinkIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
             v-else-if="item.totalDonation <= 24999"
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/BlueIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/BlueIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div v-else class="flex items-center justify-center gap-2">
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/YellowIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/YellowIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
         </template>
