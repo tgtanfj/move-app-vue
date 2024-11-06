@@ -62,7 +62,8 @@ const countries = ref(null)
 const isLoading = ref(false)
 const userCountryIso = ref(null)
 const cardType = ref('')
-const expDate = ref('')
+const expMonth = ref('')
+const expYear = ref('')
 const showError = ref(false)
 const cardholderName = ref('')
 const cvc = ref('')
@@ -75,6 +76,8 @@ const isChecked = ref(false)
 const coun = ref('')
 const wrongCardType = ref('')
 const modalRef = ref(null)
+const expMonthInput = ref(null)
+const expYearInput = ref(null)
 
 const isSubmitEnabled = computed(() => {
   if (!isPaymentRequired.value) return true
@@ -137,11 +140,13 @@ watch(cvc, (newValue) => {
 watch(cardholderName, (newValue) => {
   setValues({ ...values, cardholderName: newValue })
 })
-watch(expDate, (newValue) => {
-  if (newValue) {
+watch([expMonth, expYear], (newValue) => {
+  const [month, year] = newValue
+
+  if (month && year) {
     setValues({
       ...values,
-      expDate: newValue
+      expDate: `${month}/${year}`
     })
   } else {
     setValues({
@@ -185,14 +190,6 @@ onMounted(async () => {
   stripe.value = await loadStripe(STRIPE_KEY)
 })
 
-// onMounted(() => {
-//   window.addEventListener('resize', adjustModalPosition)
-// })
-
-// onBeforeUnmount(() => {
-//   window.removeEventListener('resize', adjustModalPosition)
-// })
-
 const { values, setValues, errors, resetForm, setFieldError } = useForm({
   initialValues: {
     cardholderName: '',
@@ -207,7 +204,7 @@ const { values, setValues, errors, resetForm, setFieldError } = useForm({
 })
 
 const adjustModalPosition = async () => {
-  //E nsures that the DOM has been updated before calculating the modal's position
+  //Ensures that the DOM has been updated before calculating the modal's position
   await nextTick()
 
   const modal = modalRef.value
@@ -231,7 +228,10 @@ const adjustModalPosition = async () => {
 
 const clearError = (field) => {
   setFieldError(field, '')
-  if (field === 'cardNumber') wrongCardType.value = ''
+  if (field === 'cardNumber') {
+    wrongCardType.value = ''
+    paymentStore.stripeErr = ''
+  }
 }
 
 const handelBuyRepsPackage = async (item) => {
@@ -283,7 +283,8 @@ const resetAfterSuccess = () => {
   cardNumber.value = ''
   cardholderName.value = ''
   cardType.value = ''
-  expDate.value = ''
+  expMonth.value = ''
+  expYear.value = ''
   cvc.value = ''
   showSuccessModal.value = true
 }
@@ -339,7 +340,8 @@ const resetFormOnClose = () => {
   cardNumber.value = ''
   cardholderName.value = ''
   cardType.value = ''
-  expDate.value = ''
+  expMonth.value = ''
+  expYear.value = ''
   cvc.value = ''
   userCountryIso.value = ''
   showError.value = false
@@ -355,9 +357,6 @@ const handleCloseSuccessModal = () => {
 }
 const handleCloseFailureModal = () => {
   showFailureModal.value = false
-  setTimeout(() => {
-    paymentStore.setSelectedPackage(null)
-  }, 300)
 }
 
 const handleTrim = (e) => {
@@ -379,46 +378,32 @@ const handleCheckCVC = (event) => {
 }
 const handleCheckCardName = (event) => {
   const input = event.target.value
-  const trimmedInput = input.replace(/\s+/g, ' ').trim()
+
+  const cleanedInput = input.replace(/[^\p{L}\s]/gu, '')
+  const trimmedInput = cleanedInput.replace(/\s+/g, ' ').trim()
+
   cardholderName.value = trimmedInput
   setValues({ ...values, cardholderName: trimmedInput })
 }
 
-const handleCheckExpDate = (event) => {
-  let input = event.target.value
-
-  // Remove non-numeric characters
-  input = input.replace(/\D/g, '')
-
-  // Ensure the month is between 01 and 12
-  if (input.length >= 2) {
-    let month = parseInt(input.substring(0, 2), 10)
-    if (month > 12) {
-      month = 12
-    }
-    if (month < 1) {
-      month = '01'
-    }
-    input = month.toString().padStart(2, '0') + input.substring(2)
+const handleCheckExpMonth = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  if (filteredInput === '00') {
+    expMonth.value = '01'
+  } else if (Number(filteredInput) > 12) {
+    expMonth.value = '12'
+  } else {
+    expMonth.value = filteredInput
   }
-
-  // Add '/' after the month
-  if (input.length > 2) {
-    input = input.substring(0, 2) + '/' + input.substring(2)
+  if (expMonth.value.length === 2) {
+    expYearInput.value.focus()
   }
-
-  // Limit input to 5 characters (MM/YY)
-  if (input.length > 5) {
-    input = input.substring(0, 5)
-  }
-
-  // Handle backspace
-  if (event.inputType === 'deleteContentBackward' && input.length === 3) {
-    input = input.substring(0, 2)
-  }
-
-  expDate.value = input
-  setValues({ ...values, expDate: input })
+}
+const handleCheckExpYear = (event) => {
+  const input = event.target.value
+  const filteredInput = input.replace(/[^0-9]/g, '')
+  expYear.value = filteredInput
 }
 </script>
 
@@ -588,25 +573,41 @@ const handleCheckExpDate = (event) => {
                   </FormField>
                 </div>
               </div>
-              <p class="text-red-500 font-medium text-sm" v-if="wrongCardType">
-                {{ wrongCardType }}
+              <p
+                class="text-red-500 font-medium text-sm"
+                v-if="wrongCardType || paymentStore.stripeErr"
+              >
+                {{ wrongCardType || paymentStore.stripeErr }}
               </p>
               <div class="grid grid-cols-2 w-full gap-3">
                 <div>
                   <label>Expiration date</label>
                   <FormField v-slot="{ componentField }" name="expDate">
-                    <!-- <FormItem class="w-full flex items-center gap-4 mt-2"> -->
-                    <div class="w-full flex items-center gap-4 mt-2">
-                      <input
-                        maxlength="5"
-                        placeholder="MM/YY"
-                        class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[120px] !m-0 p-2"
-                        v-model="expDate"
-                        @input="handleCheckExpDate"
-                        @focus="clearError('expDate')"
-                      />
-                    </div>
-                    <FormMessage :class="{ hidden: !showError }" />
+                    <FormItem class="w-full flex flex-col gap-4 mt-2">
+                      <div class="w-full flex items-center gap-4 mt-2">
+                        <input
+                          maxlength="2"
+                          placeholder="MM"
+                          class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                          type="text"
+                          v-model.trim="expMonth"
+                          @input="handleCheckExpMonth"
+                          @focus="clearError('expDate')"
+                          ref="expMonthInput"
+                        />
+                        <input
+                          maxlength="2"
+                          placeholder="YY"
+                          class="flex text-[16px] mb-1 py-2 px-3 border-[1px] rounded-lg focus:border-[#13D0B4] focus:outline-none border-[#CCCCCC] h-[40px] w-[70px] !m-0 p-2"
+                          type="text"
+                          v-model.trim="expYear"
+                          @input="handleCheckExpYear"
+                          @focus="clearError('expDate')"
+                          ref="expYearInput"
+                        />
+                      </div>
+                      <FormMessage class="!mt-0" :class="{ hidden: !showError }" />
+                    </FormItem>
                   </FormField>
                 </div>
                 <div class="w-full gap-3">
@@ -621,8 +622,8 @@ const handleCheckExpDate = (event) => {
                           >
                             <span>?</span>
                           </TooltipTrigger>
-                          <TooltipContent>
-                            <p class="text-[8px] max-w-[400px] whitespace-normal break-words">
+                          <TooltipContent class="max-w-[200px]">
+                            <p class="text-[12px] whitespace-normal break-words">
                               {{ t('wallet.cvc') }}
                             </p>
                           </TooltipContent>

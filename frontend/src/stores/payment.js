@@ -1,6 +1,7 @@
 import { useToast } from '@common/ui/toast'
 import { STRIPE_KEY, STRIPE_PAYMENT_METHOD_API, STRIPE_TOKEN_API } from '@constants/api.constant'
 import { apiAxios } from '@helpers/axios.helper'
+import { t } from '@helpers/i18n.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -78,7 +79,7 @@ export const usePaymentStore = defineStore('payment', () => {
         startNotificationTimer()
       }
     } catch (error) {
-      console.error(error)
+      toast({ description: error.response?.data?.message || error, variant: 'destructive' })
     }
   }
   const createToken = async (card) => {
@@ -152,7 +153,7 @@ export const usePaymentStore = defineStore('payment', () => {
         throw new Error('Token was not created')
       }
     } catch (err) {
-      toast({ description: err, variant: 'destructive' })
+      stripeErr.value = 'Your card number is incorrect'
     } finally {
       isCreating.value = false
     }
@@ -165,9 +166,10 @@ export const usePaymentStore = defineStore('payment', () => {
       })
       if (response.status === 201) {
         userPaymentList.value = null
+        toast({ description: `${t('wallet.remove_success')}`, variant: 'successfully' })
       } else throw new Error(response.data)
     } catch (error) {
-      console.error('Error deleting payment method', error)
+      toast({ description: error.response?.data?.message || error, variant: 'destructive' })
     } finally {
       isDeleting.value = false
     }

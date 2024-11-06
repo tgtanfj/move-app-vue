@@ -16,6 +16,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { usePaymentStore } from '../stores/payment'
 import { videoService } from '@services/video.services'
+import { useSearchStore } from '../stores/search'
 
 const props = defineProps({
   isInStreamerPage: {
@@ -26,6 +27,7 @@ const props = defineProps({
 
 const authStore = useAuthStore()
 const paymentStore = usePaymentStore()
+const searchStore = useSearchStore()
 const router = useRouter()
 const route = useRoute()
 const isStreamer = ref(route.path.startsWith('/streamer'))
@@ -40,6 +42,7 @@ const channelId = localStorage.getItem('userChannelId')
 
 const logOutGoogle = async () => {
   await authStore.logout()
+  searchStore.text = ''
   showLogoutModal.value = false
   showMenuAccount.value = false
   router.push('/')
@@ -103,7 +106,9 @@ watch(
               storedUserInfo
             }}
           </p>
-          <BlueBadgeIcon v-if="authStore.user.isBlueBadge || authStore.blueBadge || isBlueBadge === 'true'" />
+          <BlueBadgeIcon
+            v-if="authStore.user.isBlueBadge || authStore.blueBadge || isBlueBadge === 'true'"
+          />
         </div>
       </RouterLink>
 

@@ -16,10 +16,14 @@ const { toast } = useToast()
 const isOpen = ref(false)
 
 const onDeleteItem = (id) => {
-  paymentStore.deleteUserPaymentMethod(id).then(() => {
-    isOpen.value = false
-    toast({ description: `${t('wallet.remove_success')}`, variant: 'successfully' })
-  })
+  paymentStore
+    .deleteUserPaymentMethod(id)
+    .then(() => {
+      isOpen.value = false
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script>
 <template>

@@ -348,7 +348,6 @@ const onErrorMessage = (msg) => {
                   v-bind="componentField"
                   v-model.trim="values.username"
                   :maxlength="25"
-                  :minlength="4"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />
