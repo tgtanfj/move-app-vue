@@ -4,7 +4,7 @@ import { Input } from '@common/ui/input'
 import { computed, ref } from 'vue'
 import { Dialog, DialogContent, DialogTrigger } from '@common/ui/dialog'
 import { commentServices } from '@services/comment.services'
-import defaultAvatar from '../../assets/icons/default-avatar.png'
+import defaultAvatar from '../../assets/images/default-avatar.png'
 import { useAuthStore } from '../../stores/auth'
 import { useOpenLoginStore } from '../../stores/openLogin'
 

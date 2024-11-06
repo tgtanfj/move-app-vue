@@ -146,7 +146,7 @@ onMounted(() => {
             <p>{{ convertToTimeFormat(videoInDepth.avgWatched) }}</p>
           </li>
           <li class="flex justify-between items-end">
-            <p class="font-semibold uppercase text-gray-500">{{ $t('search.rating') }}</p>
+            <p class="font-semibold uppercase text-gray-500">{{ $t('streamer.rating') }}</p>
             <p class="flex gap-1 items-center">
               {{ videoInDepth.rating === null ? '0' : videoInDepth.rating
               }}<StartIcon class="h-[16px] w-[16px]" />

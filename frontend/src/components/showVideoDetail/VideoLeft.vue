@@ -81,6 +81,7 @@ const getCommentById = async () => {
         commentFirst.value = dataCommentBytId
       }
     } catch (error) {
+      router.push('/notify-error')
       console.error('Error fetching comment by ID:', error)
     }
   }

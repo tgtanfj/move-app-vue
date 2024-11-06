@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import {
   denormalizeGender,
   hasEmptyProperty,
@@ -304,6 +305,11 @@ const onFileSelected = (file, imagePreview) => {
 const onErrorMessage = (msg) => {
   message.value = msg
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
+
 </script>
 
 <template>
@@ -319,9 +325,10 @@ const onErrorMessage = (msg) => {
             <div class="w-[56px] h-[56px] rounded-full">
               <img
                 class="w-full h-full object-cover rounded-full"
-                :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
+                :src="avatar ? avatar : values.avatar ? values.avatar : defaultAvatar"
                 v-bind="componentField"
-                alt=""
+                alt="avatar"
+                @error="handleImageError"
               />
             </div>
             <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>

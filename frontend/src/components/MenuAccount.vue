@@ -1,7 +1,7 @@
 <script setup>
 import DashboardIcon from '@assets/icons/DashboardIcon.vue'
 import LogoMoveMini from '@assets/icons/LogoMoveMini.vue'
-import defaultAvatar from '@assets/icons/default-avatar.png'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import LogoutIcon from '@assets/icons/LogoutIcon.vue'
 import SettingIcon from '@assets/icons/SettingIcon.vue'
 import WalletIcon from '@assets/icons/WalletIcon.vue'
@@ -63,6 +63,10 @@ const closeMenuAccount = () => {
   showMenuAccount.value = false
 }
 
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
+
 watch(
   () => route.path,
   (newPath) => {
@@ -78,6 +82,7 @@ watch(
         :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
         alt="Avatar"
         class="w-[30px] h-[30px] object-cover rounded-full"
+        @error="handleImageError"
       />
     </PopoverTrigger>
 
@@ -94,6 +99,7 @@ watch(
               :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
               alt="Avatar"
               class="w-full h-full rounded-full object-cover"
+              @error="handleImageError"
             />
           </div>
           <p
@@ -118,10 +124,10 @@ watch(
         v-if="isStreamer"
         to="/"
         @click="createChannel"
-        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
         <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
         >
           <LogoMoveMini class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Back to Move</p>
@@ -132,10 +138,10 @@ watch(
         v-else
         to="/streamer/videos"
         @click="createChannel"
-        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
         <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
         >
           <DashboardIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Dashboard</p>
@@ -146,10 +152,10 @@ watch(
         v-if="isStreamer"
         to="/streamer/cashout"
         @click="closeMenuAccount"
-        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
         <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
         >
           <WalletIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Cashout</p>
@@ -160,10 +166,10 @@ watch(
         v-else
         to="/wallet"
         @click="closeMenuAccount"
-        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
         <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
         >
           <WalletIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">
@@ -177,10 +183,10 @@ watch(
       <RouterLink
         to="/profile"
         @click="closeMenuAccount"
-        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group-hover:text-primary"
+        class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
         <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
+          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
         >
           <SettingIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Settings</p>

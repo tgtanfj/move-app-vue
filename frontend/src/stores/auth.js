@@ -10,7 +10,7 @@ import { auth } from '../services/firebaseConfig.js'
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { ADMIN_BASE } from '@constants/api.constant.js'
-import defaultAvatar from '@assets/icons/default-avatar.png'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import { apiAxios } from '@helpers/axios.helper.js'
 
 export const useAuthStore = defineStore('auth', () => {

@@ -1,7 +1,8 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import defaultAvatar from '@assets/icons/default-avatar.png'
+import defaultAvatar from '@assets/images/default-avatar.png'
+import defaultNotify from '@assets/images/default-notify.png'
 import AvaSystem from '@assets/icons/AvaSystem.vue'
 
 const props = defineProps({
@@ -185,6 +186,10 @@ const handleModalPopup = () => {
   }
 }
 
+const handleImageError = (event) => {
+  event.target.src = defaultNotify
+}
+
 onMounted(() => {
   setTimeInterval.value = setInterval(() => {
     timeAgo.value = formatTimeAgo(timestamp)
@@ -215,7 +220,8 @@ onBeforeUnmount(() => {
           v-else
           :src="sender.avatar || defaultAvatar"
           alt="User avatar"
-          class="w-full h-full rounded-full"
+          class="w-full h-full rounded-full object-cover"
+          @error="handleImageError"
         />
       </div>
       <div class="flex flex-col justify-between">

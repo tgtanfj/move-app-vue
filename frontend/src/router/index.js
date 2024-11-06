@@ -54,6 +54,10 @@ const router = createRouter({
           path: '/channel/:id',
           name: 'view-channel',
           component: () => import('@views/ChannelView.vue')
+        },
+        {
+          path: '/notify-error',
+          component: () => import('@views/NotifyError.vue')
         }
       ]
     },
