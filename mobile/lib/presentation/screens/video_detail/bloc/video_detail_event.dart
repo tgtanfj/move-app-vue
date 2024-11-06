@@ -182,3 +182,13 @@ final class VideoDetailPopEvent extends VideoDetailEvent {
   @override
   List<Object?> get props => [];
 }
+
+final class VideoDetailDeleteCommentEvent extends VideoDetailEvent {
+  final int commentId;
+  final int? parenCommentId;
+
+  const VideoDetailDeleteCommentEvent({required this.commentId, this.parenCommentId});
+
+  @override
+  List<Object?> get props => [commentId, parenCommentId];
+}

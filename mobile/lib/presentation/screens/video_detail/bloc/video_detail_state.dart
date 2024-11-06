@@ -28,7 +28,7 @@ class VideoDetailState extends Equatable {
   final String? inputReply;
   final Map<int, bool>? isHiddenInputReply;
   final Map<int?, int?>? originalNumOfReply;
-  final bool isShowTemporaryListReply;
+  final Map<int, bool>? isShowTemporaryListReply;
   final int? videoId;
   final String? option;
   final String? twitterLink;
@@ -53,7 +53,7 @@ class VideoDetailState extends Equatable {
       this.inputReply,
       this.isHiddenInputReply,
       this.originalNumOfReply,
-      this.isShowTemporaryListReply = false,
+      this.isShowTemporaryListReply ,
       this.videoId,
       this.option,
       this.twitterLink,
@@ -82,7 +82,7 @@ class VideoDetailState extends Equatable {
     String? inputReply,
     Map<int, bool>? isHiddenInputReply,
     Map<int?, int?>? originalNumOfReply,
-    bool? isShowTemporaryListReply,
+    Map<int, bool>? isShowTemporaryListReply,
     int? videoId,
     String? option,
     String? twitterLink,

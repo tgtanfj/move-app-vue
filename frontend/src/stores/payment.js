@@ -4,10 +4,8 @@ import { apiAxios } from '@helpers/axios.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
 
 const { toast } = useToast()
-const route = useRoute()
 
 export const usePaymentStore = defineStore('payment', () => {
   const isLoading = ref(false)
@@ -117,7 +115,7 @@ export const usePaymentStore = defineStore('payment', () => {
       return { error: error.response?.data?.error || error.message }
     }
   }
-  const createUserPaymentMethod = async (card) => {
+  const createUserPaymentMethod = async (card, route, router) => {
     try {
       isCreating.value = true
       const { token, error: tokenError } = await createToken(card)
@@ -141,6 +139,12 @@ export const usePaymentStore = defineStore('payment', () => {
         if (res.status === 200) {
           const { id: paymentMethodId } = res.data
           await sendPaymentIdToServer(paymentMethodId)
+          if (route && router) {
+            const { query } = route
+            if (query && query.source && selectedPackage.value) {
+              router.push({ path: query.source, query: { redirectFrom: 'add-payment' } })
+            }
+          }
         } else {
           throw new Error(res.data.error || 'Error creating payment method')
         }
