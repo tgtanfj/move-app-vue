@@ -118,8 +118,6 @@ export class Video extends BaseEntity {
   @OneToMany(() => Views, (view) => view.video)
   views: Views[];
 
-  viewGrowthRate?: number;
-
   @Column({
     type: 'float',
     default: 0,

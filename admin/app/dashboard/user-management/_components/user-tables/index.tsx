@@ -10,13 +10,26 @@ import { GENDER_OPTIONS, useUserTableFilters } from './use-user-table-filters';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import { Button } from '@/components/ui/button';
+import { useMemo } from 'react';
 
 export default function UsersTable({
   data = [],
-  totalData
+  totalData,
+  currentPage,
+  pageSize,
+  totalPages,
+  isLoading,
+  onPageChange,
+  onPageSizeChange
 }: {
   data: Employee[];
   totalData: number;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
 }) {
   const {
     genderFilter,
@@ -28,15 +41,18 @@ export default function UsersTable({
     setSearchQuery
   } = useUserTableFilters();
 
-  const filteredData = data.filter((employee) => {
-    const matchesSearch = employee.email
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-
-    const matchesGender = !genderFilter || employee.gender === genderFilter;
-
-    return matchesSearch && matchesGender;
-  });
+  // Apply filtering logic
+  const filteredData = useMemo(() => {
+    return data.filter((employee) => {
+      const matchesSearch = searchQuery
+        ? employee.email.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      const matchesGender = genderFilter
+        ? employee.gender === genderFilter
+        : true;
+      return matchesSearch && matchesGender;
+    });
+  }, [data, searchQuery, genderFilter]);
 
   // Export data to CSV
   const exportToCSV = () => {
@@ -59,40 +75,63 @@ export default function UsersTable({
     XLSX.writeFile(workbook, 'users_data.xlsx');
   };
 
+  // Handle pagination change
+  const handlePaginationChange = (newPage: number, newSize: number) => {
+    onPageChange(newPage);
+    onPageSizeChange(newSize);
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-4">
-        <DataTableSearch
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          setPage={setPage}
-          searchKey={'email or username'}
-        />
-        <DataTableFilterBox
-          filterKey="gender"
-          title="Gender"
-          options={GENDER_OPTIONS}
-          setFilterValue={setGenderFilter}
-          filterValue={genderFilter}
-        />
-        <DataTableResetFilter
-          isFilterActive={isAnyFilterActive}
-          onReset={resetFilters}
-        />
-        <Button
-          onClick={exportToCSV}
-          className="rounded bg-blue-500 px-4 py-2 text-white"
-        >
-          Export to CSV
-        </Button>
-        <Button
-          onClick={exportToExcel}
-          className="rounded bg-green-500 px-4 py-2 text-white"
-        >
-          Export to Excel
-        </Button>
-      </div>
-      <DataTable columns={columns} data={filteredData} totalItems={totalData} />
+      {isLoading ? (
+        <div className="flex items-center justify-center">
+          <span>Loading...</span>
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-4">
+            <DataTableSearch
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setPage={setPage}
+              searchKey={'email or username'}
+            />
+            <DataTableFilterBox
+              filterKey="gender"
+              title="Gender"
+              options={GENDER_OPTIONS}
+              setFilterValue={setGenderFilter}
+              filterValue={genderFilter}
+            />
+            <DataTableResetFilter
+              isFilterActive={isAnyFilterActive}
+              onReset={resetFilters}
+            />
+            <Button
+              onClick={exportToCSV}
+              className="rounded bg-blue-500 px-4 py-2 text-white"
+            >
+              Export to CSV
+            </Button>
+            <Button
+              onClick={exportToExcel}
+              className="rounded bg-green-500 px-4 py-2 text-white"
+            >
+              Export to Excel
+            </Button>
+          </div>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            totalItems={totalData}
+            pageSizeOptions={[10, 20, 50]}
+            onPageChange={(page) => handlePaginationChange(page, pageSize)}
+            onPageSizeChange={(size) =>
+              handlePaginationChange(currentPage, size)
+            }
+          />
+        </>
+      )}
     </div>
   );
 }
