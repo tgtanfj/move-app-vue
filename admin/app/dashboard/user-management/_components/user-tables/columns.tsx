@@ -5,16 +5,17 @@ import { ColumnDef } from '@tanstack/react-table';
 export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'id',
-    header: 'User ID',
-    enableSorting: false
+    header: 'User ID'
   },
   {
     accessorKey: 'username',
-    header: 'User Name'
+    header: 'User Name',
+    enableSorting: false
   },
   {
     accessorKey: 'email',
-    header: 'Email'
+    header: 'Email',
+    enableSorting: true
   },
   {
     accessorKey: 'fullName',
@@ -22,25 +23,30 @@ export const columns: ColumnDef<Employee>[] = [
   },
   {
     accessorKey: 'gender',
-    header: 'Gender'
+    header: 'Gender',
+    enableSorting: false
   },
   {
     accessorKey: 'dateOfBirth',
     header: 'Date of Birth',
     cell: ({ getValue }) => (
       <span>{new Date(getValue() as string).toLocaleDateString()}</span>
-    )
+    ),
+    enableSorting: false
   },
   {
     accessorKey: 'country.name',
-    header: 'Country'
+    header: 'Country',
+    enableSorting: false
   },
   {
     accessorKey: 'state.name',
-    header: 'State'
+    header: 'State',
+    enableSorting: false
   },
   {
     accessorKey: 'city',
-    header: 'City'
+    header: 'City',
+    enableSorting: false
   }
 ];

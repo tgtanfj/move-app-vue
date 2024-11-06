@@ -25,9 +25,12 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  OnChangeFn,
+  SortingState,
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -41,7 +44,10 @@ interface DataTableProps<TData, TValue> {
   };
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
-  onSortChange: (columnId: string, direction: 'asc' | 'desc') => void;
+  onSortChange: (
+    columnId: string | null,
+    direction: 'asc' | 'desc' | null
+  ) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -60,17 +66,40 @@ export function DataTable<TData, TValue>({
     pageSize: take
   };
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updaterOrValue) => {
+    const newSorting =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(sorting) // Call the function with current sorting
+        : updaterOrValue;
+
+    setSorting(newSorting);
+
+    // Extract the first sorting entry for backend API call
+    if (newSorting.length > 0) {
+      const { id, desc } = newSorting[0];
+      onSortChange(id, desc ? 'desc' : 'asc');
+    } else {
+      // If no sorting is specified, clear sorting on backend
+      onSortChange(null, null);
+    }
+  };
+
   const table = useReactTable({
     data,
     columns,
     pageCount: totalPages,
     state: {
-      pagination: paginationState
+      pagination: paginationState,
+      sorting: sorting
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
-    manualFiltering: true
+    manualFiltering: true,
+    manualSorting: true,
+    onSortingChange: handleSortingChange
   });
 
   return (
@@ -83,10 +112,7 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    onClick={() =>
-                      header.column.getCanSort() &&
-                      header.column.toggleSorting()
-                    }
+                    onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
                       ? null
@@ -94,6 +120,10 @@ export function DataTable<TData, TValue>({
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                    {{
+                      asc: ' 🔼',
+                      desc: ' 🔽'
+                    }[header.column.getIsSorted() as string] ?? null}
                   </TableHead>
                 ))}
               </TableRow>
