@@ -79,6 +79,7 @@ class _CustomExpandablePageViewState extends State<CustomExpandablePageView>
             unselectedLabelStyle: widget.unselectedLabelStyle ??
                 AppTextStyles.montserratStyle.regular16Black,
             indicatorWeight: widget.dividerHeight ?? 4,
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             indicatorColor: widget.indicatorColor ?? AppColors.tiffanyBlue,
             dividerColor: widget.dividerColor ?? Colors.white,
             indicator: const UnderlineTabIndicator(

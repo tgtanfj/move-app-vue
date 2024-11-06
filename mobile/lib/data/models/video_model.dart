@@ -20,6 +20,8 @@ class VideoModel {
   final int? durationsVideo;
   final bool? isCommentable;
   final List<ThumbnailsModel>? thumbnailsModel;
+  final int? videoId;
+
 
   VideoModel({
     this.id,
@@ -39,6 +41,7 @@ class VideoModel {
     this.videoLength,
     this.isCommentable,
     this.thumbnailsModel,
+    this.videoId,
   });
 
   VideoModel copyWith({
@@ -59,6 +62,7 @@ class VideoModel {
     int? videoLength,
     bool? isCommentable,
     List<ThumbnailsModel>? thumbnailsModel,
+    int? videoId,
   }) {
     return VideoModel(
       id: id ?? this.id,
@@ -78,6 +82,7 @@ class VideoModel {
       videoLength: videoLength ?? this.videoLength,
       isCommentable: isCommentable ?? this.isCommentable,
       thumbnailsModel: thumbnailsModel ?? this.thumbnailsModel,
+      videoId: videoId ?? this.videoId,
     );
   }
 
@@ -119,6 +124,7 @@ class VideoModel {
           (json['isCommentable'] != null && json['isCommentable'] is bool)
               ? json['isCommentable'] as bool
               : false,
+      videoId: (json['videoId'] is int) ? json['videoId'] : 0,
     );
   }
 }

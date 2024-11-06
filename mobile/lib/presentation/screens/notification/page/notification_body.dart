@@ -34,7 +34,7 @@ class _NotificationBodyState extends State<NotificationBody> {
                   title: Constants.notifications,
                   titleStyle: AppTextStyles.montserratStyle.bold20White,
                   titleAlign: TextAlign.center,
-                  prefixButton: (){
+                  prefixButton: () {
                     Navigator.of(context).pop();
                   },
                   prefixIconPath: AppIcons.closeWhite.svgAssetPath,
@@ -90,7 +90,8 @@ class _NotificationBodyState extends State<NotificationBody> {
                                 );
                               },
                               separatorBuilder: (context, index) => Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 20),
                                   child: const Divider(height: 1)),
                             ),
                           ),

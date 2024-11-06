@@ -192,3 +192,8 @@ final class VideoDetailDeleteCommentEvent extends VideoDetailEvent {
   @override
   List<Object?> get props => [commentId, parenCommentId];
 }
+
+class VideoDetailClearTargetCommentEvent extends VideoDetailEvent {
+  @override
+  List<Object?> get props => [];
+}

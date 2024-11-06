@@ -91,6 +91,7 @@ class _ListVideosMayULikeState extends State<ListVideosMayULike> {
                         widget.listMayULikeVideo[index].duration?.shorten() ??
                             '',
                     ratings: widget.listMayULikeVideo[index].ratings ?? 0,
+                    category: widget.listMayULikeVideo[index].category?.title ?? '',
                   ),
                 ),
               ],
