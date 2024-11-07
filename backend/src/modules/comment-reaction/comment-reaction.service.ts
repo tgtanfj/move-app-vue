@@ -82,7 +82,7 @@ export class CommentReactionService {
 
       result.affected === 1 &&
         commentReaction.isLike === true &&
-        comment.numberOfLike > 1 &&
+        comment.numberOfLike >= 1 &&
         (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
@@ -128,7 +128,7 @@ export class CommentReactionService {
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
-      const checkId = value?.replyId ? value.replyId : value.commentId;
+      const checkId = value?.replyId ? value.replyId : value?.commentId;
       if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
