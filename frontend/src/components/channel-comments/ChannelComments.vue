@@ -73,7 +73,7 @@ watch([filter, sort, page], async () => {
 <template>
   <div class="mt-[80px] ml-6 mb-16 w-full">
     <div
-      v-if="comments.length === 0 && isLoading === false"
+      v-if="comments.length === 0 && isLoading === false && filter === 'all' && sort === 'createdAt'"
       class="flex flex-col items-start gap-2 justify-between"
     >
       <h1 class="text-title-size font-bold">{{ $t('channel_comments.comments') }}</h1>
@@ -95,6 +95,7 @@ watch([filter, sort, page], async () => {
         />
       </div>
     </div>
+
     <CommentsTableAnalytics
       v-if="comments.length > 0"
       :comments="comments"
@@ -102,9 +103,18 @@ watch([filter, sort, page], async () => {
       @updateReplyCount="updateReplyCount"
       @handleDeleteComment="handleDeleteComment"
     />
+
+    <p
+      v-if="comments.length === 0 && isLoading === false && (filter !== 'all' || sort !== 'createdAt')"
+      class="text-center mt-20"
+    >
+      No Comments Found
+    </p>
+
     <div v-if="isLoading" class="w-full flex items-center justify-center my-[300px]">
       <LoadingTable />
     </div>
+
     <div class="flex items-center justify-between mt-5 pr-16">
       <div class="flex items-center"></div>
 
