@@ -189,36 +189,35 @@ export class AwsS3Service {
 
     const command = new GetObjectCommand(params);
     const url = await getSignedUrl(this.s3Client, command, {
-      expiresIn: this.expiresIn, 
+      expiresIn: this.expiresIn,
     });
 
-    return url; 
+    return url;
   }
 
-  async downloadMultiFiles(urlS3: string[]) {
+  async downloadMultiFiles(urlS3: any[]) {
     const archive = archiver('zip', { zlib: { level: 5 } });
     const passthrough = new PassThrough();
 
     archive.on('error', (err) => {
       console.error('Archive error:', err);
-      passthrough.destroy(err); 
+      passthrough.destroy(err);
     });
 
-  
     archive.pipe(passthrough);
 
     for (const url of urlS3) {
-      const key = getKeyS3(url);
+      const key = getKeyS3(url.urlS3);
       const command = new GetObjectCommand({ Bucket: this.bucketName, Key: key });
 
       try {
         const response = await this.s3Client.send(command);
 
         if (response.Body) {
-          const filename = path.basename(url);
-          const partName = filename.split('-')[2];
+          const extension = path.extname(url.urlS3);
+          const newFileName = `${url.title}${extension}`;
           archive.append(response.Body as NodeJS.ReadableStream, {
-            name: partName,
+            name: newFileName,
           });
         }
       } catch (error) {
@@ -226,9 +225,8 @@ export class AwsS3Service {
       }
     }
 
-    
     archive.finalize();
 
-    return passthrough; 
+    return passthrough;
   }
 }
