@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:move_app/data/models/channel_model.dart';
-import 'package:move_app/presentation/components/category_item.dart';
 import 'package:move_app/presentation/screens/search/widgets/custom_search_channel.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 import 'package:move_app/utils/util_number_format.dart';

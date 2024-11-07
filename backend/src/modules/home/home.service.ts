@@ -108,7 +108,7 @@ export class HomeService {
     const response = await Promise.all(
       result.map(async (video) => {
         const [thumbnail, channel, category] = await Promise.all([
-          this.thumbnailService.getSelectedThumbnail(video.id),
+          this.thumbnailService.getSelectedThumbnail(video.videoId),
           this.channelService.findOne(video.channelId),
           this.categoryService.getCategoryById(video.categoryId),
         ]);
@@ -438,6 +438,13 @@ export class HomeService {
   }
 
   async youMayLike(userId: number) {
+    const foundChannel = await this.channelRepository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
     const selected = [
       'v.id',
       'v.title',
@@ -492,14 +499,14 @@ export class HomeService {
         videosWithValue1.push(entry.videoId);
       }
     });
-
-    const [priorityHigh, priorityLow, recentVideoByUser] = await Promise.all([
+    const [recentVideoByUser, priorityHigh, priorityLow] = await Promise.all([
+      this.getVideoByIds(recentWatchedVideoIds, selected),
       this.getVideoByIds(videosWithValue2, selected),
       this.getVideoByIds(videosWithValue1, selected),
-      this.getVideoByIds(recentWatchedVideoIds, selected),
     ]);
-    const ignoreIds = [...videosWithValue2, ...videosWithValue2, ...recentWatchedVideoIds];
-    let result = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
+    const ignoreIds = [...videosWithValue2, ...videosWithValue1, ...recentWatchedVideoIds];
+    let temp = [...recentVideoByUser, ...priorityHigh, ...priorityLow];
+    let result = [...new Map(temp.map((item) => [item.id, item])).values()];
 
     if (result.length >= 32) {
       result = result.slice(0, 31);
@@ -509,9 +516,17 @@ export class HomeService {
     if (limitVideoOther > 0) {
       let topViewVideo = await this.videoRepository.find({
         take: limitVideoOther,
-        where: { id: Not(In(ignoreIds)) },
+        where: {
+          id: Not(In(ignoreIds)),
+          channel: {
+            id: Not(foundChannel ? foundChannel.id : null),
+          },
+          isPublish: true,
+        },
         order: {
           numberOfViews: 'DESC',
+          ratings: 'DESC',
+          createdAt: 'desc',
         },
         relations: {
           category: true,

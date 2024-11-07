@@ -5,6 +5,7 @@ export const useCommentToggleStore = defineStore('commentToggle', () => {
   const channelId = ref(null)
   const videoChannelId = ref(null)
   const isCommentable = ref(false)
+  const userId = ref(null)
 
   const isInstructor = computed(() => channelId.value === videoChannelId.value)
   const isDisabledActions = ref(false)
@@ -31,14 +32,20 @@ export const useCommentToggleStore = defineStore('commentToggle', () => {
     isCommentable.value = value
   }
 
+  const setUserId = (value) => {
+    userId.value = value
+  }
+
   return {
     channelId,
     videoChannelId,
     isInstructor,
     isDisabledActions,
     isCommentable,
+    userId,
     setChannelId,
     setVideoChannelId,
-    setIsCommentable
+    setIsCommentable,
+    setUserId
   }
 })

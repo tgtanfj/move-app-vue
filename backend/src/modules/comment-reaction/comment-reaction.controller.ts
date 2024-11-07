@@ -30,8 +30,8 @@ export class CommentReactionController {
   @UseGuards(JwtAuthGuard)
   @Patch('')
   async updateCommentReaction(@User() user, @Body() dto: CreateCommentReactionDto) {
-    const userId = user.id;
-    return await this.commentReactionService.update(userId, dto);
+    const userInfo = { id: user.id, avatar: user.avatar, username: user.username };
+    return await this.commentReactionService.update(userInfo, dto);
   }
 
   @UseGuards(JwtAuthGuard)

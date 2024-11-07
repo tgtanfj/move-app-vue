@@ -20,4 +20,5 @@ class AppColors {
   static const pineGreen = Color(0xff008370);
   static const grey = Color(0xFF9E9E9E);
   static const lightGrey = Color(0xFFD6D5D5);
+  static const culturedLight = Color(0xFFF7F7F7);
 }

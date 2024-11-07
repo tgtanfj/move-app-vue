@@ -105,12 +105,14 @@ export class NotificationService {
 
     const notificationsRef = db.ref(`notifications`);
     const snapshot = await notificationsRef.once('value');
+    const remove = [];
     snapshot.forEach((childSnapshot) => {
       const createdAt = childSnapshot.val().createdAt;
       if (createdAt < threshold) {
-        childSnapshot.ref.remove();
+        remove.push(childSnapshot.ref.remove());
       }
     });
+    await Promise.all(remove);
   }
 
   async setNotificationData(

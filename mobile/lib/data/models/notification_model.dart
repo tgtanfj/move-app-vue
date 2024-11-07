@@ -4,12 +4,14 @@ import 'package:move_app/utils/util_date_time.dart';
 class NotificationModel {
   final NotificationData data;
   final bool isRead;
+  final bool hasDelete;
   final int timestamp;
   String? key;
 
   NotificationModel(
       {required this.data,
       required this.isRead,
+      required this.hasDelete,
       required this.timestamp,
       this.key});
 
@@ -17,11 +19,13 @@ class NotificationModel {
     NotificationData? data,
     bool? isRead,
     int? timestamp,
+    bool? hasDelete,
     String? key,
   }) {
     return NotificationModel(
       data: data ?? this.data,
       isRead: isRead ?? this.isRead,
+      hasDelete: hasDelete ?? this.hasDelete,
       timestamp: timestamp ?? this.timestamp,
       key: key ?? this.key,
     );
@@ -33,6 +37,7 @@ class NotificationModel {
       data: (json['data'] is Map)
           ? NotificationData.fromJson(Map<String, dynamic>.from(json['data']))
           : NotificationData.fromJson({}),
+      hasDelete: (json['hasDelete'] is bool) ? json['hasDelete'] : false,
       isRead: (json['isRead'] is bool) ? json['isRead'] : false,
       timestamp: (json['timestamp'] is int) ? json['timestamp'] : 0,
     );
@@ -118,7 +123,7 @@ class NotificationData {
           ? UserModel.fromJson(Map<String, dynamic>.from(json['sender']))
           : null,
       type: NotificationType.values.firstWhere(
-            (type) => type.value == (json['type'] is String ? json['type'] : ''),
+        (type) => type.value == (json['type'] is String ? json['type'] : ''),
         orElse: () => NotificationType.follow,
       ),
       commentId: (json['commentId'] is int) ? json['commentId'] : 0,
@@ -155,6 +160,7 @@ class NotificationData {
     };
   }
 }
+
 enum NotificationType {
   follow('follow'),
   like('like'),

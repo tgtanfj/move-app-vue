@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/common/ui/select'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import {
   denormalizeGender,
   hasEmptyProperty,
@@ -61,7 +62,7 @@ const gender = ref('')
 const loginMethod = ref('')
 
 const { toast } = useToast()
-const { values, setValues, errors } = useForm({
+const { values, setValues, errors, setFieldError } = useForm({
   initialValues: {
     avatar: null,
     username: '',
@@ -280,10 +281,16 @@ const onSubmit = async () => {
         } else throw new Error(response.error)
       } catch (err) {
         const message = err?.response?.data?.message || err.message
-        toast({ description: message, variant: 'destructive' })
+        if (message === `The username '${values.username}' has been taken. Try another username.`) {
+          setFieldError(
+            'username',
+            `The username '${values.username}' has been taken. Try another username.`
+          )
+          showError.value = true
+        }
       } finally {
         isSubmitting.value = false
-        showError.value = false
+        // showError.value = false
       }
     }
   }
@@ -304,6 +311,10 @@ const onFileSelected = (file, imagePreview) => {
 const onErrorMessage = (msg) => {
   message.value = msg
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
 </script>
 
 <template>
@@ -319,9 +330,10 @@ const onErrorMessage = (msg) => {
             <div class="w-[56px] h-[56px] rounded-full">
               <img
                 class="w-full h-full object-cover rounded-full"
-                :src="avatar ? avatar : values.avatar ? values.avatar : userBaseAvatar"
+                :src="avatar ? avatar : values.avatar ? values.avatar : defaultAvatar"
                 v-bind="componentField"
-                alt=""
+                alt="avatar"
+                @error="handleImageError"
               />
             </div>
             <p class="text-red-500 text-sm" v-if="message">{{ message }}</p>
@@ -348,7 +360,6 @@ const onErrorMessage = (msg) => {
                   v-bind="componentField"
                   v-model.trim="values.username"
                   :maxlength="25"
-                  :minlength="4"
                 />
               </FormControl>
               <FormMessage :class="{ hidden: !showError }" />

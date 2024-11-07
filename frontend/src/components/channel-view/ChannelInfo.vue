@@ -1,5 +1,5 @@
 <script setup>
-import defaultAvatar from '@assets/icons/default-avatar.png'
+import defaultAvatar from '@assets/images/default-avatar.png'
 import { formatFollowers } from '@utils/formatViews.util'
 import { ref, watchEffect } from 'vue'
 import BlueBadgeIcon from '../../assets/icons/BlueBadgeIcon.vue'
@@ -30,7 +30,7 @@ const handleDecrease = () => {
 <template>
   <div class="flex items-center justify-between">
     <div class="flex items-center">
-      <img :src="image || defaultAvatar" class="w-[56px] h-[56px] mr-5 rounded-full" />
+      <img :src="image || defaultAvatar" class="w-[56px] h-[56px] mr-5 rounded-full object-cover" />
       <div>
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>

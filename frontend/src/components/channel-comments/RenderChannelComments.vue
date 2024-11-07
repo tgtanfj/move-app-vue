@@ -11,7 +11,7 @@ import { formatViews } from '@utils/formatViews.util'
 import { ChevronUp } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
-import defaultAvatar from '../../assets/icons/default-avatar.png'
+import defaultAvatar from '../../assets/images/default-avatar.png'
 import { commentServices } from '@services/comment.services'
 import { Input } from '@common/ui/input'
 import { Button } from '@common/ui/button'
@@ -220,6 +220,10 @@ const cancelComment = () => {
   replyInputId.value = null
 }
 
+const isEmptyObject = (obj) => {
+  return obj && Object.keys(obj).length === 0 && obj.constructor === Object
+}
+
 const createReply = async (commentId) => {
   const response = await commentServices.postReply(replyData.value, commentId)
   if (response.message === 'success') {
@@ -227,7 +231,15 @@ const createReply = async (commentId) => {
       myReplyPerComment.value[commentId] = response.data
       increaseReplies(commentId, 1)
     } else {
-      myReplyPerComment.value[commentId] = response.data
+      if (
+        repliesPerComment.value[commentId] &&
+        !isEmptyObject(repliesPerComment.value[commentId])
+      ) {
+        increaseReplies(commentId, 1)
+        repliesPerComment.value[commentId].push(response.data)
+      } else {
+        myReplyPerComment.value[commentId] = response.data
+      }
     }
     replyData.value = ''
     isFocused.value = false
@@ -246,11 +258,19 @@ const handleRidirect = (commentId, videoId) => {
     query: commentId ? { commentId } : {}
   })
 }
+
+const handleShowReply = (commentId) => {
+  if (myReplyPerComment.value[commentId]) {
+    increaseReplies(commentId, 1)
+    myReplyPerComment.value[commentId] = {}
+  }
+  showRepliesByComment(commentId)
+}
 </script>
 
 <template>
   <TableRow v-for="item in comments" :key="item.id" class="w-full relative hover:bg-[#EDFFFC]">
-    <TableCell class="w-[60%] p-[10px]">
+    <TableCell class="w-[50%] p-[10px]">
       <div class="flex items-start gap-4 w-full">
         <img
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
@@ -362,7 +382,7 @@ const handleRidirect = (commentId, videoId) => {
 
               <div v-if="item.numberOfReply > 0" class="mt-1 ml-2 cursor-pointer transition-all">
                 <div
-                  @click="showRepliesByComment(item.id)"
+                  @click="handleShowReply(item.id)"
                   class="flex items-center gap-3 mb-1 justify-start"
                   v-if="!isShowedReplies[item.id]"
                 >
@@ -387,11 +407,11 @@ const handleRidirect = (commentId, videoId) => {
                     v-if="repliesCountPerComment[item.id] > 1"
                     class="text-primary text-[13px] font-semibold"
                   >
-                    {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
+                    {{ $t('comment.hide') }} {{ item?.numberOfReply }}
                     {{ $t('comment.replies') }}
                   </p>
                   <p v-else class="text-primary text-[13px] font-semibold">
-                    {{ $t('comment.hide') }} {{ repliesCountPerComment[item.id] }}
+                    {{ $t('comment.hide') }} {{ item?.numberOfReply }}
                     {{ $t('comment.reply') }}
                   </p>
                   <ChevronUp class="text-primary w-[20px] transition-all" />
@@ -409,7 +429,7 @@ const handleRidirect = (commentId, videoId) => {
               v-model="replyData"
               @focus="isFocused = true"
               @keydown.enter="createReply(item.id)"
-              @keydown.esc="createReply(item.id)"
+              @keydown.esc="cancelComment"
               placeholder="Reply comment"
               class="w-full outline-none bg-transparent rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
             />
@@ -672,43 +692,44 @@ const handleRidirect = (commentId, videoId) => {
         </div>
       </div>
     </TableCell>
-    <TableCell class="w-[15%] h-full align-top">
-      <div class="flex justify-center mb-auto">
+    <TableCell class="w-[20%] h-full align-top">
+      <div class="flex mb-auto">
         <template v-if="item?.totalDonation > 0">
           <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GrayIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GrayIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
             v-else-if="item.totalDonation <= 4999"
+            g
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/GreenIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GreenIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
             v-else-if="item.totalDonation <= 9999"
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/PinkIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/PinkIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div
             v-else-if="item.totalDonation <= 24999"
             class="flex items-center justify-center gap-2"
           >
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/BlueIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/BlueIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
           <div v-else class="flex items-center justify-center gap-2">
-            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/icons/YellowIconImg.png" />
+            <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/YellowIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
           </div>
         </template>
         <span class="font-bold" v-else>-</span>
       </div>
     </TableCell>
-    <TableCell class="w-[25%] align-top">
+    <TableCell class="w-[30%] align-top">
       <div class="w-full h-full flex gap-4 mb-auto">
         <img class="w-[124px] h-[70px] cursor-pointer" :src="item?.video?.thumbnails[0]?.image" />
         <div class="flex flex-col justify-between">

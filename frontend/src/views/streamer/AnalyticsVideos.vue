@@ -72,7 +72,7 @@ const handleNextPage = () => {
   <div class="mt-[80px] ml-6 mb-10 w-full">
     <Loading v-if="isLoading" class="mt-72"></Loading>
     <div v-else>
-      <div class="flex items-center justify-between pr-16 mb-5">
+      <div class="flex items-center justify-between pr-16 mb-2">
         <h1 class="text-title-size font-bold">{{ $t('streamer_analysis.video_analytics') }}</h1>
         <div class="flex gap-10" v-if="videos.length > 0">
           <CustomSelection
@@ -91,7 +91,7 @@ const handleNextPage = () => {
         <div v-if="videos.length > 0">
           <TableAnalytics :videos="videos" />
         </div>
-        <div v-else class="ml-5 mt-4 italic">{{ $t('streamer.no_videos') }}</div>
+        <div v-else class="text-[16px] italic">{{ $t('streamer.no_videos') }}</div>
       </div>
       <div class="flex items-center justify-between mt-5 pr-16" v-if="videos.length > 0">
         <div class="flex items-center">

@@ -18,7 +18,6 @@ export function useVideoTableFilters() {
       .withDefault('')
   );
 
-
   const [workoutLevelFilter, setWorkoutLevelFilter] = useQueryState(
     'workoutLevel',
     searchParams.workoutLevel.withOptions({ shallow: false }).withDefault('')

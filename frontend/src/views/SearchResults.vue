@@ -97,9 +97,9 @@ const handleBackChannels = () => {
 }
 
 const gridClass = computed(() => {
-  const itemCount = searchStore.searchResults.video?.data.length || 0
+  const itemCount = searchStore.searchResults?.video?.data.length || 0
   const rows = Math.ceil(itemCount / 2) // Calculate the number of rows (2 items per row)
-  return `grid grid-cols-2 grid-rows-${rows}`
+  return `grid grid-cols-2 grid-rows-${rows} gap-2`
 })
 </script>
 <template>

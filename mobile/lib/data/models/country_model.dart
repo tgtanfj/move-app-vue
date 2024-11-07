@@ -9,6 +9,14 @@ class CountryModel {
     this.countryCode,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'countryCode': countryCode,
+    };
+  }
+
   CountryModel copyWith({
     int? id,
     String? name,

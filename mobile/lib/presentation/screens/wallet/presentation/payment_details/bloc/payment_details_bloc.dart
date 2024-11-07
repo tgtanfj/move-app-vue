@@ -1,9 +1,8 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc/bloc.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
 import 'package:move_app/data/repositories/payment_method_repository.dart';
-import 'package:move_app/data/repositories/stripe_repository.dart';
 import 'package:move_app/data/services/stripe_service.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_event.dart';
 import 'package:move_app/presentation/screens/wallet/presentation/payment_details/bloc/payment_details_state.dart';
@@ -68,7 +67,6 @@ class PaymentDetailsBloc
     final validateExpiryDate =
         InputValidationHelper.validateExpiryDate(state.expiryDate ?? '');
     final validateCvv = InputValidationHelper.validateCvv(state.cvv ?? '');
-
     emit(state.copyWith(
       isShowCardHolderNameMessage: validateCardHolderName != null,
       isShowCardNumberMessage: validateCardNumber != null,
@@ -85,43 +83,34 @@ class PaymentDetailsBloc
         validateExpiryDate == null &&
         validateCvv == null) {
       emit(state.copyWith(status: PaymentDetailsStatus.processing));
+      try {
+        final paymentMethod = await stripeService.createPaymentMethod(
+          cardNumber: state.cardNumber ?? '',
+          expiryDate: state.expiryDate ?? '',
+          cvv: state.cvv ?? '',
+          cardHolderName: state.cardHolderName ?? '',
+          country: state.selectedCountry?.countryCode ?? '',
+        );
+        final paymentMethodId = paymentMethod.toJson()['id'].toString();
+        final paymentMethodModel =
+            PaymentMethodModel(paymentMethodId: paymentMethodId);
 
-      final stripeRepository = StripeRepository();
-      final result = await stripeRepository.createPaymentMethod(
-        cardNumber: state.cardNumber ?? '',
-        cardName: state.cardHolderName ?? '',
-        expiryDate: state.expiryDate ?? '',
-        cvv: state.cvv ?? '',
-        countryCode: state.selectedCountry?.countryCode ?? '',
-      );
-
-      result.fold(
-        (error) {
-          emit(state.copyWith(
-              isShowCardNumberMessage: true,
-              status: PaymentDetailsStatus.failure,
-              cardNumberErrorMessage: error));
-        },
-        (paymentMethodId) async {
-          final paymentMethodModel =
-              PaymentMethodModel(paymentMethodId: paymentMethodId);
-
-          final postResult = await paymentMethodRepository
-              .postAddPaymentMethod(paymentMethodModel);
-
-          postResult.fold(
-            (error) {
-              emit(state.copyWith(
-                  status: PaymentDetailsStatus.failure,
-                  cardNumberErrorMessage: error));
-            },
-            (response) {
-              emit(state.copyWith(status: PaymentDetailsStatus.success));
-              emit(state.copyWith(status: PaymentDetailsStatus.added));
-            },
-          );
-        },
-      );
+        final result = await paymentMethodRepository
+            .postAddPaymentMethod(paymentMethodModel);
+        result.fold(
+          (error) {
+            emit(state.copyWith(
+                status: PaymentDetailsStatus.failure, errorMessage: error));
+          },
+          (response) {
+            emit(state.copyWith(status: PaymentDetailsStatus.success));
+            emit(state.copyWith(status: PaymentDetailsStatus.added));
+          },
+        );
+      } catch (e) {
+        emit(state.copyWith(
+            status: PaymentDetailsStatus.failure, errorMessage: e.toString()));
+      }
     }
   }
 

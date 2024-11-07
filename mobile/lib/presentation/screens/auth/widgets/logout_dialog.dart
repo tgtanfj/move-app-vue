@@ -3,7 +3,7 @@ import 'package:move_app/config/theme/app_colors.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/repositories/auth_repository.dart';
-import 'custom_logout_button.dart';
+import '../../../components/custom_logout_button.dart';
 
 class LogoutDialog extends StatelessWidget {
   final VoidCallback yesButton;
@@ -14,6 +14,7 @@ class LogoutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

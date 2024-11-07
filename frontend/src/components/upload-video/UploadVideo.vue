@@ -135,6 +135,22 @@ const resetField = () => {
   thumbnailTypeValidationErr.value = ''
   videoInput.value = null
   totalSeconds.value = null
+  progress.value = 0
+}
+
+const increaseProgress = () => {
+  const randomIncrement = Math.floor(Math.random() * (15 - 5 + 1)) + 5
+  progress.value = Math.min(progress.value + randomIncrement, 100)
+}
+
+const startProgress = () => {
+  const interval = setInterval(() => {
+    increaseProgress()
+
+    if (progress.value >= 100) {
+      clearInterval(interval)
+    }
+  }, 1000)
 }
 
 const onCloseConfirmModal = () => {
@@ -176,6 +192,7 @@ const validateVideo = async (file) => {
       validateSizeTypeErr.value = 'File Format Requirement Not Meet'
     }
     validateSizeTypeErr.value = ''
+    startProgress()
     await captureThumbnails(videoElement)
     imagesSelected.value = images.value[0]
   }
@@ -207,13 +224,8 @@ const handleDrop = async (event) => {
   }
 }
 
-const updateProgress = (progresValue) => {
-  progress.value = progresValue
-}
-
 const uploadVideo = async (file) => {
   uploading.value = true
-  progress.value = 0
   error.value = null
   videoInput.value = file
 
@@ -223,7 +235,7 @@ const uploadVideo = async (file) => {
   }
 
   try {
-    const { data } = await videoService.createVideoSession(file.size, updateProgress)
+    const { data } = await videoService.createVideoSession(file.size)
 
     if (data.message === 'success') {
       uploadLink.value = data.data.response.linkUpLoad
@@ -482,7 +494,7 @@ const thirdButton = async (tab) => {
 
   <Dialog v-model:open="isOpenUploadVideoDetails" @update:open="onDialogClose">
     <DialogContent
-      class="m-0 p-0 w-[840px] h-[520px] flex flex-col justify-between overflow-hidden"
+      class="m-0 p-0 w-[840px] h-[550px] flex flex-col justify-between overflow-hidden"
     >
       <div class="my-6 mx-6">
         <p class="text-[24px] font-bold mb-6">{{ $t('upload_video.video_details') }}</p>
@@ -810,7 +822,7 @@ const thirdButton = async (tab) => {
           </Button>
         </div>
         <div v-show="tabChange === 'tags'">
-          <Button @click="changeTab('details')" class="w-[120px] font-normal" variant="outline">{{
+          <Button @click="changeTab('details')" class="w-[90px] font-normal" variant="outline">{{
             $t('upload_video.back')
           }}</Button>
           <Button
@@ -823,16 +835,16 @@ const thirdButton = async (tab) => {
           </Button>
         </div>
         <div v-show="tabChange === 'settings'" class="flex items-center">
-          <Button @click="changeTab('tags')" class="w-[120px] font-normal" variant="outline">{{
+          <Button @click="changeTab('tags')" class="w-[90px] font-normal" variant="outline">{{
             $t('upload_video.back')
           }}</Button>
           <Button
             @click="thirdButton('settings')"
             variant="default"
-            :disabled="uploadLoading"
+            :disabled="uploadLoading || progress < 100"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
-            <span class="font-bold" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>
+            <span class="font-bold text-sm" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>
             <Loading v-if="uploadLoading" />
           </Button>
         </div>

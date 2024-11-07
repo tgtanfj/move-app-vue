@@ -129,18 +129,20 @@ class _PaymentDetailsBodyState extends State<PaymentDetailsBody> {
                       ),
                       _createTitle(title: Constants.country),
                       CustomDropdownButton(
-                        hintText: state.selectedCountry?.name ?? '',
-                        initialValue: state.selectedCountry?.id,
-                        items: state.countryList.map((country) {
-                          return {'id': country.id, 'name': country.name};
-                        }).toList(),
+                        hintText: state.selectedCountry?.name ??
+                            Constants.pleaseSelectCountry,
+                        initialValue: (state.selectedCountry?.id != null)
+                            ? state.selectedCountry?.id
+                            : null,
+                        items: state.countryList
+                            .map((country) => country.toJson())
+                            .toList(),
                         onChanged: (countryId) {
                           if (countryId != null) {
                             BlocProvider.of<PaymentDetailsBloc>(context).add(
                               PaymentDetailsCountrySelectEvent(
-                                  selectedCountry: state.countryList.firstWhere(
-                                (e) => e.id == countryId,
-                              )),
+                                countryId: countryId,
+                              ),
                             );
                           }
                         },

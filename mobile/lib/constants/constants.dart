@@ -246,6 +246,8 @@ class Constants {
   static const String instructors = 'Instructors';
   static const String videoNotFound = 'Video Not Found';
   static const String isCommentable = "Comments feature has been disabled.";
+  static const String notiNotFound = "Sorry, this notification doesn't exist";
+  static const String notiNotFoundSuff= "The notification you just clicked may have a broken link or the content of this page has been removed.";
 
   static const String channelId = 'channelId';
   static const String allLevels = 'All Levels';
@@ -388,12 +390,14 @@ class Constants {
       'Your payment method has been setup successfully.';
   static const String guideLineCVV =
       'The CVV2/CVC2 numbers refer to the additional 3 digits on the back or front of the card.';
+  static const String pleaseEnterValidVisaOrCreditCardNumber =
+      'Please enter a valid Visa or credit card number only';
   static const String repsNotFound = 'Reps not found';
   static const String requiresConfirmation = 'requires_confirmation';
   static const String refreshTokenExpired = 'Refresh token expired';
   static const String shareSocial = "share-social";
   static const String copy = "Copy";
-  static const String copied = "Copied";
+  static const String copied = "Message Copied!";
   static const String delete = "Delete";
   static const String invalidVisaOrCreditCard =
       "Please enter a valid Visa or Credit card number only";
