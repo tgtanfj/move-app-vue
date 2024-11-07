@@ -753,7 +753,8 @@ export class VideoService {
     return result || 0;
   }
 
-  async downloadMultiVideos(urlS3: string[]) {
-    return await this.s3.downloadMultiFiles(urlS3)
+  async downloadMultiVideos(urlS3: number[]) {
+    const videos = await this.videoRepository.getManyVideoUseIn(urlS3);
+    return await this.s3.downloadMultiFiles(videos);
   }
 }

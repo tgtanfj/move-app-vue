@@ -674,4 +674,16 @@ export class VideoRepository {
 
     return result.total_view_time;
   }
+
+  async getManyVideoUseIn(array: number[]) {
+    return await this.videoRepository.find({
+      where: {
+        id: In(array),
+      },
+      select: {
+        title: true,
+        urlS3: true,
+      },
+    });
+  }
 }
