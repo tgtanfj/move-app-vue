@@ -81,5 +81,10 @@ class VideosBloc extends Bloc<VideosEvent, VideosState> {
         selectedSortBy: event.selectedSortBy,
       ));
     });
+    if (state.videos.isEmpty) {
+      emit(state.copyWith(
+        status: VideosStatus.noData,
+      ));
+    }
   }
 }

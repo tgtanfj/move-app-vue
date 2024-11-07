@@ -145,7 +145,11 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                 ? Center(
                                     child: Column(
                                       children: [
-                                        SizedBox(height: MediaQuery.sizeOf(context).height*0.38,),
+                                        SizedBox(
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.38,
+                                        ),
                                         RichText(
                                           text: TextSpan(
                                             children: [
@@ -261,7 +265,9 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                const Divider(height: 1),
+                                                (state.categoryList.isNotEmpty)
+                                                    ? const Divider(height: 1)
+                                                    : const SizedBox(),
                                                 const SizedBox(height: 16),
                                                 Text(
                                                   Constants.channels,
@@ -327,7 +333,12 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                const Divider(height: 1),
+                                                (state.categoryList
+                                                            .isNotEmpty ||
+                                                        state.channelList
+                                                            .isNotEmpty)
+                                                    ? const Divider(height: 1)
+                                                    : const SizedBox(),
                                                 const SizedBox(height: 16),
                                                 Text(
                                                   Constants.videos,

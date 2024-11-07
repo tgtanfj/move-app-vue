@@ -45,7 +45,7 @@ class _SlideShowVideosFeatureState extends State<SlideShowVideosFeature> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => VideoDetailPage(
-                      videoId: widget.listVideo[index].id ?? 0,
+                      videoId: widget.listVideo[index].videoId ?? 0,
                     ),
                   ),
                 ),

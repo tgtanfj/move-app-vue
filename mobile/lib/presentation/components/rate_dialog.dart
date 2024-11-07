@@ -9,6 +9,7 @@ import 'custom_button.dart';
 
 class RateDialog extends StatefulWidget {
   final int rateSelected;
+
   const RateDialog({super.key, required this.rateSelected});
 
   @override
@@ -17,6 +18,7 @@ class RateDialog extends StatefulWidget {
 
 class _RateDialogState extends State<RateDialog> {
   late int rating;
+
   @override
   void initState() {
     rating = widget.rateSelected;
@@ -25,6 +27,7 @@ class _RateDialogState extends State<RateDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var isEnableRate = rating != 0 && rating != widget.rateSelected;
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       backgroundColor: Colors.white,
@@ -87,13 +90,13 @@ class _RateDialogState extends State<RateDialog> {
             ),
             const SizedBox(height: 10),
             CustomButton(
-              isEnabled: rating != 0,
+              isEnabled: isEnableRate,
               title: Constants.submit,
               titleStyle: AppTextStyles.montserratStyle.bold16White,
               borderColor:
-                  rating != 0 ? AppColors.tiffanyBlue : AppColors.spanishGray,
+                  isEnableRate ? AppColors.tiffanyBlue : AppColors.spanishGray,
               backgroundColor:
-                  rating != 0 ? AppColors.tiffanyBlue : AppColors.spanishGray,
+                  isEnableRate ? AppColors.tiffanyBlue : AppColors.spanishGray,
               onTap: () {
                 Navigator.pop(context, rating);
               },

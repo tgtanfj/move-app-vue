@@ -19,7 +19,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
   final VideoDetailRepository videoRepository = VideoDetailRepository();
   final ViewChannelProfileRepository viewChannelRepository =
-  ViewChannelProfileRepository();
+      ViewChannelProfileRepository();
   final commentRepository = CommentRepository();
 
   VideoDetailBloc() : super(VideoDetailState.initial()) {
@@ -46,8 +46,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         onVideoDetailClearTargetCommentEvent);
   }
 
-  void _onVideoDetailInitialEvent(VideoDetailInitialEvent event,
-      Emitter<VideoDetailState> emit) async {
+  void _onVideoDetailInitialEvent(
+      VideoDetailInitialEvent event, Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(
         status: VideoDetailStatus.processing,
         targetCommentId: event.targetCommentId,
@@ -73,11 +73,11 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     var updatedComments;
     final listCommentVideo = result[0] as Either<String, List<CommentModel>>;
     listCommentVideo.fold(
-          (l) {
+      (l) {
         emit(
             state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
       },
-          (comments) async {
+      (comments) async {
         updatedComments = comments;
 
         final originalNumOfReplies = {
@@ -125,8 +125,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     if (state.targetCommentId != null) {
       final targetCommentResult = result[4] as Either<String, CommentModel>;
       targetCommentResult.fold(
-            (l) {},
-            (r) {
+        (l) {},
+        (r) {
           updatedComments.removeWhere((comment) => comment.id == r.id);
           updatedComments.insert(0, r);
         },
@@ -136,7 +136,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         for (var comment in updatedComments) comment.id: comment.numberOfReply,
       };
       final lastCommentId =
-      updatedComments.isNotEmpty ? updatedComments.last.id : null;
+          updatedComments.isNotEmpty ? updatedComments.last.id : null;
 
       emit(state.copyWith(
         listComments: updatedComments,
@@ -150,11 +150,11 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       final listRepliesResult = result[6] as Either<String, List<CommentModel>>;
 
       targetReplyResult.fold(
-            (l) {},
-            (targetReply) {
+        (l) {},
+        (targetReply) {
           listRepliesResult.fold(
-                (l) {},
-                (replies) {
+            (l) {},
+            (replies) {
               final filteredReplies = replies
                   .where((reply) => reply.id != state.targetReplyId)
                   .toList();
@@ -243,7 +243,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         ...newNumOfReplies,
       };
       final lastCommentId =
-      updatedComments.isNotEmpty ? updatedComments.last.id : null;
+          updatedComments.isNotEmpty ? updatedComments.last.id : null;
       emit(state.copyWith(
           listComments: updatedComments.cast<CommentModel>(),
           lastCommentId: lastCommentId,
@@ -262,13 +262,13 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     ];
   }
 
-  void onVideoDetailCommentChangedEvent(VideoDetailCommentChangedEvent event,
-      Emitter<VideoDetailState> emit) {
+  void onVideoDetailCommentChangedEvent(
+      VideoDetailCommentChangedEvent event, Emitter<VideoDetailState> emit) {
     emit(state.copyWith(inputComment: event.content));
   }
 
-  void onVideoDetailPostCommentEvent(VideoDetailPostCommentEvent event,
-      Emitter<VideoDetailState> emit) async {
+  void onVideoDetailPostCommentEvent(
+      VideoDetailPostCommentEvent event, Emitter<VideoDetailState> emit) async {
     CommentModel commentModel;
 
     if (event.commentId != null) {
@@ -285,8 +285,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
 
     final request = await commentRepository.postComment(commentModel);
     request.fold(
-          (error) {},
-          (response) {
+      (error) {},
+      (response) {
         final responseData = response.data['data'];
         CommentModel newComment = CommentModel.fromJson(responseData);
 
@@ -337,11 +337,13 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     );
   }
 
-  void onVideoDetailLikeCommentEvent(VideoDetailLikeCommentEvent event,
-      Emitter<VideoDetailState> emit,) async {
+  void onVideoDetailLikeCommentEvent(
+    VideoDetailLikeCommentEvent event,
+    Emitter<VideoDetailState> emit,
+  ) async {
     final comment = event.comment;
     bool isReply = state.replies?.values
-        .any((list) => list.any((reply) => reply.id == comment.id)) ??
+            .any((list) => list.any((reply) => reply.id == comment.id)) ??
         false;
 
     if (comment.likeStatus == LikeStatus.unknown) {
@@ -351,7 +353,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         numberOfLike: (comment.numberOfLike ?? 0) + 1,
       );
       final result =
-      await commentRepository.postCommentReaction(updatedComment);
+          await commentRepository.postCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
@@ -392,7 +394,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         numberOfLike: (comment.numberOfLike ?? 0) + 1,
       );
       final result =
-      await commentRepository.patchCommentReaction(updatedComment);
+          await commentRepository.patchCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
@@ -409,12 +411,14 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     }
   }
 
-  void onVideoDetailDisLikeCommentEvent(VideoDetailDisLikeCommentEvent event,
-      Emitter<VideoDetailState> emit,) async {
+  void onVideoDetailDisLikeCommentEvent(
+    VideoDetailDisLikeCommentEvent event,
+    Emitter<VideoDetailState> emit,
+  ) async {
     final comment = event.comment;
 
     bool isReply = state.replies?.values
-        .any((list) => list.any((reply) => reply.id == comment.id)) ??
+            .any((list) => list.any((reply) => reply.id == comment.id)) ??
         false;
 
     if (comment.likeStatus == LikeStatus.unknown) {
@@ -423,7 +427,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         likeStatus: LikeStatus.unliked,
       );
       final result =
-      await commentRepository.postCommentReaction(updatedComment);
+          await commentRepository.postCommentReaction(updatedComment);
 
       if (result.isRight()) {
         emit(
@@ -464,7 +468,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
             : 0,
       );
       final result =
-      await commentRepository.patchCommentReaction(updatedComment);
+          await commentRepository.patchCommentReaction(updatedComment);
       if (result.isRight()) {
         emit(
           state.copyWith(
@@ -492,22 +496,22 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         cursor: havePostReply ? null : event.lastIdReply);
 
     result.fold(
-          (error) {
+      (error) {
         emit(state.copyWith(status: VideoDetailStatus.failure));
       },
-          (replies) {
+      (replies) {
         final filterReplies = replies
             .where((reply) =>
-        !existingReplies.any((existing) => existing.id == reply.id))
+                !existingReplies.any((existing) => existing.id == reply.id))
             .toList();
 
         final allReplies = state.targetReplyId != null
             ? havePostReply
-            ? filterReplies
-            : [...existingReplies, ...filterReplies]
+                ? filterReplies
+                : [...existingReplies, ...filterReplies]
             : havePostReply
-            ? replies
-            : [...existingReplies, ...replies];
+                ? replies
+                : [...existingReplies, ...replies];
 
         final updatedReplies = {
           ...?state.replies,
@@ -553,13 +557,13 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         }));
   }
 
-  void onVideoDetailReplyChangedEvent(VideoDetailReplyChangedEvent event,
-      Emitter<VideoDetailState> emit) {
+  void onVideoDetailReplyChangedEvent(
+      VideoDetailReplyChangedEvent event, Emitter<VideoDetailState> emit) {
     emit(state.copyWith(inputReply: event.content));
   }
 
-  void onVideoDetailHideInputReplyEvent(VideoDetailHideInputReplyEvent event,
-      Emitter<VideoDetailState> emit) {
+  void onVideoDetailHideInputReplyEvent(
+      VideoDetailHideInputReplyEvent event, Emitter<VideoDetailState> emit) {
     final currentVisibilityMap = state.isHiddenInputReply ?? {};
 
     emit(state.copyWith(
@@ -570,11 +574,11 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     ));
   }
 
-  List<CommentModel> updateCommentInComments(List<CommentModel>? comments,
-      CommentModel updatedComment) {
+  List<CommentModel> updateCommentInComments(
+      List<CommentModel>? comments, CommentModel updatedComment) {
     return comments
-        ?.map((c) => c.id == updatedComment.id ? updatedComment : c)
-        .toList() ??
+            ?.map((c) => c.id == updatedComment.id ? updatedComment : c)
+            .toList() ??
         [];
   }
 
@@ -591,15 +595,15 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     return updatedReplies ?? {};
   }
 
-  void _onVideoDetailRateEvent(VideoDetailRateEvent event,
-      Emitter<VideoDetailState> emit) {
+  void _onVideoDetailRateEvent(
+      VideoDetailRateEvent event, Emitter<VideoDetailState> emit) {
     emit(state.copyWith(rateSelected: event.rating));
   }
 
-  void _onVideoDetailRateSubmitEvent(VideoDetailRateSubmitEvent event,
-      Emitter<VideoDetailState> emit) async {
+  void _onVideoDetailRateSubmitEvent(
+      VideoDetailRateSubmitEvent event, Emitter<VideoDetailState> emit) async {
     final rateResult =
-    await videoRepository.rateVideo(state.video?.id ?? 0, event.rating);
+        await videoRepository.rateVideo(state.video?.id ?? 0, event.rating);
     rateResult.fold((l) {
       emit(state.copyWith(errorMessage: l));
     }, (r) {
@@ -610,11 +614,17 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     });
     if (state.status == VideoDetailStatus.rateSuccess) {
       final updateVideo =
-      await videoRepository.getVideoDetail(state.video?.id ?? 0);
+          await videoRepository.getVideoDetail(state.video?.id ?? 0);
       updateVideo.fold((l) {
-        emit(state.copyWith(errorMessage: l));
+        emit(state.copyWith(
+          errorMessage: l,
+          status: VideoDetailStatus.failure,
+        ));
       }, (r) {
-        emit(state.copyWith(video: state.video?.copyWith(ratings: r.ratings)));
+        emit(state.copyWith(
+          video: state.video?.copyWith(ratings: r.ratings),
+          status: VideoDetailStatus.success,
+        ));
       });
     }
   }
@@ -631,7 +641,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
         ));
       }, (r) {
         emit(state.copyWith(
-          status: VideoDetailStatus.failure,
+          status: VideoDetailStatus.success,
           video: state.video?.copyWith(
               channel: state.video?.channel?.copyWith(isFollowed: false)),
         ));
@@ -654,14 +664,12 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     }
   }
 
-  void _onVideoDetailPopEvent(VideoDetailPopEvent event,
-      Emitter<VideoDetailState> emit) async {
+  void _onVideoDetailPopEvent(
+      VideoDetailPopEvent event, Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(isShowVideo: false));
     final now = DateTime.now();
     var viewTime =
-        now
-            .difference(state.timeStarted ?? DateTime.now())
-            .inSeconds;
+        now.difference(state.timeStarted ?? DateTime.now()).inSeconds;
     if (viewTime > (state.video?.durationsVideo ?? 0 * 0.7)) {
       await videoRepository.postViewVideo(
         videoId: state.video?.id ?? 0,
@@ -697,18 +705,18 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     final result = await commentRepository.deleteComment(event.commentId);
 
     result.fold(
-          (error) {
+      (error) {
         emit(state.copyWith(status: VideoDetailStatus.failure));
       },
-          (_) {
+      (_) {
         final updatedComments = state.listComments
             ?.map((comment) {
-          if (comment.id == event.parenCommentId) {
-            return comment.copyWith(
-                numberOfReply: (comment.numberOfReply ?? 0) - 1);
-          }
-          return comment;
-        })
+              if (comment.id == event.parenCommentId) {
+                return comment.copyWith(
+                    numberOfReply: (comment.numberOfReply ?? 0) - 1);
+              }
+              return comment;
+            })
             .where((comment) => comment.id != event.commentId)
             .toList();
 

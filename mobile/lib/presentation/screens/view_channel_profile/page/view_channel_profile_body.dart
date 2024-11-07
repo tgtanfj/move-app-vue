@@ -134,16 +134,18 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                                   isStayOnPage: true,
                                 );
                               },
-                            ).then((value){if (context.mounted) {
-                              Navigator.pushReplacement(
-                                  context,
+                            ).then((value) {
+                              if (context.mounted) {
+                                Navigator.pushReplacement(
+                                    context,
                                     MaterialPageRoute(
-                                    builder: (context) =>
-                                        ViewChannelProfilePage(
-                                          idChannel: state.channelId ?? 0,
-                                        ),
-                                  ));
-                            }});
+                                      builder: (context) =>
+                                          ViewChannelProfilePage(
+                                        idChannel: state.channelId ?? 0,
+                                      ),
+                                    ));
+                              }
+                            });
                           } else {
                             context.read<ViewChannelProfileBloc>().add(
                                 ViewChannelProfileFollowChannelEvent(
@@ -178,6 +180,7 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                   Constants.videos: VideosPage(
                     videos: state.videos,
                     channelId: state.channelId ?? 0,
+                    channelName: state.channel?.name ?? '',
                   ),
                   Constants.about: AboutPage(
                     channelName: state.channel?.name,

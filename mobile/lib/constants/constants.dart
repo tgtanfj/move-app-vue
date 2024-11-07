@@ -247,7 +247,8 @@ class Constants {
   static const String videoNotFound = 'Video Not Found';
   static const String isCommentable = "Comments feature has been disabled.";
   static const String notiNotFound = "Sorry, this notification doesn't exist";
-  static const String notiNotFoundSuff= "The notification you just clicked may have a broken link or the content of this page has been removed.";
+  static const String notiNotFoundSuff =
+      "The notification you just clicked may have a broken link or the content of this page has been removed.";
 
   static const String channelId = 'channelId';
   static const String allLevels = 'All Levels';
@@ -399,6 +400,7 @@ class Constants {
   static const String copy = "Copy";
   static const String copied = "Message Copied!";
   static const String delete = "Delete";
+  static const String hasNotVideo = "has not uploaded any videos yet.";
   static const String invalidVisaOrCreditCard =
       "Please enter a valid Visa or Credit card number only";
   static const String searchDifferenceKeyword =

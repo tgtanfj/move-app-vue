@@ -139,7 +139,11 @@ final class ProfileState extends Equatable {
         isShowStateMessage,
         isShowAvatarMessage,
       ];
+
   bool get isEnableSaveSettings =>
       (user?.username?.isNotEmpty ?? false) &&
-      (user?.fullName?.isNotEmpty ?? false);
+      (user?.fullName?.isNotEmpty ?? false) &&
+      (user?.country?.name?.isNotEmpty ?? false) &&
+      (user?.state?.name?.isNotEmpty ?? false) &&
+      (user?.dateOfBirth?.toString().isNotEmpty ?? false);
 }
