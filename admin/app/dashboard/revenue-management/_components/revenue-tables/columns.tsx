@@ -21,16 +21,47 @@ export const columns: ColumnDef<Revenue>[] = [
   {
     accessorKey: 'totalEarnings',
     header: 'Earning (REPs)',
+    cell: ({ getValue }) => {
+      const numberOfREPs = getValue() as number;
+      const amount = (numberOfREPs * 0.006).toFixed(2); // Format the amount to 2 decimal places
+      return numberOfREPs ? (
+        <div>
+          <span>{numberOfREPs} REPs</span>
+          <br /> {/* Line break for the second line */}
+          <span>{amount} $</span>
+        </div>
+      ) : (
+        0
+      );
+    },
     enableSorting: true
   },
   {
     accessorKey: 'totalTopUp',
-    header: 'Top up (REPs)',
+    header: 'Top up',
+    cell: ({ getValue }) => {
+      const numberOfREPs = getValue() as number;
+      const amount = (numberOfREPs * 0.007).toFixed(2); // Format the amount to 2 decimal places
+      return numberOfREPs ? (
+        <div>
+          <span>{numberOfREPs} REPs</span>
+          <br /> {/* Line break for the second line */}
+          <span>{amount} $</span>
+        </div>
+      ) : (
+        0
+      );
+    },
     enableSorting: true
   },
   {
     accessorKey: 'totalDonations',
     header: 'Donations (REPs)',
+    cell: ({ getValue }) => {
+      const numberOfREPs = getValue() as number;
+      return numberOfREPs ? <span>{numberOfREPs} REPs</span> : 0;
+    },
+
     enableSorting: true
   }
 ];

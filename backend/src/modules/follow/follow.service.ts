@@ -69,7 +69,7 @@ export class FollowService {
 
   async removeNotificationFollow(channelId: number, userId: number) {
     const channel = await this.channelService.findOne(channelId, { user: true });
-    const receiveId = channel.user.id;
+    const receiveId = channel.user?.id;
     const remove = [];
 
     const notificationsRef = db.ref(`notifications/${receiveId}`);
@@ -77,8 +77,8 @@ export class FollowService {
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
-      const senderId = value.sender.id;
-      if (value.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId) {
+      const senderId = value?.sender?.id;
+      if (value?.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
         } else {
@@ -94,20 +94,14 @@ export class FollowService {
     const channel = await this.channelService.findOne(channelId, { user: true });
     const receiver = channel.user.id;
 
-    let isExisted: boolean;
-    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+    const dataNotification = {
+      sender: userInfo,
+      type: NOTIFICATION_TYPE.FOLLOW,
+    };
+    await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
 
-    if (!isExisted) {
-      const dataNotification = {
-        sender: userInfo,
-        type: NOTIFICATION_TYPE.FOLLOW,
-      };
-      await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
-    }
-
-    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
       receiver,
-      userInfo.id,
       +channel.numberOfFollowers,
     );
 

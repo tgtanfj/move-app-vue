@@ -9,6 +9,7 @@ export enum SortVideoAdmin {
   VIEWS = 'numberOfViews',
   COMMENT = 'numberOfComments',
   RATINGS = 'ratings',
+  CREATED_AT = 'createdAt',
 }
 
 export enum SortType {

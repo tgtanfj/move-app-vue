@@ -15,7 +15,6 @@ import { homepageService } from '@services/homepage.services'
 import { onMounted, ref } from 'vue'
 import SliderHomePageSkeleton from './SliderHomePageSkeleton.vue'
 import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
-import PinkBadgeIcon from '@assets/icons/PinkBadgeIcon.vue'
 import { useRouter } from 'vue-router'
 import { detectDuration } from '@utils/uploadVideo.util'
 

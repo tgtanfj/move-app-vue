@@ -26,11 +26,16 @@ const handleIncrease = () => {
 const handleDecrease = () => {
   numFollower.value--
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
+
 </script>
 <template>
   <div class="flex items-center justify-between">
     <div class="flex items-center">
-      <img :src="image || defaultAvatar" class="w-[56px] h-[56px] mr-5 rounded-full object-cover" />
+      <img :src="image || defaultAvatar" @error="handleImageError" class="w-[56px] h-[56px] mr-5 rounded-full object-cover" />
       <div>
         <div class="flex items-center">
           <span class="text-2xl">{{ name }}</span>

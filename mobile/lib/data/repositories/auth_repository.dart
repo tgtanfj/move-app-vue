@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -90,6 +91,9 @@ class AuthRepository {
         scopes: ['email'],
       );
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if(googleUser == null){
+        return const Left("User not choose account");
+      }
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(

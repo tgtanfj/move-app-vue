@@ -78,6 +78,7 @@ export default function RevenueTable() {
         columns={columns}
         data={result}
         meta={meta}
+        isLoading={isFetching}
         pageSizeOptions={[10, 20, 50]}
         onPageChange={(page) => setPage(page)}
         onPageSizeChange={(size) => setPageSize(size)}

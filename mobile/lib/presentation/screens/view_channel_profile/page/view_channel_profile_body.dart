@@ -13,6 +13,7 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_bloc.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/page/videos_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
@@ -133,7 +134,18 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                                   isStayOnPage: true,
                                 );
                               },
-                            );
+                            ).then((value) {
+                              if (context.mounted) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ViewChannelProfilePage(
+                                        idChannel: state.channelId ?? 0,
+                                      ),
+                                    ));
+                              }
+                            });
                           } else {
                             context.read<ViewChannelProfileBloc>().add(
                                 ViewChannelProfileFollowChannelEvent(
@@ -168,6 +180,7 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                   Constants.videos: VideosPage(
                     videos: state.videos,
                     channelId: state.channelId ?? 0,
+                    channelName: state.channel?.name ?? '',
                   ),
                   Constants.about: AboutPage(
                     channelName: state.channel?.name,

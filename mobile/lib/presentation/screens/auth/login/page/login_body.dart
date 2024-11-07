@@ -20,8 +20,9 @@ import '../bloc/login_event.dart';
 
 class LoginBody extends StatefulWidget {
   final bool isStayOnPage;
+  final Function()? navigate;
 
-  const LoginBody({super.key, this.isStayOnPage = false});
+  const LoginBody({super.key, this.isStayOnPage = false, this.navigate});
 
   @override
   State<LoginBody> createState() => _LoginBodyState();
@@ -40,7 +41,11 @@ class _LoginBodyState extends State<LoginBody>
         if (state.status == LoginStatus.success) {
           Fluttertoast.showToast(msg: Constants.loginSuccessful);
           if (widget.isStayOnPage) {
-            Navigator.pop(context);
+            if (widget.navigate != null) {
+              widget.navigate!();
+            } else {
+              Navigator.pop(context);
+            }
           } else {
             Navigator.pushAndRemoveUntil(
               context,
@@ -51,7 +56,10 @@ class _LoginBodyState extends State<LoginBody>
         }
         (state.status == LoginStatus.processing)
             ? EasyLoading.show()
-            : EasyLoading.dismiss();
+            : EasyLoading.dismiss().then((_) =>
+                state.status == LoginStatus.failureSocial
+                    ? Fluttertoast.showToast(msg: state.errorMessage ?? "")
+                    : Fluttertoast.cancel);
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {

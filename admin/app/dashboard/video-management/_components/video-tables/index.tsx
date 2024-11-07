@@ -7,7 +7,10 @@ import { DataTableSearch } from '@/components/ui/table/data-table-search';
 import { useGetAllVideosQuery } from '@/store/queries/videoManagement';
 import { useState } from 'react';
 import { columns } from '../video-tables/columns';
-import { WORKOUT_LEVEL_OPTIONS } from './use-video-table-filters';
+import {
+  DURATION_OPTIONS,
+  WORKOUT_LEVEL_OPTIONS
+} from './use-video-table-filters';
 
 export default function VideoTable() {
   const [page, setPage] = useState(1);
@@ -21,6 +24,8 @@ export default function VideoTable() {
     null
   );
 
+  const [durationFilter, setDurationFilter] = useState<string | null>(null);
+
   const {
     result = [],
     meta = { total: 0, page: page, take: pageSize, totalPages: 1 },
@@ -31,6 +36,7 @@ export default function VideoTable() {
       take: pageSize,
       query: search,
       workoutLevel: workoutLevelFilter,
+      duration: durationFilter,
       sortBy: sortBy,
       sortType: sortType
     },
@@ -71,10 +77,20 @@ export default function VideoTable() {
               setFilterValue={setWorkoutLevelFilter}
               filterValue={workoutLevelFilter || ''}
             />
+            <DataTableFilterBox
+              filterKey="duration"
+              title="Duration"
+              options={DURATION_OPTIONS}
+              setFilterValue={setDurationFilter}
+              filterValue={durationFilter || ''}
+            />
             <DataTableResetFilter
-              isFilterActive={search || workoutLevelFilter ? true : false}
+              isFilterActive={
+                search || workoutLevelFilter || durationFilter ? true : false
+              }
               onReset={() => {
                 setWorkoutLevelFilter(null);
+                setDurationFilter(null);
                 setSearch('');
                 setPage(1);
                 setPageSize(10);
@@ -82,6 +98,7 @@ export default function VideoTable() {
             />
           </div>
           <DataTable
+            isLoading={isFetching}
             columns={columns}
             data={result}
             meta={meta}

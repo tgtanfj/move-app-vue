@@ -97,43 +97,59 @@ onMounted(() => {
 onMounted(async () => {
   try {
     isLoading.value = true
+
     const response = await apiAxios.get(`/user/profile`)
 
     if (response.status === 200 && response.data) {
+      const userProfile = response.data.data
       userData.value = {
-        ...response.data.data,
-        gender: denormalizeGender(response.data.data.gender) || '',
-        state: response.data.data.state || '',
-        country: response.data.data.country || '',
-        dateOfBirth: response.data.data.dateOfBirth || '',
-        fullName: response.data.data.fullName || '',
-        city: response.data.data.city || ''
+        ...userProfile,
+        gender: denormalizeGender(userProfile.gender) || '',
+        state: userProfile.state || '',
+        country: userProfile.country || '',
+        dateOfBirth: userProfile.dateOfBirth || '',
+        fullName: userProfile.fullName || '',
+        city: userProfile.city || ''
       }
+
       setValues({
-        ...response.data.data,
-        gender: denormalizeGender(response.data.data.gender) || 'male',
-        state: response.data.data.state?.name || '',
-        country: response.data.data.country?.name || '',
-        fullName: response.data.data.fullName || '',
-        city: response.data.data.city || '',
-        dateOfBirth: response.data.data.dateOfBirth || ''
+        ...userProfile,
+        gender: denormalizeGender(userProfile.gender) || 'male',
+        state: userProfile.state?.name || '',
+        country: userProfile.country?.name || '',
+        fullName: userProfile.fullName || '',
+        city: userProfile.city || '',
+        dateOfBirth: userProfile.dateOfBirth || ''
       })
-      if (response.data.data.dateOfBirth) {
-        const [year, month, day] = response.data.data.dateOfBirth.split('-')
+
+      if (userProfile.dateOfBirth) {
+        const [year, month, day] = userProfile.dateOfBirth.split('-')
         selectedDay.value = day
         selectedMonth.value = month
         selectedYear.value = year
-      } else {
-        selectedMonth.value = null
-        selectedDay.value = null
-        selectedYear.value = null
       }
 
-      gender.value = denormalizeGender(response.data.data.gender) || 'male'
-      selectedCountry.value = response.data.data.country?.name || ''
-      selectedState.value = response.data.data.state?.name || ''
-      selectedCity.value = response.data.data.city || ''
-    } else throw new Error(response.error)
+      gender.value = denormalizeGender(userProfile.gender) || 'male'
+      selectedCountry.value = userProfile.country?.name || ''
+      selectedState.value = userProfile.state?.name || ''
+      selectedCity.value = userProfile.city || ''
+    } else {
+      throw new Error(response.error)
+    }
+
+    const countriesResponse = await apiAxios.get(`/countries`)
+    if (countriesResponse.status === 200) {
+      countries.value = countriesResponse.data.data
+    } else {
+      throw new Error(countriesResponse.error)
+    }
+
+    if (selectedCountry.value) {
+      const selected = countries.value.find((country) => country.name === selectedCountry.value)
+      if (selected) {
+        await fetchStatesForCountry(selected.id)
+      }
+    }
   } catch (err) {
     console.log(err)
   } finally {
@@ -141,16 +157,16 @@ onMounted(async () => {
   }
 })
 
-onMounted(async () => {
+const fetchStatesForCountry = async (countryId) => {
   try {
-    const res = await apiAxios.get(`/countries`)
+    const res = await apiAxios.get(`/countries/${countryId}/states`)
     if (res.status === 200) {
-      countries.value = res.data.data
-    } else throw new Error(res.error)
+      states.value = res.data.data
+    }
   } catch (error) {
-    console.log(error.message)
+    console.log('Error fetching states:', error.message)
   }
-})
+}
 
 watch(gender, (newValue) => {
   setValues({
@@ -160,28 +176,34 @@ watch(gender, (newValue) => {
 })
 
 watch(
-  [() => countries.value, () => selectedCountry.value],
-  async (newValue) => {
-    const [countries, selectedCountry] = newValue
-    if (countries.length > 0 && selectedCountry) {
-      const temp = countries.filter((item) => item.name === selectedCountry)
-      if (temp.length > 0 && temp[0].name) {
-        setValues({ ...values, country: temp[0].name })
+  selectedCountry,
+  async (newCountry) => {
+    // Reset selected state when country changes
+    if (newCountry && newCountry !== userData.value?.country?.name) {
+      selectedState.value = ''
+      setValues({ ...values, state: '' })
+    }
+    if (newCountry) {
+      try {
+        const selected = countries.value.find((country) => country.name === newCountry)
+        if (selected) {
+          setValues({ ...values, country: selected.name })
 
-        try {
-          const res = await apiAxios.get(`/countries/${temp[0].id}/states`)
+          const res = await apiAxios.get(`/countries/${selected.id}/states`)
           if (res.status === 200) {
             states.value = res.data.data
           } else {
             throw new Error(res.error)
           }
-        } catch (error) {
-          console.log(error.message)
         }
+      } catch (error) {
+        console.log('Error fetching states:', error.message)
       }
+    } else {
+      states.value = []
     }
   },
-  { immediate: true }
+  { immediate: false }
 )
 
 watch(selectedCity, (newValue) => {
@@ -202,6 +224,7 @@ const onCountryChange = (value) => {
 
 const onStateChange = (value) => {
   selectedState.value = value
+  setValues({ ...values, state: value })
 }
 
 const onCityChange = (value) => {
@@ -536,7 +559,14 @@ const handleImageError = (event) => {
                 <Select v-bind="componentField" v-model="selectedState" @change="onStateChange">
                   <SelectTrigger :class="{ 'border-red-500': showError && errors.state }">
                     <SelectValue v-if="isLoading" placeholder="Loading..." />
-                    <SelectValue v-if="!isLoading" placeholder="Select country" />
+                    <SelectValue
+                      v-if="!isLoading && states.length === 0"
+                      placeholder="No states available"
+                    />
+                    <SelectValue
+                      v-if="!isLoading && states.length > 0"
+                      placeholder="Select State"
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup v-if="states.length === 0">

@@ -10,6 +10,12 @@ export const WORKOUT_LEVEL_OPTIONS = [
   { value: 'advanced', label: 'Advanced' }
 ];
 
+export const DURATION_OPTIONS = [
+  { value: 'less than 30 minutes', label: '< 30 mins' },
+  { value: 'less than 1 hours', label: '< 1 h' },
+  { value: 'more than 1 hours', label: '> 1 h' }
+];
+
 export function useVideoTableFilters() {
   const [searchQuery, setSearchQuery] = useQueryState(
     'q',

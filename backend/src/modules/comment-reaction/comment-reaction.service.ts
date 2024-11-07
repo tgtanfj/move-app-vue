@@ -69,6 +69,7 @@ export class CommentReactionService {
 
       return commentReaction;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_UPDATE_COMMENT_REACTION'));
     }
   }
@@ -79,11 +80,15 @@ export class CommentReactionService {
       const result = await this.commentReactionRepository.delete(commentReaction.id);
       const comment = await this.commentRepository.getOne(commentId);
 
-      result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
+      result.affected === 1 &&
+        commentReaction.isLike === true &&
+        comment.numberOfLike >= 1 &&
+        (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
       await this.removeNotificationLike(commentId);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT_REACTION'));
     }
   }
@@ -97,11 +102,7 @@ export class CommentReactionService {
     const receiver = comment.user.id;
     const parent = comment?.parent;
 
-    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
-      receiver,
-      userInfo.id,
-      comment.id,
-    );
+    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, comment.id);
 
     const dataNotification = {
       sender: userInfo,
@@ -127,8 +128,8 @@ export class CommentReactionService {
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
-      const checkId = value?.replyId ? value.replyId : value.commentId;
-      if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
+      const checkId = value?.replyId ? value.replyId : value?.commentId;
+      if (value?.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
         } else {

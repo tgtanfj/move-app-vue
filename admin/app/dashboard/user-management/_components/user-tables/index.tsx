@@ -114,6 +114,7 @@ export default function UsersTable() {
             </Button>
           </div>
           <DataTable
+            isLoading={isFetching}
             columns={columns}
             data={result}
             meta={meta}

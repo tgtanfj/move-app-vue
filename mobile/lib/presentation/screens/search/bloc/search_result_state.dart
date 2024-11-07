@@ -27,6 +27,8 @@ final class SearchResultState extends Equatable {
   final int? totalCategoriesPages;
   final int? totalChannelPages;
   final String? searchResultFound;
+  final String? searchDifferenceKeyword;
+  final bool isShowSectionBar;
 
   const SearchResultState({
     this.status,
@@ -42,6 +44,8 @@ final class SearchResultState extends Equatable {
     this.totalChannelPages,
     this.currentCategoriesPage,
     this.searchResultFound,
+    this.isShowSectionBar = false,
+    this.searchDifferenceKeyword,
   });
 
   static SearchResultState initial() => const SearchResultState(
@@ -55,6 +59,8 @@ final class SearchResultState extends Equatable {
         channelList: [],
         videoList: [],
         searchResultFound: '',
+        isShowSectionBar: false,
+        searchDifferenceKeyword: '',
       );
 
   SearchResultState copyWith({
@@ -71,6 +77,8 @@ final class SearchResultState extends Equatable {
     List<VideoModel>? videoList,
     SuggestionModel? suggestionList,
     String? searchResultFound,
+    bool? isShowSectionBar,
+    String? searchDifferenceKeyword,
   }) {
     return SearchResultState(
       status: status ?? this.status,
@@ -87,6 +95,9 @@ final class SearchResultState extends Equatable {
       totalCategoriesPages: totalCategoriesPages ?? this.totalCategoriesPages,
       totalChannelPages: totalChannelPages ?? this.totalChannelPages,
       searchResultFound: searchResultFound ?? this.searchResultFound,
+      isShowSectionBar: isShowSectionBar ?? this.isShowSectionBar,
+      searchDifferenceKeyword:
+          searchDifferenceKeyword ?? this.searchDifferenceKeyword,
     );
   }
 
@@ -105,5 +116,7 @@ final class SearchResultState extends Equatable {
         suggestionList,
         searchResultFound,
         status,
+        isShowSectionBar,
+        searchDifferenceKeyword,
       ];
 }

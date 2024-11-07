@@ -107,6 +107,7 @@ export default function PaymentTable() {
         />
       </div>
       <DataTable
+        isLoading={isFetching}
         columns={columns}
         data={result}
         meta={meta}

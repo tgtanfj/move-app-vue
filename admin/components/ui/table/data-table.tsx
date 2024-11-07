@@ -1,4 +1,5 @@
 'use client';
+import Loading from '@/components/loading';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
@@ -42,6 +43,7 @@ interface DataTableProps<TData, TValue> {
     take: number;
     totalPages: number;
   };
+  isLoading: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   onSortChange: (
@@ -55,6 +57,7 @@ export function DataTable<TData, TValue>({
   data,
   meta,
   pageSizeOptions = [10, 20, 50],
+  isLoading,
   onPageChange,
   onPageSizeChange,
   onSortChange
@@ -130,7 +133,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <Loading /> {/* Loading indicator inside Table Body */}
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

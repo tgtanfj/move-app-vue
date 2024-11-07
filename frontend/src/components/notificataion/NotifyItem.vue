@@ -35,7 +35,7 @@ const {
   replyId,
   purchase,
   donation,
-  rep_milestone,
+  repMilestone,
   cashout,
   followMilestone,
   viewVideoMilestone
@@ -73,7 +73,7 @@ const getContentByType = () => {
       return truncateString(`just uploaded a new video '<strong>${videoTitle}</strong>'`)
     case 'donation':
       return truncateString(
-        `has donated ${donation} to your video '<strong>${videoTitle}</strong>'`
+        `has donated ${donation} REPs to your video '<strong>${videoTitle}</strong>'`
       )
 
     // System
@@ -90,7 +90,7 @@ const getContentByType = () => {
         `Your video '<strong>${videoTitle}</strong>' has surpassed ${viewVideoMilestone} views.`
       )
     case 'rep_milestone':
-      return `You've earned ${rep_milestone} REPs in total from your content.`
+      return `You've earned ${repMilestone} REPs in total from your content.`
     default:
       return 'performed an action'
   }
@@ -175,7 +175,7 @@ const handleModalPopup = () => {
     case 'view_video_milestone':
       router.push('/streamer/analytics/overview')
       break
-    case 'rep_milestone':
+    case 'repMilestone':
       router.push('/streamer/analytics/overview')
       break
     case 'password_change_reminder':

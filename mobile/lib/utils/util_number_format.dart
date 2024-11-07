@@ -27,7 +27,7 @@ extension UtilNumberFormat on int {
     }
   }
 
-  static String formatWithCommas(int value) {
+  static String formatWithCommas(num value) {
     final formatter = NumberFormat('#,###');
     return formatter.format(value);
   }

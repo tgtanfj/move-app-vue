@@ -135,7 +135,7 @@ class _MenuHadLoginState extends State<MenuHadLogin> {
                 builder: (BuildContext context) {
                   return LogoutDialog(yesButton: widget.logoutSuccessEvent);
                 },
-              );
+              ).then((_) => Navigator.of(context).pushNamed(AppRoutes.getInitialRoute()));
             },
             title: Constants.logout,
           ),

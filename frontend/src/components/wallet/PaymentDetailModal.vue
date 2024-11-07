@@ -223,7 +223,7 @@ const handleCheckCVC = (event) => {
 const handleCheckCardName = (event) => {
   const input = event.target.value
 
-  const cleanedInput = input.replace(/[^\p{L}\s]/gu, '')
+  const cleanedInput = input.replace(/^[a-zA-ZÀ-ỹ\s]+$/, '')
   const trimmedInput = cleanedInput.replace(/\s+/g, ' ').trim()
 
   cardholderName.value = trimmedInput

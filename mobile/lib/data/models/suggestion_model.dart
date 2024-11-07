@@ -3,7 +3,7 @@ import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 
 class SuggestionModel {
-  final CategoryModel? topCategory;
+  final List<CategoryModel>? topCategory;
   final List<ChannelModel>? topInstructors;
   final List<VideoModel>? topVideos;
 
@@ -14,7 +14,7 @@ class SuggestionModel {
   });
 
   SuggestionModel copyWith({
-    CategoryModel? topCategory,
+    List<CategoryModel>? topCategory,
     List<ChannelModel>? topInstructors,
     List<VideoModel>? topVideos,
   }) {
@@ -27,9 +27,11 @@ class SuggestionModel {
 
   factory SuggestionModel.fromJson(Map<String, dynamic> json) {
     return SuggestionModel(
-      topCategory: json['topCategory'] != "Notfound" && json['topCategory'] != null
-          ? CategoryModel.fromJson(json['topCategory'])
-          : null,
+      topCategory: (json['topCategories'] is List?)
+          ? (json['topCategories'] as List?)
+          ?.map((e) => CategoryModel.fromJson(e))
+          .toList()
+          : [],
       topInstructors: (json['topInstructors'] is List?)
           ? (json['topInstructors'] as List?)
               ?.map((e) => ChannelModel.fromJson(e))

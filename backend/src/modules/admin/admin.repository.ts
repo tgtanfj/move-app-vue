@@ -91,6 +91,12 @@ export class AdminRepository {
         [sortBy]: sortType,
         ...order,
       };
+
+      if (sortBy === 'createdAt') {
+        order = {
+          createdAt: sortType,
+        };
+      }
     }
 
     const skip = (page - 1) * take;

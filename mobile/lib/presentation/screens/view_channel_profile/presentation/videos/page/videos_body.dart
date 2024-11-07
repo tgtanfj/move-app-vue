@@ -24,8 +24,11 @@ import 'package:tuple/tuple.dart';
 class VideosBody extends StatefulWidget {
   final ChannelModel? channelModel;
   final List<VideoModel>? videos;
+  final String channelName;
 
-  const VideosBody({super.key, this.channelModel, this.videos});
+  const VideosBody(
+      {super.key, this.channelModel, this.videos, required this.channelName});
+
   @override
   State<VideosBody> createState() => _VideosBodyState();
 }
@@ -82,8 +85,8 @@ class _VideosBodyState extends State<VideosBody>
                     final data = onValue as Tuple3<WorkoutLevelType,
                         CategoryModel?, SortAndFilterType>;
                     _scrollController.animateTo(
-                      0, 
-                      duration: const Duration(milliseconds: 300), 
+                      0,
+                      duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
                     context.read<VideosBloc>().add(VideoSortedAndFiledEvent(
@@ -104,7 +107,14 @@ class _VideosBodyState extends State<VideosBody>
                     return const Center(
                         child: Text(Constants.failedToLoadVideos));
                   }
-                  if (state.videos.isEmpty) {
+                  if (state.videos.isEmpty &&
+                      state.status == VideosStatus.success) {
+                    return Center(
+                      child: Text(
+                          '${widget.channelName} ${Constants.hasNotVideo}'),
+                    );
+                  } else if (state.videos.isEmpty &&
+                      state.status == VideosStatus.noData) {
                     return const Center(
                       child: Text(Constants.noDataAvailable),
                     );

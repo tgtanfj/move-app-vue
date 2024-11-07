@@ -4,7 +4,7 @@ import 'package:move_app/data/models/channel_model.dart';
 import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/sort_and_filter/bloc/sort_and_filter_state.dart';
 
-enum VideosStatus { initial, processing, success, failure, loadingMore }
+enum VideosStatus { initial, processing, success, failure, loadingMore, noData }
 
 final class VideosState extends Equatable {
   final VideosStatus? status;

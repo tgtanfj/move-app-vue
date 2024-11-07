@@ -47,6 +47,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
     emit(state.copyWith(
       status: SearchResultStatus.processing,
       searchQuery: event.searchQuery,
+      isShowSectionBar: true,
     ));
     if (event.searchQuery != null && event.searchQuery!.trim().isNotEmpty) {
       final result = await Future.wait([
@@ -91,6 +92,7 @@ class SearchResultBloc extends Bloc<SearchResultEvent, SearchResultState> {
           state.videoList.isEmpty) {
         emit(state.copyWith(
             searchResultFound: Constants.notFoundResult,
+            searchDifferenceKeyword: Constants.searchDifferenceKeyword,
             status: SearchResultStatus.failure));
       }
 

@@ -17,6 +17,7 @@ import { useAuthStore } from '../stores/auth'
 import { usePaymentStore } from '../stores/payment'
 import { videoService } from '@services/video.services'
 import { useSearchStore } from '../stores/search'
+import { apiAxios } from '../helpers/axios.helper'
 
 const props = defineProps({
   isInStreamerPage: {
@@ -43,6 +44,7 @@ const channelId = localStorage.getItem('userChannelId')
 const logOutGoogle = async () => {
   await authStore.logout()
   searchStore.text = ''
+  paymentStore.clearFields()
   showLogoutModal.value = false
   showMenuAccount.value = false
   router.push('/')
@@ -79,7 +81,7 @@ watch(
   <Popover v-model:open="showMenuAccount">
     <PopoverTrigger @click="handleOpenPopover" class="w-[30px] h-[30px]">
       <img
-        :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
+        :src="authStore.user.avatar || userAvatar || defaultAvatar"
         alt="Avatar"
         class="w-[30px] h-[30px] object-cover rounded-full"
         @error="handleImageError"
@@ -96,7 +98,7 @@ watch(
         >
           <div class="w-[40px] h-[40px] rounded-full">
             <img
-              :src="authStore.user.photoURL || authStore.user.avatar || userAvatar || defaultAvatar"
+              :src="authStore.user.avatar || userAvatar || defaultAvatar"
               alt="Avatar"
               class="w-full h-full rounded-full object-cover"
               @error="handleImageError"
@@ -126,9 +128,7 @@ watch(
         @click="createChannel"
         class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
-        <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
-        >
+        <div class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary">
           <LogoMoveMini class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Back to Move</p>
         </div>
@@ -140,9 +140,7 @@ watch(
         @click="createChannel"
         class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
-        <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
-        >
+        <div class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary">
           <DashboardIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Dashboard</p>
         </div>
@@ -154,9 +152,7 @@ watch(
         @click="closeMenuAccount"
         class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
-        <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
-        >
+        <div class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary">
           <WalletIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Cashout</p>
         </div>
@@ -168,9 +164,7 @@ watch(
         @click="closeMenuAccount"
         class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
-        <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
-        >
+        <div class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary">
           <WalletIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">
             Wallet ({{ paymentStore.reps }} REPs)
@@ -185,9 +179,7 @@ watch(
         @click="closeMenuAccount"
         class="w-full flex gap-3 items-center py-1 px-0 cursor-pointer group hover:text-primary focus:bg-transparent"
       >
-        <div
-          class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary"
-        >
+        <div class="flex gap-3 items-center py-2 px-0 cursor-pointer group-hover:text-primary">
           <SettingIcon class="group-hover:text-primary duration-100" />
           <p class="font-semibold group-hover:text-primary duration-100">Settings</p>
         </div>
@@ -215,6 +207,6 @@ watch(
     <div class="flex justify-end items-center">
       <Button @click="showLogoutModal = false" variant="outline">{{ $t('button.cancel') }}</Button>
       <Button @click="logOutGoogle">{{ $t('button.confirm') }}</Button>
-    </div></BaseDialog
-  >
+    </div>
+  </BaseDialog>
 </template>

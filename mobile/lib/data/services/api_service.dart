@@ -72,12 +72,12 @@ class ApiService {
   }
 
   Future<Response<T>> request<T>(
-    APIRequestMethod method,
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Object? data,
-    Options? options,
-  }) async {
+      APIRequestMethod method,
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Object? data,
+        Options? options,
+      }) async {
     try {
       Response<T> response;
       switch (method) {

@@ -34,6 +34,10 @@ const updateComments = (value) => {
   comments.value = value
 }
 
+const handleDeleteComment = (commentId) => {
+  comments.value = comments.value.filter((item) => item?.id !== commentId)
+}
+
 const updateReplyCount = (id, number) => {
   const targetComment = comments.value.find((c) => c.id === id)
   if (targetComment) {
@@ -96,6 +100,7 @@ watch([filter, sort, page], async () => {
       :comments="comments"
       @updateComments="updateComments"
       @updateReplyCount="updateReplyCount"
+      @handleDeleteComment="handleDeleteComment"
     />
     <div v-if="isLoading" class="w-full flex items-center justify-center my-[300px]">
       <LoadingTable />

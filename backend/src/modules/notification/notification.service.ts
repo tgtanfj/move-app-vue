@@ -126,7 +126,7 @@ export class NotificationService {
     });
   }
 
-  async checkNotificationExistsAntiSpam(userId: number, senderId: number, data?: number) {
+  async checkNotificationExistsAntiSpam(userId: number, data?: number) {
     const notificationsRef = db.ref(`notifications/${userId}`);
     const snapshot = await notificationsRef.get();
 
@@ -139,15 +139,10 @@ export class NotificationService {
     for (const notificationId in notifications) {
       const notification = notifications[notificationId];
       const type = notification.data?.type;
-      const sender = notification.data?.sender;
       const followMilestone = notification.data?.followMilestone;
       const viewVideoMilestone = notification.data?.viewVideoMilestone;
       const repMilestone = notification.data?.repMilestone;
       const commentId = notification.data?.commentId;
-
-      if (!data && type === NOTIFICATION_TYPE.FOLLOW && sender.id === senderId) {
-        return true;
-      }
 
       if (type === NOTIFICATION_TYPE.LIKE && commentId === data) {
         return true;

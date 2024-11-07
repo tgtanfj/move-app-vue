@@ -11,6 +11,7 @@ import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { db } from '@/shared/firebase/firebase.config';
+import { Video } from '@/entities/video.entity';
 
 @Injectable()
 export class CommentService {
@@ -45,17 +46,21 @@ export class CommentService {
   async create(userInfo: UserInfoDto, dto: CreateCommentDto) {
     try {
       const userId = userInfo.id;
-      const video = await this.videoRepository.findOne(dto?.videoId);
-
-      if (video?.isCommentable === false) {
-        throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
-      }
+      let video: Video;
+      dto?.videoId && (video = await this.videoRepository.findOne(dto?.videoId));
 
       if (dto.commentId && !dto.videoId) {
-        const comment = await this.commentRepository.getOne(dto.commentId);
+        const comment = await this.commentRepository.getOne(dto.commentId, { video: true });
         await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
-
+        video = comment.video;
+        if (comment.video.isCommentable === false) {
+          throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
+        }
         const reply = await this.commentRepository.create(userId, dto);
+
+        video.numberOfComments++;
+
+        await this.videoRepository.save(video);
         await this.sendNotificationComment(userInfo, reply.id, dto);
 
         return reply;
@@ -63,6 +68,10 @@ export class CommentService {
 
       if (!video) {
         throw new NotFoundException(this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'));
+      }
+
+      if (video?.isCommentable === false) {
+        throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
       }
 
       const comment = await this.commentRepository.create(userId, dto);
@@ -104,6 +113,7 @@ export class CommentService {
 
       await this.commentRepository.delete(id);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT'));
     }
   }
@@ -150,9 +160,9 @@ export class CommentService {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
       const type = comment?.parent ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT;
-      const checkId = comment?.parent ? value.replyId : value.commentId;
+      const checkId = comment?.parent ? value.replyId : value?.commentId;
 
-      if (value.type === type && checkId === +commentId) {
+      if (value?.type === type && checkId === +commentId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
         } else {
