@@ -14,6 +14,7 @@ import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_blo
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
 import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/vimeo_player.dart';
 import '../../../../config/theme/app_icons.dart';
@@ -72,13 +73,23 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     }
   }
 
-  void _handleCommentReaction(BuildContext context, CommentModel? commentModel,
+  void _handleCommentReaction(
+      BuildContext context, CommentModel? commentModel, VideoDetailState state,
       {required bool isLike}) {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(
+        builder: (context) => DialogAuthentication(
           isStayOnPage: true,
+          navigate: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => VideoDetailPage(
+                          videoId: state.video?.id ?? 0,
+                        )),
+                (route) => false);
+          },
         ),
       );
     } else {
@@ -136,7 +147,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                     final comments = state.listComments;
 
                     if ((comments?.length ?? 0) > 2) {
-                      double scrollToPosition = 100;
+                      double scrollToPosition = height *0.3;
                       _hasScrolledToPosition = true;
 
                       Future.delayed(const Duration(seconds: 1), () {
@@ -327,7 +338,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
 
     if (hasTargetCommentId) {
       Future.delayed(const Duration(seconds: 5), () {
-        context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+        context
+            .read<VideoDetailBloc>()
+            .add(VideoDetailClearTargetCommentEvent());
       });
     }
     return Column(
@@ -346,12 +359,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           isCommentable: state.video?.isCommentable ?? false,
           hasTargetCommentId: hasTargetCommentId,
           onTapLike: state.video?.isCommentable == true
-              ? () =>
-                  _handleCommentReaction(context, commentModel, isLike: true)
+              ? () => _handleCommentReaction(context, commentModel, state,
+                  isLike: true)
               : null,
           onTapDislike: state.video?.isCommentable == true
-              ? () =>
-                  _handleCommentReaction(context, commentModel, isLike: false)
+              ? () => _handleCommentReaction(context, commentModel, state,
+                  isLike: false)
               : null,
           isHideReplies: isHideRepliesForCurrentComment,
           widgetHideListReplies: _buildHideRepliesButton(
@@ -359,7 +372,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           widgetListReplies: _buildReplyList(context, replies,
               isHideRepliesForCurrentComment, state, commentModel),
           onTapShowInputReply: state.video?.isCommentable == true
-              ? () => _onTapShowInputReply(context, commentModel)
+              ? () => _onTapShowInputReply(context, commentModel, state)
               : null,
           isShowTemporaryListReply: isShowTemporaryListReplyMap,
           repliesLength: replies.length,
@@ -403,7 +416,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           }
         },
         borderColor: AppColors.white,
-        padding:  EdgeInsets.zero,
+        padding: EdgeInsets.zero,
         mainAxisSize: MainAxisSize.min,
       ),
     );
@@ -424,7 +437,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           if (hasTargetReplyId) {
             Future.delayed(const Duration(seconds: 5), () {
-              context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+              context
+                  .read<VideoDetailBloc>()
+                  .add(VideoDetailClearTargetCommentEvent());
             });
           }
           return ItemComment(
@@ -438,11 +453,13 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
             hasTargetReplyId: hasTargetReplyId,
             isShowReplyButton: false,
             onTapLike: state.video?.isCommentable == true
-                ? () => _handleCommentReaction(context, replyCommentModel,
+                ? () => _handleCommentReaction(
+                    context, replyCommentModel, state,
                     isLike: true)
                 : null,
             onTapDislike: state.video?.isCommentable == true
-                ? () => _handleCommentReaction(context, replyCommentModel,
+                ? () => _handleCommentReaction(
+                    context, replyCommentModel, state,
                     isLike: false)
                 : null,
           );
@@ -454,12 +471,22 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     );
   }
 
-  void _onTapShowInputReply(BuildContext context, CommentModel commentModel) {
+  void _onTapShowInputReply(
+      BuildContext context, CommentModel commentModel, VideoDetailState state) {
     if (SharedPrefer.sharedPrefer.getUserToken().isEmpty) {
       showDialog(
         context: context,
-        builder: (context) => const DialogAuthentication(
+        builder: (context) => DialogAuthentication(
           isStayOnPage: true,
+          navigate: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => VideoDetailPage(
+                          videoId: state.video?.id ?? 0,
+                        )),
+                (route) => false);
+          },
         ),
       );
     } else {
@@ -589,8 +616,17 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication(
+                    return DialogAuthentication(
                       isStayOnPage: true,
+                      navigate: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VideoDetailPage(
+                                      videoId: state.video?.id ?? 0,
+                                    )),
+                            (route) => false);
+                      },
                     );
                   },
                 );
@@ -605,8 +641,17 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication(
+                    return DialogAuthentication(
                       isStayOnPage: true,
+                      navigate: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VideoDetailPage(
+                                      videoId: state.video?.id ?? 0,
+                                    )),
+                            (route) => false);
+                      },
                     );
                   },
                 );
@@ -624,8 +669,17 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return const DialogAuthentication(
+                    return DialogAuthentication(
                       isStayOnPage: true,
+                      navigate: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => VideoDetailPage(
+                                      videoId: state.video?.id ?? 0,
+                                    )),
+                            (route) => false);
+                      },
                     );
                   },
                 );
@@ -680,6 +734,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
     return Column(
       children: [
         WriteComment(
+          videoModel: state.video,
           onChanged: (value) {
             context
                 .read<VideoDetailBloc>()
