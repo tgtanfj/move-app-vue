@@ -42,6 +42,7 @@ export class CommentRepository {
     const queryBuilder = this.commentRepository
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.user', 'user')
+      .innerJoinAndSelect('user.channel', 'userChannel')
       .innerJoinAndSelect('comment.video', 'video')
       .innerJoin('video.channel', 'channel')
       .leftJoinAndSelect('comment.children', 'child')
@@ -50,7 +51,7 @@ export class CommentRepository {
       })
       .leftJoinAndSelect('video.category', 'category')
       .where('channel.userId = :userId', { userId })
-      .select(['comment', 'user', 'video', 'child', 'category', 'thumbnail']);
+      .select(['comment', 'user', 'userChannel', 'video', 'child', 'category', 'thumbnail']);
 
     if (filter === 'unresponded') {
       queryBuilder.andWhere(
@@ -77,7 +78,8 @@ export class CommentRepository {
     const enrichedComments = await Promise.all(
       comments.map(async (comment) => {
         const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
-        return { ...comment, totalDonation };
+        const lastContentDonate = await this.getLastContentDonate(comment.user.id, comment.video.id);
+        return { ...comment, totalDonation, lastContentDonate };
       }),
     );
 
