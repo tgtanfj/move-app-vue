@@ -129,7 +129,7 @@ export class CommentReactionService {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
       const checkId = value?.replyId ? value.replyId : value?.commentId;
-      if (value.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
+      if (value?.type === NOTIFICATION_TYPE.LIKE && checkId === +commentId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
         } else {
