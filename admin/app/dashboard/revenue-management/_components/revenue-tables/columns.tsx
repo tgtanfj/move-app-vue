@@ -20,7 +20,7 @@ export const columns: ColumnDef<Revenue>[] = [
   },
   {
     accessorKey: 'totalEarnings',
-    header: 'Earning (REPs)',
+    header: 'Earning',
     cell: ({ getValue }) => {
       const numberOfREPs = getValue() as number;
       const amount = (numberOfREPs * 0.006).toFixed(2); // Format the amount to 2 decimal places
@@ -56,7 +56,7 @@ export const columns: ColumnDef<Revenue>[] = [
   },
   {
     accessorKey: 'totalDonations',
-    header: 'Donations (REPs)',
+    header: 'Donations',
     cell: ({ getValue }) => {
       const numberOfREPs = getValue() as number;
       return numberOfREPs ? <span>{numberOfREPs} REPs</span> : 0;
