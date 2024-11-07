@@ -69,7 +69,7 @@ export class FollowService {
 
   async removeNotificationFollow(channelId: number, userId: number) {
     const channel = await this.channelService.findOne(channelId, { user: true });
-    const receiveId = channel.user.id;
+    const receiveId = channel.user?.id;
     const remove = [];
 
     const notificationsRef = db.ref(`notifications/${receiveId}`);
@@ -77,7 +77,7 @@ export class FollowService {
     snapshot.forEach((childSnapshot) => {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
-      const senderId = value.sender.id;
+      const senderId = value.sender?.id;
       if (value.type === NOTIFICATION_TYPE.FOLLOW && senderId === +userId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());

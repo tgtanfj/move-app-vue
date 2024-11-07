@@ -69,6 +69,7 @@ export class CommentReactionService {
 
       return commentReaction;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_UPDATE_COMMENT_REACTION'));
     }
   }
@@ -87,6 +88,7 @@ export class CommentReactionService {
 
       await this.removeNotificationLike(commentId);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT_REACTION'));
     }
   }
