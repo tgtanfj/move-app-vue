@@ -55,25 +55,19 @@ export const userProfileSchema = yup.object().shape({
   username: yup
     .string()
     .trim()
-    .required(t('user_profile.field_required'))
     .matches(REGEX_USERNAME_CODE, t('user_profile.username_verify_message'))
     .min(4, t('user_profile.username_8_255_long'))
     .max(25, t('user_profile.username_8_255_long')),
   fullName: yup
     .string()
     .trim()
-    .required(t('user_profile.field_required'))
     .matches(/^.{8,255}$/, t('user_profile.fullname_8_255_long'))
-    .matches(/^[\p{L}\s]+$/u, t('user_profile.fullname_no_special_characters')),
-  country: yup.string().required(t('user_profile.field_required')),
-  state: yup.string().required(t('user_profile.field_required')),
-  gender: yup
-    .string()
-    .required(t('user_profile.field_required'))
-    .oneOf(['male', 'female', 'rather not say']),
+    .matches(/^[a-zA-ZÀ-ỹ\s]+$/, t('user_profile.fullname_no_special_characters')),
+  country: yup.string(),
+  state: yup.string(),
+  gender: yup.string().oneOf(['male', 'female', 'rather not say']),
   dateOfBirth: yup
     .string()
-    .required(t('user_profile.field_required'))
     .test('is-valid-date', 'Invalid date format', (value) => {
       const date = new Date(value)
       return !isNaN(date.getTime()) // Check if it's a valid date
@@ -88,7 +82,7 @@ export const userProfileSchema = yup.object().shape({
       const minDate = subYears(today, maxAge)
       return isBefore(date, maxDate) && isBefore(minDate, date)
     }),
-  avatar: yup.mixed().nullable().required(t('user_profile.field_required')),
+  avatar: yup.mixed().nullable(),
   city: yup.string().trim()
 })
 
@@ -98,7 +92,7 @@ export const walletSchema = yup.object().shape({
   cardholderName: yup
     .string()
     .trim()
-    .matches(/^[\p{L}\s]+$/u, t('wallet.no_special_characters'))
+    .matches(/^[a-zA-ZÀ-ỹ\s]+$/, t('wallet.no_special_characters'))
     .max(50, 'Max 50 characters'),
   cardNumber: yup
     .string()

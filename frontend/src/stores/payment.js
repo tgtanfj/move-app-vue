@@ -4,7 +4,7 @@ import { apiAxios } from '@helpers/axios.helper'
 import { t } from '@helpers/i18n.helper'
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 
 const { toast } = useToast()
 
@@ -20,22 +20,19 @@ export const usePaymentStore = defineStore('payment', () => {
   const repsPackageList = ref([])
   const showPurchaseModal = ref(false)
 
-  onMounted(async () => {
-    try {
-      const res = await apiAxios.get('/user/profile')
-      if (res.status === 200) {
-        reps.value = res.data.data.numberOfREPs
-      } else return
-    } catch (error) {
-      return
-    }
-  })
-
   onBeforeUnmount(() => {
     clearTimeout(notificationTimeout)
   })
 
   let notificationTimeout = null
+
+  const clearFields = () => {
+    reps.value = false
+    userPaymentList.value = null
+    selectedPackage.value = null
+    repsPackageList.value = []
+    showPurchaseModal.value = false
+  }
 
   const hideNotify = () => {
     showSucessNotify.value = false
@@ -286,6 +283,7 @@ export const usePaymentStore = defineStore('payment', () => {
     reps,
     selectedPackage,
     showPurchaseModal,
+    clearFields,
     setShowPurchaseModal,
     setSelectedPackage,
     checkForSavedPayment,

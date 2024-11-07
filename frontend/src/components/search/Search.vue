@@ -143,26 +143,30 @@ const onSubmit = () => {
       </div>
       <div v-if="searchStore.text !== ''" class="w-full">
         <!-- 1 Category -->
-        <div v-if="searchStore.results.topCategory?.id" class="mt-4 w-full">
-          <div>
-            <div class="flex items-center justify-between mb-1">
+        <div
+          v-if="
+            Array.isArray(searchStore.results?.topCategories) &&
+            searchStore.results?.topCategories.length > 0
+          "
+          class="mt-4 w-full"
+        >
+          <div class="flex items-center justify-between flex-1 mb-1">
+            <div
+              v-for="item in searchStore.results.topCategories"
+              :key="item.id"
+              class="flex justify-between items-center gap-5 cursor-pointer"
+            >
               <div
-                class="flex items-center gap-3 cursor-pointer"
-                @click="
-                  redirectToCategory(
-                    'categories',
-                    searchStore.results.topCategory?.title.toLowerCase(),
-                    searchStore.results.topCategory.id
-                  )
-                "
+                class="flex items-center"
+                @click="redirectToCategory('categories', item.title.toLowerCase(), item.id)"
               >
-                <img
-                  :src="searchStore.results.topCategory?.image"
-                  alt=""
-                  class="w-[60px] h-[90px]"
-                />
-                <p class="text-base font-medium text-black capitalize">
-                  {{ searchStore.results.topCategory?.title }}
+                <img :src="item.image" alt="item.name" class="w-[60px] h-[90px]" />
+                <p class="text-base font-medium text-black capitalize ml-4 mr-1">
+                  {{
+                    item.title && item.title.length > 10
+                      ? item.title.slice(0, 10) + '...'
+                      : item.title
+                  }}
                 </p>
               </div>
               <p class="italic text-gray-500 text-base ml-5">Categories</p>
