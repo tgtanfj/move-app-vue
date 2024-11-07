@@ -1,6 +1,7 @@
 import { User } from '@/entities/user.entity';
 import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 import { ChannelService } from '../channel/channel.service';
 import { NotificationService } from '../notification/notification.service';
 import { UserService } from '../user/user.service';
@@ -8,7 +9,6 @@ import { VideoService } from '../video/video.service';
 import { DonationDto } from './dto/donation.dto';
 import { DonationRepository } from './repositories/donation.repository';
 import { GiftPackageRepository } from './repositories/gift-package.repository';
-import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class DonationService {
@@ -78,7 +78,7 @@ export class DonationService {
         const dataNotification = {
           sender: 'system',
           type: NOTIFICATION_TYPE.REP_MILESTONE,
-          rep_milestone: aroundTotalREPs,
+          repMilestone: aroundTotalREPs,
         };
         await this.notificationService.sendOneToOneNotification(receiver.user.id, dataNotification);
       }
