@@ -61,7 +61,7 @@ watchEffect(() => {
         </div>
       </div>
       <div v-if="latestVideo">
-        <h1 class="text-title-size font-bold mb-5">
+        <h1 class="text-title-size font-bold mb-2">
           {{ $t('streamer_analysis.latest_analytics') }}
         </h1>
         <LatestVideo v-if="latestVideo" :video="latestVideo" />

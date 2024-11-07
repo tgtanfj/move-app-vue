@@ -65,7 +65,7 @@
     "videos": "Videos",
     "details": "Details",
     "views": "Views",
-    "avg_view_time": "Avg. view time",
+    "avg_view_time": "Avg view time",
     "ratings": "Ratings",
     "reps": "REPs received",
     "viewer_gifted": "Viewer gifted",
@@ -426,7 +426,7 @@
     "age": "Age",
     "gender": "Gender",
     "demographics": "Demographics",
-    "avg_view_time": "avg. view time",
+    "avg_view_time": "average view time",
     "publish_on": "Published on"
   }
 }

@@ -35,11 +35,17 @@ const router = useRouter()
 const handleNavigate = () => {
   router.push(`/channel/${props.id}`)
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
+
 </script>
 <template>
   <div class="flex flex-col items-center text-center">
     <img
       :src="avatar || defaultAvatar"
+      @error="handleImageError"
       class="w-[56px] h-[56px] mb-4 rounded-full cursor-pointer"
       @click="handleNavigate"
     />

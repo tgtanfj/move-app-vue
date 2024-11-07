@@ -124,7 +124,7 @@ const scrollToComment = async () => {
 
         setTimeout(() => {
           replyElement.classList.remove('highlight')
-        }, 5000)
+        }, 15000)
       } else {
         console.log('Reply element not found after timeout')
       }
@@ -145,7 +145,7 @@ const scrollToComment = async () => {
 
         setTimeout(() => {
           commentElement.classList.remove('highlight')
-        }, 5000)
+        }, 15000)
       } else {
         console.log('Element not found after timeout')
       }
