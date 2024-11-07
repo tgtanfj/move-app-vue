@@ -60,12 +60,12 @@ export const useSearchStore = defineStore('search', () => {
     }, 300)
   }
 
-  const getUserHistory = async () => {
+  const getUserHistory = async (postHistory) => {
     try {
       const response = await apiAxios.get(`${ADMIN_BASE}/search/history`)
       if (response.status === 200 && response.data.data.histories.length > 0) {
         history.value = [...response.data.data.histories]
-        showResultBox.value = true
+        if (!postHistory) showResultBox.value = true
       } else {
         showResultBox.value = false
         return
@@ -80,7 +80,7 @@ export const useSearchStore = defineStore('search', () => {
         content: query
       })
       if (res.status === 201) {
-        await getUserHistory()
+        await getUserHistory(true)
       } else throw new Error(res.error)
     } catch (error) {
       console.log(error)

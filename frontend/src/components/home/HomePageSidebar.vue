@@ -70,7 +70,7 @@ const handleImageError = (event) => {
         </button>
       </div>
 
-      <div class="flex flex-col w-full mt-4 gap-4">
+      <div class="flex flex-col w-[240px] mt-4 gap-4">
         <div
           v-if="authStore.accessToken"
           v-for="channel in followerStore.follower"
@@ -106,7 +106,12 @@ const handleImageError = (event) => {
           <FollowedChannelsSkeleton />
         </div>
         <p
-          v-if="sidebarOpen && authStore.accessToken && followerStore.follower.length === 0 && !isLoading"
+          v-if="
+            sidebarOpen &&
+            authStore.accessToken &&
+            followerStore.follower.length === 0 &&
+            !isLoading
+          "
           class="text-[16px] text-[#666666]"
         >
           {{ $t('sidebar.not_login') }}
@@ -114,7 +119,7 @@ const handleImageError = (event) => {
         <div
           v-if="sidebarOpen && !authStore.accessToken && !isLoading"
           :class="sidebarOpen ? 'opacity-100 delay-500' : 'opacity-0'"
-          class="w-full h-[220px] bg-primary rounded-lg shadow-lg flex flex-col p-4 items-start justify-between transition-opacity opacity-0 duration-500 ease-in-out"
+          class="w-[210px] h-[220px] bg-primary rounded-lg shadow-lg flex flex-col p-4 items-start justify-between transition-opacity opacity-0 duration-500 ease-in-out"
         >
           <div class="flex flex-col item-center gap-4">
             <p class="font-bold text-[24px] text-white leading-8">{{ $t('sidebar.interested') }}</p>
