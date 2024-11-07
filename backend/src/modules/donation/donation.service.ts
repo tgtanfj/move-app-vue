@@ -70,7 +70,6 @@ export class DonationService {
 
       const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
         receiver.user.id,
-        userInfo.id,
         aroundTotalREPs,
       );
 

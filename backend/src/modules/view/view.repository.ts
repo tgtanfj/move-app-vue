@@ -30,10 +30,11 @@ export class ViewRepository {
       await this.viewRepository.save(view);
       return view;
     }
-    !viewTime &&
-      existingView.totalView++ &&
-      (existingView.totalViewTime = +existingView.totalViewTime + timeCountView);
-    viewTime && (existingView.totalViewTime = +existingView.totalViewTime + viewTime - timeCountView);
+    if (viewTime) {
+      existingView.totalViewTime = +existingView.totalViewTime + viewTime - timeCountView;
+    } else {
+      existingView.totalView++ && (existingView.totalViewTime = +existingView.totalViewTime + timeCountView);
+    }
 
     await this.viewRepository.save(existingView);
     return existingView;

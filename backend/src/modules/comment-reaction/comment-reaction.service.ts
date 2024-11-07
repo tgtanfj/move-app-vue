@@ -79,7 +79,10 @@ export class CommentReactionService {
       const result = await this.commentReactionRepository.delete(commentReaction.id);
       const comment = await this.commentRepository.getOne(commentId);
 
-      result.affected === 1 && commentReaction.isLike === true && (comment.numberOfLike -= 1);
+      result.affected === 1 &&
+        commentReaction.isLike === true &&
+        comment.numberOfLike > 1 &&
+        (comment.numberOfLike -= 1);
       await this.commentRepository.update(comment.id, { numberOfLike: comment.numberOfLike });
 
       await this.removeNotificationLike(commentId);
@@ -97,11 +100,7 @@ export class CommentReactionService {
     const receiver = comment.user.id;
     const parent = comment?.parent;
 
-    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
-      receiver,
-      userInfo.id,
-      comment.id,
-    );
+    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, comment.id);
 
     const dataNotification = {
       sender: userInfo,

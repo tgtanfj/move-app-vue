@@ -1,10 +1,11 @@
 import { VideoRepository } from './../video/video.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ViewRepository } from './view.repository';
 import { CreateUpdateViewDto } from './dto/create-update-view.dto';
 import { NotificationService } from '../notification/notification.service';
 import { NOTIFICATION_TYPE } from '@/shared/constraints/notification-message.constraint';
 import { CategoryRepository } from '../category/category.repository';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ViewService {
@@ -13,6 +14,7 @@ export class ViewService {
     private videoRepository: VideoRepository,
     private notificationService: NotificationService,
     private categoryRepository: CategoryRepository,
+    private readonly i18n: I18nService,
   ) {}
   async getTotalViewInOnTime(time: Date, videoId: number) {
     return await this.viewRepository.getTotalView(time, videoId);
@@ -23,10 +25,16 @@ export class ViewService {
       channel: { user: true },
       category: true,
     });
+
+    if (!video) {
+      throw new NotFoundException({
+        message: this.i18n.t('exceptions.video.NOT_FOUND_VIDEO'),
+      });
+    }
+
     const timeCountView = video?.durationsVideo * 0.7;
     const view = await this.viewRepository.createUpdateViewDate(dto, timeCountView);
     const receiver = video.channel.user.id;
-    const systemId = 0;
 
     if (!dto.viewTime) {
       video.numberOfViews++;
@@ -36,7 +44,6 @@ export class ViewService {
 
       const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
         receiver,
-        systemId,
         +video.numberOfViews,
       );
 
