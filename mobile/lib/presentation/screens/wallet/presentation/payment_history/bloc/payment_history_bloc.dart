@@ -259,7 +259,6 @@ class PaymentHistoryBloc
           take: 10,
           page: currentPage,
         ));
-        print(state.totalResult!.totalResult!);
         paymentHistoryList.fold((l) {
           emit(state.copyWith(
             status: PaymentHistoryStatus.failure,

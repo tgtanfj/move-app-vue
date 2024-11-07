@@ -26,40 +26,48 @@ class SuggestionSearchBox extends StatelessWidget {
     return Column(
       children: [
         (suggestionModel?.topCategory != null)
-            ? ListTile(
-                leading: Image.network(
-                  suggestionModel?.topCategory?.image ?? "",
-                  height: 40,
-                  fit: BoxFit.fill,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      AppImages.hiitCategory.pngAssetPath,
-                      fit: BoxFit.cover,
+            ? ListView.builder(
+                shrinkWrap: true,
+                itemCount: suggestionModel?.topCategory?.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Image.network(
+                      suggestionModel?.topCategory?[index].image ?? "",
                       height: 40,
-                      width: 40,
-                    );
-                  },
-                ),
-                title: Text(
-                  suggestionModel?.topCategory?.title ?? "",
-                  style: AppTextStyles.montserratStyle.regular14Black,
-                ),
-                trailing: Text(
-                  Constants.categories,
-                  style: AppTextStyles.montserratStyle.regular12Black.copyWith(
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
+                      fit: BoxFit.fill,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          AppImages.hiitCategory.pngAssetPath,
+                          fit: BoxFit.cover,
+                          height: 40,
+                          width: 40,
+                        );
+                      },
+                    ),
+                    title: Text(
+                      suggestionModel?.topCategory?[index].title ?? "",
+                      style: AppTextStyles.montserratStyle.regular14Black,
+                    ),
+                    trailing: Text(
+                      Constants.categories,
+                      style:
+                          AppTextStyles.montserratStyle.regular12Black.copyWith(
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => VideosCategoryPage(
-                                categoryId:
-                                    suggestionModel?.topCategory?.id ?? 0,
-                              )));
-                },
-              )
+                            categoryId:
+                                suggestionModel?.topCategory?[index].id ?? 0,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                })
             : const SizedBox(),
         (suggestionModel?.topInstructors != null)
             ? ListView.builder(

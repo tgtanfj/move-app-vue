@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:move_app/constants/api_urls.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
@@ -35,7 +36,12 @@ class ApiService {
           return handler.next(options);
         },
         onError: (error, handler) async {
-          if (error.response?.statusCode == 400) {
+          var accessToken = SharedPrefer.sharedPrefer.getUserToken();
+          var check = false;
+          if (accessToken.isNotEmpty) {
+            check = JwtDecoder.isExpired(accessToken);
+          }
+          if (error.response?.statusCode == 400 && check) {
             try {
               final respone = await refreshAccessToken();
               respone.fold((l) async {
@@ -66,12 +72,12 @@ class ApiService {
   }
 
   Future<Response<T>> request<T>(
-    APIRequestMethod method,
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Object? data,
-    Options? options,
-  }) async {
+      APIRequestMethod method,
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Object? data,
+        Options? options,
+      }) async {
     try {
       Response<T> response;
       switch (method) {

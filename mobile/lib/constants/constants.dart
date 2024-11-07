@@ -185,7 +185,6 @@ class Constants {
   static const String channels = "Channels";
   static const String searchResults = "Search Results";
   static const String noSearchResults = "No Search Results";
-
   static const String giftReps = 'Gift REPs';
   static const String share = 'Share';
   static const String reportVideo = 'Report video';
@@ -398,6 +397,6 @@ class Constants {
   static const String copy = "Copy";
   static const String copied = "Copied";
   static const String delete = "Delete";
-
-  static const String searchDifferenceKeyword = "Please try searching with a different keyword.";
+  static const String searchDifferenceKeyword =
+      "Please try searching with a different keyword.";
 }

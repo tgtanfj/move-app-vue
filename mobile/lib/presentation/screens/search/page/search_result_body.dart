@@ -145,6 +145,7 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                                 ? Center(
                                     child: Column(
                                       children: [
+                                        SizedBox(height: MediaQuery.sizeOf(context).height*0.38,),
                                         RichText(
                                           text: TextSpan(
                                             children: [
