@@ -122,7 +122,7 @@ export type Product = {
 export type Video = {
   id: number;
   title: string;
-  thumbnails: string;
+  thumbnails: any[];
   workoutLevel: string;
   duration: string;
   views: number;
