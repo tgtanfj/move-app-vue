@@ -8,7 +8,7 @@ import DislikeOffDisabledIcon from '@assets/icons/DislikeOffDisabledIcon.vue'
 import RepsSenderIcon from '@assets/icons/RepsSenderIcon.vue'
 import { convertTimeComment } from '@utils/convertTimePostVideo.util'
 import { formatViews } from '@utils/formatViews.util'
-import { ChevronUp } from 'lucide-vue-next'
+import { ChevronUp, Trash2 } from 'lucide-vue-next'
 import { ChevronDown } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import defaultAvatar from '../../assets/images/default-avatar.png'
@@ -21,6 +21,7 @@ import BlueBadgeIcon from '@assets/icons/BlueBadgeIcon.vue'
 import { TableCell, TableRow } from '@common/ui/table'
 import { useRouter } from 'vue-router'
 import RenderIconsReps from './RenderIconsReps.vue'
+import { Popover, PopoverContent, PopoverTrigger } from '@common/ui/popover'
 
 const props = defineProps({
   comments: {
@@ -29,7 +30,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update-comments', 'updateReplyCount'])
+const emit = defineEmits(['update-comments', 'updateReplyCount', 'handleDeleteComment'])
 
 const router = useRouter()
 
@@ -48,6 +49,7 @@ const replyInputId = ref(null)
 const isFocused = ref(false)
 const isCancelComment = ref(false)
 const myReplyPerComment = ref({})
+const isModalDeleteOpen = ref(false)
 
 const userAvatar = ref(localStorage.getItem('userAvatar'))
 
@@ -265,6 +267,13 @@ const handleShowReply = (commentId) => {
     myReplyPerComment.value[commentId] = {}
   }
   showRepliesByComment(commentId)
+}
+
+const handleDeleteChannelComment = async (commentId) => {
+  const response = await commentServices.deleteCommentById(commentId)
+  if (response.statusCode === 200) {
+    emit('handleDeleteComment', commentId)
+  }
 }
 </script>
 
@@ -692,7 +701,7 @@ const handleShowReply = (commentId) => {
         </div>
       </div>
     </TableCell>
-    <TableCell class="w-[20%] h-full align-top">
+    <TableCell class="w-[15%] h-full align-top">
       <div class="flex mb-auto">
         <template v-if="item?.totalDonation > 0">
           <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
@@ -729,7 +738,7 @@ const handleShowReply = (commentId) => {
         <span class="font-bold" v-else>-</span>
       </div>
     </TableCell>
-    <TableCell class="w-[30%] align-top">
+    <TableCell class="w-[25%] align-top">
       <div class="w-full h-full flex gap-4 mb-auto">
         <img class="w-[124px] h-[70px] cursor-pointer" :src="item?.video?.thumbnails[0]?.image" />
         <div class="flex flex-col justify-between">
@@ -746,6 +755,21 @@ const handleShowReply = (commentId) => {
             {{ $t('comment.view_comment') }}
           </p>
         </div>
+      </div>
+    </TableCell>
+    <TableCell class="w-[10%] align-top">
+      <div class="w-full h-full flex gap-4 mb-auto">
+        <Popover>
+          <PopoverTrigger>
+            <Trash2 size="20" class="text-primary ml-6 cursor-pointer" />
+          </PopoverTrigger>
+          <PopoverContent align="center" side="right" :sideOffset="-10" class="w-[250px] relative">
+            <div>Are you sure you want to delete this comment?</div>
+            <div class="flex items-center justify-end gap-2 mt-2">
+              <Button @click="handleDeleteChannelComment(item?.id)">Delete</Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </TableCell>
   </TableRow>

@@ -17,7 +17,7 @@ const showPassword = ref(false)
 const showError = ref(false)
 
 const mutation = useChangePassword()
-const { isPending, isError } = mutation
+const { isPending, isError, reset } = mutation
 
 const { values, errors, defineField, resetForm } = useForm({
   validationSchema: passwordSchema
@@ -59,6 +59,7 @@ const togglePasswordVisibility = () => {
 
 const resetFormOnClose = () => {
   resetForm()
+  reset()
   oldPassword.value = ''
   showError.value = false
   showPassword.value = false
@@ -67,10 +68,9 @@ const resetFormOnClose = () => {
 const handlePasswordInput = (event) => {
   const char = event.key
   if (char === ' ') {
-    event.preventDefault();
+    event.preventDefault()
   }
 }
-
 </script>
 
 <template>
@@ -87,7 +87,12 @@ const handlePasswordInput = (event) => {
       <div class="flex flex-col space-y-1.5 mb-4">
         <label>{{ $t('change_password.old_password') }}</label>
         <div class="relative pb-2">
-          <Input :type="showPassword ? 'text' : 'password'" v-model="oldPassword" maxlength="32" @keydown="handlePasswordInput" />
+          <Input
+            :type="showPassword ? 'text' : 'password'"
+            v-model="oldPassword"
+            maxlength="32"
+            @keydown="handlePasswordInput"
+          />
           <span
             @click="togglePasswordVisibility"
             class="absolute right-2 top-2 opacity-70 z-10 cursor-pointer"

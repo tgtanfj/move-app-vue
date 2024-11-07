@@ -61,6 +61,7 @@ const postCommentVideo = async () => {
       emit('update', data?.data)
       comment.value = ''
       cancelComment()
+      handleBlur()
     } else {
       return
     }

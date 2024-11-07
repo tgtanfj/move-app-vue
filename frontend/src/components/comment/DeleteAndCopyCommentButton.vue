@@ -1,5 +1,4 @@
 <script setup>
-import CopyLinkIcon from '@assets/icons/CopyLinkIcon.vue'
 import { useToast } from '@common/ui/toast'
 import { useCommentToggleStore } from '../../stores/commentToggle.store'
 import { Copy, EllipsisVertical, MessageSquareMore, Trash2 } from 'lucide-vue-next'

@@ -367,7 +367,8 @@
   "channel_comments": {
     "comments": "Comments",
     "reps": "REPs received",
-    "videos": "Videos"
+    "videos": "Videos",
+    "actions": "Actions"
   },
   "wallet": {
     "card_number": "Card Number",
