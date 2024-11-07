@@ -9,13 +9,18 @@ import { fDate } from '@/lib/format-time';
 import { useGetAllWithdrawHistoriesQuery } from '@/store/queries/paymentManagement';
 import { useState } from 'react';
 import { columns } from './columns';
-import { STATUS_OPTIONS } from './use-withdraw-table-filters';
+
+const STATUS_OPTIONS = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'failed', label: 'Failed' }
+];
 
 export default function WithdrawTable() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortField, setSortField] = useState('createdAt');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('1-1-2024');
@@ -48,12 +53,21 @@ export default function WithdrawTable() {
         isFetching
       })
     }
-    );
+  );
 
-  const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
-    setSortField(field);
-    setSortDirection(direction);
-    setPage(1); // Reset to the first page when sorting changes
+  const handleSortChange = (
+    field: string | null,
+    direction: 'asc' | 'desc' | null
+  ) => {
+    if (field && direction) {
+      setSortField(field);
+      setSortDirection(direction);
+      setPage(1);
+    } else {
+      setSortField('createdAt');
+      setSortDirection('desc');
+      setPage(1);
+    }
   };
 
   return (

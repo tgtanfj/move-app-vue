@@ -11,10 +11,12 @@ export const paymentAPI = baseApi.injectEndpoints({
         params: {
           page: params.page,
           take: params.take,
-          contentSearch: params.contentSearch || '',
-          sortBy: params.sortBy || '',
-          isAsc: params.isAsc ?? true,
-          gender: params.gender || ''
+          search: params.search || '',
+          sortField: params.sortField || undefined,
+          sortDirection: params.sortDirection || undefined,
+          startDate: params.startDate,
+          endDate: params.endDate,
+          status: params.status || ''
         },
         method: 'GET',
         flashError: true
@@ -27,8 +29,8 @@ export const paymentAPI = baseApi.injectEndpoints({
           page: params.page,
           take: params.take,
           search: params.search || '',
-          // sortField: params.sortBy || '',
-          // sortDirection: params.isAsc ?? 'asc',
+          sortField: params.sortField || undefined,
+          sortDirection: params.sortDirection || undefined,
           startDate: params.startDate,
           endDate: params.endDate,
           status: params.status || ''
@@ -44,10 +46,9 @@ export const paymentAPI = baseApi.injectEndpoints({
         params: {
           page: params.page,
           take: params.take,
-          contentSearch: params.contentSearch || '',
-          sortBy: params.sortBy || '',
-          isAsc: params.isAsc ?? true,
-          gender: params.gender || ''
+          search: params.search || '',
+          sortField: params.sortField || undefined,
+          sortDirection: params.sortDirection || undefined
         },
         flashError: true
       })
