@@ -25,6 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(
       state.copyWith(
         isVisible: !state.isVisible,
+        status: LoginStatus.dismiss,
       ),
     );
   }
@@ -35,9 +36,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         state.email != event.email ? false : state.isShowEmailMessage;
     final isShowPasswordMessage =
         state.password != event.password ? false : state.isShowPasswordMessage;
-
     emit(
       state.copyWith(
+        status: LoginStatus.dismiss,
+        errorMessage: '',
         email: event.email,
         password: event.password,
         isEnabled: event.email.isNotEmpty && event.password.isNotEmpty,
@@ -54,13 +56,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final user = await AuthRepository().googleLogin();
     user.fold((l) {
       emit(state.copyWith(
-        status: LoginStatus.failure,
+        status: LoginStatus.failureSocial,
         errorMessage: l,
       ));
     }, (r) {
       emit(state.copyWith(
         status: LoginStatus.success,
-        googleAccount: user.toString(),
+        googleAccount: r.toString(),
       ));
     });
   }
@@ -79,7 +81,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }, (r) {
       emit(state.copyWith(
         status: LoginStatus.success,
-        facebookAccount: facebookAccount.toString(),
+        facebookAccount: r.toString(),
       ));
     });
   }

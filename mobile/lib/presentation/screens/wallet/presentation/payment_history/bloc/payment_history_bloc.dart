@@ -233,13 +233,11 @@ class PaymentHistoryBloc
             status: PaymentHistoryStatus.success,
             paymentHistoryList: r,
             currentPage: currentPage,
-            startResult:
-                (state.startResult != null) ? (state.startResult! + 10) : 0,
-            endResult: (state.startResult != null &&
-                    state.totalResult?.totalResult != null)
-                ? (((state.totalResult!.totalResult! - 10) < 10)
-                    ? state.totalResult?.totalResult
-                    : (state.startResult! + 9))
+            startResult: (state.startResult != null) ? (state.startResult! + 10) : 1,
+            endResult: (state.startResult != null && state.totalResult?.totalResult != null)
+                ? ((state.totalResult!.totalResult! - (state.startResult! + 10)) <= 10
+                ? state.totalResult!.totalResult
+                : (state.startResult! + 19))
                 : 0,
           ));
         });
@@ -271,13 +269,11 @@ class PaymentHistoryBloc
             paymentHistoryList: r,
             currentPage: currentPage,
             status: PaymentHistoryStatus.success,
-            startResult:
-                (state.startResult != null) ? (state.startResult! - 10) : 1,
-            endResult: (state.startResult != null &&
-                    state.totalResult?.totalResult != null)
-                ? ((state.totalResult!.totalResult! - 10) < 10
-                    ? 10
-                    : state.endResult)
+            startResult: (state.startResult != null) ? (state.startResult! - 10) : 1,
+            endResult: (state.startResult != null && state.totalResult?.totalResult != null)
+                ? ((state.startResult! - 1) >= 10
+                ? (state.startResult! - 1)
+                : (state.totalResult!.totalResult! < 10 ? state.totalResult!.totalResult! : 10))
                 : 0,
           ));
         });

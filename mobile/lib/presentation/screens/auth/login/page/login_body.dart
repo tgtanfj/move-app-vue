@@ -56,7 +56,10 @@ class _LoginBodyState extends State<LoginBody>
         }
         (state.status == LoginStatus.processing)
             ? EasyLoading.show()
-            : EasyLoading.dismiss();
+            : EasyLoading.dismiss().then((_) =>
+                state.status == LoginStatus.failureSocial
+                    ? Fluttertoast.showToast(msg: state.errorMessage ?? "")
+                    : Fluttertoast.cancel);
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {

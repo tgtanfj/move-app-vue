@@ -37,8 +37,11 @@ class ApiService {
         },
         onError: (error, handler) async {
           var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-          if (error.response?.statusCode == 400 &&
-              JwtDecoder.isExpired(accessToken)) {
+          var check = false;
+          if (accessToken.isNotEmpty) {
+            check = JwtDecoder.isExpired(accessToken);
+          }
+          if (error.response?.statusCode == 400 && check) {
             try {
               final respone = await refreshAccessToken();
               respone.fold((l) async {
@@ -69,12 +72,12 @@ class ApiService {
   }
 
   Future<Response<T>> request<T>(
-    APIRequestMethod method,
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Object? data,
-    Options? options,
-  }) async {
+      APIRequestMethod method,
+      String path, {
+        Map<String, dynamic>? queryParameters,
+        Object? data,
+        Options? options,
+      }) async {
     try {
       Response<T> response;
       switch (method) {

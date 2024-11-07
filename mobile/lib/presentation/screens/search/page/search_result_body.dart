@@ -128,169 +128,225 @@ class _SearchResultBodyState extends State<SearchResultBody> {
                             const SizedBox(
                               height: 16,
                             ),
-                            (state.categoryList.isNotEmpty ||
-                                    state.videoList.isNotEmpty ||
-                                    state.channelList.isNotEmpty)
-                                ? const CustomSectionTitle(
-                                    title: Constants.searchResults)
-                                : Center(
-                                    child: Text(state.searchResultFound ?? "",
-                                        style: AppTextStyles
-                                            .montserratStyle.bold14Black),
-                                  ),
+                            (state.isShowSectionBar == true)
+                                ? CustomSectionTitle(
+                                    title: (state.categoryList.isEmpty &&
+                                            state.videoList.isEmpty &&
+                                            state.channelList.isEmpty)
+                                        ? Constants.noSearchResults
+                                        : Constants.searchResults)
+                                : const SizedBox(),
                             const SizedBox(
                               height: 24,
                             ),
-                            Column(
-                              children: [
-                                (state.categoryList.isNotEmpty)
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            Constants.categories,
-                                            style: AppTextStyles
-                                                .montserratStyle.bold16Black,
-                                          ),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.3,
-                                            child: ListSearchResultCategories(
-                                              categoryList: state.categoryList,
-                                            ),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                            (state.categoryList.isEmpty &&
+                                    state.videoList.isEmpty &&
+                                    state.channelList.isEmpty)
+                                ? Center(
+                                    child: Column(
+                                      children: [
+                                        SizedBox(height: MediaQuery.sizeOf(context).height*0.38,),
+                                        RichText(
+                                          text: TextSpan(
                                             children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<SearchResultBloc>()
-                                                      .add(SearchResultLoadPreviousCategoriesEvent(
-                                                          searchQuery: state
-                                                                  .searchQuery ??
-                                                              ""));
-                                                },
-                                                icon: const Icon(
-                                                    Icons.navigate_before),
-                                                color:
-                                                    (state.currentCategoriesPage ==
-                                                            1)
-                                                        ? AppColors
-                                                            .chineseSilver
-                                                        : AppColors.tiffanyBlue,
-                                                padding: EdgeInsets.zero,
-                                              ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<SearchResultBloc>()
-                                                      .add(SearchResultLoadMoreCategoriesEvent(
-                                                          searchQuery: state
-                                                                  .searchQuery ??
-                                                              ""));
-                                                },
-                                                icon: const Icon(
-                                                    Icons.navigate_next),
-                                                color: (state
-                                                            .currentCategoriesPage ==
-                                                        state
-                                                            .totalCategoriesPages)
-                                                    ? AppColors.chineseSilver
-                                                    : AppColors.tiffanyBlue,
-                                              ),
+                                              TextSpan(
+                                                  text:
+                                                      state.searchResultFound ??
+                                                          "",
+                                                  style: AppTextStyles
+                                                      .montserratStyle
+                                                      .bold14Black),
+                                              const TextSpan(text: " "),
+                                              TextSpan(
+                                                  text: state.searchQuery,
+                                                  style: AppTextStyles
+                                                      .montserratStyle
+                                                      .regular14Black
+                                                      .copyWith(
+                                                          fontStyle: FontStyle
+                                                              .italic)),
                                             ],
                                           ),
-                                        ],
-                                      )
-                                    : const SizedBox(),
-                                (state.channelList.isNotEmpty)
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Divider(height: 1),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            Constants.channels,
+                                        ),
+                                        Text(
+                                            state.searchDifferenceKeyword ?? "",
                                             style: AppTextStyles
-                                                .montserratStyle.bold16Black,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          ListChannels(
-                                              channelList: state.channelList),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<SearchResultBloc>()
-                                                      .add(SearchResultLoadPreviousChannelEvent(
-                                                          searchQuery: state
-                                                                  .searchQuery ??
-                                                              ""));
-                                                },
-                                                icon: const Icon(
-                                                    Icons.navigate_before),
-                                                color: (state.page == 1)
-                                                    ? AppColors.chineseSilver
-                                                    : AppColors.tiffanyBlue,
-                                                padding: EdgeInsets.zero,
-                                              ),
-                                              IconButton(
-                                                onPressed: () {
-                                                  context
-                                                      .read<SearchResultBloc>()
-                                                      .add(SearchResultLoadMoreChannelsEvent(
-                                                          searchQuery: state
-                                                                  .searchQuery ??
-                                                              ""));
-                                                },
-                                                icon: const Icon(
-                                                    Icons.navigate_next),
-                                                color: (state.page ==
-                                                        state.totalChannelPages)
-                                                    ? AppColors.chineseSilver
-                                                    : AppColors.tiffanyBlue,
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 16),
-                                        ],
-                                      )
-                                    : const SizedBox(),
-                                (state.videoList.isNotEmpty)
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Divider(height: 1),
-                                          const SizedBox(height: 16),
-                                          Text(
-                                            Constants.videos,
-                                            style: AppTextStyles
-                                                .montserratStyle.bold16Black,
-                                          ),
-                                          const SizedBox(height: 16),
-                                          ListSearchResultVideo(
-                                            videoList: state.videoList,
-                                            channelList: state.channelList,
-                                          ),
-                                          const SizedBox(height: 16),
-                                        ],
-                                      )
-                                    : const SizedBox(),
-                              ],
-                            ),
+                                                .montserratStyle.regular14Black
+                                                .copyWith(
+                                                    fontStyle:
+                                                        FontStyle.italic)),
+                                      ],
+                                    ),
+                                  )
+                                : Column(
+                                    children: [
+                                      (state.categoryList.isNotEmpty)
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  Constants.categories,
+                                                  style: AppTextStyles
+                                                      .montserratStyle
+                                                      .bold16Black,
+                                                ),
+                                                const SizedBox(
+                                                  height: 12,
+                                                ),
+                                                SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.3,
+                                                  child:
+                                                      ListSearchResultCategories(
+                                                    categoryList:
+                                                        state.categoryList,
+                                                  ),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        context
+                                                            .read<
+                                                                SearchResultBloc>()
+                                                            .add(SearchResultLoadPreviousCategoriesEvent(
+                                                                searchQuery:
+                                                                    state.searchQuery ??
+                                                                        ""));
+                                                      },
+                                                      icon: const Icon(Icons
+                                                          .navigate_before),
+                                                      color:
+                                                          (state.currentCategoriesPage ==
+                                                                  1)
+                                                              ? AppColors
+                                                                  .chineseSilver
+                                                              : AppColors
+                                                                  .tiffanyBlue,
+                                                      padding: EdgeInsets.zero,
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        context
+                                                            .read<
+                                                                SearchResultBloc>()
+                                                            .add(SearchResultLoadMoreCategoriesEvent(
+                                                                searchQuery:
+                                                                    state.searchQuery ??
+                                                                        ""));
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.navigate_next),
+                                                      color: (state
+                                                                  .currentCategoriesPage ==
+                                                              state
+                                                                  .totalCategoriesPages)
+                                                          ? AppColors
+                                                              .chineseSilver
+                                                          : AppColors
+                                                              .tiffanyBlue,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox(),
+                                      (state.channelList.isNotEmpty)
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Divider(height: 1),
+                                                const SizedBox(height: 16),
+                                                Text(
+                                                  Constants.channels,
+                                                  style: AppTextStyles
+                                                      .montserratStyle
+                                                      .bold16Black,
+                                                ),
+                                                const SizedBox(height: 16),
+                                                ListChannels(
+                                                    channelList:
+                                                        state.channelList),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        context
+                                                            .read<
+                                                                SearchResultBloc>()
+                                                            .add(SearchResultLoadPreviousChannelEvent(
+                                                                searchQuery:
+                                                                    state.searchQuery ??
+                                                                        ""));
+                                                      },
+                                                      icon: const Icon(Icons
+                                                          .navigate_before),
+                                                      color: (state.page == 1)
+                                                          ? AppColors
+                                                              .chineseSilver
+                                                          : AppColors
+                                                              .tiffanyBlue,
+                                                      padding: EdgeInsets.zero,
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        context
+                                                            .read<
+                                                                SearchResultBloc>()
+                                                            .add(SearchResultLoadMoreChannelsEvent(
+                                                                searchQuery:
+                                                                    state.searchQuery ??
+                                                                        ""));
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.navigate_next),
+                                                      color: (state.page ==
+                                                              state
+                                                                  .totalChannelPages)
+                                                          ? AppColors
+                                                              .chineseSilver
+                                                          : AppColors
+                                                              .tiffanyBlue,
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 16),
+                                              ],
+                                            )
+                                          : const SizedBox(),
+                                      (state.videoList.isNotEmpty)
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Divider(height: 1),
+                                                const SizedBox(height: 16),
+                                                Text(
+                                                  Constants.videos,
+                                                  style: AppTextStyles
+                                                      .montserratStyle
+                                                      .bold16Black,
+                                                ),
+                                                const SizedBox(height: 16),
+                                                ListSearchResultVideo(
+                                                  videoList: state.videoList,
+                                                  channelList:
+                                                      state.channelList,
+                                                ),
+                                                const SizedBox(height: 16),
+                                              ],
+                                            )
+                                          : const SizedBox(),
+                                    ],
+                                  ),
                           ],
                         ),
                       ),

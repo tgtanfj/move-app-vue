@@ -4,7 +4,9 @@ enum LoginStatus {
   initial,
   processing,
   success,
+  dismiss,
   failure,
+  failureSocial,
 }
 
 final class LoginState extends Equatable {

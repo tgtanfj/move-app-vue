@@ -183,8 +183,8 @@ class Constants {
   static const String noInformationFound = 'No information found.';
   static const String categories = "Categories";
   static const String channels = "Channels";
-  static const String searchResults = "Search Result";
-
+  static const String searchResults = "Search Results";
+  static const String noSearchResults = "No Search Results";
   static const String giftReps = 'Gift REPs';
   static const String share = 'Share';
   static const String reportVideo = 'Report video';
@@ -379,7 +379,7 @@ class Constants {
   static const String goToHome = 'Go To Home';
 
   static const String enterValidContent = "Please enter search content";
-  static const String notFoundResult = "No any search result found";
+  static const String notFoundResult = "No search results for";
   static const String anonymousCardNumber = '**** **** ****';
   static const String cardHolderName = 'Cardholder Name';
   static const String edit = 'Edit';
@@ -401,4 +401,6 @@ class Constants {
   static const String delete = "Delete";
   static const String invalidVisaOrCreditCard =
       "Please enter a valid Visa or Credit card number only";
+  static const String searchDifferenceKeyword =
+      "Please try searching with a different keyword.";
 }
