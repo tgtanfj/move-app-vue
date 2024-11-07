@@ -17,7 +17,7 @@ export const useChannelAbout = (id) => {
 }
 
 const fetchVideos = async (id, level, sortBy, category, page) => {
-  const TAKE = 12
+  const TAKE = 8
   let response
   if (category != 0) {
     response = await apiAxios.get(

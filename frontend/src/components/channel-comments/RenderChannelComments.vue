@@ -275,6 +275,10 @@ const handleDeleteChannelComment = async (commentId) => {
     emit('handleDeleteComment', commentId)
   }
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
 </script>
 
 <template>
@@ -282,6 +286,7 @@ const handleDeleteChannelComment = async (commentId) => {
     <TableCell class="w-[50%] p-[10px]">
       <div class="flex items-start gap-4 w-full">
         <img
+          @error="handleImageError"
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
@@ -431,6 +436,7 @@ const handleDeleteChannelComment = async (commentId) => {
 
           <div v-if="replyInputId === item.id" class="w-full flex items-center gap-4 mt-2">
             <img
+              @error="handleImageError"
               :src="userAvatar ? userAvatar : defaultAvatar"
               class="w-[40px] h-[40px] rounded-full object-cover"
             />
@@ -465,6 +471,7 @@ const handleDeleteChannelComment = async (commentId) => {
           <div v-if="myReplyPerComment[item.id]" class="w-full space-y-4 mt-2">
             <div class="flex gap-4 items-start">
               <img
+                @error="handleImageError"
                 :src="myReplyPerComment[item.id].user.avatar"
                 class="object-cover w-[40px] h-[40px] rounded-full"
               />
@@ -587,7 +594,11 @@ const handleDeleteChannelComment = async (commentId) => {
               :key="reply.id"
               class="flex gap-4 items-start"
             >
-              <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
+              <img
+                @error="handleImageError"
+                :src="reply.user.avatar"
+                class="object-cover w-[40px] h-[40px] rounded-full"
+              />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-start gap-2">
                   <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
