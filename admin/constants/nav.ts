@@ -39,11 +39,4 @@ export const navItems: NavItem[] = [
       }
     ]
   },
-  {
-    title: 'Content management',
-    url: '/dashboard/content-management',
-    icon: 'product',
-    isActive: false,
-    items: []
-  }
 ];
