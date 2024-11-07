@@ -9,13 +9,13 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useGetProfileMutation, useSignInMutation } from '@/store/queries/auth';
+import webStorageClient from '@/utils/webStorageClient';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { useGetProfileMutation, useSignInMutation } from '@/store/queries/auth';
-import webStorageClient from '@/utils/webStorageClient';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -96,7 +96,11 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-          <Button className="ml-auto w-full" type="submit">
+          <Button
+            className="ml-auto w-full"
+            type="submit"
+            disabled={isLoading ?? false}
+          >
             Continue With Email
           </Button>
         </form>

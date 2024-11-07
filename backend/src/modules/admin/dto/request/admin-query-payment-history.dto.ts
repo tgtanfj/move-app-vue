@@ -11,6 +11,7 @@ export enum SortDirection {
 export enum SortField {
   CREATED_AT = 'createdAt',
   NUMBER_OF_REPS = 'numberOfREPs',
+  PRICE = 'price',
 }
 
 export default class QueryAdminPaymentHistoryDto extends QueryPaymentHistoryDto {

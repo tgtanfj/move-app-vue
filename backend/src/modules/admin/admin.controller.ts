@@ -10,6 +10,7 @@ import QueryAdminPaymentHistoryDto from './dto/request/admin-query-payment-histo
 import UserQueryDto from './dto/request/user-query.dto';
 import VideoAdminQueryDto from './dto/request/video-admin-query.dto';
 import { RevenueDto } from './dto/response/revenue.dto';
+import RevenueRequestDto from './dto/request/revenue.dto';
 
 @ApiTags('admin')
 @ApiBearerAuth('jwt')
@@ -19,8 +20,8 @@ export class AdminController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('revenue')
-  async getRevenue(): Promise<RevenueDto[]> {
-    return await this.adminService.getRevenue();
+  async getRevenue(@Query() revenueQueryDto: RevenueRequestDto) {
+    return await this.adminService.getRevenue(revenueQueryDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

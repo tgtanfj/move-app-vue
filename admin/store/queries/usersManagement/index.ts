@@ -5,24 +5,14 @@ import { baseApi } from '../base';
 
 export const userAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getAllUsers: build.query<
-      any,
-      {
-        page: number;
-        take: number;
-        contentSearch?: string;
-        sortBy?: string;
-        isAsc?: boolean;
-        gender?: string;
-      }
-    >({
+    getAllUsers: build.query({
       query: (params) => ({
         url: endpointUser.GET_ALL,
         params: {
           page: params.page,
           take: params.take,
           contentSearch: params.contentSearch || '',
-          sortBy: params.sortBy || '',
+          sortBy: params.sortBy || 'id',
           isAsc: params.isAsc ?? true,
           gender: params.gender || ''
         },

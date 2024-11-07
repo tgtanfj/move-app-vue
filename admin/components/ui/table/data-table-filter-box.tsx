@@ -20,8 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { CheckIcon } from 'lucide-react';
-import { Options } from 'nuqs';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 interface FilterOption {
   value: string;
@@ -33,10 +32,7 @@ interface FilterBoxProps {
   filterKey: string;
   title: string;
   options: FilterOption[];
-  setFilterValue: (
-    value: string | ((old: string) => string | null) | null,
-    options?: Options<any> | undefined
-  ) => Promise<URLSearchParams>;
+  setFilterValue: Dispatch<SetStateAction<string | null>>;
   filterValue: string;
 }
 
@@ -47,23 +43,14 @@ export function DataTableFilterBox({
   setFilterValue,
   filterValue
 }: FilterBoxProps) {
-  const selectedValuesSet = React.useMemo(() => {
-    if (!filterValue) return new Set<string>();
-    const values = filterValue.split('.');
-    return new Set(values.filter((value) => value !== ''));
-  }, [filterValue]);
-
   const handleSelect = (value: string) => {
-    const newSet = new Set(selectedValuesSet);
-    if (newSet.has(value)) {
-      newSet.delete(value);
-    } else {
-      newSet.add(value);
-    }
-    setFilterValue(Array.from(newSet).join('.') || null);
+    // Set the selected value directly, no need for a set or multiple values
+    setFilterValue(value);
   };
 
-  const resetFilter = () => setFilterValue(null);
+  const resetFilter = () => {
+    setFilterValue(null);
+  };
 
   return (
     <Popover>
@@ -71,36 +58,16 @@ export function DataTableFilterBox({
         <Button variant="outline" className="border-dashed">
           <PlusCircledIcon className="mr-2 h-4 w-4" />
           {title}
-          {selectedValuesSet.size > 0 && (
+          {filterValue && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
                 variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
+                className="rounded-sm px-1 font-normal"
               >
-                {selectedValuesSet.size}
+                {options.find((option) => option.value === filterValue)
+                  ?.label || filterValue}
               </Badge>
-              <div className="hidden space-x-1 lg:flex">
-                {selectedValuesSet.size > 2 ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {selectedValuesSet.size} selected
-                  </Badge>
-                ) : (
-                  Array.from(selectedValuesSet).map((value) => (
-                    <Badge
-                      variant="secondary"
-                      key={value}
-                      className="rounded-sm px-1 font-normal"
-                    >
-                      {options.find((option) => option.value === value)
-                        ?.label || value}
-                    </Badge>
-                  ))
-                )}
-              </div>
             </>
           )}
         </Button>
@@ -119,7 +86,7 @@ export function DataTableFilterBox({
                   <div
                     className={cn(
                       'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                      selectedValuesSet.has(option.value)
+                      filterValue === option.value
                         ? 'bg-primary text-primary-foreground'
                         : 'opacity-50 [&_svg]:invisible'
                     )}
@@ -136,7 +103,7 @@ export function DataTableFilterBox({
                 </CommandItem>
               ))}
             </CommandGroup>
-            {selectedValuesSet.size > 0 && (
+            {filterValue && (
               <>
                 <CommandSeparator />
                 <CommandGroup>
@@ -144,7 +111,7 @@ export function DataTableFilterBox({
                     onSelect={resetFilter}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    Clear filter
                   </CommandItem>
                 </CommandGroup>
               </>
