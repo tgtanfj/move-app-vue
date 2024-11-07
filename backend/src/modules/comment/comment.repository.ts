@@ -289,8 +289,8 @@ export class CommentRepository {
   private async addInformation(comment: Comment, videoId: number, userId?: number) {
     const [reactions, donation, lastContentDonate] = await Promise.all([
       this.getReactionsInComment(comment.id),
-      this.getTotalDonations(comment.user.id, videoId),
-      this.getLastContentDonate(comment.user.id, videoId),
+      this.getTotalDonations(comment.user?.id, videoId),
+      this.getLastContentDonate(comment.user?.id, videoId),
     ]);
 
     const checkLike = userId ? reactions.find((reaction) => reaction.user?.id === userId) : undefined;
