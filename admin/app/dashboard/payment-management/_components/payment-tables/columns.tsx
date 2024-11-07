@@ -9,26 +9,31 @@ export const columns: ColumnDef<Payment>[] = [
     enableSorting: false
   },
   {
-    accessorKey: 'user.fullName',
-    header: 'Full Name'
+    accessorKey: 'fullName',
+    header: 'Full Name',
+    enableSorting: false
   },
   {
-    accessorKey: 'user.email',
-    header: 'Email'
+    accessorKey: 'email',
+    header: 'Email',
+    enableSorting: false
   },
   {
     accessorKey: 'createdAt',
     header: 'Created At',
     cell: ({ getValue }) => (
       <span>{new Date(getValue() as string).toUTCString()}</span>
-    )
+    ),
+    enableSorting: true
   },
   {
-    accessorKey: 'repsPackage.numberOfREPs',
-    header: 'REPs'
+    accessorKey: 'numberOfREPs',
+    header: 'REPs',
+    enableSorting: true
   },
   {
-    accessorKey: 'repsPackage.price',
-    header: 'Amount ($)'
+    accessorKey: 'price',
+    header: 'Amount ($)',
+    enableSorting: true
   }
 ];

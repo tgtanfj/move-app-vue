@@ -47,19 +47,30 @@ class FollowingItem extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             runSpacing: 4,
             children: [
-              Text(
-                followingChannel.name ?? '',
-                style: AppTextStyles.montserratStyle.regular20Black,
+              RichText(
                 textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: followingChannel.name ?? '',
+                      style: AppTextStyles.montserratStyle.regular20Black,
+                    ),
+                    if (followingChannel.isBlueBadge)
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.baseline,
+                        baseline: TextBaseline.alphabetic,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 7),
+                          child: SvgPicture.asset(
+                            AppIcons.blueCheckCircle.svgAssetPath,
+                            width: 16,
+                            height: 16,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              SizedBox(width: followingChannel.isBlueBadge ? 7 : 0),
-              followingChannel.isBlueBadge
-                  ? SvgPicture.asset(
-                      AppIcons.blueCheckCircle.svgAssetPath,
-                      width: 16,
-                      height: 16,
-                    )
-                  : const SizedBox(),
             ],
           ),
           const SizedBox(height: 3),

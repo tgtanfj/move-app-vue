@@ -83,22 +83,31 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           runSpacing: 4,
                           children: [
-                            Text(
-                              state.channel?.name ?? '',
-                              style:
-                                  AppTextStyles.montserratStyle.regular20Black,
+                            RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: state.channel?.name ?? '',
+                                    style: AppTextStyles
+                                        .montserratStyle.regular20Black,
+                                  ),
+                                  if (state.channel?.isBlueBadge ?? false)
+                                    WidgetSpan(
+                                      alignment: PlaceholderAlignment.baseline,
+                                      baseline: TextBaseline.alphabetic,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 7),
+                                        child: SvgPicture.asset(
+                                          AppIcons.blueCheckCircle.svgAssetPath,
+                                          width: 16,
+                                          height: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                                width: state.channel?.isBlueBadge ?? false
-                                    ? 7
-                                    : 0),
-                            state.channel?.isBlueBadge ?? false
-                                ? SvgPicture.asset(
-                                    AppIcons.blueStick.svgAssetPath,
-                                    width: 16,
-                                    height: 16,
-                                  )
-                                : const SizedBox(),
                           ],
                         ),
                         const SizedBox(height: 4),

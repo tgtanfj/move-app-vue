@@ -2,8 +2,8 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Video } from '@/constants/data';
 import { ColumnDef } from '@tanstack/react-table';
-import { CellAction } from './cell-action';
 import Image from 'next/image';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Video>[] = [
   {
@@ -32,14 +32,15 @@ export const columns: ColumnDef<Video>[] = [
   {
     accessorKey: 'thumbnail',
     header: 'THUMBNAIL',
+    enableSorting: false,
     cell: ({ row }) => {
+      console.log(row);
       return (
         <div className="relative aspect-square h-16 w-16">
           <Image
-            src={row.getValue('thumbnail')}
+            src={row.original.thumbnails[0].image}
             alt={row.getValue('title')}
             fill
-            className="rounded-lg object-cover"
           />
         </div>
       );
@@ -47,27 +48,24 @@ export const columns: ColumnDef<Video>[] = [
   },
   {
     accessorKey: 'workoutLevel',
-    header: 'WORKOUT LEVEL'
+    header: 'WORKOUT LEVEL',
+    enableSorting: false
   },
   {
     accessorKey: 'duration',
     header: 'DURATION'
   },
   {
-    accessorKey: 'views',
+    accessorKey: 'numberOfViews',
     header: 'VIEWS'
   },
   {
-    accessorKey: 'comments',
+    accessorKey: 'numberOfComments',
     header: 'COMMENTS'
   },
   {
     accessorKey: 'ratings',
     header: 'RATINGS'
-  },
-  {
-    accessorKey: 'shares',
-    header: 'SHARES'
   },
   {
     id: 'actions',

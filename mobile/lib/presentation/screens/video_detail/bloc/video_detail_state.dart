@@ -53,7 +53,7 @@ class VideoDetailState extends Equatable {
       this.inputReply,
       this.isHiddenInputReply,
       this.originalNumOfReply,
-      this.isShowTemporaryListReply ,
+      this.isShowTemporaryListReply,
       this.videoId,
       this.option,
       this.twitterLink,

@@ -70,265 +70,276 @@ class _BuyRepBodyState extends State<BuyRepBody> {
       },
       child: BlocBuilder<BuyRepBloc, BuyRepState>(builder: (context, state) {
         final screenHeight = MediaQuery.of(context).size.height;
-        return state.status == BuyRepStatus.orderProcessing ||
-                state.status == BuyRepStatus.orderFailed ||
-                state.status == BuyRepStatus.orderSuccess
-            ? Container()
-            : Padding(
-                padding: const EdgeInsets.all(5),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: SizedBox(
-                        height: state.cardPaymentMethod != null
-                            ? screenHeight
-                            : null,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(Constants.completePurchase,
-                                    style: AppTextStyles
-                                        .montserratStyle.bold24black),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: SvgPicture.asset(
-                                    AppIcons.close.svgAssetPath,
-                                    width: 18,
-                                    height: 18,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              Constants.orderSummary,
-                              style: AppTextStyles
-                                  .montserratStyle.bold16DarkSilver,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    '${state.rep?.numberOfREPs} ${Constants.rep}',
-                                    style: AppTextStyles
-                                        .montserratStyle.bold16black),
-                                Text('${Constants.us}${state.rep?.price}',
-                                    style: AppTextStyles
-                                        .montserratStyle.regular16Black)
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                                '${Constants.oneTimeChargeOn} ${DateFormat('d MMM y').format(DateTime.now())}',
-                                style: AppTextStyles
-                                    .montserratStyle.regular14sonicSilver),
-                            const SizedBox(height: 10),
-                            const Divider(),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(Constants.total,
-                                    style: AppTextStyles
-                                        .montserratStyle.regular16Black),
-                                Text('${Constants.us}${state.rep?.price}',
-                                    style: AppTextStyles
-                                        .montserratStyle.bold16black)
-                              ],
-                            ),
-                            const SizedBox(height: 32),
-                            Text(
-                              Constants.paymentDetails,
-                              style: AppTextStyles
-                                  .montserratStyle.bold16DarkSilver,
-                            ),
-                            const SizedBox(height: 12),
-                            state.cardPaymentMethod == null
-                                ? WithoutSavedPayment(
-                                    countries: state.countries,
-                                    onChangeCardName: (value) {
-                                      context.read<BuyRepBloc>().add(
-                                          BuyRepCardNameEvent(cardName: value));
-                                    },
-                                    onChangedCountry: (value) {
-                                      context.read<BuyRepBloc>().add(
-                                          BuyRepCountryEvent(
-                                              countryCode: state.countries
-                                                  ?.firstWhere(
-                                                      (e) => e.id == value)
-                                                  .countryCode));
-                                    },
-                                    onChangeCardNumber: (value) {
-                                      context.read<BuyRepBloc>().add(
-                                          BuyRepCardNumberEvent(
-                                              cardNumber: value));
-                                    },
-                                    onChangeExpiryDate: (value) {
-                                      context.read<BuyRepBloc>().add(
-                                          BuyRepExpiryDateEvent(
-                                              expiryDate: value));
-                                    },
-                                    onChangeCvv: (value) {
-                                      context
-                                          .read<BuyRepBloc>()
-                                          .add(BuyRepCvvEvent(cvv: value));
-                                    },
-                                    onCardNameFocusLost: (value) {
-                                      context.read<BuyRepBloc>().add(
-                                          BuyRepCardNameEvent(
-                                              cardName: value.trim()));
-                                    },
-                                    isShowCardNameMessage:
-                                        state.isShowCardNameMessage,
-                                    isShowCardNumberMessage:
-                                        state.isShowCardNumberMessage,
-                                    isShowExpiryDateMessage:
-                                        state.isShowExpiryDateMessage,
-                                    isShowCvvMessage: state.isShowCvvMessage,
-                                    messageInputCardName:
-                                        state.messageInputCardName,
-                                    messageInputCardNumber:
-                                        state.messageInputCardNumber,
-                                    messageInputExpiryDate:
-                                        state.messageInputExpiryDate,
-                                    messageInputCvv: state.messageInputCvv,
-                                    initialCountry: state.countries
-                                        ?.firstWhere(
-                                            (e) => e.countryCode == "VN")
-                                        .id,
-                                    cardType: state.cardType,
-                                  )
-                                : WithSavedPayment(
-                                    card: state.cardPaymentMethod?.card,
-                                    rep: state.rep),
-                            const SizedBox(height: 24),
-                            Text.rich(
-                              TextSpan(
-                                text: Constants.bySubmittingPayment,
-                                style: AppTextStyles
-                                    .montserratStyle.regular14sonicSilver,
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: state.status == BuyRepStatus.orderProcessing ||
+                  state.status == BuyRepStatus.orderFailed ||
+                  state.status == BuyRepStatus.orderSuccess
+              ? Container()
+              : Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SizedBox(
+                          height: state.cardPaymentMethod != null
+                              ? screenHeight
+                              : null,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  TextSpan(
-                                      text: Constants.endUserLicenseAgreement,
-                                      style: AppTextStyles.montserratStyle
-                                          .regular14TiffanyBlue),
-                                  const TextSpan(text: ', '),
-                                  TextSpan(
-                                      text: Constants.privacyPolicy,
-                                      style: AppTextStyles.montserratStyle
-                                          .regular14TiffanyBlue),
-                                  const TextSpan(text: Constants.and),
-                                  TextSpan(
-                                      text: Constants.refundPolicy,
-                                      style: AppTextStyles.montserratStyle
-                                          .regular14TiffanyBlue),
-                                  const TextSpan(text: '.'),
+                                  Text(Constants.completePurchase,
+                                      style: AppTextStyles
+                                          .montserratStyle.bold24black),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: SvgPicture.asset(
+                                      AppIcons.close.svgAssetPath,
+                                      width: 18,
+                                      height: 18,
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-                            SizedBox(
-                                height:
-                                    state.cardPaymentMethod == null ? 60 : 0),
-                            state.cardPaymentMethod == null
-                                ? Row(children: [
-                                    InkWell(
-                                        splashFactory: NoSplash.splashFactory,
-                                        onTap: () {
-                                          context
-                                              .read<BuyRepBloc>()
-                                              .add(BuyRepSavePaymentEvent());
-                                        },
-                                        child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: AppColors.tiffanyBlue,
-                                              width: 1,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: state.isSavePayment
-                                              ? const Icon(
-                                                  Icons.check,
-                                                  color: AppColors.tiffanyBlue,
-                                                )
-                                              : const SizedBox(),
-                                        )),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Text(
-                                        Constants.saveMyPayment,
+                              const SizedBox(height: 16),
+                              Text(
+                                Constants.orderSummary,
+                                style: AppTextStyles
+                                    .montserratStyle.bold16DarkSilver,
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      '${state.rep?.numberOfREPs} ${Constants.rep}',
+                                      style: AppTextStyles
+                                          .montserratStyle.bold16black),
+                                  Text('${Constants.us}${state.rep?.price}',
+                                      style: AppTextStyles
+                                          .montserratStyle.regular16Black)
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                  '${Constants.oneTimeChargeOn} ${DateFormat('d MMM y').format(DateTime.now())}',
+                                  style: AppTextStyles
+                                      .montserratStyle.regular14sonicSilver),
+                              const SizedBox(height: 10),
+                              const Divider(),
+                              const SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(Constants.total,
+                                      style: AppTextStyles
+                                          .montserratStyle.regular16Black),
+                                  Text('${Constants.us}${state.rep?.price}',
+                                      style: AppTextStyles
+                                          .montserratStyle.bold16black)
+                                ],
+                              ),
+                              const SizedBox(height: 32),
+                              Text(
+                                Constants.paymentDetails,
+                                style: AppTextStyles
+                                    .montserratStyle.bold16DarkSilver,
+                              ),
+                              const SizedBox(height: 12),
+                              state.cardPaymentMethod == null
+                                  ? WithoutSavedPayment(
+                                      countries: state.countries,
+                                      onChangeCardName: (value) {
+                                        context.read<BuyRepBloc>().add(
+                                            BuyRepCardNameEvent(
+                                                cardName: value));
+                                      },
+                                      onChangedCountry: (value) {
+                                        context.read<BuyRepBloc>().add(
+                                            BuyRepCountryEvent(
+                                                countryCode: state.countries
+                                                    ?.firstWhere(
+                                                        (e) => e.id == value)
+                                                    .countryCode));
+                                      },
+                                      onChangeCardNumber: (value) {
+                                        context.read<BuyRepBloc>().add(
+                                            BuyRepCardNumberEvent(
+                                                cardNumber: value));
+                                      },
+                                      onChangeExpiryDate: (value) {
+                                        context.read<BuyRepBloc>().add(
+                                            BuyRepExpiryDateEvent(
+                                                expiryDate: value));
+                                      },
+                                      onChangeCvv: (value) {
+                                        context
+                                            .read<BuyRepBloc>()
+                                            .add(BuyRepCvvEvent(cvv: value));
+                                      },
+                                      onCardNameFocusLost: (value) {
+                                        context.read<BuyRepBloc>().add(
+                                            BuyRepCardNameEvent(
+                                                cardName: value.trim()));
+                                      },
+                                      isShowCardNameMessage:
+                                          state.isShowCardNameMessage,
+                                      isShowCardNumberMessage:
+                                          state.isShowCardNumberMessage,
+                                      isShowExpiryDateMessage:
+                                          state.isShowExpiryDateMessage,
+                                      isShowCvvMessage: state.isShowCvvMessage,
+                                      messageInputCardName:
+                                          state.messageInputCardName,
+                                      messageInputCardNumber:
+                                          state.messageInputCardNumber,
+                                      messageInputExpiryDate:
+                                          state.messageInputExpiryDate,
+                                      messageInputCvv: state.messageInputCvv,
+                                      initialCountry: state.countries
+                                          ?.firstWhere(
+                                              (e) => e.countryCode == "VN")
+                                          .id,
+                                      cardType: state.cardType,
+                                    )
+                                  : WithSavedPayment(
+                                      card: state.cardPaymentMethod?.card,
+                                      rep: state.rep),
+                              const SizedBox(height: 24),
+                              Text.rich(
+                                TextSpan(
+                                  text: Constants.bySubmittingPayment,
+                                  style: AppTextStyles
+                                      .montserratStyle.regular14sonicSilver,
+                                  children: [
+                                    TextSpan(
+                                        text: Constants.endUserLicenseAgreement,
                                         style: AppTextStyles.montserratStyle
-                                            .regular14sonicSilver,
+                                            .regular14TiffanyBlue),
+                                    const TextSpan(text: ', '),
+                                    TextSpan(
+                                        text: Constants.privacyPolicy,
+                                        style: AppTextStyles.montserratStyle
+                                            .regular14TiffanyBlue),
+                                    const TextSpan(text: Constants.and),
+                                    TextSpan(
+                                        text: Constants.refundPolicy,
+                                        style: AppTextStyles.montserratStyle
+                                            .regular14TiffanyBlue),
+                                    const TextSpan(text: '.'),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                  height:
+                                      state.cardPaymentMethod == null ? 60 : 0),
+                              state.cardPaymentMethod == null
+                                  ? Row(children: [
+                                      InkWell(
+                                          splashFactory: NoSplash.splashFactory,
+                                          onTap: () {
+                                            context
+                                                .read<BuyRepBloc>()
+                                                .add(BuyRepSavePaymentEvent());
+                                          },
+                                          child: Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: AppColors.tiffanyBlue,
+                                                width: 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: state.isSavePayment
+                                                ? const Icon(
+                                                    Icons.check,
+                                                    color:
+                                                        AppColors.tiffanyBlue,
+                                                  )
+                                                : const SizedBox(),
+                                          )),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          Constants.saveMyPayment,
+                                          style: AppTextStyles.montserratStyle
+                                              .regular14sonicSilver,
+                                        ),
                                       ),
-                                    ),
-                                  ])
-                                : const SizedBox(),
-                            const SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                RichText(
-                                    text: TextSpan(
-                                        text: Constants.total,
-                                        style: AppTextStyles
-                                            .montserratStyle.regular16Black,
-                                        children: [
-                                      TextSpan(
-                                          text:
-                                              ' ${Constants.us}${state.rep?.price}',
+                                    ])
+                                  : const SizedBox(),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  RichText(
+                                      text: TextSpan(
+                                          text: Constants.total,
                                           style: AppTextStyles
-                                              .montserratStyle.bold16black)
-                                    ])),
-                                const SizedBox(width: 30),
-                                CustomLogoutButton(
-                                  isEnabled: state.cardPaymentMethod != null
-                                      ? true
-                                      : state.isEnablePayNow,
-                                  borderColor: (state.cardPaymentMethod != null
-                                          ? true
-                                          : state.isEnablePayNow)
-                                      ? AppColors.tiffanyBlue
-                                      : AppColors.spanishGray,
-                                  onTap: () {
-                                    context
-                                        .read<BuyRepBloc>()
-                                        .add(BuyRepPayNowEvent());
-                                  },
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 10),
-                                  backgroundColor:
-                                      (state.cardPaymentMethod != null
-                                              ? true
-                                              : state.isEnablePayNow)
-                                          ? AppColors.tiffanyBlue
-                                          : AppColors.spanishGray,
-                                  title: Constants.payNow,
-                                  titleStyle:
-                                      AppTextStyles.montserratStyle.bold16White,
-                                )
-                              ],
-                            ),
-                          ],
+                                              .montserratStyle.regular16Black,
+                                          children: [
+                                        TextSpan(
+                                            text:
+                                                ' ${Constants.us}${state.rep?.price}',
+                                            style: AppTextStyles
+                                                .montserratStyle.bold16black)
+                                      ])),
+                                  const SizedBox(width: 30),
+                                  CustomLogoutButton(
+                                    isEnabled: state.cardPaymentMethod != null
+                                        ? true
+                                        : state.isEnablePayNow,
+                                    borderColor:
+                                        (state.cardPaymentMethod != null
+                                                ? true
+                                                : state.isEnablePayNow)
+                                            ? AppColors.tiffanyBlue
+                                            : AppColors.spanishGray,
+                                    onTap: () {
+                                      context
+                                          .read<BuyRepBloc>()
+                                          .add(BuyRepPayNowEvent());
+                                    },
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 10),
+                                    backgroundColor:
+                                        (state.cardPaymentMethod != null
+                                                ? true
+                                                : state.isEnablePayNow)
+                                            ? AppColors.tiffanyBlue
+                                            : AppColors.spanishGray,
+                                    title: Constants.payNow,
+                                    titleStyle: AppTextStyles
+                                        .montserratStyle.bold16White,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              );
+        );
       }),
     );
   }
