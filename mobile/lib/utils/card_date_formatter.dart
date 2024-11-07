@@ -9,10 +9,21 @@ class CardDateFormatter extends TextInputFormatter {
     final String newTextFiltered = newValue.text.replaceAll(RegExp(r'\D'), '');
     int offset = 0;
 
-    if (newTextFiltered.length >= 2) {
-      int month = int.parse(newTextFiltered.substring(0, 2));
-      if (month > 12) {
-        return oldValue;
+    if (newTextFiltered.isNotEmpty) {
+      int firstDigit = int.parse(newTextFiltered[0]);
+
+      if (firstDigit == 0 && newTextFiltered.length > 1) {
+        int secondDigit = int.parse(newTextFiltered[1]);
+        if (secondDigit == 0) {
+          return oldValue;
+        }
+      }
+
+      if (newTextFiltered.length >= 2) {
+        int month = int.parse(newTextFiltered.substring(0, 2));
+        if (month > 12) {
+          return oldValue;
+        }
       }
     }
 

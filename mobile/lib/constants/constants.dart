@@ -399,5 +399,6 @@ class Constants {
   static const String copy = "Copy";
   static const String copied = "Message Copied!";
   static const String delete = "Delete";
-
+  static const String invalidVisaOrCreditCard =
+      "Please enter a valid Visa or Credit card number only";
 }
