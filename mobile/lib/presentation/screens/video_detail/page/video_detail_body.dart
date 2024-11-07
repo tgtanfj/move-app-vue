@@ -9,20 +9,21 @@ import 'package:move_app/constants/key_screen.dart';
 import 'package:move_app/data/services/launch_service.dart';
 import 'package:move_app/presentation/components/app_bar_widget.dart';
 import 'package:move_app/presentation/components/rate_dialog.dart';
+import 'package:move_app/presentation/components/thanks_rating_dialog.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
+import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_bloc.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_event.dart';
 import 'package:move_app/presentation/screens/video_detail/bloc/video_detail_state.dart';
-import 'package:move_app/presentation/screens/gift_reps/widgets/gift_reps_dialog.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/info_video_detail.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/vimeo_player.dart';
+
 import '../../../../config/theme/app_icons.dart';
 import '../../../../config/theme/app_text_styles.dart';
 import '../../../../constants/constants.dart';
 import '../../../../data/data_sources/local/shared_preferences.dart';
 import '../../../../data/models/comment_model.dart';
 import '../../../components/custom_button.dart';
-import '../../../components/thanks_rating_dialog.dart';
 import '../../auth/widgets/dialog_authentication.dart';
 import '../../view_channel_profile/page/view_channel_profile_page.dart';
 import '../widgets/item_comment.dart';
@@ -327,7 +328,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
 
     if (hasTargetCommentId) {
       Future.delayed(const Duration(seconds: 5), () {
-        context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+        context
+            .read<VideoDetailBloc>()
+            .add(VideoDetailClearTargetCommentEvent());
       });
     }
     return Column(
@@ -403,7 +406,7 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           }
         },
         borderColor: AppColors.white,
-        padding:  EdgeInsets.zero,
+        padding: EdgeInsets.zero,
         mainAxisSize: MainAxisSize.min,
       ),
     );
@@ -424,7 +427,9 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
           final hasTargetReplyId = state.targetReplyId == replyCommentModel.id;
           if (hasTargetReplyId) {
             Future.delayed(const Duration(seconds: 5), () {
-              context.read<VideoDetailBloc>().add(VideoDetailClearTargetCommentEvent());
+              context
+                  .read<VideoDetailBloc>()
+                  .add(VideoDetailClearTargetCommentEvent());
             });
           }
           return ItemComment(

@@ -87,13 +87,15 @@ class _RateDialogState extends State<RateDialog> {
             ),
             const SizedBox(height: 10),
             CustomButton(
-              isEnabled: rating != 0,
+              isEnabled: rating != 0 && rating != widget.rateSelected,
               title: Constants.submit,
               titleStyle: AppTextStyles.montserratStyle.bold16White,
-              borderColor:
-                  rating != 0 ? AppColors.tiffanyBlue : AppColors.spanishGray,
-              backgroundColor:
-                  rating != 0 ? AppColors.tiffanyBlue : AppColors.spanishGray,
+              borderColor: rating != 0 && rating != widget.rateSelected
+                  ? AppColors.tiffanyBlue
+                  : AppColors.spanishGray,
+              backgroundColor: rating != 0 && rating != widget.rateSelected
+                  ? AppColors.tiffanyBlue
+                  : AppColors.spanishGray,
               onTap: () {
                 Navigator.pop(context, rating);
               },

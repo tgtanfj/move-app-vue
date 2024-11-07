@@ -37,8 +37,11 @@ class ApiService {
         },
         onError: (error, handler) async {
           var accessToken = SharedPrefer.sharedPrefer.getUserToken();
-          if (error.response?.statusCode == 400 &&
-              JwtDecoder.isExpired(accessToken)) {
+          var check = false;
+          if (accessToken.isNotEmpty) {
+            check = JwtDecoder.isExpired(accessToken);
+          }
+          if (error.response?.statusCode == 400 && check) {
             try {
               final respone = await refreshAccessToken();
               respone.fold((l) async {
