@@ -94,20 +94,14 @@ export class FollowService {
     const channel = await this.channelService.findOne(channelId, { user: true });
     const receiver = channel.user.id;
 
-    let isExisted: boolean;
-    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(receiver, userInfo.id);
+    const dataNotification = {
+      sender: userInfo,
+      type: NOTIFICATION_TYPE.FOLLOW,
+    };
+    await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
 
-    if (!isExisted) {
-      const dataNotification = {
-        sender: userInfo,
-        type: NOTIFICATION_TYPE.FOLLOW,
-      };
-      await this.notificationService.sendOneToOneNotification(receiver, dataNotification);
-    }
-
-    isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
+    const isExisted = await this.notificationService.checkNotificationExistsAntiSpam(
       receiver,
-      userInfo.id,
       +channel.numberOfFollowers,
     );
 
