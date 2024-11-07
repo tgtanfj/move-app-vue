@@ -185,9 +185,9 @@ const handleDeleteVideo = async (videoId) => {
 
 const handleDownloadVideoList = async () => {
   try {
-    const filteredItems = selectedItemsUrlS3.value.filter((item) => item !== null)
+    // const filteredItems = selectedItemsUrlS3.value.filter((item) => item !== null)
 
-    const data = await videoStore.downloadVideos(filteredItems)
+    const data = await videoStore.downloadVideos(selectedItems.value)
     const blob = data instanceof Blob ? data : await data.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
