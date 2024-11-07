@@ -113,6 +113,7 @@ export class CommentService {
 
       await this.commentRepository.delete(id);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_DELETE_COMMENT'));
     }
   }
