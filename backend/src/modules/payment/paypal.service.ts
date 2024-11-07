@@ -62,27 +62,16 @@ export class PayPalService {
       ],
     };
 
-    try {
-      const response = await axios.post('https://api-m.sandbox.paypal.com/v1/payments/payouts', requestBody, {
+    const response = await axios
+      .post('https://api-m.sandbox.paypal.com/v1/payments/payouts', requestBody, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
+      })
+      .catch((err) => {
+        throw err.response.data?.message;
       });
-      return response.data;
-    } catch (error) {
-      // Check if the error is an Axios error to access the response details
-      if (axios.isAxiosError(error) && error.response) {
-        // Extract error message from the PayPal API response if available
-        const paypalErrorMessage =
-          error.response.data?.message || error.response.data?.name || 'An error occurred with PayPal';
-        console.error('PayPal API Error:', error.response.data);
-        throw paypalErrorMessage;
-      } else {
-        // Log and throw a generic error message if it's not a PayPal-specific error
-        console.error('Unexpected error creating payout:', error);
-        throw this.i18n.t('exceptions.paypal.WITHDRAW_FAILED');
-      }
-    }
+    return response;
   }
 }
