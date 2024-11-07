@@ -45,8 +45,8 @@ export default function UserAuthForm() {
       const info = webStorageClient.getUserInfo();
       const infoJson = info ? JSON.parse(info) : null;
       if (infoJson?.role === 'admin') {
-        await toast.success('Signed In Successfully!');
         router.push('/dashboard');
+        await toast.success('Signed In Successfully!');
       } else {
         await toast.error('Unauthorized Access');
       }
