@@ -66,7 +66,8 @@ enum AppIcons {
   pinkRep,
   tiffanyRep,
   copy,
-  bin
+  bin,
+  messageTiffany
 }
 
 extension AppIconsExtension on AppIcons {

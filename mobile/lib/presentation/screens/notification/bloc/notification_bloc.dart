@@ -6,11 +6,13 @@ import 'package:move_app/presentation/screens/notification/bloc/notification_eve
 import 'package:move_app/presentation/screens/notification/bloc/notification_state.dart';
 import '../../../../data/data_sources/remote/notification_service.dart';
 import '../../../../data/models/notification_model.dart';
+import '../../../../data/repositories/comment_repository.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   final NotificationService notificationService;
   StreamSubscription<NotificationModel>? _notificationSubscription;
   int? _lastTimestamp;
+  final commentRepository = CommentRepository();
 
   NotificationBloc(this.notificationService)
       : super(NotificationState.initial()) {
@@ -97,6 +99,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Future<void> _onNotificationMarkAsReadEvent(NotificationMarkAsReadEvent event,
       Emitter<NotificationState> emit) async {
+
     try {
       int userId = SharedPrefer().getUserId();
       bool isUpdated =
@@ -112,9 +115,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         }).toList();
 
         emit(state.copyWith(
-          status: NotificationStatus.success,
-          listNotifications: updatedNotifications,
-        ));
+            status: NotificationStatus.success,
+            listNotifications: updatedNotifications,));
       } else {
         emit(state.copyWith(status: NotificationStatus.failure));
       }

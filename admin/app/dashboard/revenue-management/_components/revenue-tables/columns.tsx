@@ -10,22 +10,27 @@ export const columns: ColumnDef<Revenue>[] = [
   },
   {
     accessorKey: 'fullName',
-    header: 'Full Name'
+    header: 'Full Name',
+    enableSorting: false
   },
   {
     accessorKey: 'email',
-    header: 'Email'
+    header: 'Email',
+    enableSorting: false
   },
   {
     accessorKey: 'totalEarnings',
-    header: 'Earning'
+    header: 'Earning (REPs)',
+    enableSorting: true
   },
   {
     accessorKey: 'totalTopUp',
-    header: 'Top up'
+    header: 'Top up (REPs)',
+    enableSorting: true
   },
   {
     accessorKey: 'totalDonations',
-    header: 'Donations'
+    header: 'Donations (REPs)',
+    enableSorting: true
   }
 ];

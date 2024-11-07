@@ -40,239 +40,249 @@ class _ProfileBodyState extends State<ProfileBody> {
         }
       },
       child: BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
-        return state.user == null
-            ? const SizedBox()
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 19),
-                    _createTitle(title: Constants.profilePicture),
-                    ClipOval(
-                      child: state.imageLocal == null &&
-                              state.user!.avatar.isNullOrEmpty
-                          ? Image.asset(
-                              AppImages.defaultAvatar.webpAssetPath,
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                            )
-                          : state.imageLocal != null
-                              ? Image.file(
-                                  state.imageLocal!,
-                                  width: 56,
-                                  height: 56,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.network(
-                                  state.user!.avatar!,
-                                  width: 56,
-                                  height: 56,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image.asset(
-                                      AppImages.defaultAvatar.webpAssetPath,
-                                      width: 56,
-                                      height: 56,
-                                      fit: BoxFit.cover,
-                                    );
-                                  },
-                                ),
-                    ),
-                    Visibility(
-                      visible: state.isShowAvatarMessage,
-                      child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.only(top: 8),
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.lavenderBlush,
-                            border: Border.all(
-                                width: 1, color: AppColors.brinkPink),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            state.messageUpdateAvatar,
-                            style: AppTextStyles.montserratStyle.regular14Black,
-                          )),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        context
-                            .read<ProfileBloc>()
-                            .add(ProfileUpdateAvatarEvent());
-                      },
-                      style: TextButton.styleFrom(
-                          splashFactory: NoSplash.splashFactory,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          alignment: Alignment.centerLeft),
-                      child: Text(
-                        Constants.updateProfilePicture,
-                        style:
-                            AppTextStyles.montserratStyle.regular14TiffanyBlue,
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: state.user == null
+              ? const SizedBox()
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 19),
+                      _createTitle(title: Constants.profilePicture),
+                      ClipOval(
+                        child: state.imageLocal == null &&
+                                state.user!.avatar.isNullOrEmpty
+                            ? Image.asset(
+                                AppImages.defaultAvatar.webpAssetPath,
+                                width: 56,
+                                height: 56,
+                                fit: BoxFit.cover,
+                              )
+                            : state.imageLocal != null
+                                ? Image.file(
+                                    state.imageLocal!,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.network(
+                                    state.user!.avatar!,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                        AppImages.defaultAvatar.webpAssetPath,
+                                        width: 56,
+                                        height: 56,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
+                                  ),
                       ),
-                    ),
-                    CustomEditText(
-                      initialValue: state.user?.username,
-                      isShowMessage: state.isShowUsernameMessage,
-                      title: Constants.username,
-                      textStyle: state.isShowUsernameMessage
-                          ? AppTextStyles.montserratStyle.regular16BrinkPink
-                          : AppTextStyles.montserratStyle.regular16Black,
-                      cursorColor: state.isShowUsernameMessage
-                          ? AppColors.brinkPink
-                          : AppColors.tiffanyBlue,
-                      borderColor: AppColors.brinkPink,
-                      preMessage: state.messageInputUsername,
-                      widthMessage: MediaQuery.of(context).size.width,
-                      onChanged: (value) {
-                        context.read<ProfileBloc>().add(
-                            ProfileUsernameChangeEvent(username: value.trim()));
-                      },
-                      inputFormatters: [
-                        FilteringTextInputFormatter.deny(RegExp(r'\s'))
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    CustomEditText(
-                      initialValue: state.user?.email,
-                      title: Constants.email,
-                      textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      enable: false,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomEditText(
-                      initialValue: state.user?.fullName,
-                      isShowMessage: state.isShowFullNameMessage,
-                      title: Constants.fullName,
-                      textStyle: state.isShowFullNameMessage
-                          ? AppTextStyles.montserratStyle.regular16BrinkPink
-                          : AppTextStyles.montserratStyle.regular16Black,
-                      cursorColor: state.isShowFullNameMessage
-                          ? AppColors.brinkPink
-                          : AppColors.tiffanyBlue,
-                      borderColor: AppColors.brinkPink,
-                      preMessage: state.messageInputFullName,
-                      widthMessage: MediaQuery.of(context).size.width,
-                      onChanged: (value) {
-                        context
-                            .read<ProfileBloc>()
-                            .add(ProfileFullNameChangeEvent(fullName: value));
-                      },
-                      onLostFocus: (value) {
-                        context.read<ProfileBloc>().add(
-                            ProfileFullNameChangeEvent(fullName: value.trim()));
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _createTitle(title: Constants.gender),
-                    GenderRadioGroup(
-                      selectedGender: Gender.values.firstWhere(
-                        (gender) => gender.value == state.user?.gender,
-                        orElse: () => Gender.male,
+                      Visibility(
+                        visible: state.isShowAvatarMessage,
+                        child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: const EdgeInsets.only(top: 8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.lavenderBlush,
+                              border: Border.all(
+                                  width: 1, color: AppColors.brinkPink),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              state.messageUpdateAvatar,
+                              style:
+                                  AppTextStyles.montserratStyle.regular14Black,
+                            )),
                       ),
-                      onChanged: (gender) {
-                        context.read<ProfileBloc>().add(
-                            ProfileGenderChangedEvent(selectedGender: gender));
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _createTitle(title: Constants.dateOfBirth),
-                    const SizedBox(height: 4),
-                    DatePicker(
-                      date: state.user?.dateOfBirth,
-                      onDateChanged: (datetime) {
-                        context
-                            .read<ProfileBloc>()
-                            .add(ProfileUpdateDateOfBirthEvent(datetime));
-                      },
-                      isShowMessage: state.isShowDateOfBirthMessage,
-                      message: state.messageSelectDateOfBirth,
-                    ),
-                    const SizedBox(height: 16),
-                    _createTitle(title: Constants.country),
-                    CustomDropdownButton(
-                      hintText: Constants.pleaseSelectCountry,
-                      initialValue: state.user?.country?.id,
-                      items: state.countryList.map((country) {
-                        return {'id': country.id, 'name': country.name};
-                      }).toList(),
-                      onChanged: (countryId) {
-                        final country = state.countryList
-                            .firstWhere((e) => e.id == countryId);
-                        if (country.id != null) {
-                          context.read<ProfileBloc>().add(
-                              ProfileCountrySelectEvent(
-                                  countryId: country.id!));
-                        }
-                      },
-                      isShowMessage: state.isShowCountryMessage,
-                      message: state.messageSelectCountry,
-                    ),
-                    const SizedBox(height: 16),
-                    _createTitle(title: Constants.state),
-                    CustomDropdownButton(
-                      hintText: Constants.pleaseSelectState,
-                      initialValue: state.user?.state?.id,
-                      items: state.stateList
-                          .map((state) {
-                            return {'id': state.id, 'name': state.name};
-                          })
-                          .toSet()
-                          .toList(),
-                      onChanged: (stateId) {
-                        final stateItem =
-                            state.stateList.firstWhere((e) => e.id == stateId);
-                        if (stateItem.id != null) {
-                          context.read<ProfileBloc>().add(
-                              ProfileStateSelectEvent(stateId: stateItem.id!));
-                        }
-                      },
-                      isShowMessage: state.isShowStateMessage,
-                      message: state.messageSelectState,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomEditText(
-                      initialValue: state.user?.city,
-                      title: Constants.city,
-                      textStyle: AppTextStyles.montserratStyle.regular16Black,
-                      cursorColor: AppColors.tiffanyBlue,
-                      borderColor: AppColors.brinkPink,
-                      widthMessage: MediaQuery.of(context).size.width,
-                      onChanged: (value) {
-                        context
-                            .read<ProfileBloc>()
-                            .add(ProfileCityChangeEvent(city: value));
-                      },
-                      suffixLabel: Text(
-                        Constants.optional,
-                        style: AppTextStyles.montserratStyle.regular16Black,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    CustomButton(
-                        isEnabled: state.isEnableSaveSettings,
-                        mainAxisSize: MainAxisSize.max,
-                        title: Constants.saveSetting,
-                        titleStyle: AppTextStyles.montserratStyle.bold16White,
-                        borderColor: state.isEnableSaveSettings
-                            ? AppColors.tiffanyBlue
-                            : AppColors.spanishGray,
-                        backgroundColor: state.isEnableSaveSettings
-                            ? AppColors.tiffanyBlue
-                            : AppColors.spanishGray,
-                        onTap: () {
-                          FocusScope.of(context).unfocus();
+                      TextButton(
+                        onPressed: () {
                           context
                               .read<ProfileBloc>()
-                              .add(ProfileSaveSettingsEvent());
-                        }),
-                  ],
+                              .add(ProfileUpdateAvatarEvent());
+                        },
+                        style: TextButton.styleFrom(
+                            splashFactory: NoSplash.splashFactory,
+                            padding: EdgeInsets.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.centerLeft),
+                        child: Text(
+                          Constants.updateProfilePicture,
+                          style: AppTextStyles
+                              .montserratStyle.regular14TiffanyBlue,
+                        ),
+                      ),
+                      CustomEditText(
+                        initialValue: state.user?.username,
+                        isShowMessage: state.isShowUsernameMessage,
+                        title: Constants.username,
+                        textStyle: state.isShowUsernameMessage
+                            ? AppTextStyles.montserratStyle.regular16BrinkPink
+                            : AppTextStyles.montserratStyle.regular16Black,
+                        cursorColor: state.isShowUsernameMessage
+                            ? AppColors.brinkPink
+                            : AppColors.tiffanyBlue,
+                        borderColor: AppColors.brinkPink,
+                        preMessage: state.messageInputUsername,
+                        widthMessage: MediaQuery.of(context).size.width,
+                        onChanged: (value) {
+                          context.read<ProfileBloc>().add(
+                              ProfileUsernameChangeEvent(
+                                  username: value.trim()));
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      CustomEditText(
+                        initialValue: state.user?.email,
+                        title: Constants.email,
+                        textStyle: AppTextStyles.montserratStyle.regular16Black,
+                        enable: false,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomEditText(
+                        initialValue: state.user?.fullName,
+                        isShowMessage: state.isShowFullNameMessage,
+                        title: Constants.fullName,
+                        textStyle: state.isShowFullNameMessage
+                            ? AppTextStyles.montserratStyle.regular16BrinkPink
+                            : AppTextStyles.montserratStyle.regular16Black,
+                        cursorColor: state.isShowFullNameMessage
+                            ? AppColors.brinkPink
+                            : AppColors.tiffanyBlue,
+                        borderColor: AppColors.brinkPink,
+                        preMessage: state.messageInputFullName,
+                        widthMessage: MediaQuery.of(context).size.width,
+                        onChanged: (value) {
+                          context
+                              .read<ProfileBloc>()
+                              .add(ProfileFullNameChangeEvent(fullName: value));
+                        },
+                        onLostFocus: (value) {
+                          context.read<ProfileBloc>().add(
+                              ProfileFullNameChangeEvent(
+                                  fullName: value.trim()));
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _createTitle(title: Constants.gender),
+                      GenderRadioGroup(
+                        selectedGender: Gender.values.firstWhere(
+                          (gender) => gender.value == state.user?.gender,
+                          orElse: () => Gender.male,
+                        ),
+                        onChanged: (gender) {
+                          context.read<ProfileBloc>().add(
+                              ProfileGenderChangedEvent(
+                                  selectedGender: gender));
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _createTitle(title: Constants.dateOfBirth),
+                      const SizedBox(height: 4),
+                      DatePicker(
+                        date: state.user?.dateOfBirth,
+                        onDateChanged: (datetime) {
+                          context
+                              .read<ProfileBloc>()
+                              .add(ProfileUpdateDateOfBirthEvent(datetime));
+                        },
+                        isShowMessage: state.isShowDateOfBirthMessage,
+                        message: state.messageSelectDateOfBirth,
+                      ),
+                      const SizedBox(height: 16),
+                      _createTitle(title: Constants.country),
+                      CustomDropdownButton(
+                        hintText: Constants.pleaseSelectCountry,
+                        initialValue: state.user?.country?.id,
+                        items: state.countryList.map((country) {
+                          return {'id': country.id, 'name': country.name};
+                        }).toList(),
+                        onChanged: (countryId) {
+                          final country = state.countryList
+                              .firstWhere((e) => e.id == countryId);
+                          if (country.id != null) {
+                            context.read<ProfileBloc>().add(
+                                ProfileCountrySelectEvent(
+                                    countryId: country.id!));
+                          }
+                        },
+                        isShowMessage: state.isShowCountryMessage,
+                        message: state.messageSelectCountry,
+                      ),
+                      const SizedBox(height: 16),
+                      _createTitle(title: Constants.state),
+                      CustomDropdownButton(
+                        hintText: Constants.pleaseSelectState,
+                        initialValue: state.user?.state?.id,
+                        items: state.stateList
+                            .map((state) {
+                              return {'id': state.id, 'name': state.name};
+                            })
+                            .toSet()
+                            .toList(),
+                        onChanged: (stateId) {
+                          final stateItem = state.stateList
+                              .firstWhere((e) => e.id == stateId);
+                          if (stateItem.id != null) {
+                            context.read<ProfileBloc>().add(
+                                ProfileStateSelectEvent(
+                                    stateId: stateItem.id!));
+                          }
+                        },
+                        isShowMessage: state.isShowStateMessage,
+                        message: state.messageSelectState,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomEditText(
+                        initialValue: state.user?.city,
+                        title: Constants.city,
+                        textStyle: AppTextStyles.montserratStyle.regular16Black,
+                        cursorColor: AppColors.tiffanyBlue,
+                        borderColor: AppColors.brinkPink,
+                        widthMessage: MediaQuery.of(context).size.width,
+                        onChanged: (value) {
+                          context
+                              .read<ProfileBloc>()
+                              .add(ProfileCityChangeEvent(city: value));
+                        },
+                        suffixLabel: Text(
+                          Constants.optional,
+                          style: AppTextStyles.montserratStyle.regular16Black,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      CustomButton(
+                          isEnabled: state.isEnableSaveSettings,
+                          mainAxisSize: MainAxisSize.max,
+                          title: Constants.saveSetting,
+                          titleStyle: AppTextStyles.montserratStyle.bold16White,
+                          borderColor: state.isEnableSaveSettings
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          backgroundColor: state.isEnableSaveSettings
+                              ? AppColors.tiffanyBlue
+                              : AppColors.spanishGray,
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                            context
+                                .read<ProfileBloc>()
+                                .add(ProfileSaveSettingsEvent());
+                          }),
+                    ],
+                  ),
                 ),
-              );
+        );
       }),
     );
   }

@@ -83,18 +83,38 @@ class SuggestionSearchBox extends StatelessWidget {
                         radiusAvatar: 50),
                     title: Wrap(
                       alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      runSpacing: 4,
                       children: [
-                        Text(
-                          suggestionModel?.topInstructors?[index].name ?? "",
-                          style: AppTextStyles.montserratStyle.regular14Black,
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: suggestionModel
+                                        ?.topInstructors?[index].name ??
+                                    "",
+                                style: AppTextStyles
+                                    .montserratStyle.regular14Black,
+                              ),
+                              if (suggestionModel
+                                      ?.topInstructors?[index].isBlueBadge ??
+                                  false)
+                                WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  baseline: TextBaseline.alphabetic,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 4),
+                                    child: SvgPicture.asset(
+                                      AppIcons.blueCheckCircle.svgAssetPath,
+                                      width: 12,
+                                      height: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        (suggestionModel?.topInstructors?[index].isBlueBadge ??
-                                false)
-                            ? SvgPicture.asset(AppIcons.blueStick.svgAssetPath)
-                            : const SizedBox(),
                       ],
                     ),
                     trailing: Text(

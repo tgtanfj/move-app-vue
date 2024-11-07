@@ -39,6 +39,12 @@ export default class UserQueryDto {
     default: true,
   })
   @IsOptional()
+  @Transform(
+    ({ value }) => {
+      return value === 'true' || value === true;
+    },
+    { toPlainOnly: true },
+  )
   isAsc?: boolean = true;
 
   @ApiPropertyOptional({

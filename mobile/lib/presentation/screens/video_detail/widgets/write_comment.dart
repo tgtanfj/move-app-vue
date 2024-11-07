@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/data_sources/local/shared_preferences.dart';
 import 'package:move_app/data/models/comment_model.dart';
+import 'package:move_app/data/models/video_model.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
+import 'package:move_app/presentation/screens/video_detail/page/video_detail_page.dart';
 import 'package:move_app/presentation/screens/video_detail/widgets/dialog_cancel_comment.dart';
 
 import '../../../../config/theme/app_colors.dart';
@@ -19,6 +21,7 @@ class WriteComment extends StatefulWidget {
   final CommentModel? commentModel;
   final String? hintText;
   final bool isCancelReply;
+  final VideoModel? videoModel;
 
   const WriteComment({
     super.key,
@@ -30,6 +33,7 @@ class WriteComment extends StatefulWidget {
     this.commentModel,
     this.hintText,
     this.isCancelReply = false,
+    this.videoModel
   });
 
   @override
@@ -165,8 +169,17 @@ class _WriteCommentState extends State<WriteComment> {
   void _showAuthenticationDialog() {
     showDialog(
       context: context,
-      builder: (_) => const DialogAuthentication(
+      builder: (_) => DialogAuthentication(
         isStayOnPage: true,
+        navigate: () {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => VideoDetailPage(
+                    videoId: widget.videoModel?.id ?? 0,
+                  )),
+                  (route) => false);
+        },
       ),
     );
   }

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from '@radix-ui/react-icons';
-import { addDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import * as React from 'react';
 import { DateRange } from 'react-day-picker';
 
@@ -21,7 +21,7 @@ export function CalendarDateRangePicker({
 }) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 9, 20),
-    to: addDays(new Date(2024, 10, 20), 20)
+    to: new Date()
   });
 
   // console.log(date);

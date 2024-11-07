@@ -6,6 +6,7 @@ import 'package:move_app/config/theme/app_images.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/data/models/notification_model.dart';
 import 'package:move_app/presentation/screens/notification/widgets/dialog_notice.dart';
+import 'package:move_app/presentation/screens/notification/widgets/not_found_notification.dart';
 
 import '../../../../utils/notification_messages.dart';
 import '../../video_detail/page/video_detail_page.dart';
@@ -13,12 +14,13 @@ import '../../video_detail/page/video_detail_page.dart';
 class ItemNotification extends StatefulWidget {
   final NotificationModel? notificationModel;
   final VoidCallback? onTapNotification;
+  final bool hasDeleteNotification;
 
-  const ItemNotification({
-    super.key,
-    this.notificationModel,
-    this.onTapNotification,
-  });
+  const ItemNotification(
+      {super.key,
+      this.notificationModel,
+      this.onTapNotification,
+      this.hasDeleteNotification = true});
 
   @override
   State<ItemNotification> createState() => _ItemNotificationState();
@@ -52,16 +54,19 @@ class _ItemNotificationState extends State<ItemNotification> {
         type == NotificationType.comment.value ||
         type == NotificationType.reply.value ||
         type == NotificationType.upload.value) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => VideoDetailPage(
-            videoId: data?.videoId ?? 0,
-            targetCommentId: data?.commentId ?? 0,
-            targetReplyId: data?.replyId ?? 0,
-          ),
-        ),
-      );
+      (widget.notificationModel?.hasDelete ?? false)
+          ? Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const NotFoundNotification()))
+          : Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => VideoDetailPage(
+                  videoId: data?.videoId ?? 0,
+                  targetCommentId: data?.commentId ?? 0,
+                  targetReplyId: data?.replyId ?? 0,
+                ),
+              ),
+            );
     } else {
       showDialog(
         context: context,
@@ -140,8 +145,8 @@ class _ItemNotificationState extends State<ItemNotification> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _handleNotificationTap(widget.notificationModel?.data.type.value ?? "");
         widget.onTapNotification?.call();
+        _handleNotificationTap(widget.notificationModel?.data.type.value ?? "");
       },
       child: Material(
         color: widget.notificationModel?.isRead ?? false

@@ -19,7 +19,7 @@ class ProcessingPaymentDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 66, 16, 0),
+        padding: const EdgeInsets.symmetric(vertical: 66, horizontal: 16),
         child: SizedBox(
           width: screenWidth,
           child: Column(
@@ -34,16 +34,6 @@ class ProcessingPaymentDialog extends StatelessWidget {
               Text(
                 Constants.processingPayment,
                 style: AppTextStyles.montserratStyle.bold16TiffanyBlue,
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  Constants.cancel,
-                  style: AppTextStyles.montserratStyle.regular16tiffanyBlue,
-                ),
               ),
             ],
           ),

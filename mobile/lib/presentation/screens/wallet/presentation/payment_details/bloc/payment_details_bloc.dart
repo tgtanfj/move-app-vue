@@ -1,6 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:move_app/constants/constants.dart';
+import 'package:bloc/bloc.dart';
 import 'package:move_app/data/models/country_model.dart';
 import 'package:move_app/data/models/payment_method_model.dart';
 import 'package:move_app/data/repositories/country_repository.dart';
@@ -69,7 +67,6 @@ class PaymentDetailsBloc
     final validateExpiryDate =
         InputValidationHelper.validateExpiryDate(state.expiryDate ?? '');
     final validateCvv = InputValidationHelper.validateCvv(state.cvv ?? '');
-
     emit(state.copyWith(
       isShowCardHolderNameMessage: validateCardHolderName != null,
       isShowCardNumberMessage: validateCardNumber != null,
@@ -86,7 +83,6 @@ class PaymentDetailsBloc
         validateExpiryDate == null &&
         validateCvv == null) {
       emit(state.copyWith(status: PaymentDetailsStatus.processing));
-
       try {
         final paymentMethod = await stripeService.createPaymentMethod(
           cardNumber: state.cardNumber ?? '',
@@ -112,17 +108,8 @@ class PaymentDetailsBloc
           },
         );
       } catch (e) {
-        String cardNumberErrorMessage = '';
-        if (e is StripeException && e.error.code == FailureCode.Failed) {
-          if (e.error.stripeErrorCode == 'incorrect_number') {
-            cardNumberErrorMessage =
-                Constants.pleaseEnterValidVisaOrCreditCardNumber;
-          }
-        }
         emit(state.copyWith(
-            status: PaymentDetailsStatus.failure,
-            cardNumberErrorMessage: cardNumberErrorMessage,
-            isShowCardNumberMessage: true));
+            status: PaymentDetailsStatus.failure, errorMessage: e.toString()));
       }
     }
   }

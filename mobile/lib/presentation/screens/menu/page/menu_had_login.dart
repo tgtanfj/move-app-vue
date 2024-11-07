@@ -11,7 +11,7 @@ import 'package:move_app/presentation/components/custom_button.dart';
 import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/menu/widget/content_menu.dart';
 
-import '../../../components/logout_dialog.dart';
+import '../../auth/widgets/logout_dialog.dart';
 
 class MenuHadLogin extends StatefulWidget {
   final VoidCallback moreButton;

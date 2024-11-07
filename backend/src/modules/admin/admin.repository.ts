@@ -2,13 +2,13 @@ import { Channel } from '@/entities/channel.entity';
 import { Donation } from '@/entities/donation.entity';
 import { Payment } from '@/entities/payment.entity';
 import { User } from '@/entities/user.entity';
+import { Video } from '@/entities/video.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Video } from '@/entities/video.entity';
-import { FindOptionsOrder, FindOptionsWhere, ILike, Like, Repository } from 'typeorm';
+import { FindOptionsOrder, ILike, Repository } from 'typeorm';
 import UserQueryDto from './dto/request/user-query.dto';
-import UserRepository from './repositories/user.repository';
 import VideoAdminQueryDto from './dto/request/video-admin-query.dto';
+import UserRepository from './repositories/user.repository';
 
 @Injectable()
 export class AdminRepository {
@@ -17,16 +17,13 @@ export class AdminRepository {
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(Donation)
     private readonly donationRepository: Repository<Donation>,
+
     private readonly userRepository: UserRepository,
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video)
     private readonly videoRepository: Repository<Video>,
   ) {}
-
-  async getUsers() {
-    return await this.userRepository.getUsers();
-  }
 
   async getChannels() {
     return await this.channelRepository.find();

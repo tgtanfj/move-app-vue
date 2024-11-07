@@ -10,7 +10,9 @@ import '../../../../../config/theme/app_colors.dart';
 
 class DialogAuthentication extends StatelessWidget {
   final bool isStayOnPage;
-  const DialogAuthentication({super.key, this.isStayOnPage = false});
+  final Function()? navigate;
+
+  const DialogAuthentication({super.key, this.isStayOnPage = false, this.navigate});
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -48,6 +50,7 @@ class DialogAuthentication extends StatelessWidget {
                 tabsWithViews: {
                   Constants.logIn: LoginPage(
                     isStayOnPage: isStayOnPage,
+                    navigate: navigate,
                   ),
                   Constants.signUp: const SignUpPage()
                 },

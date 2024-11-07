@@ -13,6 +13,7 @@ import 'package:move_app/presentation/routes/app_routes.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_bloc.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_event.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/bloc/view_channel_profile_state.dart';
+import 'package:move_app/presentation/screens/view_channel_profile/page/view_channel_profile_page.dart';
 import 'package:move_app/presentation/screens/view_channel_profile/presentation/videos/page/videos_page.dart';
 import 'package:move_app/utils/util_number_format.dart';
 
@@ -82,22 +83,31 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           runSpacing: 4,
                           children: [
-                            Text(
-                              state.channel?.name ?? '',
-                              style:
-                                  AppTextStyles.montserratStyle.regular20Black,
+                            RichText(
+                              textAlign: TextAlign.start,
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: state.channel?.name ?? '',
+                                    style: AppTextStyles
+                                        .montserratStyle.regular20Black,
+                                  ),
+                                  if (state.channel?.isBlueBadge ?? false)
+                                    WidgetSpan(
+                                      alignment: PlaceholderAlignment.baseline,
+                                      baseline: TextBaseline.alphabetic,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 7),
+                                        child: SvgPicture.asset(
+                                          AppIcons.blueCheckCircle.svgAssetPath,
+                                          width: 16,
+                                          height: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                            SizedBox(
-                                width: state.channel?.isBlueBadge ?? false
-                                    ? 7
-                                    : 0),
-                            state.channel?.isBlueBadge ?? false
-                                ? SvgPicture.asset(
-                                    AppIcons.blueStick.svgAssetPath,
-                                    width: 16,
-                                    height: 16,
-                                  )
-                                : const SizedBox(),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -124,7 +134,16 @@ class _ViewChannelProfileBodyState extends State<ViewChannelProfileBody> {
                                   isStayOnPage: true,
                                 );
                               },
-                            );
+                            ).then((value){if (context.mounted) {
+                              Navigator.pushReplacement(
+                                  context,
+                                    MaterialPageRoute(
+                                    builder: (context) =>
+                                        ViewChannelProfilePage(
+                                          idChannel: state.channelId ?? 0,
+                                        ),
+                                  ));
+                            }});
                           } else {
                             context.read<ViewChannelProfileBloc>().add(
                                 ViewChannelProfileFollowChannelEvent(

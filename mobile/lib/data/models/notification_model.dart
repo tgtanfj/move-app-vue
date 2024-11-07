@@ -4,12 +4,14 @@ import 'package:move_app/utils/util_date_time.dart';
 class NotificationModel {
   final NotificationData data;
   final bool isRead;
+  final bool hasDelete;
   final int timestamp;
   String? key;
 
   NotificationModel(
       {required this.data,
       required this.isRead,
+      required this.hasDelete,
       required this.timestamp,
       this.key});
 
@@ -17,11 +19,13 @@ class NotificationModel {
     NotificationData? data,
     bool? isRead,
     int? timestamp,
+    bool? hasDelete,
     String? key,
   }) {
     return NotificationModel(
       data: data ?? this.data,
       isRead: isRead ?? this.isRead,
+      hasDelete: hasDelete ?? this.hasDelete,
       timestamp: timestamp ?? this.timestamp,
       key: key ?? this.key,
     );
@@ -33,6 +37,7 @@ class NotificationModel {
       data: (json['data'] is Map)
           ? NotificationData.fromJson(Map<String, dynamic>.from(json['data']))
           : NotificationData.fromJson({}),
+      hasDelete: (json['hasDelete'] is bool) ? json['hasDelete'] : false,
       isRead: (json['isRead'] is bool) ? json['isRead'] : false,
       timestamp: (json['timestamp'] is int) ? json['timestamp'] : 0,
     );
@@ -57,12 +62,12 @@ class NotificationData {
   final int? replyId;
   final String? videoTitle;
   final String? content;
-  final int? donation;
-  final int? cashOut;
-  final int? purchase;
-  final int? followMilestone;
-  final int? viewVideoMilestone;
-  final int? repMilestone;
+  final num? donation;
+  final num? cashOut;
+  final num? purchase;
+  final num? followMilestone;
+  final num? viewVideoMilestone;
+  final num? repMilestone;
 
   NotificationData({
     this.userModel,
@@ -88,12 +93,12 @@ class NotificationData {
     int? replyId,
     String? videoTitle,
     String? content,
-    int? donation,
-    int? cashOut,
-    int? purchase,
-    int? followMilestone,
-    int? viewVideoMilestone,
-    int? repMilestone,
+    num? donation,
+    num? cashOut,
+    num? purchase,
+    num? followMilestone,
+    num? viewVideoMilestone,
+    num? repMilestone,
   }) {
     return NotificationData(
       userModel: userModel ?? this.userModel,
@@ -118,7 +123,7 @@ class NotificationData {
           ? UserModel.fromJson(Map<String, dynamic>.from(json['sender']))
           : null,
       type: NotificationType.values.firstWhere(
-            (type) => type.value == (json['type'] is String ? json['type'] : ''),
+        (type) => type.value == (json['type'] is String ? json['type'] : ''),
         orElse: () => NotificationType.follow,
       ),
       commentId: (json['commentId'] is int) ? json['commentId'] : 0,
@@ -126,15 +131,15 @@ class NotificationData {
       replyId: (json['replyId'] is int) ? json['replyId'] : 0,
       videoTitle: (json['videoTitle'] is String) ? json['videoTitle'] : '',
       content: (json['content'] is String) ? json['content'] : '',
-      donation: (json['donation'] is int) ? json['donation'] : 0,
-      cashOut: (json['cashout'] is int) ? json['cashout'] : 0,
-      purchase: (json['purchase'] is int) ? json['purchase'] : 0,
+      donation: (json['donation'] is num) ? json['donation'] : 0,
+      cashOut: (json['cashout'] is num) ? json['cashout'] : 0,
+      purchase: (json['purchase'] is num) ? json['purchase'] : 0,
       followMilestone:
-          (json['follow_milestone'] is int) ? json['follow_milestone'] : 0,
-      viewVideoMilestone: (json['view_video_milestone'] is int)
-          ? json['view_video_milestone']
+          (json['followMilestone'] is num) ? json['followMilestone'] : 0,
+      viewVideoMilestone: (json['viewVideoMilestone'] is num)
+          ? json['viewVideoMilestone']
           : 0,
-      repMilestone: (json['rep_milestone'] is int) ? json['rep_milestone'] : 0,
+      repMilestone: (json['repMilestone'] is num) ? json['repMilestone'] : 0,
     );
   }
 
@@ -149,12 +154,13 @@ class NotificationData {
       'cashout': cashOut,
       'donation': donation,
       'purchase': purchase,
-      'follow_milestone': followMilestone,
-      'view_video_milestone': viewVideoMilestone,
-      'rep_milestone': repMilestone
+      'followMilestone': followMilestone,
+      'viewVideoMilestone': viewVideoMilestone,
+      'repMilestone': repMilestone
     };
   }
 }
+
 enum NotificationType {
   follow('follow'),
   like('like'),
