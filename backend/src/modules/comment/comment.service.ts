@@ -160,7 +160,7 @@ export class CommentService {
       const value = childSnapshot.val().data;
       const isRead = childSnapshot.val().isRead;
       const type = comment?.parent ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT;
-      const checkId = comment?.parent ? value.replyId : value.commentId;
+      const checkId = comment?.parent ? value.replyId : value?.commentId;
 
       if (value.type === type && checkId === +commentId) {
         if (isRead === false) {
