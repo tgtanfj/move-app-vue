@@ -1,5 +1,6 @@
 'use client';
 import { Payment } from '@/constants/data';
+import { toSentenceCase } from '@/utils/toSentenceCase';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<Payment>[] = [
@@ -19,12 +20,10 @@ export const columns: ColumnDef<Payment>[] = [
     enableSorting: false
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Created At',
-    cell: ({ getValue }) => (
-      <span>{new Date(getValue() as string).toUTCString()}</span>
-    ),
-    enableSorting: true
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ getValue }) => <span>{toSentenceCase(getValue() as string)}</span>,
+    enableSorting: false
   },
   {
     accessorKey: 'numberOfREPs',
@@ -40,6 +39,14 @@ export const columns: ColumnDef<Payment>[] = [
         </div>
       );
     },
+    enableSorting: true
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Created At',
+    cell: ({ getValue }) => (
+      <span>{new Date(getValue() as string).toUTCString()}</span>
+    ),
     enableSorting: true
   }
 ];
