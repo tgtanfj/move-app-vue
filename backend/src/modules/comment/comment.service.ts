@@ -52,11 +52,15 @@ export class CommentService {
       if (dto.commentId && !dto.videoId) {
         const comment = await this.commentRepository.getOne(dto.commentId, { video: true });
         await this.commentRepository.update(comment.id, { numberOfReply: comment.numberOfReply + 1 });
-
+        video = comment.video;
         if (comment.video.isCommentable === false) {
           throw new BadRequestException(this.i18n.t('exceptions.comment.NOT_CREATE_COMMENT'));
         }
         const reply = await this.commentRepository.create(userId, dto);
+
+        video.numberOfComments++;
+
+        await this.videoRepository.save(video);
         await this.sendNotificationComment(userInfo, reply.id, dto);
 
         return reply;
