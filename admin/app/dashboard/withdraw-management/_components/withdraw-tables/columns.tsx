@@ -11,20 +11,24 @@ export const columns: ColumnDef<Withdraw>[] = [
   },
   {
     accessorKey: 'channel.user.fullName',
-    header: 'Full Name'
+    header: 'Full Name',
+    enableSorting: false
   },
   {
     accessorKey: 'channel.user.email',
-    header: 'Email'
+    header: 'Email',
+    enableSorting: false
   },
   {
     accessorKey: 'channel.name',
-    header: 'Channel'
+    header: 'Channel',
+    enableSorting: false
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ getValue }) => <span>{toSentenceCase(getValue() as string)}</span>
+    cell: ({ getValue }) => <span>{toSentenceCase(getValue() as string)}</span>,
+    enableSorting: false
   },
   {
     accessorKey: 'numberOfREPs',
@@ -36,6 +40,7 @@ export const columns: ColumnDef<Withdraw>[] = [
     header: 'Created At',
     cell: ({ getValue }) => (
       <span>{new Date(getValue() as string).toUTCString()}</span>
-    )
+    ),
+    enableSorting: true
   }
 ];

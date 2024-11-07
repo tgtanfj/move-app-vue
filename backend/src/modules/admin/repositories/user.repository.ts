@@ -1,7 +1,7 @@
 import { User } from '@/entities/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsOrder, FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import UserQueryDto from '../dto/request/user-query.dto';
 
 @Injectable()
@@ -11,8 +11,25 @@ export default class UserRepository {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async getUsers() {
-    return this.userRepository.find();
+  async getUsers(search?: string, take?: number, page?: number): Promise<User[]> {
+    let where: FindOptionsWhere<User>[] = [];
+
+    // Build the search filter
+
+    if (search) {
+      where = [{ email: ILike(`%${search}%`) }, { fullName: ILike(`%${search}%`) }];
+    }
+
+    const select: FindOptionsSelect<User> = {
+      id: true,
+      fullName: true,
+      email: true,
+    };
+
+    return await this.userRepository.find({
+      where,
+      select,
+    });
   }
 
   async filterUsers(userQueryDto: UserQueryDto): Promise<[User[], number]> {

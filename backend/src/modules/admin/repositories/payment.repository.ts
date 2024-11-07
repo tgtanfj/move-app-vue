@@ -35,7 +35,7 @@ export class PaymentRepository {
     // relations
     const relations: FindOptionsRelations<Payment> = {
       user: true,
-      repsPackage: true
+      repsPackage: true,
     };
 
     // Build the search filter
@@ -80,7 +80,23 @@ export class PaymentRepository {
 
     // Sort by
 
-    let order: FindOptionsOrder<Payment> = { [sortField]: sortDirection };
+    let order: FindOptionsOrder<Payment> = {};
+
+    if (sortField === 'numberOfREPs') {
+      order = {
+        repsPackage: {
+          numberOfREPs: sortDirection,
+        },
+      };
+    } else if (sortField === 'price') {
+      order = {
+        repsPackage: {
+          price: sortDirection,
+        },
+      };
+    } else {
+      order = { [sortField]: sortDirection };
+    }
 
     // Select fields
 
@@ -89,7 +105,7 @@ export class PaymentRepository {
       createdAt: true,
       repsPackage: {
         numberOfREPs: true,
-        price:true
+        price: true,
       },
       status: true,
       user: {

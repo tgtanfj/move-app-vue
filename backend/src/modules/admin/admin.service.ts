@@ -1,15 +1,19 @@
 import { User } from '@/entities/user.entity';
 import { objectResponse } from '@/shared/utils/response-metadata.function';
 import { Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { PaginationDto } from '../video/dto/request/pagination.dto';
 import { PaginationMetadata } from '../video/dto/response/pagination.meta';
 import { AdminRepository } from './admin.repository';
 import QueryAdminPaymentHistoryDto from './dto/request/admin-query-payment-history.dto';
+import RevenueRequestDto from './dto/request/revenue.dto';
 import UserQueryDto from './dto/request/user-query.dto';
 import VideoAdminQueryDto from './dto/request/video-admin-query.dto';
+import { PaymentHistoryDto } from './dto/response/payment-history.dto';
 import { RevenueDto } from './dto/response/revenue.dto';
 import { CashOutRepository } from './repositories/cashout.repository';
 import { PaymentRepository } from './repositories/payment.repository';
+import UserRepository from './repositories/user.repository';
 
 @Injectable()
 export class AdminService {
@@ -17,13 +21,15 @@ export class AdminService {
     private readonly adminRepository: AdminRepository,
     private readonly cashOutRepository: CashOutRepository,
     private readonly paymentRepository: PaymentRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
-  async getRevenue() {
+  async getRevenue({ search, take, page, sortField, sortDirection }: RevenueRequestDto) {
     let data: RevenueDto[] = [];
 
     // Fetch users and payments concurrently
-    const [users] = await Promise.all([this.adminRepository.getUsers()]);
+
+    const [users] = await Promise.all([this.userRepository.getUsers(search)]);
 
     for (const user of users) {
       const { id, fullName, email } = user;
@@ -43,7 +49,25 @@ export class AdminService {
       if (row.totalTopUp != 0 || row.totalDonations != 0 || row.totalEarnings != 0) data.push(row);
     }
 
-    return data;
+    data.sort((a, b) => {
+      const aValue = a[sortField]; // Get the value of the field to sort by
+      const bValue = b[sortField];
+
+      if (sortDirection === 'asc') {
+        return aValue - bValue; // Ascending order
+      } else {
+        return bValue - aValue; // Descending order
+      }
+    });
+
+    // Apply pagination
+    const totalItems = data.length;
+    const startIndex = (page - 1) * take;
+    const paginatedData = data.slice(startIndex, startIndex + take);
+
+    const totalPages = Math.ceil(totalItems / take);
+
+    return objectResponse(paginatedData, new PaginationMetadata(totalItems, page, take, totalPages));
   }
 
   async getVideoAdmin(dto: VideoAdminQueryDto) {
@@ -89,9 +113,24 @@ export class AdminService {
       sortDirection,
     );
 
+    const data = await Promise.all(
+      items.map((paymentHistory) => {
+        const paymentHistoryDto = plainToInstance(PaymentHistoryDto, paymentHistory, {
+          excludeExtraneousValues: true,
+        });
+
+        paymentHistoryDto.email = paymentHistory.user.email;
+        paymentHistoryDto.fullName = paymentHistory.user.fullName;
+        paymentHistoryDto.numberOfREPs = paymentHistory.repsPackage.numberOfREPs;
+        paymentHistoryDto.price = paymentHistory.repsPackage.price;
+
+        return paymentHistoryDto;
+      }),
+    );
+
     const totalPages = Math.ceil(totalItems / take);
 
-    return objectResponse(items, new PaginationMetadata(totalItems, page, take, totalPages));
+    return objectResponse(data, new PaginationMetadata(totalItems, page, take, totalPages));
   }
 
   async getAllCashOutHistories({

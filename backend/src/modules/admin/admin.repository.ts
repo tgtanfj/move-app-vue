@@ -17,16 +17,13 @@ export class AdminRepository {
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(Donation)
     private readonly donationRepository: Repository<Donation>,
+
     private readonly userRepository: UserRepository,
     @InjectRepository(Channel)
     private readonly channelRepository: Repository<Channel>,
     @InjectRepository(Video)
     private readonly videoRepository: Repository<Video>,
   ) {}
-
-  async getUsers() {
-    return await this.userRepository.getUsers();
-  }
 
   async getChannels() {
     return await this.channelRepository.find();
