@@ -28,12 +28,18 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: 'numberOfREPs',
-    header: 'REPs',
-    enableSorting: true
-  },
-  {
-    accessorKey: 'price',
-    header: 'Amount ($)',
+    header: 'Amounts ($)',
+    cell: ({ getValue }) => {
+      const numberOfREPs = getValue() as number;
+      const amount = (numberOfREPs * 0.007).toFixed(2); // Format the amount to 2 decimal places
+      return (
+        <div>
+          <span>{numberOfREPs} REPs</span>
+          <br /> {/* Line break for the second line */}
+          <span>{amount} $</span>
+        </div>
+      );
+    },
     enableSorting: true
   }
 ];

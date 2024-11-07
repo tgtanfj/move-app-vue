@@ -98,6 +98,7 @@ export default function VideoTable() {
             />
           </div>
           <DataTable
+            isLoading={isFetching}
             columns={columns}
             data={result}
             meta={meta}
