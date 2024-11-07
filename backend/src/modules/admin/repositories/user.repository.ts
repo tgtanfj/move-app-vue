@@ -50,7 +50,7 @@ export default class UserRepository {
 
     if (sortBy) {
       order = {
-        [sortBy]: isAsc === true ? 'asc' : 'desc',
+        [sortBy]: isAsc ? 'asc' : 'desc',
         ...order,
       };
     }

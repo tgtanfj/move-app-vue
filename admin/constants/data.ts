@@ -122,7 +122,7 @@ export type Product = {
 export type Video = {
   id: number;
   title: string;
-  thumbnail: string;
+  thumbnails: string;
   workoutLevel: string;
   duration: string;
   views: number;
@@ -147,6 +147,7 @@ export type Withdraw = {
   id: number;
   numberOfREPs: number;
   createdAt: any;
+  status: string;
   channel: {
     name: string;
     user: {

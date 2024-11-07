@@ -12,12 +12,9 @@ const endpointVideo = {
 };
 
 const endpointPayment = {
-  GET_PAYMENT_HISTORIES: `/payment/admin/payment-histories`,
-  GET_WITHDRAW_HISTORIES: `/payment/admin/cashout-histories`,
-  GET_REVENUE_DATA: `/admin/revenue`,
-  GET_TOTAL_REVENUE: `/stripe/revenue`,
-  GET_BALANCE: `/stripe/balance`,
-  GET_TOTAL_WITHDRAW: `/payment/admin/total-withdraw`
+  GET_PAYMENT_HISTORIES: `/admin/payment-histories`,
+  GET_WITHDRAW_HISTORIES: `/admin/cashout-histories`,
+  GET_REVENUE_DATA: `/admin/revenue`
 };
 
 const endpointFAQs = {

@@ -11,8 +11,9 @@ export const videosAPI = baseApi.injectEndpoints({
         page: number;
         take: number;
         query?: string;
-        sortBy?: string;
-        workoutLevel?: string;
+        sortBy?: string | null;
+        sortType?: string;
+        workoutLevel?: string | null;
       }
     >({
       query: (params) => ({
@@ -22,6 +23,7 @@ export const videosAPI = baseApi.injectEndpoints({
           take: params.take,
           query: params.query || undefined,
           sortBy: params.sortBy || undefined,
+          sortType: params.sortType || 'ASC',
           workoutLevel: params.workoutLevel || undefined
         },
         method: 'GET',

@@ -25,83 +25,81 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
-  PaginationState,
+  OnChangeFn,
+  SortingState,
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
+import { useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  totalItems: number;
   pageSizeOptions?: number[];
+  meta: {
+    total: number;
+    page: number;
+    take: number;
+    totalPages: number;
+  };
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
+  onSortChange: (
+    columnId: string | null,
+    direction: 'asc' | 'desc' | null
+  ) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  totalItems,
-  pageSizeOptions = [10, 20, 30, 40, 50],
+  meta,
+  pageSizeOptions = [10, 20, 50],
   onPageChange,
-  onPageSizeChange
+  onPageSizeChange,
+  onSortChange
 }: DataTableProps<TData, TValue>) {
-  const [currentPage, setCurrentPage] = useQueryState(
-    'page',
-    parseAsInteger.withOptions({ shallow: false }).withDefault(1)
-  );
-  const [pageSize, setPageSize] = useQueryState(
-    'take',
-    parseAsInteger
-      .withOptions({ shallow: false, history: 'push' })
-      .withDefault(10)
-  );
-  useEffect(() => {
-    onPageChange(currentPage);
-    onPageSizeChange(pageSize);
-  }, [currentPage, pageSize, onPageChange, onPageSizeChange]);
-  
+  const { total, page, take, totalPages } = meta;
+
   const paginationState = {
-    pageIndex: currentPage - 1,
-    pageSize: pageSize
+    pageIndex: page - 1,
+    pageSize: take
   };
 
-  const pageCount = Math.ceil(totalItems / pageSize);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const handlePaginationChange = (
-    updaterOrValue:
-      | PaginationState
-      | ((old: PaginationState) => PaginationState)
-  ) => {
-    const pagination =
+  const handleSortingChange: OnChangeFn<SortingState> = (updaterOrValue) => {
+    const newSorting =
       typeof updaterOrValue === 'function'
-        ? updaterOrValue(paginationState)
+        ? updaterOrValue(sorting) // Call the function with current sorting
         : updaterOrValue;
 
-    if (
-      pagination.pageIndex + 1 !== currentPage ||
-      pagination.pageSize !== pageSize
-    ) {
-      setCurrentPage(pagination.pageIndex + 1);
-      setPageSize(pagination.pageSize);
+    setSorting(newSorting);
+
+    // Extract the first sorting entry for backend API call
+    if (newSorting.length > 0) {
+      const { id, desc } = newSorting[0];
+      onSortChange(id, desc ? 'desc' : 'asc');
+    } else {
+      // If no sorting is specified, clear sorting on backend
+      onSortChange(null, null);
     }
   };
 
   const table = useReactTable({
     data,
     columns,
-    pageCount: pageCount,
+    pageCount: totalPages,
     state: {
-      pagination: paginationState
+      pagination: paginationState,
+      sorting: sorting
     },
-    onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
-    manualFiltering: true
+    manualFiltering: true,
+    manualSorting: true,
+    onSortingChange: handleSortingChange
   });
 
   return (
@@ -112,13 +110,20 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                    {{
+                      asc: ' 🔼',
+                      desc: ' 🔽'
+                    }[header.column.getIsSorted() as string] ?? null}
                   </TableHead>
                 ))}
               </TableRow>
@@ -159,15 +164,15 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-center justify-end gap-2 space-x-2 py-4 sm:flex-row">
         <div className="flex w-full items-center justify-between">
           <div className="flex-1 text-sm text-muted-foreground">
-            {totalItems > 0 ? (
+            {total > 0 ? (
               <>
                 Showing{' '}
                 {paginationState.pageIndex * paginationState.pageSize + 1} to{' '}
                 {Math.min(
                   (paginationState.pageIndex + 1) * paginationState.pageSize,
-                  totalItems
+                  total
                 )}{' '}
-                of {totalItems} entries
+                of {total} entries
               </>
             ) : (
               'No entries found'
@@ -182,6 +187,10 @@ export function DataTable<TData, TValue>({
                 value={`${paginationState.pageSize}`}
                 onValueChange={(value) => {
                   const newSize = Number(value);
+                  if (newSize >= take) {
+                    table.setPageIndex(0);
+                    onPageChange(1);
+                  }
                   table.setPageSize(newSize);
                   onPageSizeChange(newSize);
                 }}
@@ -202,7 +211,7 @@ export function DataTable<TData, TValue>({
         </div>
         <div className="flex w-full items-center justify-between gap-2 sm:justify-end">
           <div className="flex w-[150px] items-center justify-center text-sm font-medium">
-            {totalItems > 0 ? (
+            {total > 0 ? (
               <>
                 Page {paginationState.pageIndex + 1} of {table.getPageCount()}
               </>
