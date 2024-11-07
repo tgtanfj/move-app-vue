@@ -131,15 +131,15 @@ class NotificationData {
       replyId: (json['replyId'] is int) ? json['replyId'] : 0,
       videoTitle: (json['videoTitle'] is String) ? json['videoTitle'] : '',
       content: (json['content'] is String) ? json['content'] : '',
-      donation: (json['donation'] is int) ? json['donation'] : 0,
+      donation: (json['donation'] is num) ? json['donation'] : 0,
       cashOut: (json['cashout'] is num) ? json['cashout'] : 0,
       purchase: (json['purchase'] is num) ? json['purchase'] : 0,
       followMilestone:
-          (json['follow_milestone'] is int) ? json['follow_milestone'] : 0,
-      viewVideoMilestone: (json['view_video_milestone'] is int)
-          ? json['view_video_milestone']
+          (json['followMilestone'] is num) ? json['followMilestone'] : 0,
+      viewVideoMilestone: (json['viewVideoMilestone'] is num)
+          ? json['viewVideoMilestone']
           : 0,
-      repMilestone: (json['repMilestone'] is int) ? json['repMilestone'] : 0,
+      repMilestone: (json['repMilestone'] is num) ? json['repMilestone'] : 0,
     );
   }
 
@@ -154,8 +154,8 @@ class NotificationData {
       'cashout': cashOut,
       'donation': donation,
       'purchase': purchase,
-      'follow_milestone': followMilestone,
-      'view_video_milestone': viewVideoMilestone,
+      'followMilestone': followMilestone,
+      'viewVideoMilestone': viewVideoMilestone,
       'repMilestone': repMilestone
     };
   }
