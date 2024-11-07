@@ -162,7 +162,7 @@ export class CommentService {
       const type = comment?.parent ? NOTIFICATION_TYPE.REPLY : NOTIFICATION_TYPE.COMMENT;
       const checkId = comment?.parent ? value.replyId : value?.commentId;
 
-      if (value.type === type && checkId === +commentId) {
+      if (value?.type === type && checkId === +commentId) {
         if (isRead === false) {
           remove.push(childSnapshot.ref.remove());
         } else {
