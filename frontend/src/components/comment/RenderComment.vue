@@ -312,6 +312,10 @@ const handleShowReply = (commentId) => {
 const isEmptyObject = (obj) => {
   return obj && Object.keys(obj).length === 0 && obj.constructor === Object
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
 </script>
 
 <template>
@@ -319,6 +323,7 @@ const isEmptyObject = (obj) => {
     <div class="w-full" v-for="item in comments" :key="item.id">
       <div class="flex items-start gap-2 w-full">
         <img
+          @error="handleImageError"
           :src="item.user.avatar ? item.user.avatar : defaultAvatar"
           class="object-cover w-[40px] h-[40px] rounded-full"
         />
@@ -431,6 +436,7 @@ const isEmptyObject = (obj) => {
 
             <div v-if="replyInputId === item.id" class="w-full flex items-center gap-4 mt-2">
               <img
+                @error="handleImageError"
                 :src="userAvatar ?? defaultAvatar"
                 class="w-[40px] h-[40px] rounded-full object-cover"
               />
@@ -497,6 +503,7 @@ const isEmptyObject = (obj) => {
             <div v-if="myReplyPerComment[item.id]" class="w-full space-y-4 mt-2">
               <div class="flex gap-4 items-start relative">
                 <img
+                  @error="handleImageError"
                   :src="myReplyPerComment[item.id].user.avatar"
                   class="object-cover w-[40px] h-[40px] rounded-full"
                 />
@@ -629,7 +636,11 @@ const isEmptyObject = (obj) => {
                 :id="reply.id"
                 class="flex gap-4 items-start py-2 relative"
               >
-                <img :src="reply.user.avatar" class="object-cover w-[40px] h-[40px] rounded-full" />
+                <img
+                  @error="handleImageError"
+                  :src="reply.user.avatar"
+                  class="object-cover w-[40px] h-[40px] rounded-full"
+                />
                 <div class="flex flex-col gap-1 justify-between w-full">
                   <div class="flex items-center justify-start gap-2">
                     <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />

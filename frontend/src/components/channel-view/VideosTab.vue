@@ -33,7 +33,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (!isLoadingVideos.value && videosData.value) {
     const newVideos = videosData.value.data
-    if (newVideos.length < 12) {
+    if (newVideos.length < 8) {
       hasMoreVideos.value = false
     }
 

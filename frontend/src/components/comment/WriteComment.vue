@@ -83,12 +83,17 @@ const handleClickInput = () => {
     handleBlur()
   }
 }
+
+const handleImageError = (event) => {
+  event.target.src = defaultAvatar
+}
 </script>
 
 <template>
   <div class="w-full flex flex-col items-end gap-4">
     <div class="w-full flex items-center gap-4">
       <img
+        @error="handleImageError"
         :src="authStore.user.avatar || userAvatar || defaultAvatar"
         class="w-[40px] h-[40px] rounded-full object-cover"
       />
