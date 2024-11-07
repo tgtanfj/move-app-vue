@@ -62,12 +62,12 @@ class NotificationData {
   final int? replyId;
   final String? videoTitle;
   final String? content;
-  final int? donation;
-  final int? cashOut;
-  final int? purchase;
-  final int? followMilestone;
-  final int? viewVideoMilestone;
-  final int? repMilestone;
+  final num? donation;
+  final num? cashOut;
+  final num? purchase;
+  final num? followMilestone;
+  final num? viewVideoMilestone;
+  final num? repMilestone;
 
   NotificationData({
     this.userModel,
@@ -93,12 +93,12 @@ class NotificationData {
     int? replyId,
     String? videoTitle,
     String? content,
-    int? donation,
-    int? cashOut,
-    int? purchase,
-    int? followMilestone,
-    int? viewVideoMilestone,
-    int? repMilestone,
+    num? donation,
+    num? cashOut,
+    num? purchase,
+    num? followMilestone,
+    num? viewVideoMilestone,
+    num? repMilestone,
   }) {
     return NotificationData(
       userModel: userModel ?? this.userModel,
@@ -132,14 +132,14 @@ class NotificationData {
       videoTitle: (json['videoTitle'] is String) ? json['videoTitle'] : '',
       content: (json['content'] is String) ? json['content'] : '',
       donation: (json['donation'] is int) ? json['donation'] : 0,
-      cashOut: (json['cashout'] is int) ? json['cashout'] : 0,
-      purchase: (json['purchase'] is int) ? json['purchase'] : 0,
+      cashOut: (json['cashout'] is num) ? json['cashout'] : 0,
+      purchase: (json['purchase'] is num) ? json['purchase'] : 0,
       followMilestone:
           (json['follow_milestone'] is int) ? json['follow_milestone'] : 0,
       viewVideoMilestone: (json['view_video_milestone'] is int)
           ? json['view_video_milestone']
           : 0,
-      repMilestone: (json['rep_milestone'] is int) ? json['rep_milestone'] : 0,
+      repMilestone: (json['repMilestone'] is int) ? json['repMilestone'] : 0,
     );
   }
 
@@ -156,7 +156,7 @@ class NotificationData {
       'purchase': purchase,
       'follow_milestone': followMilestone,
       'view_video_milestone': viewVideoMilestone,
-      'rep_milestone': repMilestone
+      'repMilestone': repMilestone
     };
   }
 }

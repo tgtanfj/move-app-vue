@@ -8,7 +8,9 @@ import 'login_body.dart';
 
 class LoginPage extends StatelessWidget {
   final bool isStayOnPage;
-  const LoginPage({super.key, this.isStayOnPage = false});
+  final Function()? navigate;
+
+  const LoginPage({super.key, this.isStayOnPage = false, this.navigate});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class LoginPage extends StatelessWidget {
       },
       child: LoginBody(
         isStayOnPage: isStayOnPage,
+        navigate: navigate,
       ),
     );
   }
