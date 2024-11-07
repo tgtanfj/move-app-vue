@@ -54,7 +54,7 @@ export class SearchService {
     const keyword = `%${query}%`;
     const offset = (page - 1) * limit;
 
-    let [channels, totalCount] = await this.channelRepository
+    const [channels, totalCount] = await this.channelRepository
       .createQueryBuilder('channel')
       .where('channel.name ILIKE :keyword', { keyword })
       .orderBy('channel.numberOfFollowers', 'DESC')
@@ -64,17 +64,9 @@ export class SearchService {
       .take(limit)
       .getManyAndCount();
 
-    // Filter channels to include only those with published videos
-    channels = await Promise.all(
-      channels.map(async (channel) => {
-        const hasPublishedVideos = await this.channelIdHasPublishedVideo(channel.id);
-        return hasPublishedVideos ? channel : null;
-      }),
-    );
-    channels = channels.filter((channel) => channel !== null);
-
     return { channels, totalCount };
   }
+
   async searchVideos(params: { query: string; page: number; limit: number }) {
     const { query, page, limit } = params;
     const keyword = query.toLowerCase();
@@ -131,36 +123,47 @@ export class SearchService {
 
   async suggestion(query: string) {
     const keyword = query.toLowerCase();
-
-    // Lấy video ban đầu dựa trên từ khóa, sắp xếp theo `numberOfViews`
-    let initialVideos = await this.videoRepository.find({
-      where: [{ title: ILike(`%${keyword}%`) }],
-      relations: ['channel', 'thumbnails'],
-      order: { numberOfViews: 'DESC' },
-    });
-
-    // Lọc thumbnail để chỉ lấy những thumbnail có `selected` là `true`
+  
+    // Lấy video ban đầu dựa trên từ khóa, sắp xếp theo `numberOfViews`, chỉ từ kênh có video
+    let initialVideos = await this.videoRepository
+      .createQueryBuilder('video')
+      .leftJoinAndSelect('video.channel', 'channel')
+      .leftJoinAndSelect('video.thumbnails', 'thumbnail')
+      .where('video.title ILIKE :keyword', { keyword: `%${keyword}%` })
+      .andWhere('channel.id IS NOT NULL') // Chỉ lấy video từ kênh có video
+      .orderBy('video.numberOfViews', 'DESC')
+      .getMany();
+  
+    // Lọc thumbnails để chỉ lấy những thumbnail có `selected` là `true`
     initialVideos = initialVideos.map((video) => {
       video.thumbnails = video.thumbnails.filter((thumbnail) => thumbnail.selected);
       return video;
     });
-
-    // Lấy category dựa trên keyword
-    const topCategory = await this.categoryRepository.findOne({
+  
+    // Lấy category dựa trên từ khóa
+    const topCategories = await this.categoryRepository.find({
       where: { title: ILike(`%${keyword}%`) },
       order: { numberOfViews: 'DESC' },
+      take: 5,
     });
-
-    // Lấy channel dựa trên keyword, sắp xếp theo số lượng followers
+  
+    // Lấy channel dựa trên từ khóa, chỉ những kênh có ít nhất một video, sắp xếp theo số lượng followers
     let topInstructors = await this.channelRepository
       .createQueryBuilder('channel')
-      .leftJoinAndSelect('channel.videos', 'video')
       .where('channel.name ILIKE :keyword', { keyword: `%${keyword}%` })
-      .andWhere('video.id IS NOT NULL')
+      .andWhere(
+        (qb) =>
+          `EXISTS(${qb
+            .subQuery()
+            .select('video.id')
+            .from('videos', 'video')
+            .where('video.channelId = channel.id')
+            .getQuery()})`
+      ) // Kiểm tra điều kiện channel có video mà không lấy dữ liệu video
       .orderBy('channel.numberOfFollowers', 'DESC')
       .getMany();
-
-    // Sắp xếp video theo tiêu chí: followers của channel, views, comments, createdAt
+  
+    // Sắp xếp video theo tiêu chí followers của channel, views, comments, createdAt
     const topVideos = initialVideos.sort((a, b) => {
       const aFollowers = a.channel?.numberOfFollowers || 0;
       const bFollowers = b.channel?.numberOfFollowers || 0;
@@ -169,43 +172,50 @@ export class SearchService {
       if (b.numberOfComments !== a.numberOfComments) return b.numberOfComments - a.numberOfComments;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-
-    // Sắp xếp instructor theo độ ưu tiên của badge
+  
+    // Sắp xếp instructors theo độ ưu tiên của badge
     topInstructors = topInstructors.sort((a, b) => {
       const priorityA = (a.isBlueBadge ? 2 : 0) + (a.isPinkBadge ? 1 : 0);
       const priorityB = (b.isBlueBadge ? 2 : 0) + (b.isPinkBadge ? 1 : 0);
       return priorityB - priorityA;
     });
-
-    // Số lượng mục tiêu cho category, channel và video
-    let numVideos = 5;
+  
+    // Thiết lập số lượng mặc định của mỗi loại
+    let numCategories = 1;
     let numChannels = 2;
-    let hasCategory = !!topCategory;
-
-    // Xác định các tình huống đặc biệt
-    if (hasCategory) numVideos -= 1;
-    numVideos -= Math.min(numChannels, topInstructors.length);
-
-    const slicedVideos = topVideos.slice(0, numVideos);
-    const slicedInstructors = topInstructors.slice(0, Math.min(numChannels, topInstructors.length));
-
-    // Nếu không đủ video, bổ sung channel theo yêu cầu
-    if (slicedVideos.length < numVideos) {
-      const remainingChannels = topInstructors.slice(
-        slicedInstructors.length,
-        slicedInstructors.length + (numVideos - slicedVideos.length),
-      );
-      slicedInstructors.push(...remainingChannels);
+    let numVideos = 2;
+  
+    // Điều chỉnh số lượng category, channel và video dựa trên các trường hợp
+    if (topVideos.length < 2) {
+      numVideos = topVideos.length;
+      numChannels = Math.min(5 - numVideos, topInstructors.length);
+      numCategories = 5 - numVideos - numChannels;
+    } else if (topInstructors.length < 2) {
+      numChannels = topInstructors.length;
+      numVideos = Math.min(5 - numChannels, topVideos.length);
+      numCategories = 5 - numVideos - numChannels;
+    } else if (!topCategories.length) {
+      numCategories = 0;
+      numChannels = Math.min(5 - numCategories, topInstructors.length);
+      numVideos = 5 - numCategories - numChannels;
     }
-
+  
+    // Lấy danh sách topCategories, topInstructors và topVideos theo số lượng đã tính
+    const slicedCategories = topCategories.slice(0, numCategories);
+    const slicedInstructors = topInstructors.slice(0, numChannels);
+    const slicedVideos = topVideos.slice(0, numVideos);
+  
+    // Trả về kết quả với cấu trúc chỉ định
     return {
-      topCategory: topCategory || null,
-      topInstructors: slicedInstructors.length > 0 ? slicedInstructors : [],
+      topCategories: slicedCategories,
+      topInstructors: slicedInstructors,
       topVideos: slicedVideos,
-      hasTopCategory: hasCategory,
+      hasTopCategory: slicedCategories.length > 0,
       topInstructorsCount: slicedInstructors.length,
     };
   }
+  
+  
 
   async saveSearchHistory(userId: number, content: string): Promise<SearchHistory> {
     if (userId == null) {
