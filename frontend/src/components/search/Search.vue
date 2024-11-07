@@ -150,11 +150,11 @@ const onSubmit = () => {
           "
           class="mt-4 w-full"
         >
-          <div class="flex items-center justify-between flex-1 mb-1">
+          <div class="flex items-center justify-between mb-1">
             <div
               v-for="item in searchStore.results.topCategories"
               :key="item.id"
-              class="flex justify-between items-center gap-5 cursor-pointer"
+              class="flex justify-between items-center gap-5 cursor-pointer flex-1"
             >
               <div
                 class="flex items-center"

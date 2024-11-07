@@ -70,24 +70,6 @@ const handleImageError = (event) => {
 }
 
 watch(
-  () => authStore.user,
-  async (newValue) => {
-    if (newValue.numberOfREPs) {
-      paymentStore.reps = authStore.user.numberOfREPs
-    } else {
-      try {
-        const res = await apiAxios.get('/user/profile')
-        if (res.status === 200 && res.data.data.numberOfREPs) {
-          paymentStore.reps = res.data.data.numberOfREPs
-        } else paymentStore.reps = 0
-      } catch (error) {
-        paymentStore.reps = 0
-      }
-    }
-  }
-)
-
-watch(
   () => route.path,
   (newPath) => {
     isStreamer.value = newPath.startsWith('/streamer')
