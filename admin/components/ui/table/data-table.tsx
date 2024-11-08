@@ -116,6 +116,9 @@ export function DataTable<TData, TValue>({
                   <TableHead
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
+                    style={{
+                      cursor: header.column.getCanSort() ? 'pointer' : 'default' // Change cursor if sortable
+                    }}
                   >
                     {header.isPlaceholder
                       ? null
@@ -123,10 +126,14 @@ export function DataTable<TData, TValue>({
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                    {{
-                      asc: ' 🔼',
-                      desc: ' 🔽'
-                    }[header.column.getIsSorted() as string] ?? null}
+                    {header.column.getCanSort() && ( // Check if the column can sort
+                      <span>
+                        {{
+                          asc: ' 🔼', // Icon for ascending order
+                          desc: ' 🔽' // Icon for descending order
+                        }[header.column.getIsSorted() as string] ?? ' ↕️'}{' '}
+                      </span>
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
