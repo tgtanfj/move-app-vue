@@ -32,7 +32,7 @@
   "account": {
     "NOT_FOUND_ACCOUNT": "Không tìm thấy tài khoản.",
     "UPDATE_PASSWORD_FAIL": "Cập nhật mật khẩu thất bại.",
-    "PASSWORD_RESTRICTION": "Mật khẩu mới của bạn không được giống bất kỳ mật khẩu nào trong hai mật khẩu gần nhất. Vui lòng chọn mật khẩu khác.",
+    "PASSWORD_RESTRICTION": "Mật khẩu mới của bạn không được trùng với mật khẩu hiện tại hoặc mật khẩu trước đó. Vui lòng chọn một mật khẩu khác.",
     "PASSWORD_INCORRECT": "Bạn đã nhập mật khẩu không hợp lệ.",
     "WRONG_METHOD": "Phương thức của bạn không thể thay đổi mật khẩu."
   },
