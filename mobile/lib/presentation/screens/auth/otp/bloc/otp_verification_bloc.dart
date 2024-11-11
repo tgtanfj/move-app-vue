@@ -47,7 +47,6 @@ class OtpVerificationBloc
     final isShowMessageOtp = state.inputOtpCode != event.inputOtpCode
         ? false
         : state.isShowMessageOtp;
-
     emit(state.copyWith(
         inputOtpCode: event.inputOtpCode,
         isEnabledSubmit: event.inputOtpCode.isNotEmpty,
@@ -58,12 +57,20 @@ class OtpVerificationBloc
     OtpVerificationResendEvent event,
     Emitter<OtpVerificationState> emit,
   ) async {
-    try {
-      await AuthRepository().sendVerificationCode(state.userModel?.email ?? "");
-      add(OtpVerificationStartTimerEvent());
-    } catch (e) {
-      emit(state.copyWith(status: OtpVerificationStatus.error));
-    }
+    final email = state.userModel?.email ?? "";
+    final result = await AuthRepository().sendVerificationCode(email);
+    result.fold(
+      (errorMessage) {
+        emit(state.copyWith(
+          status: OtpVerificationStatus.error,
+          isShowMessageOtp: true,
+          messageOtp: errorMessage,
+        ));
+      },
+      (response) {
+        add(OtpVerificationStartTimerEvent());
+      },
+    );
   }
 
   void onOtpVerificationSubmitEvent(
@@ -71,18 +78,24 @@ class OtpVerificationBloc
     Emitter<OtpVerificationState> emit,
   ) async {
     emit(state.copyWith(status: OtpVerificationStatus.loading));
-    try {
-      await AuthRepository()
-          .signUpWithEmail(state.userModel ?? UserModel(), state.inputOtpCode);
-      emit(state.copyWith(status: OtpVerificationStatus.success));
-    } catch (e) {
-      if (e is Exception) {
+
+    final userModel = state.userModel ?? UserModel();
+    final otpCode = state.inputOtpCode;
+
+    final result = await AuthRepository().signUpWithEmail(userModel, otpCode);
+
+    result.fold(
+      (errorMessage) {
         emit(state.copyWith(
-            isShowMessageOtp: true,
-            messageOtp: e.toString(),
-            status: OtpVerificationStatus.error));
-      }
-    }
+          status: OtpVerificationStatus.error,
+          isShowMessageOtp: true,
+          messageOtp: errorMessage,
+        ));
+      },
+      (response) {
+        emit(state.copyWith(status: OtpVerificationStatus.success));
+      },
+    );
   }
 
   @override

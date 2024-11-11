@@ -87,29 +87,35 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     ));
 
     UserModel userModel = UserModel(
-        email: state.inputEmail,
-        password: state.inputPassword,
-        referralCode: state.inputReferralCode);
+      email: state.inputEmail,
+      password: state.inputPassword,
+      referralCode: state.inputReferralCode,
+    );
 
     if (validEmail == null &&
         validPassword == null &&
         doMatchPassword &&
         validReferralCode == null) {
       emit(state.copyWith(status: SignUpStatus.loading));
-      try {
-        await AuthRepository().sendVerificationCode(state.inputEmail);
-        emit(state.copyWith(status: SignUpStatus.goOn, userModel: userModel));
-      } catch (e) {
-        if (e is Exception) {
-          emit(
-            state.copyWith(
-              status: SignUpStatus.error,
-              isShowEmailMessage: true,
-              messageInputEmail: e.toString(),
-            ),
-          );
-        }
-      }
+
+      final result =
+          await AuthRepository().sendVerificationCode(state.inputEmail);
+
+      result.fold(
+        (errorMessage) {
+          emit(state.copyWith(
+            status: SignUpStatus.error,
+            isShowEmailMessage: true,
+            messageInputEmail: errorMessage,
+          ));
+        },
+        (response) {
+          emit(state.copyWith(
+            status: SignUpStatus.goOn,
+            userModel: userModel,
+          ));
+        },
+      );
     }
   }
 

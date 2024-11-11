@@ -29,4 +29,3 @@ class OtpVerificationStartTimerEvent extends OtpVerificationEvent {}
 class OtpVerificationResendEvent extends OtpVerificationEvent {}
 
 class OtpVerificationSubmitEvent extends OtpVerificationEvent {}
-

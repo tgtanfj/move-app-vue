@@ -22,6 +22,7 @@ final class LoginState extends Equatable {
   final String messageInputPassword;
   final bool isShowEmailMessage;
   final bool isShowPasswordMessage;
+  final bool isShowErrorBorder;
 
   const LoginState({
     required this.status,
@@ -36,6 +37,7 @@ final class LoginState extends Equatable {
     this.messageInputPassword = "",
     this.isShowEmailMessage = false,
     this.isShowPasswordMessage = false,
+    this.isShowErrorBorder = false,
   });
 
   static LoginState initial() => const LoginState(
@@ -50,6 +52,7 @@ final class LoginState extends Equatable {
         messageInputPassword: '',
         isShowEmailMessage: false,
         isShowPasswordMessage: false,
+        isShowErrorBorder: false,
       );
 
   LoginState copyWith({
@@ -65,6 +68,7 @@ final class LoginState extends Equatable {
     String? messageInputPassword,
     bool? isShowEmailMessage,
     bool? isShowPasswordMessage,
+    bool? isShowErrorBorder,
   }) {
     return LoginState(
       status: status ?? this.status,
@@ -80,6 +84,7 @@ final class LoginState extends Equatable {
       isShowEmailMessage: isShowEmailMessage ?? this.isShowEmailMessage,
       isShowPasswordMessage:
           isShowPasswordMessage ?? this.isShowPasswordMessage,
+      isShowErrorBorder: isShowErrorBorder ?? this.isShowErrorBorder,
     );
   }
 
@@ -97,5 +102,6 @@ final class LoginState extends Equatable {
         messageInputPassword,
         isShowEmailMessage,
         isShowPasswordMessage,
+        isShowErrorBorder,
       ];
 }

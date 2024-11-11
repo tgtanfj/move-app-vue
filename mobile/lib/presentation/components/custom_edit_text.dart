@@ -31,6 +31,7 @@ class CustomEditText extends StatefulWidget {
   final Function(String)? onLostFocus;
   final String? hintText;
   final TextStyle? hintStyle;
+  final bool isShowErrorBorder;
 
   const CustomEditText({
     super.key,
@@ -61,6 +62,7 @@ class CustomEditText extends StatefulWidget {
     this.onLostFocus,
     this.hintText,
     this.hintStyle,
+    this.isShowErrorBorder = false,
   });
 
   @override
@@ -171,21 +173,21 @@ class _CustomEditTextState extends State<CustomEditText> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                    color: widget.isShowMessage
+                    color: (widget.isShowMessage || widget.isShowErrorBorder)
                         ? widget.borderColor
                         : AppColors.chineseSilver),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                    color: widget.isShowMessage
+                    color: (widget.isShowMessage || widget.isShowErrorBorder)
                         ? widget.borderColor
                         : AppColors.chineseSilver),
               ),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(
-                      color: widget.isShowMessage
+                      color: (widget.isShowMessage || widget.isShowErrorBorder)
                           ? widget.borderColor
                           : AppColors.tiffanyBlue)),
               errorBorder: OutlineInputBorder(

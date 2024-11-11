@@ -77,8 +77,17 @@ class _ItemNotificationState extends State<ItemNotification> {
 
   Widget _buildUserAvatar() {
     final avatarUrl = widget.notificationModel?.data.userModel?.avatar;
+    final username = widget.notificationModel?.data.userModel?.username;
 
     if (avatarUrl == null || avatarUrl.isEmpty) {
+      if (username != null && username.isNotEmpty) {
+        return Image.asset(
+          AppImages.moveWhite.pngAssetPath,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+        );
+      }
       return SvgPicture.asset(
         AppIcons.artboardMove.svgAssetPath,
         width: 40,

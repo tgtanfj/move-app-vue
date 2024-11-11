@@ -677,27 +677,27 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
             .format(state.timeStarted ?? DateTime.now()),
         viewTime: 0,
       );
-      if (viewTime > (state.video?.durationsVideo ?? 0)) {
-        viewTime = state.video?.durationsVideo ?? 0;
-      }
-      final result = await videoRepository.postViewVideo(
-        videoId: state.video?.id ?? 0,
-        date: DateFormat('yyyy-MM-dd')
-            .format(state.timeStarted ?? DateTime.now()),
-        viewTime: viewTime,
-      );
-      result.fold((l) {
-        emit(state.copyWith(
-          status: VideoDetailStatus.failure,
-          errorMessage: l,
-        ));
-      }, (r) {
-        emit(state.copyWith(
-          timeStarted: null,
-          status: VideoDetailStatus.success,
-        ));
-      });
     }
+    if (viewTime > (state.video?.durationsVideo ?? 0)) {
+      viewTime = state.video?.durationsVideo ?? 0;
+    }
+    final result = await videoRepository.postViewVideo(
+      videoId: state.video?.id ?? 0,
+      date: DateFormat('yyyy-MM-dd')
+          .format(state.timeStarted ?? DateTime.now()),
+      viewTime: viewTime,
+    );
+    result.fold((l) {
+      emit(state.copyWith(
+        status: VideoDetailStatus.failure,
+        errorMessage: l,
+      ));
+    }, (r) {
+      emit(state.copyWith(
+        timeStarted: null,
+        status: VideoDetailStatus.success,
+      ));
+    });
   }
 
   void onVideoDetailDeleteCommentEvent(VideoDetailDeleteCommentEvent event,
