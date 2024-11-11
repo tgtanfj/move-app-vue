@@ -6,13 +6,6 @@ import { Video } from './video.entity';
 
 @Entity('donations')
 export class Donation extends BaseEntity {
-  @Column({
-    type: 'varchar',
-    nullable: false,
-    default: '',
-  })
-  content: string;
-
   @ManyToOne(() => User, (user) => user.donations)
   user: User;
 

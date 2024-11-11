@@ -17,12 +17,12 @@ const videoQueueStore = useVideoQueueStore()
 
     <div class="p-4 flex items-center space-x-4">
       <div class="flex items-center w-full justify-start gap-4">
-        <div class="w-[30%] h-14 shrink-0">
+        <div class="w-[30%] h-20 shrink-0">
           <img class="w-full h-full object-cover shrink-0" :src="videoQueueStore.tempThumbnail" />
         </div>
         <div class="w-[70%] h-full flex gap-4 items-start justify-start">
           <div class="flex w-[90%] flex-col gap-1 truncate">
-            <p class="text-black w-[230px] truncate font-semibold">
+            <p class="text-black w-[230px] truncate font-semibold text-[16px]">
               {{ videoQueueStore.tempVideoTitle }}
             </p>
             <div class="flex gap-2">
@@ -37,6 +37,7 @@ const videoQueueStore = useVideoQueueStore()
                 <p class="text-[11px] font-bold">{{ videoQueueStore.tempDuration }}</p>
               </div>
             </div>
+            <p class="text-[14px] text-[#666666]">{{ videoQueueStore.tempCategory?.title }}</p>
           </div>
           <div
             v-if="videoQueueStore.uploadLoadingVideoQueue"

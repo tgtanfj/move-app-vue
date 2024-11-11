@@ -8,6 +8,7 @@ export const useVideoQueueStore = defineStore('video_queue', () => {
   const isCountingVideoQueue = ref(false)
   const tempThumbnail = ref(null)
   const tempVideoTitle = ref(null)
+  const tempCategory = ref(null)
   const tempWorkoutLevel = ref(null)
   const tempDuration = ref(null)
   const isBannedUpload = ref(false)
@@ -23,6 +24,7 @@ export const useVideoQueueStore = defineStore('video_queue', () => {
     isCountingVideoQueue,
     tempThumbnail,
     tempVideoTitle,
+    tempCategory,
     tempWorkoutLevel,
     tempDuration,
     isBannedUpload,

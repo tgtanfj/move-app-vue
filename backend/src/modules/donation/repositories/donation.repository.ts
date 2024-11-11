@@ -22,7 +22,6 @@ export class DonationRepository {
       giftPackage: {
         id: donationDto.giftPackageId,
       },
-      content: donationDto.content,
     });
 
     return await this.donationRepository.save(donationCreated);

@@ -23,4 +23,8 @@ export class CreateCommentDto {
   @IsOptional()
   @IsNumber()
   commentId?: number;
+
+  @IsOptional()
+  @IsNumber()
+  numberOfReps?: number;
 }

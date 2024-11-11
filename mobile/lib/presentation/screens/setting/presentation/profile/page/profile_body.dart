@@ -123,7 +123,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                       CustomEditText(
                         initialValue: state.user?.username,
                         isShowMessage: state.isShowUsernameMessage,
-                        title: Constants.username,
+                        title: '${Constants.username}*',
                         textStyle: state.isShowUsernameMessage
                             ? AppTextStyles.montserratStyle.regular16BrinkPink
                             : AppTextStyles.montserratStyle.regular16Black,
@@ -175,11 +175,11 @@ class _ProfileBodyState extends State<ProfileBody> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _createTitle(title: Constants.gender),
+                      _createTitle(title: '${Constants.gender}*'),
                       GenderRadioGroup(
                         selectedGender: Gender.values.firstWhere(
                           (gender) => gender.value == state.user?.gender,
-                          orElse: () => Gender.male,
+                          orElse: () => Gender.notChosen,
                         ),
                         onChanged: (gender) {
                           context.read<ProfileBloc>().add(
@@ -256,10 +256,6 @@ class _ProfileBodyState extends State<ProfileBody> {
                               .read<ProfileBloc>()
                               .add(ProfileCityChangeEvent(city: value));
                         },
-                        suffixLabel: Text(
-                          Constants.optional,
-                          style: AppTextStyles.montserratStyle.regular16Black,
-                        ),
                       ),
                       const SizedBox(height: 16),
                       CustomButton(

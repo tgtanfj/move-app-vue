@@ -38,4 +38,10 @@ export class Comment extends BaseEntity {
 
   @OneToMany(() => CommentReaction, (commentReaction) => commentReaction.comment)
   commentReactions: CommentReaction[];
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  numberOfReps: number;
 }

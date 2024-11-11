@@ -140,21 +140,8 @@ class InputValidationHelper {
   }
 
   static String? validateDateOfBirth(DateTime? dateOfBirth) {
-    if (dateOfBirth == null) {
-      return Constants.invalidDateOfBirth;
-    }
     final today = DateTime.now();
-    int age = today.year - dateOfBirth.year;
-    if (dateOfBirth.month > today.month) {
-      age--;
-    } else if (dateOfBirth.month == today.month) {
-      if (dateOfBirth.day > today.day) {
-        age--;
-      } else {
-        age++;
-      }
-    }
-    if (age < 13 || age > 65) {
+    if (dateOfBirth != null && dateOfBirth.isAfter(today)) {
       return Constants.invalidAge;
     }
     return null;
