@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:move_app/config/theme/app_colors.dart';
-import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_bloc.dart';
 import 'package:move_app/presentation/screens/auth/sign_up/bloc/sign_up_state.dart';
-import 'package:move_app/presentation/screens/auth/widgets/divider_authentication.dart';
 
 import '../../../../components/custom_button.dart';
 import '../../otp/page/otp_verification_page.dart';
@@ -58,168 +55,123 @@ class _SignUpBodyState extends State<SignUpBody>
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  CustomButton(
-                    prefix: SvgPicture.asset(AppIcons.googleLogo.svgAssetPath),
-                    title: Constants.signUpWithGoogle,
-                    titleStyle: AppTextStyles.montserratStyle.bold16Black,
-                    borderColor: AppColors.chineseSilver,
-                    padding:
-                        const EdgeInsets.only(top: 13, bottom: 14, left: 12),
-                    onTap: () {
-                      context.read<SignUpBloc>().add(SignUpWithGoogleEvent());
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  CustomButton(
-                    prefix:
-                        SvgPicture.asset(AppIcons.facebookLogo.svgAssetPath),
-                    title: Constants.signUpWithFaceBook,
-                    titleStyle: AppTextStyles.montserratStyle.bold16Black,
-                    borderColor: AppColors.chineseSilver,
-                    padding:
-                        const EdgeInsets.only(top: 13, bottom: 14, left: 12),
-                    onTap: () {
-                      context.read<SignUpBloc>().add(SignUpWithFacebookEvent());
-                    },
-                  ),
-                  const SizedBox(height: 11),
-                  const DividerAuthentication(),
-                  const SizedBox(height: 14),
-                  Visibility(
-                    visible: !state.isClickSignUpWithEmail,
-                    child: GestureDetector(
-                      onTap: () {
-                        context
-                            .read<SignUpBloc>()
-                            .add(SignUpClickSignUpWithEmailEvent());
-                      },
-                      child: Text(
-                        Constants.signUpWithEmail.toUpperCase(),
-                        style: AppTextStyles.montserratStyle.bold14tiffanyBlue,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomEditText(
+                        title: Constants.email,
+                        initialValue: state.inputEmail,
+                        isShowMessage: state.isShowEmailMessage,
+                        textStyle: state.isShowEmailMessage
+                            ? AppTextStyles.montserratStyle.regular14BrinkPink
+                            : AppTextStyles.montserratStyle.regular14Black,
+                        borderColor: AppColors.brinkPink,
+                        cursorColor: state.isShowEmailMessage
+                            ? AppColors.brinkPink
+                            : AppColors.tiffanyBlue,
+                        preMessage: state.messageInputEmail,
+                        maxLength: 255,
+                        onChanged: (email) {
+                          context
+                              .read<SignUpBloc>()
+                              .add(SignUpValuesChangedEvent(email: email));
+                        },
+                        onLostFocus: (email) {
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(email: email.trim()));
+                        },
                       ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: state.isClickSignUpWithEmail,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomEditText(
-                          title: Constants.email,
-                          initialValue: state.inputEmail,
-                          isShowMessage: state.isShowEmailMessage,
-                          textStyle: state.isShowEmailMessage
-                              ? AppTextStyles.montserratStyle.regular14BrinkPink
-                              : AppTextStyles.montserratStyle.regular14Black,
-                          borderColor: AppColors.brinkPink,
-                          cursorColor: state.isShowEmailMessage
-                              ? AppColors.brinkPink
-                              : AppColors.tiffanyBlue,
-                          preMessage: state.messageInputEmail,
-                          maxLength: 255,
-                          onChanged: (email) {
-                            context
-                                .read<SignUpBloc>()
-                                .add(SignUpValuesChangedEvent(email: email));
-                          },
-                          onLostFocus: (email) {
-                            context.read<SignUpBloc>().add(
-                                SignUpValuesChangedEvent(email: email.trim()));
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        CustomEditText(
-                          title: Constants.password,
-                          initialValue: state.inputPassword,
-                          isPasswordInput: true,
-                          isShowMessage: state.isShowPasswordMessage,
-                          textStyle: state.isShowPasswordMessage
-                              ? AppTextStyles.montserratStyle.regular14BrinkPink
-                              : AppTextStyles.montserratStyle.regular14Black,
-                          borderColor: AppColors.brinkPink,
-                          cursorColor: state.isShowPasswordMessage
-                              ? AppColors.brinkPink
-                              : AppColors.tiffanyBlue,
-                          preMessage: state.messageInputPassword,
-                          maxLength: 32,
-                          onChanged: (value) {
-                            context
-                                .read<SignUpBloc>()
-                                .add(SignUpValuesChangedEvent(password: value));
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                      const SizedBox(height: 10),
+                      CustomEditText(
+                        title: Constants.password,
+                        initialValue: state.inputPassword,
+                        isPasswordInput: true,
+                        isShowMessage: state.isShowPasswordMessage,
+                        textStyle: state.isShowPasswordMessage
+                            ? AppTextStyles.montserratStyle.regular14BrinkPink
+                            : AppTextStyles.montserratStyle.regular14Black,
+                        borderColor: AppColors.brinkPink,
+                        cursorColor: state.isShowPasswordMessage
+                            ? AppColors.brinkPink
+                            : AppColors.tiffanyBlue,
+                        preMessage: state.messageInputPassword,
+                        maxLength: 32,
+                        onChanged: (value) {
+                          context
+                              .read<SignUpBloc>()
+                              .add(SignUpValuesChangedEvent(password: value));
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      CustomEditText(
+                        title: Constants.confirmPassword,
+                        initialValue: state.inputConfirmPassword,
+                        isPasswordInput: true,
+                        textStyle: state.isShowConfirmPasswordMessage
+                            ? AppTextStyles.montserratStyle.regular14BrinkPink
+                            : AppTextStyles.montserratStyle.regular14Black,
+                        isShowMessage: state.isShowConfirmPasswordMessage,
+                        borderColor: AppColors.brinkPink,
+                        cursorColor: state.isShowConfirmPasswordMessage
+                            ? AppColors.brinkPink
+                            : AppColors.tiffanyBlue,
+                        preMessage: state.messageInputConfirmPassword,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                        ],
+                        onChanged: (value) {
+                          context.read<SignUpBloc>().add(
+                              SignUpValuesChangedEvent(confirmPassword: value));
+                        },
+                        maxLength: 32,
+                      ),
+                      const SizedBox(height: 17),
+                      RichText(
+                        textAlign: TextAlign.justify,
+                        text: TextSpan(
+                          style: AppTextStyles
+                              .montserratStyle.regular14sonicSilver,
+                          children: [
+                            const TextSpan(text: Constants.byClickingSignUp),
+                            TextSpan(
+                              text: Constants.termsOfService,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
+                            ),
+                            const TextSpan(text: Constants.and),
+                            TextSpan(
+                              text: Constants.privacyNotice,
+                              style: AppTextStyles
+                                  .montserratStyle.regular14tiffanyBlue,
+                            ),
+                            const TextSpan(text: '.'),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        CustomEditText(
-                          title: Constants.confirmPassword,
-                          initialValue: state.inputConfirmPassword,
-                          isPasswordInput: true,
-                          textStyle: state.isShowConfirmPasswordMessage
-                              ? AppTextStyles.montserratStyle.regular14BrinkPink
-                              : AppTextStyles.montserratStyle.regular14Black,
-                          isShowMessage: state.isShowConfirmPasswordMessage,
-                          borderColor: AppColors.brinkPink,
-                          cursorColor: state.isShowConfirmPasswordMessage
-                              ? AppColors.brinkPink
-                              : AppColors.tiffanyBlue,
-                          preMessage: state.messageInputConfirmPassword,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s'))
-                          ],
-                          onChanged: (value) {
-                            context.read<SignUpBloc>().add(
-                                SignUpValuesChangedEvent(
-                                    confirmPassword: value));
-                          },
-                          maxLength: 32,
-                        ),
-                        const SizedBox(height: 17),
-                        RichText(
-                          textAlign: TextAlign.justify,
-                          text: TextSpan(
-                            style: AppTextStyles
-                                .montserratStyle.regular14sonicSilver,
-                            children: [
-                              const TextSpan(text: Constants.byClickingSignUp),
-                              TextSpan(
-                                text: Constants.termsOfService,
-                                style: AppTextStyles
-                                    .montserratStyle.regular14tiffanyBlue,
-                              ),
-                              const TextSpan(text: Constants.and),
-                              TextSpan(
-                                text: Constants.privacyNotice,
-                                style: AppTextStyles
-                                    .montserratStyle.regular14tiffanyBlue,
-                              ),
-                              const TextSpan(text: '.'),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 23),
-                        CustomButton(
-                          title: Constants.signUp,
-                          titleStyle: AppTextStyles.montserratStyle.bold16White,
-                          borderColor: state.isEnableSignUp
-                              ? AppColors.tiffanyBlue
-                              : AppColors.spanishGray,
-                          backgroundColor: state.isEnableSignUp
-                              ? AppColors.tiffanyBlue
-                              : AppColors.spanishGray,
-                          onTap: state.isEnableSignUp
-                              ? () {
-                                  FocusScope.of(context).unfocus();
-                                  context
-                                      .read<SignUpBloc>()
-                                      .add(SignUpWithEmailSubmitEvent());
-                                }
-                              : null,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 23),
+                      CustomButton(
+                        title: Constants.signUp,
+                        titleStyle: AppTextStyles.montserratStyle.bold16White,
+                        borderColor: state.isEnableSignUp
+                            ? AppColors.tiffanyBlue
+                            : AppColors.spanishGray,
+                        backgroundColor: state.isEnableSignUp
+                            ? AppColors.tiffanyBlue
+                            : AppColors.spanishGray,
+                        onTap: state.isEnableSignUp
+                            ? () {
+                                FocusScope.of(context).unfocus();
+                                context
+                                    .read<SignUpBloc>()
+                                    .add(SignUpWithEmailSubmitEvent());
+                              }
+                            : null,
+                      ),
+                    ],
                   )
                 ],
               ),

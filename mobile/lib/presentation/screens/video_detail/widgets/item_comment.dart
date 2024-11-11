@@ -205,7 +205,7 @@ class _ItemCommentState extends State<ItemComment> {
   }
 
   Widget _buildDonationTag() {
-    if ((widget.commentModel?.totalDonation ?? 0) <= 0) {
+    if ((widget.commentModel?.numberOfReps ?? 0) <= 0) {
       return const SizedBox.shrink();
     }
 
@@ -218,19 +218,6 @@ class _ItemCommentState extends State<ItemComment> {
         ),
         const SizedBox(
           width: 5,
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: AppColors.rajah,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-            child: Text(widget.commentModel?.lastContentDonate ?? "",
-                maxLines: null,
-                overflow: TextOverflow.visible,
-                style: AppTextStyles.montserratStyle.bold12White),
-          ),
         ),
       ],
     );
@@ -261,18 +248,18 @@ class _ItemCommentState extends State<ItemComment> {
   Widget _buildDonationInfo() {
     return Wrap(
       children: [
-        if ((widget.commentModel?.totalDonation ?? 0) > 0)
+        if ((widget.commentModel?.numberOfReps ?? 0) > 0)
           Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             runSpacing: 4,
             children: [
               SvgPicture.asset(
-                getRepImage(widget.commentModel?.totalDonation ?? 0),
+                getRepImage(widget.commentModel?.numberOfReps ?? 0),
                 width: 14,
               ),
               const SizedBox(width: 8),
               Text(
-                "Gifted '${widget.commentModel?.totalDonation}' REPs",
+                "Gifted '${widget.commentModel?.numberOfReps}' REPs",
                 style: AppTextStyles.montserratStyle.semiBold14Rajah,
               ),
               const SizedBox(width: 12),
@@ -361,7 +348,8 @@ class _ItemCommentState extends State<ItemComment> {
             colorFilter: const ColorFilter.mode(
               AppColors.tiffanyBlue,
               BlendMode.srcIn,
-            ),            ),
+            ),
+          ),
           onSelected: (value) {
             if (value == Constants.copy) {
               _handleCopy();

@@ -44,6 +44,7 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     on<VideoDetailDeleteCommentEvent>(onVideoDetailDeleteCommentEvent);
     on<VideoDetailClearTargetCommentEvent>(
         onVideoDetailClearTargetCommentEvent);
+    on<VideoDetailLoad30CommentsEvent>(onVideoDetailLoad30CommentsEvent);
   }
 
   void _onVideoDetailInitialEvent(
@@ -224,6 +225,9 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
   void onVideoDetailLoadMoreCommentEvent(VideoDetailLoadMoreCommentsEvent event,
       Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(status: VideoDetailStatus.loading));
+    print("Video Id: ${state.videoId}");
+    print("Event Id: ${state.videoId}");
+
     final result = await commentRepository.getListCommentVideo(
         state.video?.id ?? 0,
         limit: 30,
@@ -683,8 +687,8 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
     }
     final result = await videoRepository.postViewVideo(
       videoId: state.video?.id ?? 0,
-      date: DateFormat('yyyy-MM-dd')
-          .format(state.timeStarted ?? DateTime.now()),
+      date:
+          DateFormat('yyyy-MM-dd').format(state.timeStarted ?? DateTime.now()),
       viewTime: viewTime,
     );
     result.fold((l) {
@@ -740,5 +744,27 @@ class VideoDetailBloc extends Bloc<VideoDetailEvent, VideoDetailState> {
       VideoDetailClearTargetCommentEvent event,
       Emitter<VideoDetailState> emit) async {
     emit(state.copyWith(targetReplyId: 0, targetCommentId: 0));
+  }
+
+  void onVideoDetailLoad30CommentsEvent(VideoDetailLoad30CommentsEvent event,
+      Emitter<VideoDetailState> emit) async {
+    final result =
+        await commentRepository.getListCommentVideo(event.videoId, limit: 30);
+
+    result.fold((l) {
+      emit(state.copyWith(status: VideoDetailStatus.failure, errorMessage: l));
+    }, (comments) {
+      final originalNumOfReplies = {
+        for (var comment in comments) comment.id: comment.numberOfReply,
+      };
+
+      final lastCommentId = comments.isNotEmpty ? comments.last.id : null;
+      emit(state.copyWith(
+        listComments: comments,
+        lastCommentId: lastCommentId,
+        status: VideoDetailStatus.success,
+        originalNumOfReply: originalNumOfReplies,
+      ));
+    });
   }
 }

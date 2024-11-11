@@ -405,7 +405,22 @@ class Constants {
       "Please enter a valid Visa or Credit card number only";
   static const String searchDifferenceKeyword =
       "Please try searching with a different keyword.";
-  static const String chooseAccount =
-      "User not choose account.";
-  static const String noResponse ='No response from the server';
+  static const String chooseAccount = "User not choose account.";
+  static const String noResponse = 'No response from the server';
+  static const String emailLength =
+      "Email must be between 5 and 255 characters long.";
+  static const String emailSymbol = 'Email must contain "@" symbol.';
+  static const String cannotStartWithDot =
+      "Local part cannot start or end with a dot.";
+  static const String emailLocalPart =
+      "Local part can contain only letters, digits, and the special characters ., _, -, +.";
+  static const String cannotContainDot =
+      "Local part cannot contain consecutive dots.";
+  static const String mustContainAt =
+      "Domain part must contain a valid domain name such as example.com.";
+  static const String domainDot = "Domain part cannot start or end with a dot.";
+  static const String domainConsecutiveDot =
+      "Domain part cannot contain consecutive dots.";
+  static const String lastDomain =
+      "Top-Level Domains contain only letters, such as '.com' or '.org'.";
 }

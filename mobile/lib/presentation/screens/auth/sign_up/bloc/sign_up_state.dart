@@ -11,7 +11,6 @@ enum SignUpStatus {
 
 class SignUpState extends Equatable {
   final SignUpStatus status;
-  final bool isClickSignUpWithEmail;
   final bool isEnableSignUp;
   final String inputEmail;
   final String inputPassword;
@@ -31,7 +30,6 @@ class SignUpState extends Equatable {
 
   const SignUpState({
     this.status = SignUpStatus.initial,
-    this.isClickSignUpWithEmail = false,
     this.isEnableSignUp = false,
     this.inputEmail = "",
     this.inputPassword = "",
@@ -52,7 +50,6 @@ class SignUpState extends Equatable {
 
   SignUpState copyWith({
     SignUpStatus? status,
-    bool? isClickSignUpWithEmail,
     bool? isEnableSignUp,
     String? inputEmail,
     String? inputPassword,
@@ -74,8 +71,6 @@ class SignUpState extends Equatable {
   }) {
     return SignUpState(
       status: status ?? this.status,
-      isClickSignUpWithEmail:
-          isClickSignUpWithEmail ?? this.isClickSignUpWithEmail,
       isEnableSignUp: isEnableSignUp ?? this.isEnableSignUp,
       inputEmail: inputEmail ?? this.inputEmail,
       inputPassword: inputPassword ?? this.inputPassword,
@@ -103,7 +98,6 @@ class SignUpState extends Equatable {
   @override
   List<Object?> get props => [
         status,
-        isClickSignUpWithEmail,
         isEnableSignUp,
         inputEmail,
         inputPassword,
