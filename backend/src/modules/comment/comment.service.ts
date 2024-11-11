@@ -78,7 +78,11 @@ export class CommentService {
       video.numberOfComments++;
 
       await this.videoRepository.save(video);
-      await this.sendNotificationComment(userInfo, comment.id, dto);
+
+      if (!dto?.numberOfReps) {
+        await this.sendNotificationComment(userInfo, comment.id, dto);
+      }
+
       return comment;
     } catch (error) {
       console.log(error);
@@ -109,7 +113,9 @@ export class CommentService {
       video.numberOfComments--;
       await this.videoRepository.save(video);
 
-      await this.removeNotificationComment(id);
+      if (!comment?.numberOfReps) {
+        await this.removeNotificationComment(id);
+      }
 
       await this.commentRepository.delete(id);
     } catch (error) {
