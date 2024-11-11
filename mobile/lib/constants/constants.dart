@@ -146,7 +146,7 @@ class Constants {
       "You have entered an invalid password";
   static const String invalidDateOfBirth = 'Please select your date of birth';
   static const String invalidAge =
-      'Invalid age. Age must be between 13 and 65 years old';
+      'Date of birth cannot be a future date. Please enter a valid date of birth';
   static const String sizeAvatarLimit =
       'The file size exceeds the maximum limit of 5MB. Please choose a smaller file and try again.';
   static const String allowFileType =

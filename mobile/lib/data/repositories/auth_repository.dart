@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -94,18 +93,18 @@ class AuthRepository {
       if(googleUser == null){
         return const Left("User not choose account");
       }
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
       final User? user = userCredential.user;
       final String? firebaseIdToken = await user?.getIdToken(true);
-      final String? email = googleUser?.email;
+      final String email = googleUser.email;
       LoginRequestSocial loginRequestGoogle = LoginRequestSocial(
         email: email,
         idToken: firebaseIdToken,

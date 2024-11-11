@@ -12,9 +12,9 @@ final class GiftRepsSelectedGiftEvent extends GiftRepsEvent {
   const GiftRepsSelectedGiftEvent(this.giftId);
 }
 
-final class GiftRepsSelectedTitleEvent extends GiftRepsEvent {
-  final int titleId;
-  const GiftRepsSelectedTitleEvent(this.titleId);
+final class GiftRepsOnChangeTitleEvent extends GiftRepsEvent {
+  final String title;
+  const GiftRepsOnChangeTitleEvent(this.title);
 }
 
 final class GiftRepsSendGiftEvent extends GiftRepsEvent {

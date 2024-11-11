@@ -13,7 +13,7 @@ class GiftRepsBloc extends Bloc<GiftRepsEvent, GiftRepsState> {
   GiftRepsBloc() : super(GiftRepsState.initial()) {
     on<GiftRepsInitialEvent>(_onGiftRepsInitialEvent);
     on<GiftRepsSelectedGiftEvent>(_onGiftRepsSelectedGiftEvent);
-    on<GiftRepsSelectedTitleEvent>(_onGiftRepsSelectedTitleEvent);
+    on<GiftRepsOnChangeTitleEvent>(_onGiftRepsOnChangeTitleEvent);
     on<GiftRepsSendGiftEvent>(_onGiftRepsSendGiftEvent);
   }
 
@@ -50,32 +50,41 @@ class GiftRepsBloc extends Bloc<GiftRepsEvent, GiftRepsState> {
 
   void _onGiftRepsSelectedGiftEvent(
       GiftRepsSelectedGiftEvent event, Emitter<GiftRepsState> emit) {
-    if (state.titleGiftIdSelected! < 0) {
-      emit(state.copyWith(titleGiftIdSelected: 0));
-    }
     emit(state.copyWith(giftIdSelected: event.giftId));
     final numberOfREPs = state.listGifts?[event.giftId].numberOfREPs ?? 0;
     final repOfUser = state.user?.numberOfREPs ?? 0;
 
-    if (repOfUser >= numberOfREPs) {
+    if (repOfUser >= numberOfREPs &&
+        state.donateMessage != null &&
+        state.donateMessage!.isNotEmpty) {
       emit(state.copyWith(isSendEnabled: true));
     } else {
       emit(state.copyWith(isSendEnabled: false));
     }
   }
 
-  void _onGiftRepsSelectedTitleEvent(
-      GiftRepsSelectedTitleEvent event, Emitter<GiftRepsState> emit) {
-    emit(state.copyWith(titleGiftIdSelected: event.titleId));
+  void _onGiftRepsOnChangeTitleEvent(
+      GiftRepsOnChangeTitleEvent event, Emitter<GiftRepsState> emit) {
+    emit(state.copyWith(donateMessage: event.title));
+    final numberOfREPs =
+        state.listGifts?[state.giftIdSelected ?? 0].numberOfREPs ?? 0;
+    final repOfUser = state.user?.numberOfREPs ?? 0;
+    if (repOfUser >= numberOfREPs &&
+        state.donateMessage != null &&
+        state.donateMessage!.isNotEmpty) {
+      emit(state.copyWith(isSendEnabled: true));
+    } else {
+      emit(state.copyWith(isSendEnabled: false));
+    }
   }
 
   void _onGiftRepsSendGiftEvent(
       GiftRepsSendGiftEvent event, Emitter<GiftRepsState> emit) async {
     final result = await giftsRepository.sendGift(
-        giftId: state.listGifts?[state.giftIdSelected ?? 0].id ?? 0,
-        videoId: state.videoId ?? 0,
-        content:
-            GiftRepMessageType.values[state.titleGiftIdSelected ?? 0].title);
+      giftId: state.listGifts?[state.giftIdSelected ?? 0].id ?? 0,
+      videoId: state.videoId ?? 0,
+      content: state.donateMessage ?? '',
+    );
     result.fold((l) {
       emit(state.copyWith(
         status: GiftRepsStatus.failure,
