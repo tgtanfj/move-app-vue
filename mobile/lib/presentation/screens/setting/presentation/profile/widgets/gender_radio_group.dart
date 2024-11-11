@@ -6,7 +6,8 @@ import '../../../../../components/custom_radio_item.dart';
 enum Gender {
   male('M'),
   female('F'),
-  ratherNotSay('0');
+  ratherNotSay('0'),
+  notChosen('');
 
   final String value;
 

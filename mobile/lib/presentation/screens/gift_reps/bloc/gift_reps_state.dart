@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/models/gift_model.dart';
 import 'package:move_app/data/models/rep_model.dart';
 import 'package:move_app/data/models/user_model.dart';
@@ -12,34 +11,10 @@ enum GiftRepsStatus {
   giftSuccess,
 }
 
-enum GiftRepMessageType {
-  bestWorkoutYet,
-  thankYou,
-  wellDone,
-  youHaveDoneTheUnbelievable,
-  youAreAwesome;
-
-  String get title {
-    switch (this) {
-      case GiftRepMessageType.bestWorkoutYet:
-        return Constants.bestWorkoutYet;
-      case GiftRepMessageType.thankYou:
-        return Constants.thankYou;
-      case GiftRepMessageType.wellDone:
-        return Constants.wellDone;
-      case GiftRepMessageType.youHaveDoneTheUnbelievable:
-        return Constants.youHaveDoneTheUnbelievable;
-      case GiftRepMessageType.youAreAwesome:
-        return Constants.youAreAwesome;
-    }
-  }
-}
-
 class GiftRepsState extends Equatable {
-  final GiftRepMessageType? giftRepMessageType;
   final List<GiftModel>? listGifts;
   final int? giftIdSelected;
-  final int? titleGiftIdSelected;
+  final String? donateMessage;
   final GiftRepsStatus? status;
   final bool isSendEnabled;
   final int? videoId;
@@ -47,10 +22,9 @@ class GiftRepsState extends Equatable {
   final List<RepModel>? reps;
 
   const GiftRepsState({
-    this.giftRepMessageType,
     this.listGifts = const [],
     this.giftIdSelected = -1,
-    this.titleGiftIdSelected = -1,
+    this.donateMessage = '',
     this.status = GiftRepsStatus.initial,
     this.isSendEnabled = false,
     this.user,
@@ -60,18 +34,15 @@ class GiftRepsState extends Equatable {
 
   static GiftRepsState initial() => const GiftRepsState(
         status: GiftRepsStatus.initial,
-        giftRepMessageType: GiftRepMessageType.bestWorkoutYet,
         listGifts: [],
         giftIdSelected: -1,
-        titleGiftIdSelected: -1,
         isSendEnabled: false,
       );
 
   GiftRepsState copyWith({
-    GiftRepMessageType? giftRepMessageType,
     List<GiftModel>? listGifts,
     int? giftIdSelected,
-    int? titleGiftIdSelected,
+    String? donateMessage,
     GiftRepsStatus? status,
     bool? isSendEnabled,
     UserModel? user,
@@ -79,10 +50,9 @@ class GiftRepsState extends Equatable {
     List<RepModel>? reps,
   }) {
     return GiftRepsState(
-      giftRepMessageType: giftRepMessageType ?? this.giftRepMessageType,
+      donateMessage: donateMessage ?? this.donateMessage,
       listGifts: listGifts ?? this.listGifts,
       giftIdSelected: giftIdSelected ?? this.giftIdSelected,
-      titleGiftIdSelected: titleGiftIdSelected ?? this.titleGiftIdSelected,
       status: status ?? this.status,
       isSendEnabled: isSendEnabled ?? this.isSendEnabled,
       user: user ?? this.user,
@@ -93,10 +63,9 @@ class GiftRepsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        giftRepMessageType,
+        donateMessage,
         listGifts,
         giftIdSelected,
-        titleGiftIdSelected,
         status,
         isSendEnabled,
         user,

@@ -142,8 +142,5 @@ final class ProfileState extends Equatable {
 
   bool get isEnableSaveSettings =>
       (user?.username?.isNotEmpty ?? false) &&
-      (user?.fullName?.isNotEmpty ?? false) &&
-      (user?.country?.name?.isNotEmpty ?? false) &&
-      (user?.state?.name?.isNotEmpty ?? false) &&
-      (user?.dateOfBirth?.toString().isNotEmpty ?? false);
+      (user?.gender?.isNotEmpty ?? false);
 }

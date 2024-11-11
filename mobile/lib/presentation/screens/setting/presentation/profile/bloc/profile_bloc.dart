@@ -169,36 +169,21 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     final validUsername =
         InputValidationHelper.validateUsername(state.user?.username ?? '');
-    final validFullName =
-        InputValidationHelper.validateFullName(state.user?.fullName ?? '');
+
     final validDateOfBirth =
         InputValidationHelper.validateDateOfBirth(state.user?.dateOfBirth);
-    final validCountry = InputValidationHelper.validateStringValue(
-        state.user?.country?.name ?? '');
-    final validState = InputValidationHelper.validateStringValue(
-        state.user?.state?.name ?? '');
     final validAvatar =
         await InputValidationHelper.validateImage(state.imageLocal);
     emit(state.copyWith(
       isShowUsernameMessage: validUsername != null,
-      isShowFullNameMessage: validFullName != null,
       messageInputUsername: validUsername,
-      messageInputFullName: validFullName,
       isShowDateOfBirthMessage: validDateOfBirth != null,
-      isShowCountryMessage: validCountry != null,
-      isShowStateMessage: validState != null,
       isShowUpdateMessage: validAvatar != null,
       messageSelectDateOfBirth: validDateOfBirth,
-      messageSelectCountry: validCountry,
-      messageSelectState: validState,
       messageUpdateAvatar: validAvatar,
       isShowAvatarMessage: validAvatar != null,
     ));
-    if (validUsername == null &&
-        validFullName == null &&
-        validDateOfBirth == null &&
-        validCountry == null &&
-        validState == null) {
+    if (validUsername == null && validDateOfBirth == null) {
       emit(state.copyWith(
           user: state.user?.copyWith(
               username: state.user?.username,

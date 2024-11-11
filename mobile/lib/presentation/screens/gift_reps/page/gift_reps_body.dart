@@ -6,6 +6,7 @@ import 'package:move_app/config/theme/app_icons.dart';
 import 'package:move_app/config/theme/app_text_styles.dart';
 import 'package:move_app/constants/constants.dart';
 import 'package:move_app/presentation/components/custom_button.dart';
+import 'package:move_app/presentation/components/custom_edit_text.dart';
 import 'package:move_app/presentation/screens/buy_rep/widgets/buy_rep_dialog.dart';
 import 'package:move_app/presentation/screens/gift_reps/bloc/gift_reps_bloc.dart';
 import 'package:move_app/presentation/screens/gift_reps/bloc/gift_reps_event.dart';
@@ -112,37 +113,11 @@ class _GiftRepsBodyState extends State<GiftRepsBody> {
                 const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) => GestureDetector(
-                      onTap: () {
-                        context
-                            .read<GiftRepsBloc>()
-                            .add(GiftRepsSelectedTitleEvent(index));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 15),
-                        decoration: BoxDecoration(
-                          color: index == state.titleGiftIdSelected
-                              ? AppColors.bubbles
-                              : AppColors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: index == state.titleGiftIdSelected
-                                ? AppColors.tiffanyBlue
-                                : AppColors.chineseSilver,
-                          ),
-                        ),
-                        child: Text(
-                          GiftRepMessageType.values[index].title,
-                          style: AppTextStyles.montserratStyle.bold16Black,
-                        ),
-                      ),
-                    ),
-                    separatorBuilder: (_, __) => const SizedBox(height: 4),
-                    itemCount: GiftRepMessageType.values.length,
+                  child: CustomEditText(
+                    initialValue: state.donateMessage,
+                    onChanged: (value) => context
+                        .read<GiftRepsBloc>()
+                        .add(GiftRepsOnChangeTitleEvent(value)),
                   ),
                 ),
                 const SizedBox(height: 12),
