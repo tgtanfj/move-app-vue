@@ -29,7 +29,6 @@ import {
   SelectValue
 } from '@/common/ui/select'
 import { Tabs, TabsList } from '@/common/ui/tabs'
-import { Textarea } from '@/common/ui/textarea'
 import { useToast } from '@common/ui/toast'
 
 import VideoIcon from '@assets/icons/videoIcon.vue'
@@ -39,9 +38,11 @@ import UploadVideoProgress from './UploadVideoProgress.vue'
 import { useRoute } from 'vue-router'
 import { useVideoStore } from '../../stores/videoManage'
 import { useQueryClient } from '@tanstack/vue-query'
+import { useVideoQueueStore } from '../../stores/videoQueue.store'
 
 const route = useRoute()
 const videoStore = useVideoStore()
+const videoQueueStore = useVideoQueueStore()
 const queryClient = useQueryClient()
 
 const isOpenUploadVideoModal = ref(false)
@@ -367,6 +368,26 @@ const secondButton = (tab) => {
   }
 }
 
+const startCountdown = () => {
+  videoQueueStore.isCountingVideoQueue = true
+  videoQueueStore.countdownVideoQueue = 5
+
+  const interval = setInterval(async () => {
+    videoQueueStore.countdownVideoQueue -= 1
+    if (videoQueueStore.countdownVideoQueue <= 0) {
+      clearInterval(interval)
+      videoQueueStore.isVideoQueueShow = false
+      videoQueueStore.isCountingVideoQueue = false
+      videoQueueStore.isBannedUpload = false
+      if (isVideosPage.value) {
+        await videoStore.getUploadedVideosList(10, 1)
+      }
+      queryClient.invalidateQueries('overview-analytics')
+      queryClient.invalidateQueries('videos-analytics')
+    }
+  }, 1000)
+}
+
 const thirdButton = async (tab) => {
   if (!isCommentable.value) isCommentableErr.value = 'Please select comment settings'
   if (isCommentable.value) {
@@ -422,19 +443,27 @@ const thirdButton = async (tab) => {
       formData.append('durationsVideo', totalSeconds.value)
       formData.append('video', videoInput.value)
       uploadLoading.value = true
+
+      videoQueueStore.isBannedUpload = true
+      isOpenUploadVideoDetails.value = false
+      videoQueueStore.isVideoQueueShow = true
+
+      videoQueueStore.uploadLoadingVideoQueue = true
+      videoQueueStore.tempVideoTitle = title.value
+      videoQueueStore.tempThumbnail = imagesSelected.value
+      videoQueueStore.tempWorkoutLevel = workoutLevel.value.toLowerCase()
+      videoQueueStore.tempDuration = durationText
+
       const uploadVideoData = await videoService.uploadVideo(formData)
 
       if (uploadVideoData.message === 'success') {
-        isOpenUploadVideoDetails.value = false
         uploadLoading.value = false
+        videoQueueStore.uploadLoadingVideoQueue = false
         resetField()
-        if (isVideosPage.value) {
-          await videoStore.getUploadedVideosList(10, 1)
-        }
-        queryClient.invalidateQueries('overview-analytics')
-        queryClient.invalidateQueries('videos-analytics')
+        startCountdown()
       } else {
         uploadLoading.value = false
+        videoQueueStore.uploadLoadingVideoQueue = false
         toast({
           description: 'Upload video failed',
           variant: 'destructive'
@@ -448,7 +477,11 @@ const thirdButton = async (tab) => {
 <template>
   <Dialog v-model:open="isOpenUploadVideoModal">
     <DialogTrigger as-child>
-      <Button variant="default" class="flex items-center gap-2">
+      <Button
+        :disabled="videoQueueStore.isBannedUpload"
+        variant="default"
+        class="flex items-center gap-2"
+      >
         <FileVideo2 class="text-xl" />
         <span class="text-base font-semibold -mb-1">{{ $t('button.upload_video') }}</span>
       </Button>
@@ -746,32 +779,6 @@ const thirdButton = async (tab) => {
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-center justify-start gap-8">
-                    <p class="text-[16px]">{{ $t('upload_video.search_keywords') }}</p>
-                    <p class="text-[14px] text-lightGray italic">
-                      {{ $t('upload_video.optional') }}
-                    </p>
-                  </div>
-                  <p class="text-[14px] text-lightGray">
-                    {{ $t('upload_video.search_keywords_sub') }}
-                  </p>
-                  <div>
-                    <Textarea
-                      v-model="tags"
-                      @input="(e) => handleInput(e.target.value)"
-                      class="h-[120px] resize-none"
-                      placeholder="Add tags"
-                      :maxlength="charLimit"
-                    />
-                  </div>
-                  <span
-                    class="ml-auto text-lightGray text-[14px] font-light"
-                    :class="{ 'text-red-500': charCount > charLimit }"
-                  >
-                    {{ charCount }} / {{ charLimit }} characters
-                  </span>
-                </div>
               </div>
               <div v-show="tabChange === 'settings'" class="flex flex-col gap-2">
                 <div class="flex items-center gap-4">
@@ -844,7 +851,9 @@ const thirdButton = async (tab) => {
             :disabled="uploadLoading || progress < 100"
             class="w-[170px] default mr-6 h-[40px] flex items-center justify-center"
           >
-            <span class="font-bold text-sm" v-if="!uploadLoading">{{ $t('upload_video.publish') }}</span>
+            <span class="font-bold text-sm" v-if="!uploadLoading">{{
+              $t('upload_video.publish')
+            }}</span>
             <Loading v-if="uploadLoading" />
           </Button>
         </div>
