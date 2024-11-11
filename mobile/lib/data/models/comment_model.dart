@@ -15,26 +15,25 @@ class CommentModel {
   final int? videoId;
   final LikeStatus? likeStatus;
   final bool? isLike;
-  final int? totalDonation;
+  final int? numberOfReps;
   final int? numberOfReply;
   final ChannelModel? channel;
-  final String? lastContentDonate;
 
-  CommentModel(
-      {this.id,
-      this.updatedAt,
-      this.createdAt,
-      this.deletedAt,
-      this.content,
-      this.numberOfLike,
-      this.user,
-      this.videoId,
-      this.likeStatus,
-      this.isLike,
-      this.totalDonation,
-      this.numberOfReply,
-      this.channel,
-      this.lastContentDonate});
+  CommentModel({
+    this.id,
+    this.updatedAt,
+    this.createdAt,
+    this.deletedAt,
+    this.content,
+    this.numberOfLike,
+    this.user,
+    this.videoId,
+    this.likeStatus,
+    this.isLike,
+    this.numberOfReps,
+    this.numberOfReply,
+    this.channel,
+  });
 
   String getTimeSinceCreated() {
     if (createdAt != null) {
@@ -69,39 +68,37 @@ class CommentModel {
           ? ChannelModel.fromJson(json['channel'])
           : null,
       likeStatus: status,
-      totalDonation: json['totalDonation'] as int?,
+      numberOfReps: json['numberOfReps'] as int?,
       numberOfReply: json['numberOfReply'] as int?,
-      lastContentDonate:
-          json['lastContentDonate'] is String ? json['lastContentDonate'] : '',
     );
   }
 
-  CommentModel copyWith(
-      {int? id,
-      DateTime? updatedAt,
-      DateTime? createdAt,
-      DateTime? deletedAt,
-      String? content,
-      int? numberOfLike,
-      UserModel? user,
-      LikeStatus? likeStatus,
-      int? totalDonation,
-      bool? isLike,
-      int? numberOfReply,
-      String? lastContentDonate}) {
+  CommentModel copyWith({
+    int? id,
+    DateTime? updatedAt,
+    DateTime? createdAt,
+    DateTime? deletedAt,
+    String? content,
+    int? numberOfLike,
+    UserModel? user,
+    LikeStatus? likeStatus,
+    int? numberOfReps,
+    bool? isLike,
+    int? numberOfReply,
+  }) {
     return CommentModel(
-        id: id ?? this.id,
-        updatedAt: updatedAt ?? this.updatedAt,
-        createdAt: createdAt ?? this.createdAt,
-        deletedAt: deletedAt ?? this.deletedAt,
-        content: content ?? this.content,
-        numberOfLike: numberOfLike ?? this.numberOfLike,
-        user: user ?? this.user,
-        likeStatus: likeStatus ?? this.likeStatus,
-        totalDonation: totalDonation ?? this.totalDonation,
-        isLike: isLike ?? this.isLike,
-        numberOfReply: numberOfReply ?? this.numberOfReply,
-        lastContentDonate: lastContentDonate ?? this.lastContentDonate);
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      content: content ?? this.content,
+      numberOfLike: numberOfLike ?? this.numberOfLike,
+      user: user ?? this.user,
+      likeStatus: likeStatus ?? this.likeStatus,
+      numberOfReps: numberOfReps ?? this.numberOfReps,
+      isLike: isLike ?? this.isLike,
+      numberOfReply: numberOfReply ?? this.numberOfReply,
+    );
   }
 
   Map<String, dynamic> toJson() {

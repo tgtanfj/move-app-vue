@@ -11,22 +11,44 @@ class InputValidationHelper {
 
   static String? validateEmail(String email) {
     if (email.length < 5 || email.length > 255) {
-      return Constants.invalidEmail;
+      return Constants.emailLength;
     }
 
-    const emailPattern =
-        r'^[a-zA-Z0-9]+([._+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-]?[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$';
-    final regExp = RegExp(emailPattern);
-
-    if (!regExp.hasMatch(email)) {
-      return Constants.invalidEmail;
+    final atSymbolCount = '@'.allMatches(email).length;
+    if (atSymbolCount != 1) {
+      return Constants.emailSymbol;
     }
 
     final parts = email.split('@');
     final localPart = parts[0];
     final domainPart = parts[1];
-    if (localPart.contains('..') || domainPart.contains('..')) {
-      return Constants.invalidEmail;
+
+    final localPartRegex = RegExp(r'^[a-zA-Z0-9._+-]+$');
+    if (!localPartRegex.hasMatch(localPart)) {
+      return Constants.emailLocalPart;
+    }
+    if (localPart.startsWith('.') || localPart.endsWith('.')) {
+      return Constants.cannotStartWithDot;
+    }
+    if (localPart.contains('..')) {
+      return Constants.cannotContainDot;
+    }
+
+    final domainRegex = RegExp(r'^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$');
+    if (!domainRegex.hasMatch(domainPart)) {
+      return Constants.mustContainAt;
+    }
+    if (domainPart.startsWith('.') || domainPart.endsWith('.')) {
+      return Constants.domainDot;
+    }
+    if (domainPart.contains('..')) {
+      return Constants.domainConsecutiveDot;
+    }
+
+    final domainSections = domainPart.split('.');
+    final tld = domainSections.last;
+    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(tld)) {
+      return Constants.lastDomain;
     }
 
     return null;

@@ -8,19 +8,8 @@ import 'package:move_app/utils/input_validation_helper.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(const SignUpState()) {
-    on<SignUpClickSignUpWithEmailEvent>(onSignUpClickSignUpWithEmailEvent);
     on<SignUpValuesChangedEvent>(onSignUpValuesChangedEvent);
     on<SignUpWithEmailSubmitEvent>(onSignUpWithEmailSubmitEvent);
-
-    on<SignUpWithFacebookEvent>(_onSignUpWithFacebookEvent);
-    on<SignUpWithGoogleEvent>(_onSignUpWithGoogleEvent);
-  }
-
-  void onSignUpClickSignUpWithEmailEvent(
-    SignUpClickSignUpWithEmailEvent event,
-    Emitter<SignUpState> emit,
-  ) {
-    emit(state.copyWith(isClickSignUpWithEmail: true));
   }
 
   void onSignUpValuesChangedEvent(
@@ -116,52 +105,6 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
           ));
         },
       );
-    }
-  }
-
-  void _onSignUpWithGoogleEvent(
-      SignUpWithGoogleEvent event, Emitter emit) async {
-    emit(state.copyWith(status: SignUpStatus.loading));
-    final user = await AuthRepository().googleLogin();
-    try {
-      // ignore: unnecessary_null_comparison
-      if (user != null) {
-        emit(state.copyWith(
-          status: SignUpStatus.success,
-          googleAccount: user.toString(),
-        ));
-      } else {
-        emit(state.copyWith(
-          status: SignUpStatus.error,
-        ));
-      }
-    } catch (error) {
-      emit(state.copyWith(
-        status: SignUpStatus.error,
-      ));
-    }
-  }
-
-  void _onSignUpWithFacebookEvent(
-      SignUpWithFacebookEvent event, Emitter emit) async {
-    emit(state.copyWith(status: SignUpStatus.loading));
-    final facebookAccount = await AuthRepository().loginWithFacebook();
-    try {
-      // ignore: unnecessary_null_comparison
-      if (facebookAccount != null) {
-        emit(state.copyWith(
-          status: SignUpStatus.success,
-          facebookAccount: facebookAccount.toString(),
-        ));
-      } else {
-        emit(state.copyWith(
-          status: SignUpStatus.error,
-        ));
-      }
-    } catch (error) {
-      emit(state.copyWith(
-        status: SignUpStatus.error,
-      ));
     }
   }
 }
