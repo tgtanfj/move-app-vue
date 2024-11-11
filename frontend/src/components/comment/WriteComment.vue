@@ -78,8 +78,9 @@ const handleFocus = () => {
 
 const handleClickInput = () => {
   if (!authStore.accessToken) {
-    openLoginStore.toggleOpenLogin()
     isFocused.value = false
+    openLoginStore.toggleOpenLogin()
+    cancelComment()
     handleBlur()
   }
 }
@@ -91,7 +92,7 @@ const handleImageError = (event) => {
 
 <template>
   <div class="w-full flex flex-col items-end gap-4">
-    <div class="w-full flex items-center gap-4">
+    <div v-if="authStore.accessToken" class="w-full flex items-center gap-4">
       <img
         @error="handleImageError"
         :src="authStore.user.avatar || userAvatar || defaultAvatar"
@@ -99,7 +100,6 @@ const handleImageError = (event) => {
       />
       <Input
         v-model="comment"
-        @click="handleClickInput"
         @focus="handleFocus"
         @keydown.enter="postCommentVideo"
         @keydown.esc="handleCloseEsc"
@@ -107,6 +107,19 @@ const handleImageError = (event) => {
         placeholder="Write a comment"
         class="outline-none rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-5 px-0 placeholder:text-[13px] placeholder:text-[#666666]"
       />
+    </div>
+    <div v-else class="w-full flex items-center gap-4">
+      <img
+        @error="handleImageError"
+        :src="authStore.user.avatar || userAvatar || defaultAvatar"
+        class="w-[40px] h-[40px] rounded-full object-cover"
+      />
+      <div
+        @click="handleClickInput"
+        class="outline-none rounded-none border-t-0 border-r-0 border-l-0 border-b-2 border-[#e2e2e2] py-2 w-full"
+      >
+        <p class="text-[13px] text-[#666666]">Write a comment</p>
+      </div>
     </div>
     <div v-if="isFocused" class="flex items-center justify-end gap-4">
       <Dialog v-model:open="isCancelComment">

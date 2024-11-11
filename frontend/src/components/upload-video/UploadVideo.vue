@@ -453,6 +453,8 @@ const thirdButton = async (tab) => {
       videoQueueStore.tempThumbnail = imagesSelected.value
       videoQueueStore.tempWorkoutLevel = workoutLevel.value.toLowerCase()
       videoQueueStore.tempDuration = durationText
+      const foundedCategory = categories.value.find((item) => item?.id === +category.value)
+      videoQueueStore.tempCategory = foundedCategory
 
       const uploadVideoData = await videoService.uploadVideo(formData)
 

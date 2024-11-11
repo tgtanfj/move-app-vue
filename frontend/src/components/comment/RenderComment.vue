@@ -330,7 +330,7 @@ const handleImageError = (event) => {
         <div class="px-3 w-full pb-2 flex items-start" :id="item.id">
           <div class="flex flex-col gap-1 w-full pr-10">
             <div class="flex items-center justify-start gap-2">
-              <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+              <RepsSenderIcon class="mb-1" v-if="item.numberOfReps !== null" />
               <div
                 class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
                 v-if="item?.lastContentDonate"
@@ -345,10 +345,10 @@ const handleImageError = (event) => {
               <div v-if="item.user.channel" class="flex items-center">
                 <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
               </div>
-              <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
-                <RenderIconsReps :numberOfReps="item.totalDonation" />
+              <div v-if="item.numberOfReps !== null" class="flex items-end gap-2">
+                <RenderIconsReps :numberOfReps="item.numberOfReps" />
                 <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                  Gifted {{ item.totalDonation }} REPs
+                  Gifted {{ item.numberOfReps }} REPs
                 </p>
               </div>
               <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -511,7 +511,7 @@ const handleImageError = (event) => {
                   <div class="flex items-center justify-start gap-2">
                     <RepsSenderIcon
                       class="mb-1"
-                      v-if="myReplyPerComment[item.id]?.totalDonation !== 0"
+                      v-if="myReplyPerComment[item.id]?.numberOfReps !== null"
                     />
                     <div
                       class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
@@ -530,12 +530,12 @@ const handleImageError = (event) => {
                       <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                     </div>
                     <div
-                      v-if="myReplyPerComment[item.id].totalDonation !== 0"
+                      v-if="myReplyPerComment[item.id].numberOfReps !== null"
                       class="flex items-end gap-2"
                     >
-                      <RenderIconsReps :numberOfReps="myReplyPerComment[item.id].totalDonation" />
+                      <RenderIconsReps :numberOfReps="myReplyPerComment[item.id].numberOfReps" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                        Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
+                        Gifted {{ myReplyPerComment[item.id].numberOfReps }} REPs
                       </p>
                     </div>
                     <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -643,7 +643,7 @@ const handleImageError = (event) => {
                 />
                 <div class="flex flex-col gap-1 justify-between w-full">
                   <div class="flex items-center justify-start gap-2">
-                    <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
+                    <RepsSenderIcon class="mb-1" v-if="reply?.numberOfReps !== null" />
                     <div
                       class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
                       v-if="reply?.lastContentDonate"
@@ -658,10 +658,10 @@ const handleImageError = (event) => {
                     <div v-if="reply.user.channel" class="flex items-center">
                       <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                     </div>
-                    <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
-                      <RenderIconsReps :numberOfReps="reply?.totalDonation" />
+                    <div v-if="reply.numberOfReps !== null" class="flex items-end gap-2">
+                      <RenderIconsReps :numberOfReps="reply?.numberOfReps" />
                       <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                        Gifted {{ reply.totalDonation }} REPs
+                        Gifted {{ reply.numberOfReps }} REPs
                       </p>
                     </div>
                     <p class="text-[12px] text-[#666666] -mb-[2px]">
