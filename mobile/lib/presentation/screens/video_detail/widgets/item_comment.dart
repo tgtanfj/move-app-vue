@@ -59,7 +59,7 @@ class _ItemCommentState extends State<ItemComment> {
     Clipboard.setData(ClipboardData(text: widget.commentModel?.content ?? ""));
 
     setState(() => isShowTextCopy = true);
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 15), () {
       setState(() => isShowTextCopy = false);
     });
   }
@@ -358,8 +358,10 @@ class _ItemCommentState extends State<ItemComment> {
           offset: const Offset(0, -70),
           icon: SvgPicture.asset(
             AppIcons.dots.svgAssetPath,
-            color: AppColors.tiffanyBlue,
-          ),
+            colorFilter: const ColorFilter.mode(
+              AppColors.tiffanyBlue,
+              BlendMode.srcIn,
+            ),            ),
           onSelected: (value) {
             if (value == Constants.copy) {
               _handleCopy();

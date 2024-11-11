@@ -123,17 +123,16 @@ class _LoginBodyState extends State<LoginBody>
                                         ),
                                       );
                                 },
-                                isShowMessage: state.isShowEmailMessage,
-                                textStyle: state.isShowEmailMessage
+                                isShowErrorBorder: state.isShowErrorBorder,
+                                textStyle: state.isShowErrorBorder
                                     ? AppTextStyles
                                         .montserratStyle.regular14BrinkPink
                                     : AppTextStyles
                                         .montserratStyle.regular14Black,
                                 borderColor: AppColors.brinkPink,
-                                cursorColor: state.isShowEmailMessage
+                                cursorColor: state.isShowErrorBorder
                                     ? AppColors.brinkPink
                                     : AppColors.tiffanyBlue,
-                                preMessage: state.messageInputEmail,
                               ),
                               const SizedBox(height: 12),
                               CustomEditText(
@@ -197,6 +196,7 @@ class _LoginBodyState extends State<LoginBody>
                                     : AppColors.spanishGray,
                                 onTap: state.isEnabled
                                     ? () {
+                                        FocusScope.of(context).unfocus();
                                         context.read<LoginBloc>().add(
                                               LoginWithEmailPasswordEvent(),
                                             );

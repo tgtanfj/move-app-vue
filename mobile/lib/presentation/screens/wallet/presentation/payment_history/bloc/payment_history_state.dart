@@ -70,7 +70,7 @@ final class PaymentHistoryState extends Equatable {
       endDate: endDate ?? this.endDate,
       paymentHistoryList: paymentHistoryList ?? this.paymentHistoryList,
       currentPage: currentPage ?? this.currentPage,
-      totalResult: total ?? this.totalResult,
+      totalResult: total ?? totalResult,
       startResult: startResult ?? this.startResult,
       endResult: endResult ?? this.endResult,
     );

@@ -20,6 +20,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<NotificationsLoadMoreEvent>(_onNotificationsLoadMoreEvent);
     on<NotificationMarkAsReadEvent>(_onNotificationMarkAsReadEvent);
     on<NotificationReceivedEvent>(_onNotificationReceivedEvent);
+    on<NotificationTimeUpdateEvent>(_onNotificationTimeUpdateEvent);
   }
 
   Future<void> _onNotificationInitialEvent(
@@ -91,6 +92,20 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     });
   }
 
+  void _onNotificationTimeUpdateEvent(
+      NotificationTimeUpdateEvent event, Emitter<NotificationState> emit) {
+    if (state.listNotifications != null) {
+      final updatedNotifications = state.listNotifications!.map((notification) {
+        final updatedNotification = notification.copyWith(
+          timestamp: notification.timestamp,
+        );
+        return updatedNotification;
+      }).toList();
+
+      emit(state.copyWith(listNotifications: updatedNotifications));
+    }
+  }
+
   @override
   Future<void> close() {
     _notificationSubscription?.cancel();
@@ -99,7 +114,6 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Future<void> _onNotificationMarkAsReadEvent(NotificationMarkAsReadEvent event,
       Emitter<NotificationState> emit) async {
-
     try {
       int userId = SharedPrefer().getUserId();
       bool isUpdated =
@@ -115,8 +129,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         }).toList();
 
         emit(state.copyWith(
-            status: NotificationStatus.success,
-            listNotifications: updatedNotifications,));
+          status: NotificationStatus.success,
+          listNotifications: updatedNotifications,
+        ));
       } else {
         emit(state.copyWith(status: NotificationStatus.failure));
       }
