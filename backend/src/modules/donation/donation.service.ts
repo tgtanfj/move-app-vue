@@ -9,6 +9,7 @@ import { VideoService } from '../video/video.service';
 import { DonationDto } from './dto/donation.dto';
 import { DonationRepository } from './repositories/donation.repository';
 import { GiftPackageRepository } from './repositories/gift-package.repository';
+import { CommentService } from '../comment/comment.service';
 
 @Injectable()
 export class DonationService {
@@ -20,6 +21,7 @@ export class DonationService {
     private readonly notificationService: NotificationService,
     private readonly userService: UserService,
     private readonly i18n: I18nService,
+    private readonly commentService: CommentService,
   ) {}
 
   async getGiftPackages() {
@@ -29,7 +31,7 @@ export class DonationService {
   async donation(userInfo: User, donationDto: DonationDto) {
     try {
       const userId = userInfo.id;
-      const { videoId, giftPackageId } = donationDto;
+      const { videoId, giftPackageId, ...commentDto } = donationDto;
 
       const giftPackage = await this.giftPackageRepository.findOneGiftPackage(giftPackageId);
 
@@ -43,6 +45,12 @@ export class DonationService {
       const userREPs: number = userInfo.numberOfREPs - giftPackage.numberOfREPs;
 
       await this.donationRepository.donation(userId, donationDto);
+
+      await this.commentService.create(userInfo, {
+        videoId,
+        numberOfReps: +giftPackage.numberOfREPs,
+        ...commentDto,
+      });
 
       await this.channelService.editChannel(channel.id, { totalREPs });
 

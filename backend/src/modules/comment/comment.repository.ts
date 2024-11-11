@@ -1,5 +1,4 @@
 import { CommentReaction } from '@/entities/comment-reaction.entity';
-import { Donation } from '@/entities/donation.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, LessThan, MoreThan, Repository, TreeRepository, UpdateResult } from 'typeorm';
@@ -14,8 +13,6 @@ export class CommentRepository {
     private readonly commentRepository: TreeRepository<Comment>,
     @InjectRepository(CommentReaction)
     private readonly commentReactionRepository: Repository<CommentReaction>,
-    @InjectRepository(Donation)
-    private readonly donationRepository: Repository<Donation>,
   ) {}
 
   async getNumberOfComments(videoId: number): Promise<number> {
@@ -75,26 +72,18 @@ export class CommentRepository {
 
     const comments = await queryBuilder.getMany();
 
-    const enrichedComments = await Promise.all(
-      comments.map(async (comment) => {
-        const totalDonation = await this.getTotalDonations(comment.user.id, comment.video.id);
-        const lastContentDonate = await this.getLastContentDonate(comment.user.id, comment.video.id);
-        return { ...comment, totalDonation, lastContentDonate };
-      }),
-    );
-
-    enrichedComments.sort((a, b) => {
+    comments.sort((a, b) => {
       if (sortBy === 'createdAt') {
         if (b.createdAt.getTime() !== a.createdAt.getTime()) {
           return b.createdAt.getTime() - a.createdAt.getTime();
         }
-        if (b.totalDonation !== a.totalDonation) {
-          return b.totalDonation - a.totalDonation;
+        if (b.numberOfReps !== a.numberOfReps) {
+          return b.numberOfReps - a.numberOfReps;
         }
         return b.numberOfLike - a.numberOfLike;
       } else if (sortBy === 'receivedReps') {
-        if (b.totalDonation !== a.totalDonation) {
-          return b.totalDonation - a.totalDonation;
+        if (b.numberOfReps !== a.numberOfReps) {
+          return b.numberOfReps - a.numberOfReps;
         }
         if (b.createdAt.getTime() !== a.createdAt.getTime()) {
           return b.createdAt.getTime() - a.createdAt.getTime();
@@ -104,10 +93,10 @@ export class CommentRepository {
       return 0;
     });
 
-    const totalItemCount = enrichedComments.length;
+    const totalItemCount = comments.length;
     const totalPages = Math.ceil(totalItemCount / pageSize);
 
-    const paginatedData = enrichedComments.slice((page - 1) * pageSize, page * pageSize);
+    const paginatedData = comments.slice((page - 1) * pageSize, page * pageSize);
 
     const itemFrom = (page - 1) * pageSize + 1;
     const itemTo = Math.min(itemFrom + paginatedData.length - 1, totalItemCount);
@@ -202,12 +191,11 @@ export class CommentRepository {
         },
       },
     });
-    const videoId = comment.parent ? comment.parent.video.id : comment.video.id;
-    const { parent, video, ...commentDetails } = await this.addInformation(comment, videoId, userId);
+    const { parent, video, ...commentDetails } = await this.checkMyLike(comment, userId);
     return commentDetails;
   }
 
-  async getComments(condition: any, videoId: number, limit: number, order: boolean, userId?: number) {
+  async getComments(condition: any, limit: number, order: boolean, userId?: number) {
     const comments = await this.commentRepository.find({
       where: condition,
       relations: ['user', 'user.channel'],
@@ -227,9 +215,7 @@ export class CommentRepository {
       take: limit,
     });
 
-    const listComments = await Promise.all(
-      comments.map((comment) => this.addInformation(comment, videoId, userId)),
-    );
+    const listComments = await Promise.all(comments.map((comment) => this.checkMyLike(comment, userId)));
 
     return listComments;
   }
@@ -241,7 +227,7 @@ export class CommentRepository {
       whereCondition.id = cursor ? LessThan(cursor) : undefined;
     }
 
-    const data = await this.getComments(whereCondition, videoId, limit, false, userId);
+    const data = await this.getComments(whereCondition, limit, false, userId);
 
     return data;
   }
@@ -252,8 +238,7 @@ export class CommentRepository {
     if (cursor) {
       whereCondition.id = cursor ? MoreThan(cursor) : undefined;
     }
-    const videoId = (await this.getOneWithVideo(id)).video.id;
-    const data = await this.getComments(whereCondition, videoId, limit, true, userId);
+    const data = await this.getComments(whereCondition, limit, true, userId);
 
     return data;
   }
@@ -268,53 +253,15 @@ export class CommentRepository {
     });
   }
 
-  async getTotalDonations(userId: number, videoId: number): Promise<number> {
-    const donations = await this.donationRepository.find({
-      where: {
-        user: { id: userId },
-        video: { id: videoId },
-      },
-      relations: {
-        giftPackage: true,
-      },
-    });
-
-    const totalDonations = donations.reduce((total, donation) => {
-      return total + donation.giftPackage.numberOfREPs;
-    }, 0);
-
-    return totalDonations;
-  }
-
-  private async addInformation(comment: Comment, videoId: number, userId?: number) {
-    const [reactions, donation, lastContentDonate] = await Promise.all([
-      this.getReactionsInComment(comment.id),
-      this.getTotalDonations(comment.user?.id, videoId),
-      this.getLastContentDonate(comment.user?.id, videoId),
-    ]);
+  private async checkMyLike(comment: Comment, userId?: number) {
+    const reactions = await this.getReactionsInComment(comment.id);
 
     const checkLike = userId ? reactions.find((reaction) => reaction.user?.id === userId) : undefined;
 
     return {
       ...comment,
       isLike: checkLike?.isLike,
-      totalDonation: donation,
-      lastContentDonate,
     };
-  }
-
-  async getLastContentDonate(userId: number, videoId: number) {
-    const donations = await this.donationRepository.findOne({
-      where: {
-        user: { id: userId },
-        video: { id: videoId },
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-    });
-
-    return donations?.content;
   }
 
   async create(userId: number, dto: CreateCommentDto) {
@@ -344,13 +291,9 @@ export class CommentRepository {
 
     const newComment = this.commentRepository.create(data);
     const comment = await this.commentRepository.save(newComment);
-    const [commentRes, totalDonation, lastContentDonate] = await Promise.all([
-      this.getOneWithUser(comment.id),
-      this.getTotalDonations(userId, videoId),
-      this.getLastContentDonate(userId, videoId),
-    ]);
+    const commentRes = await this.getOneWithUser(comment.id);
 
-    return { ...commentRes, totalDonation, lastContentDonate };
+    return commentRes;
   }
 
   async update(commentId: number, dto: UpdateCommentDto | Partial<Comment>): Promise<UpdateResult> {
