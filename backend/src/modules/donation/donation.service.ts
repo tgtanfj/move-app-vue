@@ -46,7 +46,7 @@ export class DonationService {
 
       await this.donationRepository.donation(userId, donationDto);
 
-      await this.commentService.create(userInfo, {
+      const commentDonate = await this.commentService.create(userInfo, {
         videoId,
         numberOfReps: +giftPackage.numberOfREPs,
         ...commentDto,
@@ -89,6 +89,8 @@ export class DonationService {
         };
         await this.notificationService.sendOneToOneNotification(receiver.user.id, dataNotification);
       }
+
+      return commentDonate;
     } catch (error) {
       throw new BadRequestException(error);
     }
