@@ -27,7 +27,7 @@ class _GiftRepsBodyState extends State<GiftRepsBody> {
     return BlocConsumer<GiftRepsBloc, GiftRepsState>(
         listener: (context, state) {
       if (state.status == GiftRepsStatus.giftSuccess) {
-        Navigator.pop(context);
+        Navigator.pop(context, true);
         showDialog(
           context: context,
           builder: (BuildContext context) {

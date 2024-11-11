@@ -409,7 +409,7 @@ class Constants {
   static const String noResponse = 'No response from the server';
   static const String emailLength =
       "Email must be between 5 and 255 characters long.";
-  static const String emailSymbol = 'Email must contain "\@" symbol.';
+  static const String emailSymbol = 'Email must contain "@" symbol.';
   static const String cannotStartWithDot =
       "Local part cannot start or end with a dot.";
   static const String emailLocalPart =

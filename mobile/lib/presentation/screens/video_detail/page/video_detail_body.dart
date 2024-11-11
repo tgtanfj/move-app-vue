@@ -669,6 +669,12 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   builder: (BuildContext context) {
                     return GiftRepsDialog(videoId: state.video?.id ?? 0);
                   },
+                ).then(
+                  (value) {
+                    context.read<VideoDetailBloc>().add(
+                        VideoDetailLoad30CommentsEvent(
+                            videoId: state.video?.id ?? 0));
+                  },
                 );
               }
             },

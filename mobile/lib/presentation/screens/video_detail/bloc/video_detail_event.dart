@@ -197,3 +197,12 @@ class VideoDetailClearTargetCommentEvent extends VideoDetailEvent {
   @override
   List<Object?> get props => [];
 }
+
+class VideoDetailLoad30CommentsEvent extends VideoDetailEvent {
+  final int videoId;
+
+  const VideoDetailLoad30CommentsEvent({required this.videoId});
+
+  @override
+  List<Object?> get props => [videoId];
+}
