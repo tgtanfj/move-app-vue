@@ -292,7 +292,7 @@ const handleImageError = (event) => {
         />
         <div class="flex flex-col gap-1 w-full">
           <div class="flex items-center justify-start gap-2">
-            <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== 0" />
+            <RepsSenderIcon class="mb-1" v-if="item.numberOfReps !== null" />
             <div
               class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
               v-if="item?.lastContentDonate"
@@ -307,10 +307,10 @@ const handleImageError = (event) => {
             <div v-if="item.user.channel" class="flex items-center">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
             </div>
-            <div v-if="item.totalDonation !== 0" class="flex items-end gap-2">
-              <RenderIconsReps :numberOfReps="item?.totalDonation" />
+            <div v-if="item.numberOfReps !== null" class="flex items-end gap-2">
+              <RenderIconsReps :numberOfReps="item?.numberOfReps" />
               <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                Gifted {{ item.totalDonation }} REPs
+                Gifted {{ item.numberOfReps }} REPs
               </p>
             </div>
             <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -479,7 +479,7 @@ const handleImageError = (event) => {
                 <div class="flex items-center justify-start gap-2">
                   <RepsSenderIcon
                     class="mb-1"
-                    v-if="myReplyPerComment[item.id]?.totalDonation !== 0"
+                    v-if="myReplyPerComment[item.id]?.numberOfReps !== null"
                   />
                   <div
                     class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
@@ -498,12 +498,12 @@ const handleImageError = (event) => {
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                   </div>
                   <div
-                    v-if="myReplyPerComment[item.id].totalDonation !== 0"
+                    v-if="myReplyPerComment[item.id].numberOfReps !== null"
                     class="flex items-end gap-2"
                   >
-                    <RenderIconsReps :numberOfReps="myReplyPerComment[item.id]?.totalDonation" />
+                    <RenderIconsReps :numberOfReps="myReplyPerComment[item.id]?.numberOfReps" />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                      Gifted {{ myReplyPerComment[item.id].totalDonation }} REPs
+                      Gifted {{ myReplyPerComment[item.id].numberOfReps }} REPs
                     </p>
                   </div>
                   <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -601,7 +601,7 @@ const handleImageError = (event) => {
               />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-start gap-2">
-                  <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== 0" />
+                  <RepsSenderIcon class="mb-1" v-if="reply?.numberOfReps !== null" />
                   <div
                     class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
                     v-if="reply?.lastContentDonate"
@@ -616,10 +616,10 @@ const handleImageError = (event) => {
                   <div v-if="reply.user.channel" class="flex items-center">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                   </div>
-                  <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
-                    <RenderIconsReps :numberOfReps="reply?.totalDonation" />
+                  <div v-if="reply.numberOfReps !== null" class="flex items-end gap-2">
+                    <RenderIconsReps :numberOfReps="reply?.numberOfReps" />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
-                      Gifted {{ reply.totalDonation }} REPs
+                      Gifted {{ reply.numberOfReps }} REPs
                     </p>
                   </div>
                   <p class="text-[12px] text-[#666666] -mb-[2px]">
@@ -714,36 +714,33 @@ const handleImageError = (event) => {
     </TableCell>
     <TableCell class="w-[15%] h-full align-top">
       <div class="flex mb-auto">
-        <template v-if="item?.totalDonation > 0">
-          <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
+        <template v-if="item?.numberOfReps !== null">
+          <div v-if="item.numberOfReps <= 999" class="flex items-center justify-center gap-2">
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GrayIconImg.png" />
-            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+            <p class="text-[16px] font-bold">{{ item?.numberOfReps }}</p>
           </div>
           <div
-            v-else-if="item.totalDonation <= 4999"
+            v-else-if="item.numberOfReps <= 4999"
             g
             class="flex items-center justify-center gap-2"
           >
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GreenIconImg.png" />
-            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+            <p class="text-[16px] font-bold">{{ item?.numberOfReps }}</p>
           </div>
-          <div
-            v-else-if="item.totalDonation <= 9999"
-            class="flex items-center justify-center gap-2"
-          >
+          <div v-else-if="item.numberOfReps <= 9999" class="flex items-center justify-center gap-2">
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/PinkIconImg.png" />
-            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+            <p class="text-[16px] font-bold">{{ item?.numberOfReps }}</p>
           </div>
           <div
-            v-else-if="item.totalDonation <= 24999"
+            v-else-if="item.numberOfReps <= 24999"
             class="flex items-center justify-center gap-2"
           >
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/BlueIconImg.png" />
-            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+            <p class="text-[16px] font-bold">{{ item?.numberOfReps }}</p>
           </div>
           <div v-else class="flex items-center justify-center gap-2">
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/YellowIconImg.png" />
-            <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
+            <p class="text-[16px] font-bold">{{ item?.numberOfReps }}</p>
           </div>
         </template>
         <span class="font-bold" v-else>-</span>

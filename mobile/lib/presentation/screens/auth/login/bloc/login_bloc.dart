@@ -45,6 +45,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         isEnabled: event.email.isNotEmpty && event.password.isNotEmpty,
         isShowEmailMessage: isShowEmailMessage,
         isShowPasswordMessage: isShowPasswordMessage,
+        isShowErrorBorder: false,
       ),
     );
   }
@@ -101,6 +102,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           status: LoginStatus.failure,
           isShowPasswordMessage: true,
           messageInputPassword: l,
+          isShowErrorBorder: true,
+          messageInputEmail: l,
         ),
       );
     }, (r) {

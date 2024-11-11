@@ -37,3 +37,8 @@ final class NotificationReceivedEvent extends NotificationEvent {
   @override
   List<Object?> get props => [notification];
 }
+class NotificationTimeUpdateEvent extends NotificationEvent {
+  @override
+  List<Object?> get props => [];
+}
+

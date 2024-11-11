@@ -11,6 +11,7 @@ import { DonationService } from './donation.service';
 import { DonationRepository } from './repositories/donation.repository';
 import { GiftPackageRepository } from './repositories/gift-package.repository';
 import { NotificationModule } from '../notification/notification.module';
+import { CommentModule } from '../comment/comment.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationModule } from '../notification/notification.module';
     forwardRef(() => UserModule),
     forwardRef(() => ChannelModule),
     forwardRef(() => VideoModule),
+    CommentModule,
     NotificationModule,
   ],
   controllers: [DonationController],

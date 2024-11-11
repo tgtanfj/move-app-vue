@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -21,6 +23,23 @@ class NotificationBody extends StatefulWidget {
 }
 
 class _NotificationBodyState extends State<NotificationBody> {
+  Timer? _timer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _timer ??= Timer.periodic(const Duration(seconds: 60), (timer) {
+      context.read<NotificationBloc>().add(NotificationTimeUpdateEvent());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<NotificationBloc, NotificationState>(

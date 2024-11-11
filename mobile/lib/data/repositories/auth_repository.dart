@@ -5,6 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:move_app/constants/api_urls.dart';
+import 'package:move_app/constants/constants.dart';
 import 'package:move_app/data/repositories/user_repository.dart';
 
 import '../data_sources/local/shared_preferences.dart';
@@ -18,14 +19,16 @@ class AuthRepository {
 
   final ApiServiceAdditional apiServiceAdditional = ApiServiceAdditional();
 
-  Future<Response> signUpWithEmail(UserModel userModel, String otp) async {
+  Future<Either<String, Response>> signUpWithEmail(
+      UserModel userModel, String otp) async {
     try {
       final data = {
         "email": userModel.email,
         "password": userModel.password,
         "referralCode": userModel.referralCode,
-        "otp": otp
+        "otp": otp,
       };
+
       final signUpResponse = await apiService.request(
         APIRequestMethod.post,
         ApiUrls.signUpEndpoint,
@@ -37,29 +40,28 @@ class AuthRepository {
           },
         ),
       );
+
       if (signUpResponse.statusCode == 201) {
         await loginWithEmailPassword(userModel);
+        return Right(signUpResponse);
+      } else {
+        return Left('${signUpResponse.statusCode}');
       }
-
-      return signUpResponse;
     } catch (e) {
       if (e is DioException) {
-        if (e.response != null) {
-          final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
-          throw SignUpException(errorMessage);
-        } else {
-          throw SignUpException("${e.message}");
-        }
+        final errorMessage =
+            e.response?.data['message'] ?? Constants.unknownErrorOccurred;
+        return Left(errorMessage);
       }
-      rethrow;
+      return Left(e.toString());
     }
   }
 
-  Future<Response> sendVerificationCode(String email) async {
+  Future<Either<String, Response>> sendVerificationCode(String email) async {
     try {
       final data = {"email": email};
-      return await apiService.request(
+
+      final response = await apiService.request(
         APIRequestMethod.post,
         ApiUrls.sendVerificationCodeEndpoint,
         data: data,
@@ -70,17 +72,14 @@ class AuthRepository {
           },
         ),
       );
+      return Right(response);
     } catch (e) {
       if (e is DioException) {
-        if (e.response != null) {
-          final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
-          throw SignUpException(errorMessage);
-        } else {
-          throw SignUpException("${e.message}");
-        }
+        final errorMessage =
+            e.response?.data['message'] ?? Constants.unknownErrorOccurred;
+        return Left(errorMessage);
       }
-      rethrow;
+      return Left(e.toString());
     }
   }
 
@@ -90,8 +89,8 @@ class AuthRepository {
         scopes: ['email'],
       );
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if(googleUser == null){
-        return const Left("User not choose account");
+      if (googleUser == null) {
+        return const Left(Constants.chooseAccount);
       }
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -116,7 +115,8 @@ class AuthRepository {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
           return Left(errorMessage);
         } else {
           return Left(e.message.toString());
@@ -184,7 +184,8 @@ class AuthRepository {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
           return Left(errorMessage);
         } else {
           return Left(e.message.toString());
@@ -253,10 +254,11 @@ class AuthRepository {
       }
     } catch (e) {
       if (e is DioException && e.response != null) {
-          final errorData = e.response?.data;
-          final errorMessage = errorData["message"] ?? 'Unknown error occurred';
-          return Left(errorMessage);
-        }
+        final errorData = e.response?.data;
+        final errorMessage =
+            errorData["message"] ?? Constants.unknownErrorOccurred;
+        return Left(errorMessage);
+      }
       return Left(e.toString());
     }
   }
@@ -291,10 +293,11 @@ class AuthRepository {
       if (e is DioException) {
         if (e.response != null) {
           final errorData = e.response?.data;
-          final errorMessage = errorData['message'] ?? 'Unknown error occurred';
+          final errorMessage =
+              errorData['message'] ?? Constants.unknownErrorOccurred;
           throw errorMessage;
         } else {
-          throw Exception('No response from the server');
+          throw Exception(Constants.noResponse);
         }
       } else {
         rethrow;

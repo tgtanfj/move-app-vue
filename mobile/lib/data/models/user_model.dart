@@ -163,4 +163,18 @@ class UserModel {
       'city': city,
     };
   }
+
+  Map<String, dynamic> signUpToJson() {
+    return {
+      'email': email,
+      'password': password,
+      'referralCode': referralCode
+    };
+  }
+
+  Map<String, dynamic> sendEmailToJson() {
+    return {
+      'email': email,
+    };
+  }
 }

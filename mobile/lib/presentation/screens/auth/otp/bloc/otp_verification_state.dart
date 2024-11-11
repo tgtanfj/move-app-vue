@@ -18,25 +18,25 @@ class OtpVerificationState extends Equatable {
   final bool isShowMessageOtp;
   final UserModel? userModel;
 
-  const OtpVerificationState({
-    this.status = OtpVerificationStatus.initial,
-    this.isEnabledSubmit = false,
-    this.inputOtpCode = "",
-    this.email = "",
-    this.remainingSeconds = 10,
-    this.messageOtp = "",
-    this.isShowMessageOtp = false,
-    this.userModel});
+  const OtpVerificationState(
+      {this.status = OtpVerificationStatus.initial,
+      this.isEnabledSubmit = false,
+      this.inputOtpCode = "",
+      this.email = "",
+      this.remainingSeconds = 10,
+      this.messageOtp = "",
+      this.isShowMessageOtp = false,
+      this.userModel});
 
-  OtpVerificationState copyWith({
-    OtpVerificationStatus? status,
-    bool? isEnabledSubmit,
-    String? inputOtpCode,
-    String? email,
-    int? remainingSeconds,
-    String? messageOtp,
-    bool? isShowMessageOtp,
-    UserModel? userModel}) {
+  OtpVerificationState copyWith(
+      {OtpVerificationStatus? status,
+      bool? isEnabledSubmit,
+      String? inputOtpCode,
+      String? email,
+      int? remainingSeconds,
+      String? messageOtp,
+      bool? isShowMessageOtp,
+      UserModel? userModel}) {
     return OtpVerificationState(
         status: status ?? this.status,
         isEnabledSubmit: isEnabledSubmit ?? this.isEnabledSubmit,
@@ -49,8 +49,7 @@ class OtpVerificationState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         status,
         isEnabledSubmit,
         inputOtpCode,

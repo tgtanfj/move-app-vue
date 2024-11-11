@@ -146,9 +146,16 @@ class _VideoDetailBodyState extends State<VideoDetailBody> {
                   if (state.targetCommentId != null &&
                       !_hasScrolledToPosition) {
                     final comments = state.listComments;
+                    double scrollToPosition = height * 0.33;
+
+                    if (state.targetReplyId != 0) {
+                      scrollToPosition =
+                          (state.listComments?[0].content?.length ?? 0) >= 300
+                              ? height * 0.6
+                              : height * 0.5;
+                    }
 
                     if ((comments?.length ?? 0) > 2) {
-                      double scrollToPosition = 100;
                       _hasScrolledToPosition = true;
 
                       Future.delayed(const Duration(seconds: 1), () {

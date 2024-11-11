@@ -405,4 +405,7 @@ class Constants {
       "Please enter a valid Visa or Credit card number only";
   static const String searchDifferenceKeyword =
       "Please try searching with a different keyword.";
+  static const String chooseAccount =
+      "User not choose account.";
+  static const String noResponse ='No response from the server';
 }

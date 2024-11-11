@@ -22,8 +22,10 @@ class SearchHistoryWidgets extends StatelessWidget {
             const ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
         icon: SvgPicture.asset(
           AppIcons.closeCircle.svgAssetPath,
-          color: AppColors.chineseSilver,
-          width: 24,
+          colorFilter: const ColorFilter.mode(
+            AppColors.chineseSilver,
+            BlendMode.srcIn,
+          ),          width: 24,
           height: 24,
         ),
         onPressed: onPress,
