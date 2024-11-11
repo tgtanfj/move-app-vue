@@ -32,7 +32,7 @@ export enum ERRORS_DICTIONARY {
   //Account
   NOT_FOUND_ACCOUNT = 'Not found account',
   UPDATE_PASSWORD_FAIL = 'Update password fail',
-  PASSWORD_RESTRICTION = 'Your new password cannot be the same as any of your last two passwords. Please choose a different password.',
+  PASSWORD_RESTRICTION = 'Your new password cannot be the same as your current or previous password. Please choose a different password.',
   PASSWORD_INCORRECT = 'You have entered an invalid password',
   WRONG_METHOD = 'Your method cant change password',
 
