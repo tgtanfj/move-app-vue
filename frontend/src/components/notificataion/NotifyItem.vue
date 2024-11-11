@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import defaultAvatar from '@assets/images/default-avatar.png'
 import defaultNotify from '@assets/images/default-notify.png'
 import AvaSystem from '@assets/icons/AvaSystem.vue'
+import { formatDistanceToNow } from 'date-fns'
 
 const props = defineProps({
   modalPopup: {
@@ -96,33 +97,50 @@ const getContentByType = () => {
   }
 }
 
+// const formatTimeAgo = (timestamp) => {
+//   const now = Date.now()
+//   const secondsElapsed = Math.floor((now - timestamp) / 1000)
+
+//   const validSecondsElapsed = Math.max(secondsElapsed, 0)
+
+//   const minutesElapsed = Math.floor(secondsElapsed / 60)
+//   const hoursElapsed = Math.floor(minutesElapsed / 60)
+//   const daysElapsed = Math.floor(hoursElapsed / 24)
+//   const weeksElapsed = Math.floor(daysElapsed / 7)
+//   const monthsElapsed = Math.floor(daysElapsed / 30)
+//   const yearsElapsed = Math.floor(daysElapsed / 365)
+
+//   if (validSecondsElapsed < 1) {
+//     return 'Just now'
+//   } else if (validSecondsElapsed < 60) {
+//     return `${validSecondsElapsed} seconds ago`
+//   } else if (minutesElapsed < 60) {
+//     return `${minutesElapsed} minutes ago`
+//   } else if (hoursElapsed < 24) {
+//     return `${hoursElapsed} hours ago`
+//   } else if (daysElapsed < 7) {
+//     return `${daysElapsed} days ago`
+//   } else if (daysElapsed < 30) {
+//     return `${weeksElapsed} weeks ago`
+//   } else if (daysElapsed < 365) {
+//     return `${monthsElapsed} months ago`
+//   } else {
+//     return `${yearsElapsed} years ago`
+//   }
+// }
+
 const formatTimeAgo = (timestamp) => {
-  const now = Date.now()
-  const secondsElapsed = Math.floor((now - timestamp) / 1000)
-
-  const validSecondsElapsed = Math.max(secondsElapsed, 0)
-
-  const minutesElapsed = Math.floor(secondsElapsed / 60)
-  const hoursElapsed = Math.floor(minutesElapsed / 60)
-  const daysElapsed = Math.floor(hoursElapsed / 24)
-  const weeksElapsed = Math.floor(daysElapsed / 7)
-  const monthsElapsed = Math.floor(daysElapsed / 30)
-  const yearsElapsed = Math.floor(daysElapsed / 365)
-
-  if (validSecondsElapsed < 60) {
-    return `${validSecondsElapsed} seconds ago`
-  } else if (minutesElapsed < 60) {
-    return `${minutesElapsed} minutes ago`
-  } else if (hoursElapsed < 24) {
-    return `${hoursElapsed} hours ago`
-  } else if (daysElapsed < 7) {
-    return `${daysElapsed} days ago`
-  } else if (daysElapsed < 30) {
-    return `${weeksElapsed} weeks ago`
-  } else if (daysElapsed < 365) {
-    return `${monthsElapsed} months ago`
+  const secondsElapsed = Math.floor((Date.now() - timestamp) / 1000)
+  
+  if (secondsElapsed <= 0) {
+    return 'Just now'
+  } else if (secondsElapsed === 1) {
+    return `${secondsElapsed} second ago`
+  } else if (secondsElapsed < 60 && secondsElapsed > 0) {
+    return `${secondsElapsed} seconds ago`
   } else {
-    return `${yearsElapsed} years ago`
+    const timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true })
+    return timeAgo.replace('about ', '')
   }
 }
 

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import FacebookIcon from '@assets/icons/FacebookIcon.vue'
-import GoogleIcon from '@assets/icons/GoogleIcon.vue'
 import { Button } from '@common/ui/button'
 import { useToast } from '@common/ui/toast/use-toast'
 import CustomInput from '@components/input-validation/CustomInput.vue'
 import { useForm } from 'vee-validate'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { signupService } from '@services/signup.services'
 import { useAuthStore } from '../../stores/auth'
 import { registerSchema } from '../../validation/schema.js'
@@ -28,11 +26,11 @@ const { handleSubmit, values, resetForm, errors, meta, defineField } = useForm({
   validationSchema: registerSchema
 })
 
-const toggleSignWithEmail = ref(false)
+// const toggleSignWithEmail = ref(false)
 
-const handleToggleSignWithEmail = () => {
-  toggleSignWithEmail.value = true
-}
+// const handleToggleSignWithEmail = () => {
+//   toggleSignWithEmail.value = true
+// }
 
 const isFillAllFields = computed(() => {
   return values.email && values.password && values.confirmPassword
@@ -64,57 +62,57 @@ const onSubmit = async () => {
   }
 }
 
-const handleGoogleSignIn = async () => {
-  try {
-    await authStore.googleSignIn()
+// const handleGoogleSignIn = async () => {
+//   try {
+//     await authStore.googleSignIn()
 
-    if (authStore.idToken) {
-      await authStore.sendTokenToBackend()
+//     if (authStore.idToken) {
+//       await authStore.sendTokenToBackend()
 
-      if (authStore.accessToken) {
-        followerStore.getAllFollowers()
-        props.closeModal()
-        toast({ description: 'Login successfully', variant: 'successfully' })
-      }
-    }
-  } catch (error) {
-    console.log('Error during Google login or backend token submission:', error)
-    toast({
-      description:
-        authStore.errorMsg ||
-        'An account with this email already exists using a different login method. Please use the original method to log in',
-      variant: 'destructive'
-    })
-  } finally {
-    authStore.isLoading = false
-  }
-}
+//       if (authStore.accessToken) {
+//         followerStore.getAllFollowers()
+//         props.closeModal()
+//         toast({ description: 'Login successfully', variant: 'successfully' })
+//       }
+//     }
+//   } catch (error) {
+//     console.log('Error during Google login or backend token submission:', error)
+//     toast({
+//       description:
+//         authStore.errorMsg ||
+//         'An account with this email already exists using a different login method. Please use the original method to log in',
+//       variant: 'destructive'
+//     })
+//   } finally {
+//     authStore.isLoading = false
+//   }
+// }
 
-const handleFacebookSignIn = async () => {
-  try {
-    await authStore.facebookSignIn()
+// const handleFacebookSignIn = async () => {
+//   try {
+//     await authStore.facebookSignIn()
 
-    if (authStore.idToken) {
-      await authStore.sendTokenToBackend()
+//     if (authStore.idToken) {
+//       await authStore.sendTokenToBackend()
 
-      if (authStore.accessToken) {
-        followerStore.getAllFollowers()
-        props.closeModal()
-        toast({ description: 'Login successfully', variant: 'successfully' })
-      }
-    }
-  } catch (error) {
-    console.log('Error during Google login or backend token submission:', error)
-    toast({
-      description:
-        authStore.errorMsg ||
-        'An account with this email already exists using a different login method. Please use the original method to log in',
-      variant: 'destructive'
-    })
-  } finally {
-    authStore.isLoading = false
-  }
-}
+//       if (authStore.accessToken) {
+//         followerStore.getAllFollowers()
+//         props.closeModal()
+//         toast({ description: 'Login successfully', variant: 'successfully' })
+//       }
+//     }
+//   } catch (error) {
+//     console.log('Error during Google login or backend token submission:', error)
+//     toast({
+//       description:
+//         authStore.errorMsg ||
+//         'An account with this email already exists using a different login method. Please use the original method to log in',
+//       variant: 'destructive'
+//     })
+//   } finally {
+//     authStore.isLoading = false
+//   }
+// }
 
 const clearErrorAPI = () => {
   errorsSignUp.value = ''
@@ -123,33 +121,33 @@ const clearErrorAPI = () => {
 
 <template>
   <div class="flex flex-col justify-center gap-3 pb-3">
-    <button
+    <!-- <button
       class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg"
       @click="handleGoogleSignIn"
     >
       <GoogleIcon />
-      <p class="m-auto font-bold">Sign up with Google</p>
+      <p class="m-auto font-bold">Log In with Google</p>
     </button>
     <button
       class="flex items-center border-[#999999] border-[1px] p-1.5 rounded-lg"
       @click="handleFacebookSignIn"
     >
       <FacebookIcon />
-      <span class="m-auto font-bold">Sign up with Facebook</span>
-    </button>
-    <div class="flex items-center">
+      <span class="m-auto font-bold">Log In with Facebook</span>
+    </button> -->
+    <!-- <div class="flex items-center">
       <div class="border-b-[1px] border-[#999999] h-1 w-full"></div>
       <p class="w-52 text-center">or</p>
       <div class="border-b-[1px] border-[#999999] h-1 w-full"></div>
-    </div>
-    <p
+    </div> -->
+    <!-- <p
       v-if="!toggleSignWithEmail"
       @click="handleToggleSignWithEmail"
       class="cursor-pointer font-bold text-[#13D0B4] text-center"
     >
       SIGN UP WITH EMAIL
-    </p>
-    <div v-if="toggleSignWithEmail">
+    </p> -->
+    <div>
       <form @submit.prevent="onSubmit" class="flex flex-col">
         <div class="flex flex-col gap-[4px]">
           <custom-input

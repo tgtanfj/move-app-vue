@@ -29,6 +29,12 @@ export const emailSchema = object({
 export const registerSchema = object({
   email: string()
     .required(t('error_message.required_email'))
+    .test('has-at-symbol', 'Email must contain "@" symbol.', value => value && value.includes('@'))
+    .test('has-dot', 'Email must contain a dot "."', value => value && value.includes('.'))
+    .test('valid-domain', 'Email domain must be between 2 and 4 characters and only contain letters.', value => {
+      const domain = value && value.split('@')[1]?.split('.')[1];
+      return domain && /^[a-zA-Z]{2,4}$/.test(domain);
+    })
     .matches(REGEX_EMAIL, t('error_message.invalid_email')),
 
   password: string()

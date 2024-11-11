@@ -46,7 +46,7 @@ const increaseViewCount = async () => {
 }
 
 const sendViewTime = async () => {
-  if (viewTime >= 0.7 * totalDuration) {
+  if (viewTime >= 0.3 * totalDuration) {
     const viewCounter = {
       videoId: props.videoId,
       date: new Date().toISOString().split('T')[0],
@@ -79,7 +79,7 @@ onMounted(() => {
       player.getCurrentTime().then((seconds) => {
         const percentage = (seconds / totalDuration) * 100
 
-        if (percentage >= 70 && !hasViewed) {
+        if (percentage >= 30 && !hasViewed) {
           increaseViewCount()
           hasViewed = true
         }

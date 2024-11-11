@@ -27,12 +27,12 @@ const videoQueueStore = useVideoQueueStore()
             </p>
             <div class="flex gap-2">
               <div
-                class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer bg-primary text-white"
+                class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer bg-[#EEEEEE] text-black"
               >
                 <p class="text-[11px] font-bold">{{ videoQueueStore.tempWorkoutLevel }}</p>
               </div>
               <div
-                class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer bg-primary text-white"
+                class="h-[26px] rounded-full p-2 flex items-center justify-center cursor-pointer bg-[#EEEEEE] text-black"
               >
                 <p class="text-[11px] font-bold">{{ videoQueueStore.tempDuration }}</p>
               </div>
