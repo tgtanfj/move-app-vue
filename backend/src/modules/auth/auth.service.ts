@@ -66,6 +66,8 @@ export class AuthService {
     //generate link reset password
     const link = `${this.apiConfigService.getString('MY_SERVER')}/deep-link?path=reset-password/${token}`;
     //send mail with template
+    await this.userService.updateToken(foundUser.id, token);
+    // await this.userService
     const dto: MailDTO = {
       subject: 'Password reset',
       to: email,
@@ -101,8 +103,23 @@ export class AuthService {
       });
       //find user by id
       const user = await this.userService.findOne(payload.userId);
+      const payloadInDB = this.jwtService.verify(user.token, {
+        secret: this.apiConfigService.getString('RESET_PASSWORD_KEY'),
+      });
 
+      if (user.token === null) {
+        throw new BadRequestException('Link has expired');
+      }
+
+      if (user.id !== payload.userId) {
+        throw new ForbiddenException();
+      }
+
+      if (payloadInDB.userId !== payload.userId) {
+        throw new ForbiddenException();
+      }
       const hash = await bcrypt.hash(newPassword, 10);
+      await this.userService.updateToken(user.id);
       const update = await this.userService.updatePassword(hash, payload.userId);
       if (!update) {
         throw new BadRequestException({
