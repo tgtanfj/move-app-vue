@@ -120,4 +120,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => CommentReaction, (commentReaction) => commentReaction.user)
   commentReactions: CommentReaction[];
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  token: string;
 }

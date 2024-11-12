@@ -101,4 +101,10 @@ export class UserRepository {
       numberOfREPs,
     });
   }
+
+  async updateToken(userId: number, token: string) {
+    return this.userRepository.update(userId, {
+      token: token,
+    });
+  }
 }

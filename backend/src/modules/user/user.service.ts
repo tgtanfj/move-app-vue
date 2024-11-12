@@ -203,4 +203,9 @@ export class UserService {
       throw new BadRequestException(error);
     });
   }
+
+  async updateToken(userId: number, token?: string) {
+    const data = token ? token : null;
+    return this.userRepository.updateToken(userId, data);
+  }
 }
