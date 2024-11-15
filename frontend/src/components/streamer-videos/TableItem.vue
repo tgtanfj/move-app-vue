@@ -47,13 +47,13 @@
                 <Trash size="16" color="#12BDA3" />
                 <span class="text-sm">{{ $t('streamer.delete_video') }}</span>
               </div>
-              <div
+              <!-- <div
                 class="flex gap-2 items-center text-sm cursor-pointer"
                 @click="handleDownloadVideo"
               >
                 <ArrowDownToLine size="16" color="#12BDA3" />
                 <span class="text-sm">{{ $t('streamer.download_video') }}</span>
-              </div>
+              </div> -->
             </div>
           </PopoverContent>
         </Popover>

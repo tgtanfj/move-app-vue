@@ -25,12 +25,12 @@
                 >
                   <Trash size="16" stroke-width="2.5" />{{ $t('streamer.delete') }}
                 </div>
-                <div
+                <!-- <div
                   class="flex gap-1 items-center text-primary capitalize font-semibold cursor-pointer"
                   @click="handleDownloadVideoList"
                 >
                   <ArrowDownToLine size="16" stroke-width="2.5" />{{ $t('streamer.download') }}
-                </div>
+                </div> -->
               </TableHead>
               <TableHead></TableHead>
               <TableHead></TableHead>
