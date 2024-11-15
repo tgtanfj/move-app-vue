@@ -292,7 +292,7 @@ const handleImageError = (event) => {
         />
         <div class="flex flex-col gap-1 w-full">
           <div class="flex items-center justify-start gap-2">
-            <RepsSenderIcon class="mb-1" v-if="item.totalDonation !== null" />
+            <RepsSenderIcon class="mb-1" v-if="item.totalDonation > 0" />
             <div
               class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
               v-if="item?.lastContentDonate"
@@ -307,7 +307,7 @@ const handleImageError = (event) => {
             <div v-if="item.user.channel" class="flex items-center">
               <BlueBadgeIcon v-if="item.user.channel.isBlueBadge" />
             </div>
-            <div v-if="item.totalDonation !== null" class="flex items-end gap-2">
+            <div v-if="item.totalDonation > 0" class="flex items-end gap-2">
               <RenderIconsReps :numberOfReps="item?.totalDonation" />
               <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                 Gifted {{ item.totalDonation }} REPs
@@ -479,7 +479,7 @@ const handleImageError = (event) => {
                 <div class="flex items-center justify-start gap-2">
                   <RepsSenderIcon
                     class="mb-1"
-                    v-if="myReplyPerComment[item.id]?.totalDonation !== null"
+                    v-if="myReplyPerComment[item.id]?.totalDonation > 0"
                   />
                   <div
                     class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
@@ -498,7 +498,7 @@ const handleImageError = (event) => {
                     <BlueBadgeIcon v-if="myReplyPerComment[item.id].user.channel.isBlueBadge" />
                   </div>
                   <div
-                    v-if="myReplyPerComment[item.id].totalDonation !== null"
+                    v-if="myReplyPerComment[item.id].totalDonation > 0"
                     class="flex items-end gap-2"
                   >
                     <RenderIconsReps :numberOfReps="myReplyPerComment[item.id]?.totalDonation" />
@@ -601,7 +601,7 @@ const handleImageError = (event) => {
               />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center justify-start gap-2">
-                  <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation !== null" />
+                  <RepsSenderIcon class="mb-1" v-if="reply?.totalDonation > 0" />
                   <div
                     class="h-[24px] px-2 bg-[#FFB564] rounded-full mb-1"
                     v-if="reply?.lastContentDonate"
@@ -616,7 +616,7 @@ const handleImageError = (event) => {
                   <div v-if="reply.user.channel" class="flex items-center">
                     <BlueBadgeIcon v-if="reply.user.channel.isBlueBadge" />
                   </div>
-                  <div v-if="reply.totalDonation !== null" class="flex items-end gap-2">
+                  <div v-if="reply.totalDonation > 0" class="flex items-end gap-2">
                     <RenderIconsReps :numberOfReps="reply?.totalDonation" />
                     <p class="text-[#FFB564] text-[12px] -mb-[1px]">
                       Gifted {{ reply.totalDonation }} REPs
@@ -714,7 +714,7 @@ const handleImageError = (event) => {
     </TableCell>
     <TableCell class="w-[15%] h-full align-top">
       <div class="flex mb-auto">
-        <template v-if="item?.totalDonation !== null">
+        <template v-if="item?.totalDonation > 0">
           <div v-if="item.totalDonation <= 999" class="flex items-center justify-center gap-2">
             <img class="w-[14px] h-[20px] shrink-0" src="../../assets/images/GrayIconImg.png" />
             <p class="text-[16px] font-bold">{{ item?.totalDonation }}</p>
